@@ -1,0 +1,137 @@
+{% extends "templates/admin.html" %}
+
+{% block head %}
+
+	{% parent %}
+	
+	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/js/admin/pages.js"></script>
+
+{% endblock %}
+
+{% block page_title %}
+	{% if page.loaded %}
+		Edit Page: <strong>{{page.name}}</strong>
+	{% else %}
+		Adding: <strong>New Page</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_8 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_8 omega tr">
+			<a href="/admin/pages" class="right-pad">Cancel</a>
+			<input type="submit" value="Save Changes" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Page Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="page-name" name="page[name]" value="{{page.name}}"
+				class="inputtext longest {% if not page.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-slug" {{ errors.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="page-slug" name="page[slug]" value="{{page.slug}}" class="inputtext longest slug" 
+				{% if page.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if page.loaded %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="{% url "view_page", ["slug":page.slug] %}" target="_blank">
+				{{base_url}}{% url "view_page", ["slug":page.slug] %}
+			</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="page-status" name="page[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == page.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<textarea name="page[body]" id="cms_body">{{page.body}}</textarea>
+	</div>
+	
+	<h2>Meta Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-meta-description">Description</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="page-meta-description" name="page[meta_description]" class="wide">{{page.meta_description}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the category.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-meta-keywords">Keywords</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="page-meta-keywords" name="page[meta_keywords]" class="wide">{{page.meta_keywords}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this category. These are used by Search Engines when indexing pages.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#page-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#page-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+</script>
+
+{% endblock %}

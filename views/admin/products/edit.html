@@ -1,0 +1,284 @@
+{% extends "templates/admin.html" %}
+
+{% block head %}
+
+	{% parent %}
+	
+	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/js/admin/products.js"></script>
+
+{% endblock %}
+
+{% block page_title %}
+	{% if product.loaded %}
+		Edit Product: <strong>{{product.name}}</strong>
+	{% else %}
+		Adding: <strong>New Product</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_8 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_8 omega tr">
+			<a href="/admin/products/delete/{{product.id}}" class="delete-button">
+				<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+				Delete Product
+			</a>
+			<a href="/admin/products" class="right-pad">Cancel Changes</a>
+			<input type="submit" value="Save Changes" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Product Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="product-name" name="product[name]" value="{{product.name}}"
+				class="inputtext longest {% if not product.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-slug" {{ errors.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="product-slug" name="product[slug]" value="{{product.slug}}" class="inputtext longest slug" 
+				{% if product.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if product.loaded %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{{base_url}}{% url "view_product", ["slug":product.slug] %}</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="product-status" name="product[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="product-description" name="product[description]" class="description">{{product.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-price">Price * (&pound;)</label>
+		</div>
+		<div class="grid_6">
+			<input type="text" id="product-price" name="product[price]" value="{{product.retail_price}}" class="inputtext shortest" />
+			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
+		</div>
+		<div class="grid_2">
+			<label for="product-brand">Brand</label>
+		</div>
+		<div class="grid_6 omega">
+			<select id="product-brand" name="product[brand]">
+				<option value="0">None</option>
+			{% for brand in brands %}
+				<option value="{{brand.id}}" {{ brand.id == product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>SKU</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="product-sku" name="product[sku]" value="{{product.sku}}" class="inputtext shorter" />
+		</div>
+	</div>
+	
+	<h2>Meta Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-meta-description">Description</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{product.meta_description}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the product.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-meta-keywords">Keywords</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{product.meta_keywords}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this product. These are used by Search Engines when indexing pages.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<!-- <h2>Images</h2>
+	
+	<div class="field product-image-edit-header">
+		
+		<div class="grid_2 alpha">
+			<label>Default</label>
+		</div>
+		
+		<div class="grid_2">
+			<label>Thumb</label>
+		</div>
+		
+		<div class="grid_2">
+			<label>Image</label>
+		</div>
+		
+		<div class="grid_6">
+			<label>Alt Text</label>
+		</div>
+		
+		<div class="grid_2">
+			<label>Edit</label>
+		</div>
+		
+		<div class="grid_2 omega">
+			<label>Delete</label>
+		</div>
+		
+		<div class="clear"></div>
+		
+	</div>
+	
+	{% if product.loaded and product.images %}
+	
+		{% for image in product.images %}
+		
+		<div class="field product-image-edit">
+			
+			<div class="grid_2 alpha image-edit-center">
+				<input type="radio" name="product[default_image]" value="{{image.id}}" 
+					{% if product.default_image.id == image.id %}checked{% endif %} />
+			</div>
+			
+			<div class="grid_2 image-edit-center">
+				<input type="radio" name="product[thumbnail]" value="{{image.id}}" 
+					{% if product.thumbnail.id == image.id %}checked{% endif %} />
+			</div>
+			
+			<div class="grid_2 tc">
+				<img src="{{image.thumb_path}}" alt="" />
+			</div>
+			
+			<div class="grid_6 alt-text">
+				<textarea name="images[{{image.id}}][alt_text]" class="wide">{{image.alt_text}}</textarea>
+			</div>
+			
+			<div class="grid_2 image-edit-center">
+				<a href="/admin/products/edit_image/{{image.id}}" class="modal">
+					<img src="/images/icons/pencil.png" alt="" class="inline-icon" />
+				</a>
+			</div>
+			
+			<div class="grid_2 omega image-edit-center">
+				<input type="checkbox" name="delete_images[]" value="{{image.id}}" />
+			</div>
+			
+			<div class="clear"></div>
+			
+		</div>
+		
+		{% endfor %}
+	
+	{% else %}
+		<div class="field">
+			<div class="left-pad"><em>No images to display.</em></div>
+		</div>
+	{% endif %}
+	
+	<div class="field">
+		<div id="file-uploader" class="left-pad">       
+		    <noscript>          
+		        <p>Please enable JavaScript to use file uploader.</p>
+		    </noscript>         
+		</div>
+	</div> -->
+	
+	<h2>Categories</h2>
+	{% for key, category in categories %}
+		{% if not category.parent.loaded %}
+		<div class="grid_4 field {{ ['alpha', '', '', 'omega']|cycle(key) }}">
+			<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
+				class="top-level-category" />
+			<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+			{% if category.categories %}
+				<ul class="subcategory-list">
+					{% for subcategory in category.categories %}
+					<li>
+						<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
+							value="{{subcategory.id}}" {% if subcategory.id in product_categories|keys %}checked{% endif %} />
+						<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+					</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</div>
+		{% endif %}
+	{% endfor %}
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#product-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#product-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+</script>
+
+{% endblock %}

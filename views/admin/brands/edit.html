@@ -1,0 +1,150 @@
+{% extends "templates/admin.html" %}
+
+{% block head %}
+
+	{% parent %}
+	
+	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+
+{% endblock %}
+
+{% block page_title %}
+	{% if brand.loaded %}
+		Edit Brand: <strong>{{brand.name}}</strong>
+	{% else %}
+		Adding: <strong>New Brand</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_8 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_8 omega tr">
+			<a href="/admin/brands" class="right-pad">Cancel</a>
+			<input type="submit" value="Save Changes" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Brand Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="brand-name" name="brand[name]" value="{{brand.name}}"
+				class="inputtext longest {% if not brand.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-slug" {{ errors.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="brand-slug" name="brand[slug]" value="{{brand.slug}}" class="inputtext longest slug" 
+				{% if brand.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if brand.loaded %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="/brands/view/{{brand.slug}}" target="_blank">{{base_url}}brands/view/{{brand.slug}}</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="brand-status" name="brand[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == brand.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="brand-description" name="brand[description]" class="description">{{brand.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-website" {{ errors.name ? "class='error'" : "" }}>Website</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="brand-website" name="brand[website]" value="{{brand.website}}" class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<h2>Meta Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-meta-description">Description</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="brand-meta-description" name="brand[meta_description]" class="wide">{{brand.meta_description}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the brand.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="brand-meta-keywords">Keywords</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="brand-meta-keywords" name="brand[meta_keywords]" class="wide">{{brand.meta_keywords}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this brand. These are used by Search Engines when indexing pages.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#brand-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#brand-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+</script>
+
+{% endblock %}

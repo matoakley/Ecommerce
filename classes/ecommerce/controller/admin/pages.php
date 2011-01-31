@@ -2,7 +2,7 @@
 
 class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 
-	function action_index()
+	public function action_index()
 	{
 		$items = 25;
 		
@@ -20,5 +20,36 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
 	}
+	
+	public function action_edit($id = FALSE)
+	{
+		$page = Model_Page::load($id);
+	
+		if ($id AND ! $page->loaded())
+		{
+			throw new Kohana_Exception('Page could not be found.');
+		}
+		
+		if ($_POST)
+		{
+			try
+			{
+				$page->update($_POST['page']);
+								
+				$this->request->redirect('/admin/pages');
+			}
+			catch (Validate_Exception $e)
+			{
+				$this->template->errors = $e->array->errors();
+			}
+		}
+		
+		// Loads the script that counts chars on the fly for Meta fields.
+		$this->scripts[] = 'jquery.counter-1.0.min';
+		
+		$this->template->page = $page;
+		$this->template->statuses = Model_Page::$statuses;
+	}
+
 	
 }

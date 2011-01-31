@@ -1,0 +1,102 @@
+{% extends "templates/admin.html" %}
+
+{% block page_title %}
+	{% if brand.loaded %}
+		Edit User: <strong>{{user.name}}</strong>
+	{% else %}
+		Adding: <strong>New User</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_8 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_8 omega tr">
+			<a href="/admin/users" class="right-pad">Cancel</a>
+			<input type="submit" value="Save Changes" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="grid_8 alpha">
+
+		<h2>System User Details</h2>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="user-firstname" {{ errors.name ? "class='error'" : "" }}>Firstname</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="user-firstname" name="user[firstname]" value="{{user.firstname}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="user-lastname" {{ errors.slug ? "class='error'" : "" }}>Lastname</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="user-lastname" name="user[lastname]" value="{{user.lastname}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="user-email" {{ errors.name ? "class='error'" : "" }}>Email *</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="user-email" name="user[email]" value="{{user.email}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="user-password" {{ errors.slug ? "class='error'" : "" }}>Password *</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="password" id="user-password" name="user[password]" value="" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+	</div>
+	
+	<div class="grid_8 omega">
+		
+		<h2>System User Roles</h2>
+		
+		{% for role in roles %}
+		
+			<div class="field">
+				
+				<div class="grid_2 alpha">
+					<div class="left-pad">
+						<input type="checkbox" name="user[roles][]" value="{{role.id}}"
+						 	{% if role.id in user.roles.as_array('id','id')  %}checked{% endif%} />
+						{{role.name|title}}
+					</div>
+				</div>
+				
+				<div class="grid_6 omega">
+					{{role.description}}
+				</div>
+				
+				<div class="clear"></div>
+				
+			</div>
+		
+		{% endfor %}
+		
+	</div>
+	
+</form>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "templates/admin.html" %}
+
+{% block page_title %}
+	View Sales Order: <strong>{{sales_order.id}} - {{sales_order.customer.firstname}} {{sales_order.customer.lastname}}</strong>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="tr">
+			<a href="/admin/products" class="right-pad">Cancel</a>
+			<input type="submit" value="Save Changes" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="grid_8 alpha">
+		<h2>Customer Details</h2>
+		<p>
+			{{sales_order.customer.firstname}} {{sales_order.customer.lastname}}<br/>
+			{{sales_order.delivery_address.line_1}}<br/>
+			{% if sales_order.delivery_address.line_2 %}{{sales_order.delivery_address.line_2}}<br/>{% endif %}
+			{{sales_order.delivery_address.town}}<br/>
+			{{sales_order.delivery_address.county}}<br/>
+			{% if sales_order.delivery_address.postcode %}{{sales_order.delivery_address.postcode}}<br/>{% endif %}
+		</p>
+		<p><a href="mailto:{{sales_order.customer.email}}">{{sales_order.customer.email}}</a></p>
+	</div>
+	
+	<div class="grid_8 omega">
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Status</label>
+			</div>
+			<div class="grid_6 omega">
+				<select name="sales_order[status]">
+				{% for status in order_statuses %}
+					<option value="{{status}}" {% if status == sales_order.status %}selected{% endif %}>
+						{{status|humanize|title}}
+					</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Placed on</label>
+			</div>
+			<div class="grid_6 omega">{{sales_order.created}}</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Delivery Option</label>
+			</div>
+			<div class="grid_6 omega">{{sales_order.delivery_option.name}}</div>
+			<div class="clear"></div>
+		</div>
+		
+	</div>
+
+	<div class="clear"></div>
+
+	<h2>Order Details</h2>
+	
+	<table>
+		<thead>
+			<th>Item Name</th>
+			<th class="tc">Qty</th>
+			<th class="tr">Total</th>
+		</thead>
+		<tbody>
+		{% for key, item in sales_order.items %}
+			<tr class="{{['', 'alternate']|cycle(key)}}">		
+ 				<td>{{item.product.name}}</td>
+				<td class="tc">{{item.quantity}}</td>
+				<td class="tr">&pound;{{item.total_price}}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	
+	<!-- <div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="product-name" name="product[name]" value="{{product.name}}"
+				class="inputtext longest {% if not product.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div> -->
+	
+</form>
+
+
+{% endblock %}

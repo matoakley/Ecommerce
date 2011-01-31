@@ -2,7 +2,7 @@
 
 class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application {
 
-	function action_index()
+	public function action_index()
 	{
 		$items = 25;
 
@@ -21,7 +21,7 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 		$this->template->items = $items;
 	}
 	
-	function action_edit($id = FALSE)
+	public function action_edit($id = FALSE)
 	{
 		$category = Model_Category::load($id);
 	

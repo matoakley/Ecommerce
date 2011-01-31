@@ -2,12 +2,12 @@
 
 class Ecommerce_Model_Category extends Model_Application
 {	
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('categories')
-            ->fields(array(
-                'id' => new Field_Primary,
-                'name' => new Field_String(array(
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('categories')
+			->fields(array(
+				'id' => new Field_Primary,
+				'name' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,
 					),
@@ -32,7 +32,7 @@ class Ecommerce_Model_Category extends Model_Application
 				'meta_keywords' => new Field_String,
 				'products' => new Field_ManyToMany(array(
 					'foreign' => 'product',
-				    'through' => 'categories_products',
+					'through' => 'categories_products',
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -46,8 +46,8 @@ class Ecommerce_Model_Category extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-             ));
-    }
+		));
+	}
 
 	public static $statuses = array(
 		'active', 'disabled'

@@ -1,0 +1,18 @@
+{% extends "templates/modal.html" %}
+
+{% block content %}
+
+	<h1>Bulk Update Prices</h1>
+	
+	<div class="field">
+		<label>Price (&pound;)</label>
+		<input type="text" name="price" id="bulk-update-prices-value" value="" class="inputtext shortest" />
+		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
+	</div>
+	
+	<div class="buttons tr">
+		<input type="submit" value-"Update" id="bulk-update-prices" />
+		<a href="#" class="close-modal">cancel</a>
+	</div>
+
+{% endblock %}
