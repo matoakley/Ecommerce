@@ -24,6 +24,11 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 	public function action_edit($id = FALSE)
 	{
 		$page = Model_Page::load($id);
+		
+		if ( ! $page->loaded())
+		{
+			$page->template = 'default';
+		}
 	
 		if ($id AND ! $page->loaded())
 		{

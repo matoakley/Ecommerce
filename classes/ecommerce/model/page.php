@@ -12,6 +12,7 @@ class Ecommerce_Model_Page extends Model_Application
 				'body' => new Field_Text,
 				'meta_description' => new Field_String,
 				'meta_keywords' => new Field_String,
+				'template' => new Field_String,
 				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,

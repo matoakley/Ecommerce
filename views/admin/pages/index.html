@@ -30,6 +30,7 @@
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
+			<th>Template</th>
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -38,7 +39,8 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td width="1"><input type="checkbox" class="row-selector" /></td>
 			<td><a href="/admin/pages/edit/{{page.id}}">{{page.name}}</a></td>
-			<td>{{ page.is_live ? 'Live' : 'Disabled' }}</td>
+			<td>{{page.template}}</td>
+			<td>{{page.status|title}}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
