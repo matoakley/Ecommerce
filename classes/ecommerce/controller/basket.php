@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Basket extends Controller_Application {
-
-	function action_view()
+class Ecommerce_Controller_Basket extends Controller_Application
+{
+	public function action_view()
 	{				
 		if ($_POST)
 		{
@@ -36,7 +36,7 @@ class Ecommerce_Controller_Basket extends Controller_Application {
 		$this->add_breadcrumb('/basket', 'Your Basket');
 	}
 	
-	function action_add_item()
+	public function action_add_item()
 	{
 		// This function should be called over AJAX, else just process and redirect to action_view.
 		$this->auto_render = FALSE;
@@ -46,10 +46,17 @@ class Ecommerce_Controller_Basket extends Controller_Application {
 			$this->basket->add_item($_POST['basket_item']['product_id'], $_POST['basket_item']['qty']);
 		}
 		
-		$this->request->redirect('/basket');
+		if (Request::$is_ajax)
+		{
+			echo $this->basket->count_items();
+		}
+		else
+		{
+			$this->request->redirect('/basket');
+		}
 	}
 	
-	function action_update_basket()
+	public function action_update_basket()
 	{
 		$this->auto_render = FALSE;
 		$this->basket->delivery_option = $_POST['delivery_option'];
@@ -58,13 +65,13 @@ class Ecommerce_Controller_Basket extends Controller_Application {
 		echo $this->basket->delivery_option->price;
 	}
 	
-	function action_update_delivery_option()
+	public function action_update_delivery_option()
 	{
 		$this->auto_render = FALSE;
 		echo $this->basket->update_delivery_option($_POST['id']);
 	}
 	
-	function action_update_total()
+	public function action_update_total()
 	{
 		$this->auto_render = FALSE;		
 		echo $this->basket->calculate_total();
