@@ -96,7 +96,7 @@ class Ecommerce_Model_Product extends Model_Application
 		}
 		else
 		{
-			$meta_description = substr(strip_tags($this->description), 0, 160);
+			$meta_description = Text::limit_chars(strip_tags($this->description), 160, ' &hellip;', TRUE);
 		}
 		
 		return $meta_description;
