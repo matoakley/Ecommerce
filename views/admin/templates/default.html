@@ -67,17 +67,24 @@
 				<ul>
 					<li class="first"><a href="/admin">Dashboard</a></li>
 					
-					{% if nav_items.categories %}
-						<li><a href="/admin/categories">Categories</a></li>
-					{% endif %}
-					
-					{% if nav_items.products %}
-						<li><a href="/admin/products">Products</a></li>
-					{% endif %}
-					
-					{% if nav_items.brands %}
-						<li><a href="/admin/brands">Brands</a></li>
-					{% endif %}
+					<li>
+						<a href="#">Catalog</a>
+						
+						<ul>
+							{% if nav_items.brands %}
+								<li><a href="/admin/brands">Brands</a></li>
+							{% endif %}
+						
+							{% if nav_items.categories %}
+								<li><a href="/admin/categories">Categories</a></li>
+							{% endif %}
+							
+							{% if nav_items.products %}
+								<li><a href="/admin/products">Products</a></li>
+							{% endif %}
+						</ul>
+
+					</li>
 					
 					{% if nav_items.sales_orders %}
 						<li><a href="/admin/sales_orders">Sales Orders</a></li>
