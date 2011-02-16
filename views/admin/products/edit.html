@@ -257,7 +257,7 @@
 		{% if not category.parent.loaded %}
 		<div class="grid_4 field {{ ['alpha', '', '', 'omega']|cycle(key) }}">
 			<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
-				class="top-level-category" />
+				class="top-level-category" {% if category.id in product_categories|keys %}checked{% endif %} />
 			<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
 			{% if category.categories %}
 				<ul class="subcategory-list">
