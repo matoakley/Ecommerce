@@ -36,6 +36,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	
 	public function after()
 	{	
+		$this->template->nav_items = Kohana::config('ecommerce.admin_sections');
+	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		
 		$this->template->scripts = $this->scripts;
