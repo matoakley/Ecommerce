@@ -51,4 +51,14 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 		$this->template->statuses = Model_Brand::$statuses;
 	}
 	
+	public function action_delete($id = NULL)
+	{
+		$this->auto_render = FALSE;
+		
+		$brands = Model_Brand::load($id);
+		$brands->delete();
+		
+		$this->request->redirect('admin/brands');
+	}
+	
 }

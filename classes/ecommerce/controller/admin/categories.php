@@ -51,4 +51,15 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 		$this->template->statuses = Model_Category::$statuses;
 		$this->template->top_level_categories = Model_Category::build_category_tree();
 	}
+	
+	public function action_delete($id = NULL)
+	{
+		$this->auto_render = FALSE;
+		
+		$categories = Model_Category::load($id);
+		$categories->delete();
+		
+		$this->request->redirect('admin/categories');
+	}
+
 }

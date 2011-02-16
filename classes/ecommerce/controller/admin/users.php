@@ -74,4 +74,14 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 		}
 	}
 	
+	public function action_delete($id = NULL)
+	{
+		$this->auto_render = FALSE;
+		
+		$user = Model_User::load($id);
+		$user->delete();
+		
+		$this->request->redirect('admin/users');
+	}
+
 }

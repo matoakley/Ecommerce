@@ -71,30 +71,30 @@
 						<a href="#">Catalog</a>
 						
 						<ul>
-							{% if nav_items.brands %}
+							{% if modules.brands %}
 								<li><a href="/admin/brands">Brands</a></li>
 							{% endif %}
 						
-							{% if nav_items.categories %}
+							{% if modules.categories %}
 								<li><a href="/admin/categories">Categories</a></li>
 							{% endif %}
 							
-							{% if nav_items.products %}
+							{% if modules.products %}
 								<li><a href="/admin/products">Products</a></li>
 							{% endif %}
 						</ul>
 
 					</li>
 					
-					{% if nav_items.sales_orders %}
+					{% if modules.sales_orders %}
 						<li><a href="/admin/sales_orders">Sales Orders</a></li>
 					{% endif %}
 					
-					{% if nav_items.pages %}
+					{% if modules.pages %}
 						<li><a href="/admin/pages">CMS Pages</a></li>
 					{% endif %}
 					
-					{% if nav_items.users %}
+					{% if modules.users %}
 						<li><a href="/admin/users">System Users</a></li>
 					{% endif %}
 				</ul>

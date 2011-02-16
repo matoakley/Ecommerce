@@ -56,5 +56,14 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 		$this->template->statuses = Model_Page::$statuses;
 	}
 
+	public function action_delete($id = NULL)
+	{
+		$this->auto_render = FALSE;
+		
+		$pages = Model_Page::load($id);
+		$pages->delete();
+		
+		$this->request->redirect('admin/pages');
+	}
 	
 }

@@ -25,6 +25,12 @@
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
 		<div class="grid_8 omega tr">
+			{% if category.loaded %}
+				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Category
+				</a>
+			{% endif %}
 			<a href="/admin/categories" class="right-pad">Cancel</a>
 			<input type="submit" value="Save Changes" class="right-pad" />
 		</div>

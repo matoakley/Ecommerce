@@ -4,7 +4,7 @@ return array
 (
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
-	'admin_sections' => array(
+	'modules' => array(
 		'brands' => TRUE,
 		'categories' => TRUE,
 		'pages' => TRUE,

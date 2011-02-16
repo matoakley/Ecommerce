@@ -26,10 +26,12 @@
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
 		<div class="grid_8 omega tr">
-			<a href="/admin/products/delete/{{product.id}}" class="delete-button">
-				<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-				Delete Product
-			</a>
+			{% if product.loaded %}
+				<a href="/admin/products/delete/{{product.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Product
+				</a>
+			{% endif %}
 			<a href="/admin/products" class="right-pad">Cancel Changes</a>
 			<input type="submit" value="Save Changes" class="right-pad" />
 		</div>
@@ -105,15 +107,19 @@
 			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
 		</div>
 		<div class="grid_2">
-			<label for="product-brand">Brand</label>
+			{% if modules.brands %}
+				<label for="product-brand">Brand</label>
+			{% endif %}
 		</div>
 		<div class="grid_6 omega">
-			<select id="product-brand" name="product[brand]">
-				<option value="0">None</option>
-			{% for brand in brands %}
-				<option value="{{brand.id}}" {{ brand.id == product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
-			{% endfor %}
-			</select>
+			{% if modules.brands %}
+				<select id="product-brand" name="product[brand]">
+					<option value="0">None</option>
+				{% for brand in brands %}
+					<option value="{{brand.id}}" {{ brand.id == product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+				{% endfor %}
+				</select>
+			{% endif %}
 		</div>
 		<div class="clear"></div>
 	</div>

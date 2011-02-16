@@ -17,6 +17,12 @@
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
 		<div class="grid_8 omega tr">
+			{% if user.loaded %}
+				<a href="/admin/users/delete/{{user.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete System User
+				</a>
+			{% endif %}
 			<a href="/admin/users" class="right-pad">Cancel</a>
 			<input type="submit" value="Save Changes" class="right-pad" />
 		</div>
