@@ -6,7 +6,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	{				
 		$items = 25;
 
-		$search = Model_Sales_Order::search(array(), $items);
+		$search = Model_Sales_Order::search(array(), $items, array('created' => 'DESC'));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
