@@ -44,7 +44,7 @@ class Ecommerce_Model_Application extends Jelly_Model
 		return $result;
 	}
 	
-	public static function search($conditions = array(), $items = FALSE)
+	public static function search($conditions = array(), $items = FALSE, $order = FALSE)
 	{
 		$data = array();
 		
@@ -106,6 +106,14 @@ class Ecommerce_Model_Application extends Jelly_Model
 		
 		$data['count_all'] = $results->count();
 		
+		if ($order)
+		{
+			foreach ($order as $key => $value)
+			{
+				$results->order_by($key, $value);
+			}
+		}
+
 		if ($items)
 		{
 			$page = (isset($_GET['page'])) ? $_GET['page'] : 1;		

@@ -5,6 +5,7 @@ return array
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
 	'modules' => array(
+		'blog' => TRUE,
 		'brands' => TRUE,
 		'categories' => TRUE,
 		'pages' => TRUE,
