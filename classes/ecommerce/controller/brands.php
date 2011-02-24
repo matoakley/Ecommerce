@@ -5,6 +5,7 @@ class Ecommerce_Controller_Brands extends Controller_Application {
 	function action_index()
 	{
 		$this->template->brands = Jelly::select('brand')
+									->where('status', '=', 'active')
 									->order_by('name')
 									->execute();;
 		
