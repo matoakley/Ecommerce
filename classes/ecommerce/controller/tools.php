@@ -45,6 +45,30 @@ class Ecommerce_Controller_Tools extends Controller_Application {
 			$sitemap->add($url);
 		}		
 		
+		if (Kohana::config('ecommerce.modules.brands'))
+		{
+			$brands = Jelly::select('brand')
+										->where('status', '=', 'active')
+										->order_by('name')
+										->execute();
+			
+			foreach ($brands as $brand)
+			{
+				$last_mod = time();
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('view_brand')->uri(array('slug' => $brand->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
+		}
+		
 		// Render the output.
 		$output = $sitemap->render();
 

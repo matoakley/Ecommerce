@@ -46,7 +46,7 @@ class Ecommerce_Model_Product_Image extends Model_Application
 	
 	private function get_filepath($type = 'full_size')
 	{
-		$path = '/images/products/' . $type . '/'. date('Y/m/', strtotime($this->created)) . $this->id . '.jpg';
+		$path = '/images/products/' . $type . '/'. date('Y/m/', $this->created) . $this->id . '.jpg';
 		
 		if ( ! file_exists(DOCROOT . $path))
 		{
