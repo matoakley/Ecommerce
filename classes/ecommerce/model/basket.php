@@ -1,12 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Model_Basket extends Model_Application {
-	
+class Ecommerce_Model_Basket extends Model_Application
+{	
 	public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('baskets')
-            ->fields(array(
-                'id' => new Field_Primary,
+  {
+  	$meta->table('baskets')
+    	->fields(array(
+      	'id' => new Field_Primary,
 				'items' => new Field_HasMany(array(
 					'foreign' => 'basket_item.basket_id',
 				)),
@@ -15,7 +15,6 @@ class Ecommerce_Model_Basket extends Model_Application {
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
-					'pretty_format' => 'd/m/Y H:i',
 				)),
 				'modified' => new Field_Timestamp(array(
 					'auto_now_update' => TRUE,
@@ -48,7 +47,7 @@ class Ecommerce_Model_Basket extends Model_Application {
 	}
 	
 	public function save($key = NULL)
-	{
+	{	
 		parent::save($key);
 		
 		if ( ! Session::instance()->get('basket_id'))
@@ -117,8 +116,7 @@ class Ecommerce_Model_Basket extends Model_Application {
 			$basket_item->product = $product_id;
 		}
 		
-		$basket_item->quantity += $quantity;
-		return $basket_item->save();
+		return $basket_item->update_quantity($basket_item->quantity + $quantity);
 	}
 	
 }

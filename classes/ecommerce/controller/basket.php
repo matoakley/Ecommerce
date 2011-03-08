@@ -3,30 +3,16 @@
 class Ecommerce_Controller_Basket extends Controller_Application
 {
 	public function action_view()
-	{				
+	{
 		if ($_POST)
 		{
 			if (isset($_POST['checkout_x']))
 			{
 				$this->request->redirect('/checkout');
 			}
-			
 			foreach($_POST['basket_items'] as $key => $value)
 			{
-				$basket_item = Jelly::select('basket_item')->load($key);				
-				
-				if ($value > 0)
-				{					
-					$basket_item
-						->set(array(
-							'quantity' => $value,											
-						))
-						->save($key);
-				}
-				else
-				{
-					$basket_item->delete();
-				}
+				Model_Basket_Item::load($key)->update_quantity($value);
 			}
 		}
 		
@@ -36,14 +22,17 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->add_breadcrumb('/basket', 'Your Basket');
 	}
 	
-	public function action_add_item()
+	public function action_add_item($product_id = FALSE, $quantity = FALSE)
 	{
 		// This function should be called over AJAX, else just process and redirect to action_view.
 		$this->auto_render = FALSE;
 		
-		if (isset($_POST['basket_item']))
-		{			
-			$this->basket->add_item($_POST['basket_item']['product_id'], $_POST['basket_item']['qty']);
+		if (isset($_POST['basket_item']) OR ($product_id AND $quantity))
+		{	
+			$product_id = ($product_id) ? $product_id : $_POST['basket_item']['product_id'];
+			$quantity = ($quantity) ? $quantity : $_POST['basket_item']['qty'];
+			
+			$this->basket->add_item($product_id, $quantity);
 		}
 		
 		if (Request::$is_ajax)
