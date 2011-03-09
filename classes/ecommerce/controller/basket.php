@@ -32,12 +32,19 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$product_id = ($product_id) ? $product_id : $_POST['basket_item']['product_id'];
 			$quantity = ($quantity) ? $quantity : $_POST['basket_item']['qty'];
 			
-			$this->basket->add_item($product_id, $quantity);
+			$item = $this->basket->add_item($product_id, $quantity);
 		}
 		
 		if (Request::$is_ajax)
 		{
-			echo $this->basket->count_items();
+			$data = array(
+				'basket_items' => $this->basket->count_items(),
+				'basket_subtotal' => $this->basket->calculate_subtotal(),
+				'line_items' => $item->quantity,
+				'line_total' => number_format(($item->product->retail_price() * $item->quantity), 2),
+			);
+			
+			echo json_encode($data);
 		}
 		else
 		{

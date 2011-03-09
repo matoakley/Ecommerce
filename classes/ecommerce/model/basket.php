@@ -84,7 +84,7 @@ class Ecommerce_Model_Basket extends Model_Application
 			$subtotal += $item->product->retail_price() * $item->quantity;
 		}
 		
-		return $subtotal;
+		return number_format($subtotal, 2);
 	}
 	
 	public function calculate_total()
@@ -93,7 +93,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		$total += $this->delivery_option->retail_price();
 		
-		return $total;
+		return number_format($total, 2);
 	}
 	
 	public function update_delivery_option($delivery_option_id)
