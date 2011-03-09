@@ -30,12 +30,16 @@ class Ecommerce_Model_Basket extends Model_Application
 	
 	public static function instance()
 	{		
-		if ( ! isset(Model_Basket::$_instance))
+		if ( ! isset(Model_Basket::$_instance) AND Session::instance()->get('basket_id'))
 		{
 			// Create a new session instance
 			Model_Basket::$_instance = Jelly::select('basket', Session::instance()->get('basket_id'));
 		}
-
+		else 
+		{
+			Model_Basket::$_instance = new Model_Basket();
+		}
+		
 		return Model_Basket::$_instance;
 	}
 	
