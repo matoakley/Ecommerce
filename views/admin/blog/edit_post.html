@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_title %}
-	{% if brand.loaded %}
+	{% if blog_post.loaded %}
 		Edit Blog Post: <strong>{{blog_post.name}}</strong>
 	{% else %}
 		Adding: <strong>New Blog Post</strong>
@@ -78,7 +78,7 @@
 			<label for="blog-post-status">Status</label>
 		</div>
 		<div class="grid_14 omega">
-			<select id="blog-post-status" name="brand[status]">
+			<select id="blog-post-status" name="blog_post[status]">
 			{% for status in statuses %}
 				<option value="{{status}}" {{ status == blog_post.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
@@ -110,7 +110,7 @@
 			<p><strong>What's this?</strong></p>
 		</div>
 		<div class="grid_6 omega">
-			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the brand.</p>
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the blog post.</p>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -125,7 +125,7 @@
 			<p><strong>What's this?</strong></p>
 		</div>
 		<div class="grid_6 omega">
-			<p class="right-pad">Provide a few keywords, separated by commas that relate to this brand. These are used by Search Engines when indexing pages.</p>
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this blog post. These are used by Search Engines when indexing pages.</p>
 		</div>
 		<div class="clear"></div>
 	</div>

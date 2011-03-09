@@ -55,10 +55,10 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 	{
 		$this->auto_render = FALSE;
 		
-		$brands = Model_Brand::load($id);
-		$brands->delete();
+		$blog_post = Model_Blog_Post::load($id);
+		$blog_post->delete();
 		
-		$this->request->redirect('admin/brands');
+		$this->request->redirect('admin/blog');
 	}
 	
 }
