@@ -28,7 +28,8 @@ class Ecommerce_Model_Basket_Item extends Model_Application
 	{
 		if ($quantity <= 0)
 		{
-			return $this->delete();
+			$this->delete();
+			return 0;
 		}
 		else
 		{

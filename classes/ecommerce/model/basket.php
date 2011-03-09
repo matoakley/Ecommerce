@@ -120,6 +120,13 @@ class Ecommerce_Model_Basket extends Model_Application
 			$basket_item->product = $product_id;
 		}
 		
+		// If we are removing the item altogether then we want the 
+		// inverse of the current quantity
+		if ($quantity === 'remove')
+		{
+			$quantity = ($basket_item->quantity * -1);
+		}
+		
 		return $basket_item->update_quantity($basket_item->quantity + $quantity);
 	}
 	

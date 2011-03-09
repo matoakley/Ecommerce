@@ -40,8 +40,8 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => $this->basket->calculate_subtotal(),
-				'line_items' => $item->quantity,
-				'line_total' => number_format(($item->product->retail_price() * $item->quantity), 2),
+				'line_items' => ($item !== 0) ? $item->quantity : 0,
+				'line_total' => ($item !== 0) ? number_format(($item->product->retail_price() * $item->quantity), 2) : 0,
 			);
 			
 			echo json_encode($data);
