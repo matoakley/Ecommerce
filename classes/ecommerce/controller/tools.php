@@ -24,13 +24,13 @@ class Ecommerce_Controller_Tools extends Controller_Application {
 		
 		foreach ($products['results'] as $product)
 		{
-			if (is_int(strtotime($product->modified)))
+			if (is_int($product->modified))
 			{
-				$last_mod = strtotime($product->modified);
+				$last_mod = $product->modified;
 			}
 			else
 			{
-				$last_mod = strtotime($product->created);
+				$last_mod = $product->created;
 			}
 			
 			// New basic sitemap.
