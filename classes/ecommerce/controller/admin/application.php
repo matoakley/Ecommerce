@@ -44,6 +44,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		
 		$this->template->auth = $this->auth;
 		
+		$this->template->site_name = Kohana::config('ecommerce.site_name');
+		
 		parent::after();
 	}
 }

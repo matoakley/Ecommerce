@@ -4,6 +4,7 @@ return array
 (
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
+	'site_name' => 'Ecommerce',
 	'modules' => array(
 		'blog' => TRUE,
 		'brands' => TRUE,
