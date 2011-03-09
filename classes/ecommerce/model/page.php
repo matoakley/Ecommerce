@@ -17,7 +17,6 @@ class Ecommerce_Model_Page extends Model_Application
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
-					'pretty_format' => 'd/m/Y H:i',
 				)),
 				'modified' => new Field_Timestamp(array(
 					'auto_now_update' => TRUE,
