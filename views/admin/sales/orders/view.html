@@ -51,7 +51,7 @@
 			<div class="grid_2 alpha">
 				<label>Placed on</label>
 			</div>
-			<div class="grid_6 omega">{{sales_order.created}}</div>
+			<div class="grid_6 omega">{{sales_order.created|date('d/m/Y H:i')}}</div>
 			<div class="clear"></div>
 		</div>
 		
@@ -80,7 +80,7 @@
 			<tr class="{{['', 'alternate']|cycle(key)}}">		
  				<td>{{item.product.name}}</td>
 				<td class="tc">{{item.quantity}}</td>
-				<td class="tr">&pound;{{item.total_price}}</td>
+				<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
 			</tr>
 		{% endfor %}
 		</tbody>
