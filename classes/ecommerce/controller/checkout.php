@@ -4,7 +4,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 
 	function before()
 	{
-		if(Request::$protocol != 'https')
+		if(Request::$protocol != 'https' AND IN_PRODUCTION)
 		{
 			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
 		}
