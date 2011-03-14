@@ -11,13 +11,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'    => $search['count_all'],
+			'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 		));
-		
-		if ($items)
-		{
-			$this->template->pagination->items_per_page = $items;
-		}
 		
 		$this->template->products = $search['results'];
 		$this->template->total_products = $search['count_all'];
