@@ -1,19 +1,23 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
+{
 	function action_index()
-	{			
-		$items = 25;
+	{					
+		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
 		$search = Model_Product::search(array(), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'    => $search['count_all'],
-			'items_per_page' => $items,
 			'auto_hide'	=> false,
 		));
+		
+		if ($items)
+		{
+			$this->template->pagination->items_per_page = $items;
+		}
 		
 		$this->template->products = $search['results'];
 		$this->template->total_products = $search['count_all'];

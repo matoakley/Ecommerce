@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-abstract class Ecommerce_Controller_Admin_Application extends Controller_Template_Twig {
-
+abstract class Ecommerce_Controller_Admin_Application extends Controller_Template_Twig
+{
 	public $environment = 'production';
 
 	protected $scripts = array();
@@ -32,6 +32,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 			$this->session->set('redirected_from', $this->request->uri());
 			$this->request->redirect('/admin/login');
 		}
+		
+		$this->list_option = $this->session->get('admin_list_option', Kohana::config('ecommerce.default_admin_list_option'));
 	}
 	
 	public function after()
@@ -45,6 +47,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		$this->template->auth = $this->auth;
 		
 		$this->template->site_name = Kohana::config('ecommerce.site_name');
+		
+		// $this->template->kohana_profiler =  View::factory('profiler/stats');
 		
 		parent::after();
 	}

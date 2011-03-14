@@ -14,4 +14,6 @@ return array
 		'sales_orders' => TRUE,
 		'users' => TRUE,
 	),
+	'admin_list_options' => array(10, 25, 50, 100, 'all'),
+	'default_admin_list_option' => 25,
 );
