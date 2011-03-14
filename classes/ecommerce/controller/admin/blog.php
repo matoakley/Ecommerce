@@ -4,14 +4,14 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 
 	function action_index()
 	{
-		$items = 25;
+		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
 		$search = Model_Blog_Post::search(array(), $items, array('created' => 'DESC'));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items' => $search['count_all'],
-			'items_per_page' => $items,
+			'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 		));
 		
