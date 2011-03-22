@@ -62,6 +62,8 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 				$this->template->error = TRUE;
 			}
 		}
+		
+		$this->template->site_name = Kohana::config('ecommerce.site_name');
 	}
 	
 	function action_logout()
