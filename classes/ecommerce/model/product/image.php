@@ -47,11 +47,25 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		// Crop it for good measure
 		$image->crop($full_size_size['width'], $full_size_size['height']);
 		
+		$directory = DOCROOT . '/images/products/full_size/'. date('Y/m/', $i->created);
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
 		$image->save(DOCROOT . $i->get_filepath('full_size'));
 		
 		// Then Thumbnail
 		$thumbnail_size = Kohana::config('ecommerce.image_sizing.thumbnail');
 		$image->resize($thumbnail_size['width'], $thumbnail_size['height'], Image::INVERSE);
+		
+		// Does the directory exist?
+		$directory = DOCROOT . '/images/products/thumb/'. date('Y/m/', $i->created);
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
 		$image->save(DOCROOT . $i->get_filepath('thumb'));
 		
 		return $i;
