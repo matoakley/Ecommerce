@@ -26,6 +26,7 @@ class Ecommerce_Model_Address extends Model_Application
 					),
 				)),
 				'postcode' => new Field_String,
+				'country' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

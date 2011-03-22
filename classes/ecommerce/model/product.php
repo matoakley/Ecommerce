@@ -2,22 +2,22 @@
 
 class Ecommerce_Model_Product extends Model_Application
 {
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('products')
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('products')
 			->sorting(array('name' => 'ASC'))
-            ->fields(array(
-                'id' => new Field_Primary,
-                'name' => new Field_String(array(
+			->fields(array(
+				'id' => new Field_Primary,
+				'name' => new Field_String(array(
 					'rules' => array(
-						'not_empty' => NULL,
-					),
+					'not_empty' => NULL,
+				),
 				)),
 				'slug' => new Field_String(array(
 					'unique' => TRUE,
 					'rules' => array(
-						'not_empty' => NULL,
-					),
+					'not_empty' => NULL,
+				),
 				)),
 				'description' => new Field_Text,
 				'price' => new Field_Float(array(
@@ -39,16 +39,15 @@ class Ecommerce_Model_Product extends Model_Application
 				)),
 				'default_image' => new Field_BelongsTo(array(
 					'foreign' => 'product_image.id',
-	                'column' => 'default_image_id',
+					'column' => 'default_image_id',
 				)),
 				'thumbnail' => new Field_BelongsTo(array(
 					'foreign' => 'product_image.id',
-	                'column' => 'thumbnail_id',
+					'column' => 'thumbnail_id',
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
-					// 'pretty_format' => 'd/m/Y H:i', Don't use pretty_format here as Product Images use it as timestamp!
 				)),
 				'modified' => new Field_Timestamp(array(
 					'auto_now_update' => TRUE,
@@ -57,8 +56,8 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-    	));
-    }
+			));
+	}
 
 	public static $statuses = array(
 		'active', 'disabled'
@@ -157,7 +156,17 @@ class Ecommerce_Model_Product extends Model_Application
 			$data['price'] = self::deduct_tax($data['price']);
 		}
 		
-		$this->set($data);
+		$this->name = $data['name'];
+		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
+		$this->description = $data['description'];
+		$this->price = $data['price'];
+		$this->sku = $data['sku'];
+		$this->status = $data['status'];
+		$this->meta_keywords = $data['meta_keywords'];
+		$this->meta_description = $data['meta_description'];
+		$this->default_image = $data['default_image'];
+		$this->thumbnail = $data['thumbnail'];
+		$this->brand = $data['brand'];
 		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
@@ -169,5 +178,37 @@ class Ecommerce_Model_Product extends Model_Application
 		
 		return $this->save();
 	}
+
+	public function set_default_image($image_id = FALSE)
+	{
+		// If no image is specified then pick the first	
+		if ( ! $image_id AND (bool) $this->images->count())
+		{
+			$image_id = $this->images->current()->id;
+		}
+		else
+		{
+			$image_id = NULL;
+		}
+		
+		$this->default_image = $image_id;
+		return $this->save();
+	}
+	
+	public function set_thumbnail($image_id = FALSE)
+	{
+		// If no image is specified then pick the first	
+		if ( ! $image_id AND (bool) $this->images->count())
+		{
+			$image_id = $this->images->current()->id;
+		}
+		else
+		{
+			$image_id = NULL;
+		}
+		
+		$this->thumbnail = $image_id;
+		return $this->save();
+	}	
 
 }

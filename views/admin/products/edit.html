@@ -19,7 +19,7 @@
 
 {% block content %}
 
-<form method="POST">
+<form method="POST" enctype="m">
 
 	<div class="field">
 		<div class="grid_8 alpha">
@@ -33,7 +33,9 @@
 				</a>
 			{% endif %}
 			<a href="/admin/products" class="right-pad">Cancel Changes</a>
-			<input type="submit" value="Save Changes" class="right-pad" />
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+			
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -131,6 +133,7 @@
 		<div class="grid_14 omega">
 			<input type="text" id="product-sku" name="product[sku]" value="{{product.sku}}" class="inputtext shorter" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	
 	<h2>Meta Details</h2>
@@ -164,119 +167,149 @@
 			<p class="right-pad">Provide a few keywords, separated by commas that relate to this product. These are used by Search Engines when indexing pages.</p>
 		</div>
 		<div class="clear"></div>
-	</div>
-	
-	<!-- <h2>Images</h2>
-	
-	<div class="field product-image-edit-header">
-		
-		<div class="grid_2 alpha">
-			<label>Default</label>
-		</div>
-		
-		<div class="grid_2">
-			<label>Thumb</label>
-		</div>
-		
-		<div class="grid_2">
-			<label>Image</label>
-		</div>
-		
-		<div class="grid_6">
-			<label>Alt Text</label>
-		</div>
-		
-		<div class="grid_2">
-			<label>Edit</label>
-		</div>
-		
-		<div class="grid_2 omega">
-			<label>Delete</label>
-		</div>
-		
-		<div class="clear"></div>
-		
-	</div>
-	
-	{% if product.loaded and product.images %}
-	
-		{% for image in product.images %}
-		
-		<div class="field product-image-edit">
-			
-			<div class="grid_2 alpha image-edit-center">
-				<input type="radio" name="product[default_image]" value="{{image.id}}" 
-					{% if product.default_image.id == image.id %}checked{% endif %} />
-			</div>
-			
-			<div class="grid_2 image-edit-center">
-				<input type="radio" name="product[thumbnail]" value="{{image.id}}" 
-					{% if product.thumbnail.id == image.id %}checked{% endif %} />
-			</div>
-			
-			<div class="grid_2 tc">
-				<img src="{{image.thumb_path}}" alt="" />
-			</div>
-			
-			<div class="grid_6 alt-text">
-				<textarea name="images[{{image.id}}][alt_text]" class="wide">{{image.alt_text}}</textarea>
-			</div>
-			
-			<div class="grid_2 image-edit-center">
-				<a href="/admin/products/edit_image/{{image.id}}" class="modal">
-					<img src="/images/icons/pencil.png" alt="" class="inline-icon" />
-				</a>
-			</div>
-			
-			<div class="grid_2 omega image-edit-center">
-				<input type="checkbox" name="delete_images[]" value="{{image.id}}" />
-			</div>
-			
-			<div class="clear"></div>
-			
-		</div>
-		
-		{% endfor %}
-	
-	{% else %}
-		<div class="field">
-			<div class="left-pad"><em>No images to display.</em></div>
-		</div>
-	{% endif %}
-	
-	<div class="field">
-		<div id="file-uploader" class="left-pad">       
-		    <noscript>          
-		        <p>Please enable JavaScript to use file uploader.</p>
-		    </noscript>         
-		</div>
-	</div> -->
+	</div>	
 	
 	<h2>Categories</h2>
+	{% set i = 1 %}
 	{% for key, category in categories %}
 		{% if not category.parent.loaded %}
-		<div class="grid_4 field {{ ['alpha', '', '', 'omega']|cycle(key) }}">
-			<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
-				class="top-level-category" {% if category.id in product_categories|keys %}checked{% endif %} />
-			<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
-			{% if category.categories %}
-				<ul class="subcategory-list">
-					{% for subcategory in category.categories %}
-					<li>
-						<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
-							value="{{subcategory.id}}" {% if subcategory.id in product_categories|keys %}checked{% endif %} />
-						<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
-					</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
-		</div>
+			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
+				<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
+					class="top-level-category" {% if category.id in product_categories|keys %}checked{% endif %} />
+				<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+				{% if category.categories %}
+					<ul class="subcategory-list">
+						{% for subcategory in category.categories %}
+						<li>
+							<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
+								value="{{subcategory.id}}" {% if subcategory.id in product_categories|keys %}checked{% endif %} />
+							<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+						</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+			</div>
+			{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
+			{% set i = i + 1 %}
 		{% endif %}
 	{% endfor %}
 	
+	<div class="clear"></div>
+	
+	<h2>Product Images</h2>
+	
+	{% if product.loaded %}
+	
+		<div id="product-images-header" class="{% if product.images.count() == 0 %}hidden{% endif %}">
+		
+			<div class="grid_3 alpha">&nbsp;</div>
+			
+			<div class="grid_2 tc">
+				<strong>Default</strong>
+			</div>
+			
+			<div class="grid_2 tc">
+				<strong>Thumb</strong>
+			</div>
+			
+			<div class="grid_6 tc">
+				<strong>Short Description</strong>
+			</div>
+			
+			<div class="clear"></div>
+
+		</div>
+	
+		<div id="product-images">
+		
+		{% for key, image in product.images %}
+			
+			<div class="product-image-row">
+				
+				<div class="grid_3 alpha tc">
+					
+					<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
+					
+				</div>
+				
+				<div class="grid_2 tc" style="line-height:120px;">
+				
+					<input type="radio" name="product[default_image]" value="{{image.id}}" {% if image.id == product.default_image.id %}checked{% endif %} />
+				
+				</div>
+				
+				<div class="grid_2 tc" style="line-height:120px;">
+	
+					<input type="radio" name="product[thumbnail]" value="{{image.id}}" {% if image.id == product.thumbnail.id %}checked{% endif %} />
+				
+				</div>
+				
+				<div class="grid_6">
+				
+					<textarea class="wide" name="product_images[{{image.id}}][alt_text]">{{image.alt_text}}</textarea>
+				
+				</div>
+				
+				<div class="grid_3 omega">
+					
+<!--
+					<a href="#">
+						<img src="/images/icons/arrow_inout.png" alt="" class="inline-icon" />
+						Adjust
+					</a>
+-->	
+					
+					<a href="/admin/products/delete_image/{{image.id}}" class="delete-product-image">
+						<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+						Delete
+					</a>
+					
+				</div>
+				
+				<div class="clear"></div>
+				
+			</div>
+		
+		{% endfor %}
+
+		</div>
+		
+	{% else %}
+		
+		<p><em>You must save the product before adding images.</em></p>
+		
+	{% endif %}
+	
 </form>
 
+{% if product.loaded %}
+
+	<!-- Async image uploader -->
+	<form enctype="multipart/form-data" action="/admin/products/upload_image" method="post" id="upload-image-form" target="upload-image">
+		
+		<input type="hidden" name="product_id" value="{{product.id}}" />
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Add new image</label>
+			</div>
+			<div class="grid_8">
+				<input type="file" id="image-upload" name="image" />
+				<img src="/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+	</form>
+	
+	<iframe name="upload-image" id="upload-image"></iframe>
+
+{% endif %}
+
 <script type="text/javascript" charset="utf-8">
+	
+$(function(){
+
 	$('#product-meta-description').counter({
 		count: 'up',
 		goal: 160
@@ -285,6 +318,105 @@
 		count: 'up',
 		goal: 255
 	});
+	
+	$('.product-image-row').live('mouseenter', function(){
+		$(this).addClass('alternate');
+	});
+	$('.product-image-row').live('mouseleave', function(){
+		$(this).removeClass('alternate');
+	});
+
+	$('#image-upload').change(function(){
+	
+		// Start the spinner
+		$('#image-upload-spinner').show();
+	
+		// If file upload has changed then do an async upload
+		$('#upload-image-form').submit();
+	});
+	
+	// Check the iframe for the response
+	$('#upload-image').load(function(){
+	
+		// Reset the upload field
+		$('#image-upload-spinner').hide();
+		$('#image-upload').val('');
+		
+		var imageCount = $('#product-images').children().length;
+		
+		// Load the new image into the page
+		var response = $.parseJSON($('#upload-image').contents().children().children('body').children().html());
+		
+		// Build the divs etc
+		var newRow = $('<div>').addClass('product-image-row hidden'); // Hidden to start so we can slide in :)
+		var imageContainer = $('<div>').addClass('grid_3 alpha tc').appendTo(newRow);
+		var defaultContainer = $('<div>').addClass('grid_2 tc').css('line-height', '120px').appendTo(newRow);
+		var thumbContainer = $('<div>').addClass('grid_2 tc').css('line-height', '120px').appendTo(newRow);
+		var altContainer = $('<div>').addClass('grid_6').appendTo(newRow);
+		var toolContainer = $('<div>').addClass('grid_3 omega').appendTo(newRow);
+		var clear = $('<div>').addClass('clear').appendTo(newRow);
+		
+		// Build the elements and place them in the divs
+		$('<img>').attr('src', response.thumb_path).attr('alt', '').appendTo(imageContainer);
+		
+		var defaultRadio = $('<input>').attr('type', 'radio').attr('name', 'product[default_image]').val(response.id);
+		var thumbRadio = $('<input>').attr('type', 'radio').attr('name', 'product[thumbnail]').val(response.id);
+		
+		// If this is the first image then we want to select it as default and thumb.
+		if (imageCount == 0){
+			defaultRadio.attr('checked', 'checked');
+			thumbRadio.attr('checked', 'checked');
+		}
+		
+		defaultRadio.appendTo(defaultContainer);
+		thumbRadio.appendTo(thumbContainer);
+		$('<textarea>').addClass('wide').attr('name', 'product_images['+response.id+'][alt_text]').appendTo(altContainer);
+		
+		var deleteAnchor = $('<a>').attr('href', '/admin/products/delete_image/'+response.id).addClass('delete-product-image').html('Delete');
+		$('<img>').attr('src', '/images/icons/delete.png').attr('alt', '').addClass('inline-icon').prependTo(deleteAnchor);
+		deleteAnchor.appendTo(toolContainer);
+		
+		// Add row to the page and show it
+		$('#product-images-header').show();
+		
+		newRow.appendTo($('#product-images')).show('slide');
+	});
+
+	
+	$('.delete-product-image').live('click', function(e){
+		
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to permanently delete this image?'))
+		{
+			var container = $(this).parents('.product-image-row');
+		
+			$.ajax({
+			
+				url: $(this).attr('href'),
+				type: 'GET',
+				dataType: 'json',
+				success: function(response){
+					
+					container.hide('slide', function(){
+						$(this).remove();
+					});
+					
+					if ($('#product-images').children().length == 0){
+						$('#product-images-header').hide();
+					}
+					else{
+						// Set the default and thumbnail images after delete
+						$(':radio[name="product\[default_image\]"][value="'+response.default_image+'"]').attr('checked', 'checked');
+						$(':radio[name="product\[thumbnail\]"][value="'+response.thumbnail+'"]').attr('checked', 'checked');
+					}
+				}
+			});
+		}
+	});
+
+});
+
 </script>
 
 {% endblock %}
