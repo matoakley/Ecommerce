@@ -17,4 +17,16 @@ return array
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
+	
+	// Image sizing
+	'image_sizing' => array(
+		'thumbnail' => array(
+			'width' => 100,
+			'height' => 100,
+		),
+		'full_size' => array(
+			'width' => 280,
+			'height' => 280,		
+		),
+	),
 );

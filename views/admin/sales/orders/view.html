@@ -17,9 +17,9 @@
 	</div>
 	
 	<div class="grid_8 alpha">
-		<h2>Customer Details</h2>
+		<h2>Delivery Details</h2>
 		<p>
-			{{sales_order.customer.firstname}} {{sales_order.customer.lastname}}<br/>
+			{{sales_order.delivery_firstname}} {{sales_order.delivery_lastname}}<br/>
 			{{sales_order.delivery_address.line_1}}<br/>
 			{% if sales_order.delivery_address.line_2 %}{{sales_order.delivery_address.line_2}}<br/>{% endif %}
 			{{sales_order.delivery_address.town}}<br/>

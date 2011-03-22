@@ -36,6 +36,12 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			{
 				$product->update($_POST['product']);
 				
+				foreach ($_POST['product_images'] as $key => $values)
+				{
+					$image = Model_Product_Image::load($key);
+					$image->update($values);
+				}
+/*
 				if (array_key_exists('images', $_POST))
 				{
 					foreach ($_POST['images'] as $key => $data)
@@ -53,8 +59,12 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 						$image->delete();
 					}
 				}
-				
-				$this->request->redirect('/admin/products');
+*/
+				// If 'Save & Exit' has been clicked then lets hit the index
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect('/admin/products');
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -108,4 +118,59 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->request->redirect('admin/products');
 	}
 	
+	public function action_upload_image()
+	{	
+		$this->auto_render = FALSE;
+		
+		if ($_FILES)
+		{
+			$product = Model_Product::load($_POST['product_id']);
+			
+			if ($product->loaded())
+			{
+				$image = Model_Product_Image::upload($_FILES['image']['tmp_name'], $product->id);
+				
+				// If this is the only image for this product then set it as default and thumb.
+				if (count($product->images) == 1)
+				{
+					$product->set_default_image($image->id);
+					$product->set_thumbnail($image->id);
+				}
+				
+				// Spit out the result for processing
+				echo '<div id="upload-response">';
+				echo json_encode($image->as_array());
+				echo '</div>';
+			}
+		}
+	}
+	
+	public function action_delete_image($image_id = FALSE)
+	{
+		$image = Model_Product_Image::load($image_id);
+		$product = $image->product;
+		
+		if ( ! $image->loaded())
+		{
+			throw new Kohana_Exception('Image not found');
+		}
+		
+		$image->delete();
+		
+		if (Request::$is_ajax)
+		{
+			$data = array(
+				'default_image' => $product->default_image->id,
+				'thumbnail' => $product->thumbnail->id,
+			);
+			echo json_encode($data);
+		}
+		else
+		{
+			// If it ain't AJAX, send 'em back where they came from.
+			$this->request->redirect(Request::$referrer);
+		}
+		
+		exit();
+	}
 }
