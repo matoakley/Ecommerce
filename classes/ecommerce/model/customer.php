@@ -2,12 +2,12 @@
 
 class Ecommerce_Model_Customer extends Model_Application
 {
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('customers')
-            ->fields(array(
-                'id' => new Field_Primary,
-                'firstname' => new Field_String(array(
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('customers')
+			->fields(array(
+				'id' => new Field_Primary,
+				'firstname' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,
 					),
@@ -37,8 +37,8 @@ class Ecommerce_Model_Customer extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-    	));
-    }
+			));
+	}
 
 	public static function create($data = null)
 	{

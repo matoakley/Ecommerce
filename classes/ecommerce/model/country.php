@@ -8,7 +8,7 @@ class Ecommerce_Model_Country extends Model_Application
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String,
-				'hsbc_code' => new Field_Integer,
+				'iso_code' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

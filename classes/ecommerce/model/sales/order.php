@@ -2,28 +2,28 @@
 
 class Ecommerce_Model_Sales_Order extends Model_Application
 {
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('sales_orders')
-            ->fields(array(
-                'id' => new Field_Primary,
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('sales_orders')
+			->fields(array(
+				'id' => new Field_Primary,
 				'customer' => new Field_BelongsTo(array(
-				    'foreign' => 'customer.id',
-	                'column' => 'customer_id',
+					'foreign' => 'customer.id',
+					'column' => 'customer_id',
 				)),
 				'billing_address' => new Field_BelongsTo(array(
-				    'foreign' => 'address.id',
-	                'column' => 'billing_address_id',
+					'foreign' => 'address.id',
+					'column' => 'billing_address_id',
 				)),
 				'delivery_firstname' => new Field_String,
 				'delivery_lastname' => new Field_String,				
 				'delivery_address' => new Field_BelongsTo(array(
-				    'foreign' => 'address.id',
-	                'column' => 'delivery_address_id',
+					'foreign' => 'address.id',
+					'column' => 'delivery_address_id',
 				)),
 				'delivery_option' => new Field_BelongsTo(array(
-				    'foreign' => 'delivery_option.id',
-	                'column' => 'delivery_option_id',
+					'foreign' => 'delivery_option.id',
+					'column' => 'delivery_option_id',
 				)),
 				'status' => new Field_String,
 				'order_total' => new Field_Float(array(
@@ -47,8 +47,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-    	));
-    }
+			));
+	}
 
 	public static $statuses = array(
 		'awaiting_payment',
@@ -132,7 +132,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$message = Twig::factory('templates/emails/order_confirmation.html');
 		$message->sales_order = $this;
 
-		Email::send($this->customer->email, array('sales@southwoldpharmacy.co.uk' => 'Southwold Pharmacy'), 'Your Order Conformation from Southwold Pharmacy', $message, true);
+		Email::send($this->customer->email, array('sales@southwoldpharmacy.co.uk' => 'Southwold Pharmacy'), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
 
 	}
 }
