@@ -175,14 +175,14 @@
 		{% if not category.parent.loaded %}
 			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
 				<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
-					class="top-level-category" {% if category.id in product_categories|keys %}checked{% endif %} />
+					class="top-level-category" {% if product.loaded and category.id in product.categories.as_array('id', 'id') %}checked{% endif %} />
 				<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
 				{% if category.categories %}
 					<ul class="subcategory-list">
 						{% for subcategory in category.categories %}
 						<li>
 							<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
-								value="{{subcategory.id}}" {% if subcategory.id in product_categories|keys %}checked{% endif %} />
+								value="{{subcategory.id}}" {% if product.loaded and subcategory.id in product.categories.as_array('id', 'id') %}checked{% endif %} />
 							<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
 						</li>
 						{% endfor %}
