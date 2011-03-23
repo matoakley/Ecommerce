@@ -36,10 +36,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			{
 				$product->update($_POST['product']);
 				
-				foreach ($_POST['product_images'] as $key => $values)
+				if (isset($_POST['product_images']))
 				{
-					$image = Model_Product_Image::load($key);
-					$image->update($values);
+					foreach ($_POST['product_images'] as $key => $values)
+					{
+						$image = Model_Product_Image::load($key);
+						$image->update($values);
+					}
 				}
 /*
 				if (array_key_exists('images', $_POST))
@@ -65,6 +68,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				{
 					$this->request->redirect('/admin/products');
 				}
+				else
+				{
+					$this->request->redirect('/admin/products/edit/' . $product->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -78,7 +85,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->brands = Model_Brand::list_all();
-		$this->template->product_categories = $product->categories->as_array('id', 'name');
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
 	}
 	

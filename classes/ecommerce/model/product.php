@@ -164,14 +164,14 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->status = $data['status'];
 		$this->meta_keywords = $data['meta_keywords'];
 		$this->meta_description = $data['meta_description'];
-		$this->default_image = $data['default_image'];
-		$this->thumbnail = $data['thumbnail'];
+		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
+		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = $data['brand'];
 		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
-		if (array_key_exists('categories', $data))
+		if (isset($data['categories']))
 		{
 			$this->add('categories', $data['categories']);
 		}
