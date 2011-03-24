@@ -51,11 +51,16 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 	
 	function action_login()
 	{
+		if ($this->auth->logged_in('admin'))
+		{
+			$this->request->redirect('admin');
+		}
+	
 		if ($_POST)
 		{
 			if ($this->auth->login($_POST['email'], $_POST['password']))
 			{
-				$this->request->redirect($this->session->get_once('redirected_from', ''));
+				$this->request->redirect($this->session->get_once('redirected_from', 'admin'));
 			}
 			else
 			{

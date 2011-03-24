@@ -43,7 +43,7 @@
 			<td>{{user.firstname}} {{user.lastname}}</td>
 			<td>
 			{% if user.last_login %}	
-				{{user.last_login}}
+				{{user.last_login|date('d/m/Y H:i')}}
 			{% else %}
 				<em>Never</em>
 			{% endif %}	

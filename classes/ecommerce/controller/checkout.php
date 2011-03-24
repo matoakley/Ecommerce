@@ -50,6 +50,10 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 			}
 		}
 		
+		$countries = Model_Country::search();
+		$this->template->countries = $countries['results'];
+		$this->template->default_country = Kohana::config('ecommerce.default_country');
+		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
 	}
