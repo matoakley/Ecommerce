@@ -132,8 +132,7 @@
 			<label for="page-template" {{ errors.template ? "class='error'" : "" }}>Template *</label>
 		</div>
 		<div class="grid_8">
-			<input type="text" id="page-template" name="page[template]" value="{{page.template}}"
-				class="inputtext short {% if not page.loaded %}slugify{% endif %}" />
+			<input type="text" id="page-template" name="page[template]" value="{{page.template}}" class="inputtext short" />
 		</div>
 		<div class="clear"></div>
 	</div>
