@@ -41,7 +41,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
 		
-		$this->template->all_brands = Model_Brand::search();
+		$brands = Model_Brand::search(array('status:active'));
+		$this->template->all_brands = $brands['results'];
 		
 		// Set recently viewed products
 		$this->template->recent_products = array_reverse($this->recent_products);

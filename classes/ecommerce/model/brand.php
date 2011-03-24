@@ -2,12 +2,13 @@
 
 class Ecommerce_Model_Brand extends Model_Application
 {
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('brands')
-            ->fields(array(
-                'id' => new Field_Primary,
-                'name' => new Field_String(array(
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('brands')
+			->sorting(array('name' => 'ASC'))
+			->fields(array(
+				'id' => new Field_Primary,
+				'name' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,
 					),
@@ -40,10 +41,22 @@ class Ecommerce_Model_Brand extends Model_Application
 				)),
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
-				)),
-			
-    		));
-    }
+				)),			
+			));
+	}
+	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
+
 
 	public static $statuses = array(
 		'active', 'disabled'
