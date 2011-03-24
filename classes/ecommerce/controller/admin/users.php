@@ -10,9 +10,10 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
-			'total_items'    => $search['count_all'],
+			'total_items' => $search['count_all'],
 			'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
+			'view' => 'pagination/admin',
 		));
 		
 		// Model_Product::get_admin_products($page, $items)

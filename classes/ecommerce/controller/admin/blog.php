@@ -13,6 +13,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			'total_items' => $search['count_all'],
 			'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
+			'view' => 'pagination/admin',
 		));
 		
 		$this->template->blog_posts = $search['results'];
