@@ -67,10 +67,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 	{
 		if ($_POST)
 		{
-			$sales_order_id = $_POST['OrderId'];
-			$cpi_results_code = $_POST['CpiResultsCode'];
-			$order_hash = $_POST['OrderHash'];
-			$this->template->sales_order = Model_Sales_Order::process_payment_result($sales_order_id, $cpi_results_code, $order_hash);
+			$this->template->sales_order = Model_Sales_Order::process_payment_result($_POST);
 		}
 		else
 		{

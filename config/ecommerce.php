@@ -4,7 +4,11 @@ return array
 (
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
-	'site_name' => 'Ecommerce',
+	
+	'site_name' => 'Creative Intent Ecommerce Software',
+	'email_from_address' => 'ecommerce@creativeintent.co.uk',
+	'email_from_name' => 'Creative Intent Ecommerce Software',
+	
 	'modules' => array(
 		'blog' => TRUE,
 		'brands' => TRUE,
@@ -29,4 +33,5 @@ return array
 			'height' => 280,		
 		),
 	),
+	
 );

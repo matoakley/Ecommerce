@@ -33,8 +33,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'foreign' => 'sales_order_item.sales_order_id',
 				)),
 				'ip_address' => new Field_String,
-				'hsbc_order_hash' => new Field_String,
-				'hsbc_cpi_results_code' => new Field_Integer,
 				'basket' => new Field_HasOne,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -97,7 +95,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 	}
 	
-	public static function process_payment_result($sales_order_id, $cpi_results_code, $order_hash)
+	public static function process_payment_result($data)
 	{
 		$sales_order = Jelly::select('sales_order', $sales_order_id);
 		$sales_order->hsbc_order_hash = $order_hash;
@@ -132,7 +130,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$message = Twig::factory('templates/emails/order_confirmation.html');
 		$message->sales_order = $this;
 
-		Email::send($this->customer->email, array('sales@southwoldpharmacy.co.uk' => 'Southwold Pharmacy'), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		Email::send($this->customer->email, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
 
 	}
 }
