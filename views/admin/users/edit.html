@@ -77,6 +77,7 @@
 	
 	<div class="grid_8 omega">
 		
+<!--
 		<h2>System User Roles</h2>
 		
 		{% for role in roles %}
@@ -101,6 +102,19 @@
 		
 		{% endfor %}
 		
+-->
+
+		<h2>User Avatar</h2>
+		
+		<div class="grid_2 alpha">
+			<img src="{{user.avatar}}" alt="Avatar" />
+		</div>
+		<div class="grid_6 omega">
+			<input type="file" />
+		</div>
+		
+		<div class="clear"></div>
+	
 	</div>
 	
 </form>

@@ -3,65 +3,90 @@
 class Ecommerce_Model_User extends Model_Auth_User
 {
 	public static function initialize(Jelly_Meta $meta)
-    {
+	{
 		$meta->name_key('username')
 			->sorting(array('username' => 'ASC'))
 			->fields(array(
-			'id' => new Field_Primary,
-			'firstname' => new Field_String,
-			'lastname' => new Field_String,
-			'username' => new Field_Email(array(
-				'unique' => TRUE,
-				'rules' => array(
+				'id' => new Field_Primary,
+				'firstname' => new Field_String,
+				'lastname' => new Field_String,
+				'username' => new Field_Email(array(
+					'unique' => TRUE,
+					'rules' => array(
 						'not_empty' => NULL,
+					),
+				)),
+				'password' => new Field_Password(array(
+					'hash_with' => array(Auth::instance(), 'hash_password'),
+					'rules' => array(
+						'not_empty' => NULL,
+						'max_length' => array(50),
+						'min_length' => array(6)
 					)
 				)),
-			'password' => new Field_Password(array(
-				'hash_with' => array(Auth::instance(), 'hash_password'),
-				'rules' => array(
-					'not_empty' => NULL,
-					'max_length' => array(50),
-					'min_length' => array(6)
-				)
-			)),
-			'password_confirm' => new Field_Password(array(
-				'in_db' => FALSE,
-				'callbacks' => array(
-					'matches' => array('Model_Auth_User', '_check_password_matches')
-				),
-				'rules' => array(
-					'not_empty' => NULL,
-					'max_length' => array(50),
-					'min_length' => array(6)
-				)
-			)),
-			'email' => new Field_Email(array(
-				'unique' => TRUE
-			)),
-			'logins' => new Field_Integer(array(
-				'default' => 0
-			)),
-			'last_login' => new Field_Timestamp(array(
-				'pretty_format' => 'D M Y H:i',
-			)),
-			'tokens' => new Field_HasMany(array(
-				'foreign' => 'user_token'
-			)),
-			'roles' => new Field_ManyToMany,
-			'created' =>  new Field_Timestamp(array(
-				'auto_now_create' => TRUE,
-				'format' => 'Y-m-d H:i:s',
-				'pretty_format' => 'd/m/Y H:i',
-			)),
-			'modified' => new Field_Timestamp(array(
-				'auto_now_update' => TRUE,
-				'format' => 'Y-m-d H:i:s',
-			)),
-			'deleted' => new Field_Timestamp(array(
-				'format' => 'Y-m-d H:i:s',
-			)),
-		));
-    }
+				'password_confirm' => new Field_Password(array(
+					'in_db' => FALSE,
+					'callbacks' => array(
+						'matches' => array('Model_Auth_User', '_check_password_matches')
+					),
+					'rules' => array(
+						'not_empty' => NULL,
+						'max_length' => array(50),
+						'min_length' => array(6)
+					)
+				)),
+				'email' => new Field_Email(array(
+					'unique' => TRUE
+				)),
+				'logins' => new Field_Integer(array(
+					'default' => 0
+				)),
+				'last_login' => new Field_Timestamp(array(
+					'pretty_format' => 'D M Y H:i',
+				)),
+				'tokens' => new Field_HasMany(array(
+					'foreign' => 'user_token'
+				)),
+				'roles' => new Field_ManyToMany,
+				'avatar' => new Field_String(array(
+					'in_db' => FALSE,
+				)),
+				'created' =>  new Field_Timestamp(array(
+					'auto_now_create' => TRUE,
+					'format' => 'Y-m-d H:i:s',
+					'pretty_format' => 'd/m/Y H:i',
+				)),
+				'modified' => new Field_Timestamp(array(
+					'auto_now_update' => TRUE,
+					'format' => 'Y-m-d H:i:s',
+				)),
+				'deleted' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
+			));
+	}
+
+	public function __get($field)
+	{
+		if ($field == 'avatar')
+		{
+			return $this->get_avatar();
+		}
+	
+		return parent::__get($field);
+	}
+	
+	public function get_avatar()
+	{
+		$file_path = '/images/users/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/users/default.jpg';
+		}
+		
+		return $file_path;
+	}
 
 	public static function load($id = FALSE)
 	{
@@ -141,7 +166,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 	}
 	
 	public function update($data)
-	{		
+	{	
 		$this->username = $data['email'];
 		$this->email = $data['email'];
 		$this->password = $data['password'];
@@ -154,6 +179,10 @@ class Ecommerce_Model_User extends Model_Auth_User
 		{
 			$this->remove('roles', $role->id);
 		}
+		
+		// Always set Login and Admin roles
+		$data['roles'][] = 1;
+		$data['roles'][] = 2;
 		
 		if (isset($data['roles']))
 		{
