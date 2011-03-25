@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.brands.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->brands = $search['results'];
 		$this->template->total_brands = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -31,13 +34,24 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 			throw new Kohana_Exception('Brand could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.brands.index', 'admin/brands');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
 			{
 				$brand->update($_POST['brand']);
 				
-				$this->request->redirect('/admin/brands');
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/brands/edit/' . $brand->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -59,7 +73,7 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 		$brands = Model_Brand::load($id);
 		$brands->delete();
 		
-		$this->request->redirect('admin/brands');
+		$this->request->redirect($this->session->get('admin.brands.index', 'admin/brands'));
 	}
 	
 }

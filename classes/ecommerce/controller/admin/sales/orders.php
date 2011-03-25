@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.sales_orders.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->sales_orders = $search['results'];
 		$this->template->total_products = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -30,6 +33,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		{
 			throw new Kohana_Exception('Sales Order could not be found.');
 		}
+		
+		$redirect_to = $this->session->get('admin.sales_orders.index', 'admin/sales_orders');
+		$this->template->cancel_url = $redirect_to;
 		
 		$this->template->sales_order = $sales_order;
 		$this->template->order_statuses = Model_Sales_Order::$statuses;

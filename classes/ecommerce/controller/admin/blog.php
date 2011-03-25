@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.blog.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->blog_posts = $search['results'];
 		$this->template->total_blog_posts = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -31,13 +34,24 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			throw new Kohana_Exception('Blog Post could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.blog.index', 'admin/blog');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
 			{
-				$brand->update($_POST['brand']);
+				$blog_post->update($_POST['brand']);
 				
-				$this->request->redirect('/admin/brands');
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/blog/edit_post/' . $blog_post->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -59,7 +73,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		$blog_post = Model_Blog_Post::load($id);
 		$blog_post->delete();
 		
-		$this->request->redirect('admin/blog');
+		$this->request->redirect($this->session->get('admin.blog.index', 'admin/blog'));
 	}
 	
 }

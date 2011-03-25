@@ -21,18 +21,19 @@
 <form method="POST">
 
 	<div class="field">
-		<div class="grid_8 alpha">
+		<div class="grid_6 alpha">
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
-		<div class="grid_8 omega tr">
+		<div class="grid_10 omega tr">
 			{% if category.loaded %}
 				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
 					Delete Category
 				</a>
 			{% endif %}
-			<a href="/admin/categories" class="right-pad">Cancel</a>
-			<input type="submit" value="Save Changes" class="right-pad" />
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
 		</div>
 		<div class="clear"></div>
 	</div>

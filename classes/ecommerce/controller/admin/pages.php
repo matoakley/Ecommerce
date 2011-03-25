@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.pages.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->pages = $search['results'];
 		$this->template->total_pages = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -36,13 +39,24 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 			throw new Kohana_Exception('Page could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.pages.index', 'admin/pages');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
 			{
 				$page->update($_POST['page']);
 								
-				$this->request->redirect('/admin/pages');
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/pages/edit/' . $page->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -64,7 +78,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 		$pages = Model_Page::load($id);
 		$pages->delete();
 		
-		$this->request->redirect('admin/pages');
+		$this->request->redirect($this->session->get('admin.pages.index', 'admin/pages'));
 	}
 	
 }

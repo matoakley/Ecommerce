@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.products.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->products = $search['results'];
 		$this->template->total_products = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -31,6 +34,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			throw new Kohana_Exception('Product could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.products.index', 'admin/products');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
@@ -45,29 +51,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 						$image->update($values);
 					}
 				}
-/*
-				if (array_key_exists('images', $_POST))
-				{
-					foreach ($_POST['images'] as $key => $data)
-					{
-						$image = Model_Product_Image::load($key);
-						$image->update($data);
-					}
-				}
-				
-				if (array_key_exists('delete_images', $_POST))
-				{
-					foreach ($_POST['delete_images'] as $image_id)
-					{
-						$image = Model_Product_Image::load($image_id);
-						$image->delete();
-					}
-				}
-*/
-				// If 'Save & Exit' has been clicked then lets hit the index
+
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
-					$this->request->redirect('/admin/products');
+					$this->request->redirect($redirect_to);
 				}
 				else
 				{
@@ -87,13 +75,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
-	}
-	
-	public function action_edit_image($id = NULL)
-	{
-		$image = Model_Product_Image::load($id);
-		
-		$this->template->image = $image;
 	}
 	
 	// Bulk price updater
@@ -122,7 +103,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$product = Model_Product::load($id);
 		$product->delete();
 		
-		$this->request->redirect('admin/products');
+		$this->request->redirect($this->session->get('admin.products.index', 'admin/products'));
 	}
 	
 	public function action_upload_image()

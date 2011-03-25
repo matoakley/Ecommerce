@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.users.index', $_SERVER['REQUEST_URI']);
+		
 		// Model_Product::get_admin_products($page, $items)
 		$this->template->users = $search['results'];
 		$this->template->total_users = $search['count_all'];
@@ -32,17 +35,28 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 			throw new Kohana_Exception('User could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.users.index', 'admin/users');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
 			{				
 				$user->update($_POST['user']);	
-				$this->request->redirect('/admin/users');
+				
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/users/edit/' . $user->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
 				$this->template->errors = $e->array->errors();
-				echo Kohana::debug($e->array->errors());
 			}
 		}
 		
@@ -89,7 +103,7 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 		$user = Model_User::load($id);
 		$user->delete();
 		
-		$this->request->redirect('admin/users');
+		$this->request->redirect($this->session->get('admin.users.index', 'admin/users'));
 	}
 
 }

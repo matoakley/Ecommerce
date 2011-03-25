@@ -16,6 +16,9 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 			'view' => 'pagination/admin',
 		));
 		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.categories.index', $_SERVER['REQUEST_URI']);
+		
 		$this->template->categories = $search['results'];
 		$this->template->total_categories = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
@@ -31,13 +34,24 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 			throw new Kohana_Exception('Category could not be found.');
 		}
 		
+		$redirect_to = $this->session->get('admin.categories.index', 'admin/categories');
+		$this->template->cancel_url = $redirect_to;
+		
 		if ($_POST)
 		{
 			try
 			{
 				$category->update($_POST['category']);
 								
-				$this->request->redirect('/admin/categories');
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/categories/edit/' . $category->id);
+				}
 			}
 			catch (Validate_Exception $e)
 			{
@@ -60,7 +74,7 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 		$categories = Model_Category::load($id);
 		$categories->delete();
 		
-		$this->request->redirect('admin/categories');
+		$this->request->redirect( $this->session->get('admin.categories.index', 'admin/categories'));
 	}
 
 }
