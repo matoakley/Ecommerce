@@ -48,6 +48,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		
 		$this->template->site_name = Kohana::config('ecommerce.site_name');
 		
+		$this->template->version_number = Kohana::config('ecommerce.software_version');
+		
 		// $this->template->kohana_profiler =  View::factory('profiler/stats');
 		
 		parent::after();
