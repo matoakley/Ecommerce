@@ -146,10 +146,8 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{
-		if (array_key_exists('brand', $data))
-		{
-			$data['brand'] = ($data['brand'] > 0) ? $data['brand'] : NULL;
-		}
+		// If no brand is set then set value to NULL
+		$data['brand'] = (isset($data['brand']) AND $data['brand'] > 0) ? $data['brand'] : NULL;
 		
 		if (array_key_exists('price', $data))
 		{
