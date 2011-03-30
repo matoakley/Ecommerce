@@ -22,6 +22,7 @@ class Ecommerce_Model_Customer extends Model_Application
 						'not_empty' => NULL,
 					),					
 				)),
+				'referred_by' => new Field_String,
 				'addresses' => new Field_HasMany(array(
 					'foreign' => 'address.customer_id',
 				)),
