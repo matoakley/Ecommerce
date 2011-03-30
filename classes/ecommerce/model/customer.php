@@ -41,12 +41,23 @@ class Ecommerce_Model_Customer extends Model_Application
 			));
 	}
 
-	public static function create($data = null)
+	public static function create($data)
 	{
 		// Format email address to lowercase
 		$data['email'] = strtolower($data['email']);
 		
-		$customer = Jelly::factory('customer')->set($data)->save();
+		$customer = Jelly::factory('customer');
+		
+		$customer->firstname = $data['firstname'];
+		$customer->lastname = $data['lastname'];
+		$customer->email = $data['email'];
+		
+		if (isset($data['referred_by']))
+		{
+			$customer->referred_by = $data['referred_by'];
+		}
+				
+		$customer->save();
 		
 		if (isset($data['email_subscribe']))
 		{
