@@ -42,4 +42,32 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	{
 		return Text::limit_words($this->body, 100, ' &hellip;');
 	}
+	
+	public function update($data)
+	{
+		$this->name = $data['name'];
+		
+		if (isset($data['slug']))
+		{
+			$this->slug = $data['slug'];
+		}
+
+		$this->body = $data['body'];
+		$this->status = $data['status'];
+		
+		if ($this->status == 'active' AND $this->published_on == NULL)
+		{
+			$this->publised_on = time();
+		}
+		
+		$this->meta_description = $data['meta_description'];
+		$this->meta_keywords = $data['meta_keywords'];
+		
+		if ( ! $this->author->loaded())
+		{
+			$this->author = Auth::instance()->get_user()->id;
+		}
+		
+		return $this->save();
+	}
 }

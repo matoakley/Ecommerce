@@ -41,7 +41,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		{
 			try
 			{
-				$blog_post->update($_POST['brand']);
+				$blog_post->update($_POST['blog_post']);
 				
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
