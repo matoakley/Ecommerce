@@ -76,48 +76,74 @@
 		
 	</div>
 	
-	<div class="grid_8 omega">
-		
-<!--
-		<h2>System User Roles</h2>
-		
-		{% for role in roles %}
-		
-			<div class="field">
-				
-				<div class="grid_2 alpha">
-					<div class="left-pad">
-						<input type="checkbox" name="user[roles][]" value="{{role.id}}"
-						 	{% if role.id in user.roles.as_array('id','id')  %}checked{% endif%} />
-						{{role.name|title}}
-					</div>
-				</div>
-				
-				<div class="grid_6 omega">
-					{{role.description}}
-				</div>
-				
-				<div class="clear"></div>
-				
-			</div>
-		
-		{% endfor %}
-		
--->
-
-		<h2>User Avatar</h2>
-		
-		<div class="grid_2 alpha">
-			<img src="{{user.avatar}}" alt="Avatar" />
-		</div>
-		<div class="grid_6 omega">
-			<input type="file" />
-		</div>
-		
-		<div class="clear"></div>
-	
-	</div>
-	
 </form>
+	
+<div class="grid_8 omega">
+		
+	<h2>User Avatar</h2>
+	
+	{% if not user.loaded %}
+	
+		<p><em>You must save the user before adding an image.</em></p>
+		
+	{% else %}
+	
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/users/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="user_id" value="{{user.id}}" />
+						
+			<div class="field">
+				<div class="grid_2 alpha">
+					<img src="{{user.avatar}}" alt="Avatar" style="margin-left:10px;" id="current-image" />
+				</div>
+				<div class="grid_2">
+					<label>Upload Image</label>
+				</div>
+				<div class="grid_4 omega">
+					<input type="file" name="image" id="image-upload" />
+				</div>
+			
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
+
+</div>
+
+<div class="clear"></div>
+
+<script type="text/javascript" charset="utf-8">
+	
+$(function(){
+
+	$('#image-upload').change(function(){
+	
+		// Remove the current image and replace with a spinner
+		$("#current-image").attr('src', '/images/admin/ajax-loader.gif');
+		
+		// If file upload has changed then do an async upload
+		$('#upload-image-form').submit();
+		
+		// Check the iframe for the response
+		$('#upload-image').load(function(){
+			
+			// Set the new image into the page
+			var date = new Date().getTime();
+			$("#current-image").attr('src', '/images/users/{{user.id}}.png?'+date);
+			
+			// Reset the upload field
+			$('#image-upload-field').val('');
+		});
+		
+	});
+	
+});
+
+</script>
 
 {% endblock %}

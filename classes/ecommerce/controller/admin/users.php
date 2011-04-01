@@ -105,5 +105,16 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 		
 		$this->request->redirect($this->session->get('admin.users.index', 'admin/users'));
 	}
+	
+	public function action_upload_image()
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{	
+			$user = Model_User::load($_POST['user_id']);
+			$user->upload_image($_FILES['image']['tmp_name']);
+		}
+	}
 
 }

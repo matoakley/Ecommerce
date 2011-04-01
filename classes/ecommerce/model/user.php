@@ -192,4 +192,24 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return $this->save();
 	}
 	
+	public function upload_image($tmp_file)
+	{
+		// Let's get to work on resizing this image
+		$image = Image::factory($tmp_file);
+		
+		// Full Size first
+		$image_size = Kohana::config('ecommerce.image_sizing.thumbnail');
+		$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
+		
+		// Crop it for good measure
+		$image->crop($image_size['width'], $image_size['height']);
+		
+		$directory = DOCROOT . '/images/users';
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
+		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+	}
 }
