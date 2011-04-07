@@ -130,7 +130,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$message = Twig::factory('templates/emails/order_confirmation.html');
 		$message->sales_order = $this;
 
-		Email::send($this->customer->email, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		$to = array(
+			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
+		);
+		
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
+		if ($bcc_address != '')
+		{
+			$to['bcc'] = array($bcc_address, '');
+		}
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
 
 	}
 }
