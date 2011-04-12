@@ -85,6 +85,23 @@ class Ecommerce_Model_Product extends Model_Application
 		),
 	);
 
+	public static function most_popular_products($num_products = 5)
+	{
+		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold
+						FROM products
+						JOIN sales_order_items ON products.id = sales_order_items.product_id
+						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
+						WHERE sales_orders.status = 'complete'
+						AND products.deleted IS NULL
+						AND sales_orders.deleted IS NULL
+						AND sales_order_items.deleted IS NULL
+						GROUP BY products.name
+						ORDER BY SUM(sales_order_items.quantity) DESC
+						LIMIT $num_products";
+						
+		return Database::instance()->query(Database::SELECT, $sql, FALSE);
+	}
+
 	public function display_meta_description()
 	{
 		// If a meta description has not been set then we'll build one from the description.

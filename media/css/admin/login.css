@@ -1,0 +1,102 @@
+body {
+	background:#EEE;
+}
+
+#login-outer {
+	margin-top:150px;
+	font-size:1.2em;
+}
+
+#login-header {
+	height:75px;
+
+}
+
+	#login-header h1 {
+		margin:0;
+		padding:0;
+		line-height:75px;
+	}
+
+#logo {
+	margin-bottom:10px;
+	text-align:center;
+}
+
+#login {
+	background:#FFF;
+	border:1px solid #D0D0D0;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	padding:20px 10px;
+}
+
+.tc { text-align:center; }
+.tr { text-align:right; }
+
+/** Form Styling **/
+
+div.field {
+	margin-bottom:5px;
+}
+
+label {
+	display:inline-block;
+	width:120px;
+	text-align:right;
+	padding-right:10px;
+}
+
+input.inputtext {
+	border:1px solid #666;
+	padding:3px;
+	width:200px;
+}
+
+input.inputtext.longer {
+	width:350px;
+}
+
+input.inputtext.long {
+	width:275px;
+}
+
+input.inputtext.short {
+	width:150px;
+}
+
+input.inputtext.shorter {
+	width:100px;
+}
+
+textarea {
+	border:1px solid #666;
+	width:200px;
+	padding:3px;
+	height:75px;
+}
+
+textarea.wide {
+	width:400px;
+}
+
+textarea.tall {
+	height:125px;
+}
+
+textarea.notes {
+	width:610px;
+}
+
+.admin-footer {
+	font-size: 1.2em;
+	color:#666;
+	text-shadow: 0 1px #FFF;
+	text-align:right;
+	margin:10px;
+}
+
+.admin-footer a {
+	color:#666;
+	text-shadow: 0 1px 0 #FFF;
+	border-bottom:1px dotted #666;

@@ -1,0 +1,433 @@
+/** HTML Elements **/
+
+body {
+	background:#EEE;
+	color:#444;
+}
+
+table {
+	width:100%;
+	border-top:1px solid #CCC;
+}
+
+td.active { color:green; }
+td.disabled { color:red; }
+
+.alternate {
+	background:#EEE;
+}
+
+th {
+	text-align:left;
+	background:#F0F0F0;
+}
+
+th, td {
+	border-left:1px solid #CCC;
+	padding:0 10px;
+	line-height:30px;
+}
+
+/** Form Styling **/
+
+div.field {
+	margin-bottom:10px;
+	background:#F0F0F0;
+	padding-top:10px;
+	padding-bottom:10px;
+	border-radius:3px;
+	-moz-border-radius:3px;
+}
+
+label {
+	display:block;
+	text-align:right;
+	padding-top:3px;
+	font-weight:bold;
+}
+
+label.checkbox-label, label.checkbox-label-bold {
+	text-align:left;
+	display:inline;
+	font-weight:normal;
+}
+
+label.checkbox-label-bold { font-weight:bold;}
+
+label.top { vertical-align:top; }
+
+label.error { color:red; }
+
+input.inputtext {
+	border:1px solid #666;
+	padding:3px;
+	width:200px;
+}
+
+input.inputtext.longest {
+	width:450px;
+}
+
+input.inputtext.longer {
+	width:330px;
+}
+
+input.inputtext.long {
+	width:275px;
+}
+
+input.inputtext.short {
+	width:150px;
+}
+
+input.inputtext.shorter {
+	width:100px;
+}
+
+input.inputtext.shortest {
+	width:65px;
+}
+
+input.inputtext.tiny {
+	width:30px;
+}
+
+input.inputtext.price {
+	width:50px;
+	text-align:right;
+	margin-right:10px;
+}
+
+textarea {
+	border:1px solid #666;
+	width:200px;
+	padding:3px;
+	height:75px;
+}
+
+textarea.wide {
+	width:330px;
+}
+
+textarea.tall {
+	height:125px;
+}
+
+textarea.notes {
+	width:610px;
+}
+
+.buttons {
+	border-top:1px dotted #CCC;
+	padding:10px;
+	margin-top:10px;
+}
+
+/** General Page Layout **/
+
+#header {
+	background:url(/images/admin/header-bg.png) repeat-x;
+	height:121px;
+	font-size:1.2em;
+}
+
+	#top_menu {
+		color:#FFF;
+		height:29px;
+		line-height:29px;
+		font-size:0.9em;
+	}
+	
+		#top_menu a { color:#F0F0F0;}
+	
+	#site_header {
+		height:50px;
+	}
+		
+		#site_header img.logo {
+			padding:0;
+			margin:0;
+			padding-top:10px;
+		}
+	
+		#app_title {
+			color:#FFF;
+			font-size:1.2em;
+			line-height:50px;
+		}
+	
+	#nav {
+		height:38px;
+		line-height:38px;
+		margin:0;
+		padding:0;
+	}
+	
+		#nav ul {
+			list-style:none;
+			height:38px;
+		}
+		
+		#nav li {
+			position:relative;
+			float:left;
+			margin:0;
+			padding:0;
+			border-right:1px solid #F7F7F7;
+		}
+		
+		#nav li.first {
+			border-left:1px solid #F7F7F7;
+		}
+		
+		#nav li a {
+			display:block;
+			text-decoration:none;
+			color:#454545;
+			font-weight:bold;
+			padding:0 20px;
+		}
+		
+		#nav li a > .sf-sub-indicator {
+			top: 14px;
+		}
+			
+		#nav ul li a.sf-with-ul {
+			padding-right: 20px;
+		}
+		
+		#nav li a:hover {
+			background:#FFF;
+		}
+		
+		#nav li ul {
+			position:absolute;
+			z-index:999;
+			height:auto;
+		}
+		
+			#nav li ul li {
+				background:#EEE;
+				width:150px;
+				margin-bottom:3px;
+				top:3px;
+			}
+
+#content {
+	font-size:1.2em;
+	background:#FFF;
+	height:500px;
+	height:auto !important;
+	min-height:500px;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.tl { text-align:left; }
+.tc { text-align:center; }
+.tr { text-align:right; }
+.tj { text-align:justify; }
+
+.left-pad { padding-left:10px; }
+.right-pad { padding-right:10px; }
+
+.align-top { vertical-align:top; }
+
+.hidden { display:none; }
+
+.page_title {
+	background:#F9F9F9;
+	border:1px solid #DDD;
+	border-radius:3px;
+	-moz-border-radius:3px;
+	padding:0 10px;
+	margin-bottom:20px;
+}
+
+	.page_title h1 {
+		margin:0.5em 0;
+	}
+
+	.page_title .description {
+		border-top: 1px dotted #DADADA;
+		padding-top:1em;
+	}
+
+span.status_tag {
+	color: white;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	width: 135px;
+	display: inline-block;
+	line-height: 2em;
+	height: 2em;
+	border-top-left-radius: 3px 3px;
+	border-top-right-radius: 3px 3px;
+	border-bottom-right-radius: 3px 3px;
+	border-bottom-left-radius: 3px 3px;
+}
+
+span.status_tag.awaiting_payment {
+	background-color:orange;
+}
+
+span.status_tag.payment_received {
+	background-color:#6C549E;
+}
+
+span.status_tag.order_cancelled {
+	background-color:red;
+}
+
+span.status_tag.fraud_shield_review {
+	background-color:blue;
+}
+
+span.status_tag.problem_occurred {
+	background-color:#614016;
+}
+
+span.status_tag.complete {
+	background-color: #419E61;
+}
+
+a.img-button {
+	position:relative;
+	background:#EEE;
+	padding:8px 15px 8px 30px;
+	border-radius:3px;
+	-moz-border-radius:3px;
+	color:#444;
+	font-weight:bold;
+	text-decoration:none;
+	border:1px solid #CCC;
+	margin-right:10px;
+}
+
+	a.img-button img {
+		position:absolute;
+		left:10px;
+	}
+
+a.img-button:hover {
+	border:1px dashed #BBB;
+	background:#F0F0F0;
+}
+
+img.inline-icon {
+	margin-bottom:-3px;
+	padding:0 3px;
+}
+
+select#bulk-actions {
+	margin-bottom:10px;
+	margin-right: 10px;
+}
+
+#no-rows-selected {
+	color:red;
+	display:none;
+}
+	
+/** Modal Styling **/	
+
+.modal {
+	font-size:1.2em;
+}
+	
+	.modal h1 {
+		background:#EEE;
+		line-height:40px;
+		padding:0 10px;
+	}
+	
+	.modal label {
+		width:120px;
+		padding-right:10px;
+		display:inline-block;
+	}
+	
+/** Product Admin **/
+#product-meta-description { height:60px; }
+
+input.top-level-category {
+	margin-left:10px;
+}
+
+ul.subcategory-list {
+	list-style:none;
+	margin-top:1em;
+}
+
+.product-image-row textarea {
+	margin-top:20px;
+}
+
+.product-image-row a {
+	line-height:120px;
+}
+
+.product-image {
+	margin:10px;
+}
+
+iframe#upload-image {
+	height:0;
+	width:0;
+}
+
+a.delete-button {
+	color:red;
+	margin-right:10px;
+}
+
+a.delete-button:hover {
+	color:red;
+}
+
+#admin_footer {
+	font-size: 1.2em;
+	color:#666;
+	text-shadow: 0 1px #FFF;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+#admin_footer a {
+	color:#666;
+	text-shadow: 0 1px 0 #FFF;
+	border-bottom:1px dotted #666;
+}
+
+#admin_footer a:hover { text-decoration: none; }
+
+/** Dashboard Styling **/
+#dashboard {
+
+	font-size:1.2em;
+}
+
+.dashboard-row {
+	margin-top:20px;
+}
+
+.dashboard-element {
+	background:#FFF;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+	padding:10px 0;
+}
+
+.dashboard-element h2 {
+	padding:0 10px;
+}
+
+.dashboard-element .table-container {
+	padding:0 10px;
+}
+
+#dashboard table, #dashboard td {
+	border:none;
+}
+

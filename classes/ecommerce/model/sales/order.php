@@ -123,6 +123,34 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return $sales_order->save();
 	}
 	
+	public static function monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status = 'complete'
+						AND EXTRACT(MONTH FROM created) = $month";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
+	}
+	
+	public static function overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status = 'complete'";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
+	}
+	
 	public function send_confirmation_email()
 	{
 		Email::connect();

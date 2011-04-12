@@ -1,0 +1,46 @@
+<div id="nav">
+	<ul>
+		<li class="first"><a href="/admin">Dashboard</a></li>
+		
+		<li>
+			<a href="#">Catalog</a>
+			
+			<ul>
+				{% if modules.brands %}
+					<li><a href="/admin/brands">Brands</a></li>
+				{% endif %}
+			
+				{% if modules.categories %}
+					<li><a href="/admin/categories">Categories</a></li>
+				{% endif %}
+				
+				{% if modules.products %}
+					<li><a href="/admin/products">Products</a></li>
+				{% endif %}
+			</ul>
+
+		</li>
+		
+		{% if modules.sales_orders %}
+			<li><a href="/admin/sales_orders">Sales Orders</a></li>
+		{% endif %}
+		
+		<li><a href="#">CMS</a>
+		
+			<ul>
+				{% if modules.blog %}
+					<li><a href="/admin/blog">Blog</a></li>
+				{% endif %}
+				
+				{% if modules.pages %}
+					<li><a href="/admin/pages">Pages</a></li>
+				{% endif %}
+			</ul>
+		
+		</li>
+		
+		{% if modules.users %}
+			<li><a href="/admin/users">System Users</a></li>
+		{% endif %}
+	</ul>
+</div>

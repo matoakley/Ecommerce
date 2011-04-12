@@ -1,7 +1,145 @@
-{% extends "admin/templates/default.html" %}
+{% extends "admin/templates/dashboard.html" %}
+
+{% block custom_scripts %}
+
+	<script type="text/javascript" src="/media/js/admin/highcharts/highcharts.js"></script>
+
+{% endblock %}
 
 {% block page_title %}<strong>Admin Dashboard</strong>{% endblock %}
 
 {% block content %}
 
+	<div class="dashboard-row" style="margin-bottom:30px;">
+	
+		<div id="chart-container-1" style="height:250px !important;" class="dashboard-element"></div>
+		
+		<div class="clear"></div>
+		
+	</div>
+	
+	<div class="dashboard-row">
+	
+		<div class="grid_8 alpha dashboard-element">
+		
+			<h2>Your 5 Most Recent Orders</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					{% for key, order in latest_orders %}
+						<tr class="{{['', 'alternate']|cycle(key)}}">
+							<td><a href="/admin/sales_orders/view/{{order.id}}">{{order.id}}</a></td>
+							<td>{{order.customer.firstname}} {{order.customer.lastname}}</td>
+							<td>&pound;{{order.order_total|num_format(2)}}</td>
+							<td class="tc"><span class="status_tag {{order.status}}">{{order.status|humanize|title}}</span></td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+
+		</div>
+		
+		<div class="grid_8 omega dashboard-element">
+			<h2>All Time Top Selling Products</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					{% for key, product in top_products %}
+						<tr class="{{['', 'alternate']|cycle(key)}}">
+							<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
+							<td class="tr">{{product.sold}}</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+				
+		</div>
+	
+		<div class="clear"></div>
+		
+	</div>
+	
+	<div class="dashboard-row">
+		
+		<div class="dashboard-element">
+			
+			<div class="grid_5 alpha">
+				<h2 style="margin:0;">{{"now"|date('F')}} Sales Order Total</h2>
+			</div>
+			<div class="grid_3 tr">
+				<h2 style="margin:0;color:green;">&pound;{{monthly_total|num_format(2)}}</h2>
+			</div>
+			<div class="grid_5">
+				<h2 style="margin:0;">All Time Sales Order Total</h2>
+			</div>
+			<div class="grid_3 omega tr">
+				<h2 style="margin:0;color:green;">&pound;{{all_time_total|num_format(2)}}</h2>
+			</div>
+			
+			<div class="clear"></div>
+			
+		</div>
+	
+	</div>
+
+	<script type="text/javascript">
+	
+	var chart1; // globally available
+	
+	$(function() {
+	
+		chart1 = new Highcharts.Chart({
+			chart: {
+				renderTo: 'chart-container-1',
+				defaultSeriesType: 'line'
+			},
+			credits: {
+				enabled: false
+			},
+			legend: {
+				align: 'right',
+				floating: true,
+				x: -10,
+        y: 10,
+				verticalAlign: 'top'
+			},
+			tooltip: {
+     		formatter: function() {
+        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2), this.x.toString().substr(6,2))) +'</b>';
+      	}
+    	},
+			xAxis: {
+				categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
+				labels: {
+					formatter: function() {
+          	return Highcharts.dateFormat('%a %d %b', Date.UTC(this.value.toString().substr(0,4), this.value.toString().substr(4,2) - 1, this.value.toString().substr(6,2)));
+          },
+          showFirstLabel: false,
+          step: 7
+				}
+			},
+			series: [{
+				name: 'Daily Visitors',
+				data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
+			}],
+			title: {
+				text: null
+			},
+			yAxis: {
+				title: null
+			}
+		});
+	
+	});
+	
+	</script>
+	
 {% endblock %}
