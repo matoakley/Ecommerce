@@ -113,7 +113,7 @@
 			},
 			tooltip: {
      		formatter: function() {
-        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2), this.x.toString().substr(6,2))) +'</b>';
+        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
       	}
     	},
 			xAxis: {
