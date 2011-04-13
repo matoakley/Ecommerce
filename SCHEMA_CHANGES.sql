@@ -1,0 +1,2 @@
+-- 13/04/2011 14:10 - Add telephone field to address table
+ALTER TABLE `addresses` ADD COLUMN `telephone` varchar(20) AFTER `country_id`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `telephone`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;

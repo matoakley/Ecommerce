@@ -2,14 +2,14 @@
 
 class Ecommerce_Model_Address extends Model_Application
 {
-    public static function initialize(Jelly_Meta $meta)
-    {
-        $meta->table('addresses')
-            ->fields(array(
-                'id' => new Field_Primary,
+	public static function initialize(Jelly_Meta $meta)
+	{
+		$meta->table('addresses')
+			->fields(array(
+				'id' => new Field_Primary,
 				'customer' => new Field_BelongsTo,
 				'is_delivery' => new Field_Boolean,
-                'line_1' => new Field_String(array(
+				'line_1' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,
 					),
@@ -27,6 +27,7 @@ class Ecommerce_Model_Address extends Model_Application
 				)),
 				'postcode' => new Field_String,
 				'country' => new Field_BelongsTo,
+				'telephone' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -39,13 +40,26 @@ class Ecommerce_Model_Address extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-    	));
-    }
+			));
+	}
 
 	public static function create($data, $customer_id, $is_delivery = FALSE)
 	{
-		$data['customer'] = $customer_id;
-		$data['is_delivery'] = $is_delivery;
-		return Jelly::factory('address')->set($data)->save();
+		$address = Jelly::factory('address');
+		$address->customer = $customer_id;
+		$address->is_delivery = $is_delivery;
+		$address->line_1 = $data['line_1'];
+		$address->line_2 = $data['line_2'];
+		$address->town = $data['town'];
+		$address->county = $data['county'];
+		$address->postcode = $data['postcode'];
+		$address->country = $data['country'];
+		
+		if (isset($data['telephone']))
+		{
+			$address->telephone = $data['telephone'];
+		}
+	
+		return $address->save();
 	}
 }
