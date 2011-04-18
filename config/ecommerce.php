@@ -10,7 +10,7 @@ return array
 	'site_name' => 'Creative Intent Ecommerce Software',
 	'email_from_address' => 'ecommerce@creativeintent.co.uk',
 	'email_from_name' => 'Creative Intent Ecommerce Software',
-	'copy_order_confirmations_to' => 'ecommerce@creativeintent.co.uk',
+	'copy_order_confirmations_to' => '',
 	
 	'modules' => array(
 		'blog' => TRUE,

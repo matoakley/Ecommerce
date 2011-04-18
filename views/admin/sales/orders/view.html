@@ -17,7 +17,23 @@
 		<div class="clear"></div>
 	</div>
 	
-	<div class="grid_8 alpha">
+	<div class="grid_4 alpha">
+		<h2>Customer Details</h2>
+		<p>
+			{{sales_order.customer.firstname}} {{sales_order.customer.lastname}}<br/>
+			{{sales_order.billing_address.line_1}}<br/>
+			{% if sales_order.billing_address.line_2 %}{{sales_order.billing_address.line_2}}<br/>{% endif %}
+			{{sales_order.billing_address.town}}<br/>
+			{{sales_order.billing_address.county}}<br/>
+			{% if sales_order.billing_address.postcode %}{{sales_order.billing_address.postcode}}<br/>{% endif %}
+		</p>
+		<p>
+			{% if sales_order.billing_address.telephone %}Tel: {{sales_order.billing_address.telephone}}<br/>{% endif %}
+			<a href="mailto:{{sales_order.customer.email}}">{{sales_order.customer.email}}</a>
+		</p>
+	</div>
+	
+	<div class="grid_4">
 		<h2>Delivery Details</h2>
 		<p>
 			{{sales_order.delivery_firstname}} {{sales_order.delivery_lastname}}<br/>
@@ -27,7 +43,7 @@
 			{{sales_order.delivery_address.county}}<br/>
 			{% if sales_order.delivery_address.postcode %}{{sales_order.delivery_address.postcode}}<br/>{% endif %}
 		</p>
-		<p><a href="mailto:{{sales_order.customer.email}}">{{sales_order.customer.email}}</a></p>
+		{% if sales_order.billing_address.telephone %}<p>Tel: {{sales_order.billing_address.telephone}}</p>{% endif %}
 	</div>
 	
 	<div class="grid_8 omega">
@@ -37,13 +53,22 @@
 				<label>Status</label>
 			</div>
 			<div class="grid_6 omega">
-				<select name="sales_order[status]">
+				<select name="sales_order[status]" id="sales-order-status">
 				{% for status in order_statuses %}
 					<option value="{{status}}" {% if status == sales_order.status %}selected{% endif %}>
 						{{status|humanize|title}}
 					</option>
 				{% endfor %}
 				</select>
+
+
+				{% if sales_order.status == 'payment_received' %}
+					<a href="#" id="complete-and-email">
+						<img src="/images/icons/tick.png" alt="" class="inline-icon" />
+						<img src="/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
+						Complete &amp; Send Email
+					</a>
+				{% endif %}
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -68,37 +93,139 @@
 
 	<div class="clear"></div>
 
-	<h2>Order Details</h2>
-	
-	<table>
-		<thead>
-			<th>Item Name</th>
-			<th class="tc">Qty</th>
-			<th class="tr">Total</th>
-		</thead>
-		<tbody>
-		{% for key, item in sales_order.items %}
-			<tr class="{{['', 'alternate']|cycle(key)}}">		
- 				<td>{{item.product.name}}</td>
-				<td class="tc">{{item.quantity}}</td>
-				<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-	
-	<!-- <div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
-		</div>
-		<div class="grid_8">
-			<input type="text" id="product-name" name="product[name]" value="{{product.name}}"
-				class="inputtext longest {% if not product.loaded %}slugify{% endif %}" />
-		</div>
-		<div class="clear"></div>
-	</div> -->
-	
 </form>
 
+<h2>Order Details</h2>
+
+<table>
+	<thead>
+		<th>Item Name</th>
+		<th class="tc">Qty</th>
+		<th class="tr">Total</th>
+	</thead>
+	<tbody>
+	{% for key, item in sales_order.items %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">		
+				<td>{{item.product.name}}</td>
+			<td class="tc">{{item.quantity}}</td>
+			<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td class="tr" colspan="2">{{sales_order.delivery_option.name}}</td>
+			<td class="tr">&pound;{{sales_order.delivery_option.retail_price|num_format(2)}}</td>
+		</tr>
+		<tr>
+			<td class="tr" colspan="2"><strong>Total</strong></td>
+			<td class="tr"><strong>&pound;{{sales_order.order_total|num_format(2)}}</strong></td>
+		</tr>
+	</tfoot>
+</table>
+
+<h2>Order Notes</h2>
+
+<textarea class="full-width" id="new-note"></textarea>
+<button id="add-note">Add Note</button>
+<img src="/images/admin/ajax-loader.gif" alt="" id="add-note-spinner" class="hidden" />
+
+<div id="sales-order-notes">
+{% for key, note in sales_order.notes %}
+
+	<div class="{{['', 'alternate']|cycle(key)}} sales_order_note">
+	
+	{% if note.is_system %}
+		<p>
+			<img src="/images/icons/computer.png" alt="" class="inline-icon" />
+			<strong>Order updated on {{note.created|date('d/m/Y H:i')}}:</strong>
+		</p>
+	{% else %}
+		<p>
+			<img src="/images/icons/user_suit.png" alt="" class="inline-icon" />
+			<strong>On {{note.created|date('d/m/Y H:i')}} {{note.user.firstname}} {{note.user.lastname}} said:</strong>
+		</p>
+	{% endif %}
+	
+		{{note.text}}
+	
+	</div>
+
+{% endfor %}
+</div>
+
+<script type="text/javascript">
+
+$(function(){
+
+	$('#complete-and-email').click(function(e){
+	
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to mark this order as complete and send confirmation email to customer?')) {
+		
+			$.ajax({
+				
+				url: '/admin/sales_orders/complete_and_send_email/{{sales_order.id}}',
+				type: 'GET',
+				beforeSend: function(){
+				
+					$('#complete-and-email img').hide();
+					$('#ajax-spinner').show();
+				},
+				success: function(response){
+					
+					if (response == 'ok')
+					{
+						$('#sales-order-status').val('complete');
+						$('#complete-and-email').hide();
+					}
+				}
+			});
+		}
+	});
+	
+	$('#add-note').click(function(){
+	
+		$.ajax({
+			
+			url: '/admin/sales_orders/add_note',
+			type: 'POST',
+			data: { sales_order:"{{sales_order.id}}", note: $('#new-note').val() },
+			dataType: 'json',
+			beforeSend: function(){
+				
+				$('#add-note-spinner').show();
+				$('#add-note').attr('disabled', 'disabled');
+			},
+			success: function(response){
+				
+				var rowClass;
+				
+				if ($('.sales_order_note').first().hasClass('alternate')){
+					 rowClass = '';
+				}
+				else {
+					rowClass = 'alternate';
+				}
+				
+				// Add note into list
+				var newRow = $('<div>').addClass('sales_order_note hidden ' + rowClass); // Hidden to start so we can slide in :)
+				var noteHeader = $('<p>').html('<img src="/images/icons/user_suit.png" alt="" class="inline-icon" /><strong>On ' + response.created + ' ' + response.user + ' said:</strong>').appendTo(newRow);
+				var noteBody = $('<div>').html(response.text).appendTo(newRow);
+				newRow.prependTo($('#sales-order-notes')).show('slide');
+				
+				$('#new-note').val('');
+			},
+			complete: function(){
+				
+				$('#add-note-spinner').hide();
+				$('#add-note').removeAttr('disabled');
+			}
+		});
+	});
+});
+
+</script>
 
 {% endblock %}

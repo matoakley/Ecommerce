@@ -34,6 +34,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				)),
 				'ip_address' => new Field_String,
 				'basket' => new Field_HasOne,
+				'notes' => new Field_HasMany(array(
+					'foreign' => 'sales_order_note.sales_order_id',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -51,8 +54,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public static $statuses = array(
 		'awaiting_payment',
 		'payment_received',
+		'complete',
 		'order_cancelled',
-		'fraud_shield_review',
 		'problem_occurred',
 	);
 
@@ -168,7 +171,44 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$to['bcc'] = array($bcc_address, '');
 		}
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your Order Confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
+	}
+	
+	public function send_shipped_email()
+	{
+		Email::connect();
+		
+		$message = Twig::factory('templates/emails/order_shipped.html');
+		$message->sales_order = $this;
 
+		$to = array(
+			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
+	}
+	
+	public function update_status($status)
+	{
+		if (in_array($status, self::$statuses))
+		{
+			$user = Auth::instance()->get_user();
+			$note_text = $user->firstname . ' ' . $user->lastname . ' changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+			
+			$this->status = $status;
+			
+			$this->add_note($note_text, TRUE);
+			
+			return $this->save();
+		}
+		else
+		{
+			throw new Kohana_Exception('Unrecognised status.');
+		}
+	}
+	
+	public function add_note($text = FALSE, $is_system = FALSE)
+	{
+		return Model_Sales_Order_Note::add_note($this, $text, $is_system);
 	}
 }

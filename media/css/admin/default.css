@@ -113,8 +113,8 @@ textarea.tall {
 	height:125px;
 }
 
-textarea.notes {
-	width:610px;
+textarea.full-width {
+	width:99%;
 }
 
 .buttons {
@@ -400,6 +400,11 @@ a.delete-button:hover {
 }
 
 #admin_footer a:hover { text-decoration: none; }
+
+/** Sales Order Admin **/
+.sales_order_note {
+	padding:10px;
+}
 
 /** Dashboard Styling **/
 #dashboard {

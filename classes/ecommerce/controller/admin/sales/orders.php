@@ -37,8 +37,62 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$redirect_to = $this->session->get('admin.sales_orders.index', 'admin/sales_orders');
 		$this->template->cancel_url = $redirect_to;
 		
+		if ($_POST)
+		{
+			$sales_order->update_status($_POST['sales_order']['status']);
+			
+			// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+			if (isset($_POST['save_exit']))
+			{
+				$this->request->redirect($redirect_to);
+			}
+			else
+			{
+				$this->request->redirect('/admin/sales_orders/view/' . $sales_order->id);
+			}
+		}
+		
 		$this->template->sales_order = $sales_order;
 		$this->template->order_statuses = Model_Sales_Order::$statuses;
 	}
 	
+	public function action_complete_and_send_email($id = FALSE)
+	{
+		$this->auto_render = FALSE;
+	
+		$sales_order = Model_Sales_Order::load($id);
+	
+		if ($sales_order->loaded() AND $sales_order->status == 'payment_received')
+		{
+			$sales_order->update_status('complete')->send_shipped_email();
+			echo 'ok';
+		}
+		else
+		{
+			echo 'error';
+		}
+		
+		exit;
+	}
+	
+	public function action_add_note()
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{
+			$sales_order = Model_Sales_Order::load($_POST['sales_order']);
+			$note = $sales_order->add_note($_POST['note']);
+			
+			$data = array(
+				'user' => $note->user->firstname . ' ' . $note->user->lastname,
+				'text' => $note->text,
+				'created' => date('d/m/Y H:i', $note->created),
+			);
+			
+			echo json_encode($data);
+		}
+		
+		exit;
+	}
 }
