@@ -4,7 +4,7 @@ class Ecommerce_Controller_Blog extends Controller_Application
 {
 	public function action_index()
 	{
-		$blog_posts = Model_Blog_Post::search(array(), FALSE, array('published_on' => 'DESC'));
+		$blog_posts = Model_Blog_Post::search(array(), FALSE, array('created' => 'DESC'));
 		
 		$this->template->blog_posts = $blog_posts['results'];
 	}
