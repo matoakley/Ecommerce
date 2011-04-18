@@ -39,7 +39,11 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		if ($_POST)
 		{
-			$sales_order->update_status($_POST['sales_order']['status']);
+			// Only update the status if it has actually changed
+			if ($sales_order->status != $_POST['sales_order']['status'])
+			{
+				$sales_order->update_status($_POST['sales_order']['status']);
+			}
 			
 			// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 			if (isset($_POST['save_exit']))
