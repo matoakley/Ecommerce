@@ -136,6 +136,55 @@
 		<div class="clear"></div>
 	</div>
 	
+	<h2>Product Options</h2>
+	
+	{% set i = 1 %}
+	
+	{% for option in product.get_options %}
+	
+		<div class="grid_8 field {% if i%2 > 0 %}alpha{% else %}omega{% endif %}">
+			<div class="grid_2 alpha">
+				<label>{{option|title}}</label>
+			</div>
+			<div class="grid_6 omega">
+			{% for value, option_status in product.get_option_values(option) %}
+				<div>
+					<input type="text" value="{{value}}" class="inputtext short" />
+					<select>
+					{% for status in product_option_statuses %}
+						<option value="{{status}}" {% if status == option_status %}selected{% endif %}>{{status|title}}</option>
+					{% endfor %}
+					</select>
+				</div>
+			{% endfor %}
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		{% if i%2 == 0 %}<div class="clear"></div>{% endif %}
+	
+		{% set i = i + 1 %}
+	
+	{% else %}
+		<p><em>No product options added.</em></p>
+	{% endfor %}
+
+	<div class="clear"></div>
+
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Add new option</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="new-product-option" class="inputtext short" />
+			<button>Add</button>
+			<img src="/images/admin/ajax-loader.gif" alt="" id="product-option-spinner" class="hidden" />
+			<em>e.g. Colour, Size ...</em>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	
 	<h2>Meta Details</h2>
 	
 	<div class="field">

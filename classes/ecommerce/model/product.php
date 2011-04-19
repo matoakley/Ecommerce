@@ -60,7 +60,7 @@ class Ecommerce_Model_Product extends Model_Application
 	}
 
 	public static $statuses = array(
-		'active', 'disabled'
+		'active', 'disabled',
 	);
 	
 	public static $searchable_fields = array(
@@ -226,4 +226,20 @@ class Ecommerce_Model_Product extends Model_Application
 		return $this->save();
 	}	
 
+	public function get_options()
+	{
+		$options = Jelly::select('product_option')
+									->where('product_id', '=', $this->id)
+									->execute()->as_array('id', 'key');
+									
+		return array_unique($options);
+	}
+	
+	public function get_option_values($option_name)
+	{
+		return Jelly::select('product_option')
+							->where('product_id', '=', $this->id)
+							->where('key', '=', $option_name)
+							->execute()->as_array('value', 'status');
+	}
 }

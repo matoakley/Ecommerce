@@ -1,3 +1,16 @@
+-- 18/04/2011 - Add product_options table
+CREATE TABLE `product_options` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`product_id` int NOT NULL,
+	`key` varchar(255) NOT NULL,
+	`value` varchar(255) NOT NULL,
+	`status` varchar(25) NOT NULL,
+	`created` datetime NOT NULL,
+	`modified` datetime,
+	`deleted` datetime,
+	PRIMARY KEY (`id`)
+);
+
 -- 18/04/2011 - Add table for Sales Order Notes
 CREATE TABLE `sales_order_notes` (
 	`id` int NOT NULL AUTO_INCREMENT,

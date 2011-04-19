@@ -75,6 +75,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
+		$this->template->product_option_statuses = Model_Product_Option::$statuses;
 	}
 	
 	// Bulk price updater
