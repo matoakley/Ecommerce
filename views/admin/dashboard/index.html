@@ -89,6 +89,73 @@
 		</div>
 	
 	</div>
+	
+	
+	
+		<div class="dashboard-row">
+	
+		<div class="grid_8 alpha dashboard-element">
+		
+			<h2>Monthly Breakdown</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					{% set i = 1 %}
+					{% for month, data in monthly_visits %}
+						<tr class="{{['', 'alternate']|cycle(i)}}">
+							<td><strong>{{month}}</strong></td>
+							<td class="tc">{{data.visits}} visits</td>
+							<td class="tr">&pound;{{data.total}}</td>
+						</tr>
+						{% set i = i + 1 %}
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+
+		</div>
+		
+		<div class="grid_8 omega dashboard-element">
+			<h2>Top Referring Sites <em>(last 30 days)</em></h2>
+			
+			<div class="table-container">
+				
+				<table>
+					<tbody>
+					{% set i = 1 %}
+					{% for referrer, referrals in top_referrers %}
+						<tr class="{{['', 'alternate']|cycle(i)}}">
+							<td>
+							{% if referrer == '(direct)' %}
+								<em>direct</em>
+							{% elseif referrer == 'google' %}
+								<a href="http://www.google.com">google.com</a>
+							{% else %}
+								<a href="http://{{referrer}}">{{referrer}}</a>
+							{% endif %}
+							</td>
+							<td class="tr">{{referrals}}</td>
+						</tr>
+						{% set i = i + 1 %}
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+				
+		</div>
+	
+		<div class="clear"></div>
+		
+	</div>
+
+	
+	
+	
+	
 
 	<script type="text/javascript">
 	
