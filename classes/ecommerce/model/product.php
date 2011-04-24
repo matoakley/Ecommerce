@@ -45,6 +45,7 @@ class Ecommerce_Model_Product extends Model_Application
 					'foreign' => 'product_image.id',
 					'column' => 'thumbnail_id',
 				)),
+				'product_options' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -189,6 +190,23 @@ class Ecommerce_Model_Product extends Model_Application
 		if (isset($data['categories']))
 		{
 			$this->add('categories', $data['categories']);
+		}
+		
+		// Let's handle product options.
+		foreach ($this->product_options as $product_option)
+		{
+			$product_option->delete();
+		}
+		
+		if (isset($data['product_options']))
+		{
+			foreach ($data['product_options'] as $key => $product_options)
+			{
+				foreach ($product_options as $product_option)
+				{
+					Model_Product_Option::add_option($this->id, $key,  $product_option['value'], $product_option['status']);
+				}
+			}
 		}
 		
 		return $this->save();

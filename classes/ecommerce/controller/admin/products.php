@@ -162,4 +162,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		exit();
 	}
+	
+	public function action_option_statuses()
+	{
+		$this->auto_render = FALSE;
+		
+		echo json_encode(Model_Product_Option::$statuses);
+	}
 }

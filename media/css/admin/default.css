@@ -385,6 +385,18 @@ a.delete-button:hover {
 	color:red;
 }
 
+a.remove-product-option-container {
+	color:red;
+	font-style:italic;
+	float:right;
+}
+
+a.product-option-remove {
+	color:red;
+	font-style:italic;
+	margin-left:10px;
+}
+
 #admin_footer {
 	font-size: 1.2em;
 	color:#666;

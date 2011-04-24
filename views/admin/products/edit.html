@@ -1,11 +1,9 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
+{% block custom_scripts %}
 	
 	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/js/admin/products.js"></script>
+	<script type="text/javascript" src="/media/js/admin/products.js?1"></script>
 
 {% endblock %}
 
@@ -140,34 +138,50 @@
 	
 	{% set i = 1 %}
 	
-	{% for option in product.get_options %}
-	
-		<div class="grid_8 field {% if i%2 > 0 %}alpha{% else %}omega{% endif %}">
-			<div class="grid_2 alpha">
-				<label>{{option|title}}</label>
-			</div>
-			<div class="grid_6 omega">
-			{% for value, option_status in product.get_option_values(option) %}
-				<div>
-					<input type="text" value="{{value}}" class="inputtext short" />
-					<select>
-					{% for status in product_option_statuses %}
-						<option value="{{status}}" {% if status == option_status %}selected{% endif %}>{{status|title}}</option>
-					{% endfor %}
-					</select>
+	<div id="product-options">
+
+		{% for option in product.get_options %}
+		
+			<div class="grid_8 field product-option-container {% if i%2 > 0 %}alpha{% else %}omega{% endif %}" rel="{{option}}">
+				<div class="grid_2 alpha">
+					<label>{{option|title}}</label>
+					<a href="#" class="remove-product-option-container" rel="{{option}}">remove</a>
 				</div>
-			{% endfor %}
+				<div class="grid_6 omega">
+				
+					<div class="option-container">
+					{% set j = 0 %}
+					{% for value, option_status in product.get_option_values(option) %}
+						<div id="{{j}}" class="product-option-row">
+							<input type="text" name="product[product_options][{{option}}][{{j}}][value]" value="{{value}}" class="inputtext short" />
+							<select name="product[product_options][{{option}}][{{j}}][status]">
+							{% for status in product_option_statuses %}
+								<option value="{{status}}" {% if status == option_status %}selected{% endif %}>{{status|title}}</option>
+							{% endfor %}
+							</select>
+							<a href="#" class="product-option-remove">remove</a>
+						</div>
+						{% set j = j + 1 %}
+					{% endfor %}
+					</div>
+					<input type="text" class="inputtext short" placeholder="New value..." />
+					<a href="#" class="add-product-option" rel="{{option}}">
+						<img src="/images/icons/add.png" alt="" class="inline-icon" />
+						Add
+					</a>
+				</div>
+				<div class="clear"></div>
 			</div>
-			<div class="clear"></div>
-		</div>
-	
-		{% if i%2 == 0 %}<div class="clear"></div>{% endif %}
-	
-		{% set i = i + 1 %}
-	
-	{% else %}
-		<p><em>No product options added.</em></p>
-	{% endfor %}
+		
+			{% if i%2 == 0 %}<div class="clear"></div>{% endif %}
+		
+			{% set i = i + 1 %}
+		
+		{% else %}
+			<p id="no-options"><em>No product options added.</em></p>
+		{% endfor %}
+
+	</div>
 
 	<div class="clear"></div>
 
@@ -177,7 +191,7 @@
 		</div>
 		<div class="grid_8">
 			<input type="text" id="new-product-option" class="inputtext short" />
-			<button>Add</button>
+			<button id="add-new-option-container">Add</button>
 			<img src="/images/admin/ajax-loader.gif" alt="" id="product-option-spinner" class="hidden" />
 			<em>e.g. Colour, Size ...</em>
 		</div>
@@ -354,118 +368,5 @@
 	<iframe name="upload-image" id="upload-image"></iframe>
 
 {% endif %}
-
-<script type="text/javascript" charset="utf-8">
-	
-$(function(){
-
-	$('#product-meta-description').counter({
-		count: 'up',
-		goal: 160
-	});
-	$('#product-meta-keywords').counter({
-		count: 'up',
-		goal: 255
-	});
-	
-	$('.product-image-row').live('mouseenter', function(){
-		$(this).addClass('alternate');
-	});
-	$('.product-image-row').live('mouseleave', function(){
-		$(this).removeClass('alternate');
-	});
-
-	$('#image-upload').change(function(){
-	
-		// Start the spinner
-		$('#image-upload-spinner').show();
-	
-		// If file upload has changed then do an async upload
-		$('#upload-image-form').submit();
-	});
-	
-	// Check the iframe for the response
-	$('#upload-image').load(function(){
-	
-		// Reset the upload field
-		$('#image-upload-spinner').hide();
-		$('#image-upload').val('');
-		
-		var imageCount = $('#product-images').children().length;
-		
-		// Load the new image into the page
-		var response = $.parseJSON($('#upload-image').contents().children().children('body').children().html());
-		
-		// Build the divs etc
-		var newRow = $('<div>').addClass('product-image-row hidden'); // Hidden to start so we can slide in :)
-		var imageContainer = $('<div>').addClass('grid_3 alpha tc').appendTo(newRow);
-		var defaultContainer = $('<div>').addClass('grid_2 tc').css('line-height', '120px').appendTo(newRow);
-		var thumbContainer = $('<div>').addClass('grid_2 tc').css('line-height', '120px').appendTo(newRow);
-		var altContainer = $('<div>').addClass('grid_6').appendTo(newRow);
-		var toolContainer = $('<div>').addClass('grid_3 omega').appendTo(newRow);
-		var clear = $('<div>').addClass('clear').appendTo(newRow);
-		
-		// Build the elements and place them in the divs
-		$('<img>').attr('src', response.thumb_path).attr('alt', '').appendTo(imageContainer);
-		
-		var defaultRadio = $('<input>').attr('type', 'radio').attr('name', 'product[default_image]').val(response.id);
-		var thumbRadio = $('<input>').attr('type', 'radio').attr('name', 'product[thumbnail]').val(response.id);
-		
-		// If this is the first image then we want to select it as default and thumb.
-		if (imageCount == 0){
-			defaultRadio.attr('checked', 'checked');
-			thumbRadio.attr('checked', 'checked');
-		}
-		
-		defaultRadio.appendTo(defaultContainer);
-		thumbRadio.appendTo(thumbContainer);
-		$('<textarea>').addClass('wide').attr('name', 'product_images['+response.id+'][alt_text]').appendTo(altContainer);
-		
-		var deleteAnchor = $('<a>').attr('href', '/admin/products/delete_image/'+response.id).addClass('delete-product-image').html('Delete');
-		$('<img>').attr('src', '/images/icons/delete.png').attr('alt', '').addClass('inline-icon').prependTo(deleteAnchor);
-		deleteAnchor.appendTo(toolContainer);
-		
-		// Add row to the page and show it
-		$('#product-images-header').show();
-		
-		newRow.appendTo($('#product-images')).show('slide');
-	});
-
-	
-	$('.delete-product-image').live('click', function(e){
-		
-		e.preventDefault();
-		
-		if (confirm('Are you sure that you want to permanently delete this image?'))
-		{
-			var container = $(this).parents('.product-image-row');
-		
-			$.ajax({
-			
-				url: $(this).attr('href'),
-				type: 'GET',
-				dataType: 'json',
-				success: function(response){
-					
-					container.hide('slide', function(){
-						$(this).remove();
-					});
-					
-					if ($('#product-images').children().length == 0){
-						$('#product-images-header').hide();
-					}
-					else{
-						// Set the default and thumbnail images after delete
-						$(':radio[name="product\[default_image\]"][value="'+response.default_image+'"]').attr('checked', 'checked');
-						$(':radio[name="product\[thumbnail\]"][value="'+response.thumbnail+'"]').attr('checked', 'checked');
-					}
-				}
-			});
-		}
-	});
-
-});
-
-</script>
 
 {% endblock %}

@@ -106,7 +106,13 @@
 	<tbody>
 	{% for key, item in sales_order.items %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">		
-				<td>{{item.product.name}}</td>
+				<td>
+				{% if item.product.loaded %}
+					<a href="/admin/products/edit/{{item.product.id}}">{{item.product_name}}</a>
+				{% else %}
+					{{item.product_name}}
+				{% endif %}
+				</td>
 			<td class="tc">{{item.quantity}}</td>
 			<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
 		</tr>

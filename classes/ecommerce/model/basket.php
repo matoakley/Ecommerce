@@ -103,7 +103,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		return $this->delivery_option->retail_price();
 	}
 	
-	public function add_item($product_id, $quantity)
+	public function add_item($product_id, $quantity, $product_options = NULL)
 	{
 		// If we've not created a saved basket yet then we'd best create one now!
 		if ( ! $this->loaded())
@@ -112,12 +112,16 @@ class Ecommerce_Model_Basket extends Model_Application
 		}
 		
 		// See if this product already exists as a basket item!
-		$basket_item = $this->get('items')->where('product_id', '=', $product_id)->limit(1)->execute();
+		$basket_item = $this->get('items')
+												->where('product_id', '=', $product_id)
+												->where('product_options', '=', serialize($product_options))
+												->limit(1)->execute();
 		
 		if ( ! $basket_item->loaded())
 		{
 			$basket_item->basket_id = $this->id;
 			$basket_item->product = $product_id;
+			$basket_item->product_options = $product_options;
 		}
 		
 		// If we are removing the item altogether then we want the 

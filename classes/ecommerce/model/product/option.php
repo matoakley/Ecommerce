@@ -29,4 +29,14 @@ class Ecommerce_Model_Product_Option extends Model_Application
 		'active',
 		'disabled',
 	);
+	
+	public static function add_option($product_id, $key, $value, $status)
+	{
+		$product_option = Jelly::factory('product_option');
+		$product_option->product = $product_id;
+		$product_option->key = $key;
+		$product_option->value = $value;
+		$product_option->status = $status;
+		return $product_option->save();
+	}
 }

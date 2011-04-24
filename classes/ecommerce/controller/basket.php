@@ -31,8 +31,9 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		{	
 			$product_id = ($product_id) ? $product_id : $_POST['basket_item']['product_id'];
 			$quantity = ($quantity) ? $quantity : $_POST['basket_item']['qty'];
+			$product_options = isset($_POST['basket_item']['options']) ? $_POST['basket_item']['options'] : NULL;
 			
-			$item = $this->basket->add_item($product_id, $quantity);
+			$item = $this->basket->add_item($product_id, $quantity, $product_options);
 		}
 		
 		if (Request::$is_ajax)

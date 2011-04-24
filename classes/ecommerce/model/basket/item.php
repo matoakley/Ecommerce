@@ -9,6 +9,7 @@ class Ecommerce_Model_Basket_Item extends Model_Application
 				'id' => new Field_Primary,
 				'basket_id' => new Field_Integer,
 				'product' => new Field_BelongsTo,
+				'product_options' => new Field_Serialized,
 				'quantity' => new Field_Integer,
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
