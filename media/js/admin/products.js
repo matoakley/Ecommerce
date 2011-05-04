@@ -204,6 +204,9 @@ $(function(){
 		var addButton = $(this);
 		var newOptionValue = $(this).prev('input');
 		var i = parseInt($(this).siblings('.option-container').children('.product-option-row').last().attr('id')) + 1;
+		if (isNaN(i)) {
+			i = 0;
+		}
 		
 		if (newOptionValue.val() != ''){
 		
