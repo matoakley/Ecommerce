@@ -74,7 +74,7 @@ class Ecommerce_Controller_Products extends Controller_Application {
 		if (isset($_GET['q']))
 		{
 			$items = 10;
-			$products_search = Model_Product::search(array(), $items);
+			$products_search = Model_Product::search(array('status:active'), $items);
 			
 			$search_term = implode(' ',$products_search['query_string']);
 			
