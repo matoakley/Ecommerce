@@ -1,0 +1,188 @@
+{% extends "admin/templates/default.html" %}
+
+{% block custom_scripts %}
+	
+	<script type="text/javascript" src="/media/js/admin/promotion_codes.js?1"></script>
+
+{% endblock %}
+
+{% block page_title %}
+	{% if promotion_code.loaded %}
+		Edit Promotion Code: <strong>{{promotion_code.code}}</strong>
+	{% else %}
+		Adding: <strong>New Promotion Code</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if promotion_code.loaded %}
+				<a href="/admin/promotion_codes/delete/{{promotion_code.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Promotion Code
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Promotion Code Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="promotion-code-code" {{ errors.promotion_code.code ? "class='error'" : "" }}>Code *</label>
+		</div>
+		<div class="grid_5">
+			<input type="text" id="promotion-code-code" name="promotion_code[code]" value="{{fields.promotion_code.code}}"
+				class="inputtext short" />
+				<a href="#" id="generate-promotion-code">
+					<img src="/images/icons/cog.png" alt="" class="inline-icon" id="promotion-code-auto-generate-icon" />
+					Auto Generate
+				</a>
+		</div>
+
+		<div class="grid_9 omega">
+			<em>Enter a unique shortcode between 4 and 20 characters.</em>
+		</div>
+		
+		<div class="clear"></div>
+		
+	</div>
+	
+	<div class="field">
+		
+		<div class="grid_2 alpha">
+			<label for="promotion-code-description" {{ errors.promotion_code.name ? "class='error'" : "" }}>Description</label>
+		</div>
+		<div class="grid_6">
+			<input type="text" id="promotion-code-description" name="promotion_code[description]" value="{{fields.promotion_code.description}}" class="inputtext longer" />
+		</div>
+		<div class="grid_2">
+			<label for="promotion-code-status">Status</label>
+		</div>
+		<div class="grid_6 omega">
+			<select id="promotion-code-status" name="promotion_code[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == category.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if promotion_code.loaded %}
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Redeemed</label>
+			</div>
+			<div class="grid_14 omega">
+				{{promotion_code.redeemed}} times
+			</div>
+		
+			<div class="clear"></div>
+		</div>
+		
+	{% endif %}
+	
+	<h2>Promotion Code Conditions</h2>
+	<div class="field">
+		
+		<div class="grid_2 alpha">
+			<label for="promotion-code-valid-from">Valid From</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" name="valid_from_date" value="{{fields.promotion_code.start_date|date('d/m/Y')}}"
+				class="datepicker inputtext shorter" />
+			<select name="valid_from_hour">
+			{% for i in 0..23 %}
+				<option value="{{i}}" {% if fields.promotion_code.start_date|date('G') == i %}selected{% endif %}>{{'%02s'|format(i)}}</option>
+			{% endfor %}
+			</select>
+			:
+			<select name="valid_from_minute">
+			{% for i in 0..59 %}
+				<option value="{{i}}" {% if fields.promotion_code.start_date|date('i') == '%02s'|format(i) %}selected{% endif %}>{{'%02s'|format(i)}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="grid_2">
+			<label for="promotion-code-valid-until">Valid Until</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" name="valid_to_date" value="{{fields.promotion_code.end_date|date('d/m/Y')}}"
+				class="datepicker inputtext shorter" />
+			<select name="valid_to_hour">
+			{% for i in 0..23 %}
+				<option value="{{i}}" {% if fields.promotion_code.end_date|date('G') == i %}selected{% endif %}>{{'%02s'|format(i)}}</option>
+			{% endfor %}
+			</select>
+			:
+			<select name="valid_to_minute">
+			{% for i in 0..59 %}
+				<option value="{{i}}" {% if fields.promotion_code.end_date|date('i') == '%02s'|format(i) %}selected{% endif %}>{{'%02s'|format(i)}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="grid_4 omega"><em>Leave blank to run indefinitely.</em></div>
+		<div class="clear"></div>
+		
+	</div>
+	
+	<div class="field">
+	
+		<div class="grid_2 alpha">
+			<label for="promotion-code-max-redemption">Redeemable</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" name="promotion_code[max_redemptions]" value="{{fields.promotion_code.max_redemptions}}"
+				class="inputtext tiny" /> &nbsp;times. <em>Leave blank for unlimited.</em>
+		</div>
+		
+		<div class="grid_2">
+			<label for="promotion-code-basket-minimum-value">Basket Min Value</label>
+		</div>
+		
+		<div class="grid_8 omega">
+			<input type="text" id="promotion-code-basket-minimum-value" name="promotion_code[basket_minimum_value]"
+				value="{{fields.promotion_code.basket_minimum_value|num_format(2)}}" class="inputtext shorter" />
+			<em>&nbsp;Leave blank for no minimum.</em>
+		</div>
+		
+		<div class="clear"></div>
+	
+	</div>
+	
+	<h2>Promotion Code Reward</h2>
+	
+	<div class="field">
+	
+		<div class="grid_2 alpha">
+			<label for="promotion-code-discount-amount">Discount Amt</label>
+		</div>
+		
+		<div class="grid_14 omega">
+			<input type="text" id="promotion-code-discount-amount" name="promotion_code[discount_amount]" 
+				value="{{fields.promotion_code.discount_amount|num_format(2)}}" class="inputtext shortest" />
+			<select name="promotion_code[discount_unit]">
+				<option value="pounds" {% if fields.promotion_code.discount_unit == "pounds" %}selected{% endif %}>Pounds</option>
+				<option value="percent" {% if fields.promotion_code.discount_unit == "percent" %}selected{% endif %}>Percent</option>
+			</select>
+		</div>
+	
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+{% endblock %}

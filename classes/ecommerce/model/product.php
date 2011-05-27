@@ -10,14 +10,14 @@ class Ecommerce_Model_Product extends Model_Application
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
 					'rules' => array(
-					'not_empty' => NULL,
-				),
+						'not_empty' => NULL,
+					),
 				)),
 				'slug' => new Field_String(array(
 					'unique' => TRUE,
 					'rules' => array(
-					'not_empty' => NULL,
-				),
+						'not_empty' => NULL,
+					),
 				)),
 				'description' => new Field_Text,
 				'price' => new Field_Float(array(

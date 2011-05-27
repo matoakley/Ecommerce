@@ -448,3 +448,11 @@ a.product-option-remove {
 	border:none;
 }
 
+/** Override some jQueryUI styles **/
+table.ui-datepicker-calendar td {
+	line-height:1.6em;
+}
+
+table.ui-datepicker-calendar td a {
+	text-align:center;
+}

@@ -1,0 +1,70 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}Viewing: <strong>Promotion Codes</strong>{% endblock %}
+
+{% block content %}
+
+<p>
+	<a href="/admin/promotion_codes/add" class="img-button">
+		<img src="/images/icons/add.png" alt="" />
+		New Promotion Code
+	</a>
+</p>
+
+<div class="grid_8 alpha">
+	<select id="bulk-actions">
+		<option value="">-- Bulk Actions --</option>
+	</select>
+
+	<span id="no-rows-selected">No rows selected!</span>
+</div>
+
+<div class="grid_8 omega tr">
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_promotion_codes %}{{page * items}}{% else %}{{total_promotion_codes}}{% endif %}</strong> of <strong>{{total_promotion_codes}}</strong> items
+</div>
+
+<div class="clear"></div>
+
+<table>
+	<thead>
+		<tr>
+			<th width="1"><input id="check-all" type="checkbox" /></th>
+			<th>Code</th>
+			<th>Description</th>
+			<th class="tr">Valid From</th>
+			<th class="tr">Valid Until</th>
+			<th>Status</th>
+			<th class="tr">Redeemed</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, promotion_code in promotion_codes %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
+			<td><a href="/admin/promotion_codes/edit/{{promotion_code.id}}">{{promotion_code.code}}</a></td>
+			<td>{{promotion_code.description}}</td>
+			<td class="tr">
+			{% if promotion_code.start_date %}
+				{{promotion_code.start_date|date('d/m/Y')}}
+			{% else %}
+				-
+			{% endif %}
+			</td>
+			<td class="tr">
+			{% if promotion_code.end_date %}
+				{{promotion_code.end_date|date('d/m/Y')}}
+			{% else %}
+				-
+			{% endif %}
+			</td>
+			<td class="{{promotion_code.status}}">{{promotion_code.status|title}}</td>
+			<td class="tr">{{promotion_code.redeemed}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{{pagination}}
+
+
+{% endblock %}
