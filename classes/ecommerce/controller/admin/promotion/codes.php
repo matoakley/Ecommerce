@@ -92,4 +92,14 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		echo Model_Promotion_Code::generate_unique_code();
 		exit;
 	}
+	
+	public function action_delete($id = NULL)
+	{
+		$this->auto_render = FALSE;
+		
+		$promotion_code = Model_Promotion_Code::load($id);
+		$promotion_code->delete();
+		
+		$this->request->redirect($this->session->get('admin.promotion_codes.index', 'admin/promotion_codes'));
+	}
 }

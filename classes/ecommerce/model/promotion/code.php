@@ -77,7 +77,7 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 	{
 		$code = strtoupper($code);
 	
-		$promotion_code = Jelly::select('promotion_code')->where('code', '=', $code)->limit(1)->execute();
+		$promotion_code = Jelly::select('promotion_code')->where('code', '=', $code)->where('status', '=', 'active')->limit(1)->execute();
 		
 		return $promotion_code->is_valid();
 	}
