@@ -385,6 +385,15 @@ a.delete-button:hover {
 	color:red;
 }
 
+a.clone-button {
+	color:green;
+	margin-right:10px;
+}
+
+a.clone-button:hover {
+	color:green;
+}
+
 a.remove-product-option-container {
 	color:red;
 	font-style:italic;

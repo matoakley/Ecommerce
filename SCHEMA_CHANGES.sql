@@ -1,3 +1,6 @@
+-- 14/05/2011 - Slug can be null to allow for product duplication
+ALTER TABLE `products` CHANGE COLUMN `slug` `slug` varchar(255);
+
 -- 19/04/2011 - Update new unit price field in sales_order_items
 UPDATE `sales_order_items` SET `unit_price` = (`total_price` / `quantity`);
 
