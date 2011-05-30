@@ -117,8 +117,26 @@
 			<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
 		</tr>
 	{% endfor %}
+	{% if sales_order.promotion_code_code %}
+		<tr>
+			<td colspan="100">
+				Promotion Code:
+				{% if sales_order.promotion_code.loaded %}
+					<a href="/admin/promotion_codes/edit/{{sales_order.promotion_code.id}}">{{sales_order.promotion_code_code}}</a>
+				{% else %}
+					{{sales_order.promotion_code_code}}
+				{% endif%}
+			</td>
+		</tr>
+	{% endif %}
 	</tbody>
 	<tfoot>
+	{% if sales_order.discount_amount > 0 %}
+		<tr>
+			<td class="tr" colspan="2">Promotional Discount</td>
+			<td class="tr">- &pound;{{sales_order.discount_amount|num_format(2)}}</td>
+		</tr>
+	{% endif %}
 		<tr>
 			<td class="tr" colspan="2">{{sales_order.delivery_option.name}}</td>
 			<td class="tr">&pound;{{sales_order.delivery_option.retail_price|num_format(2)}}</td>

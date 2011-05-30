@@ -16,11 +16,7 @@ class Ecommerce_Model_Product extends Model_Application
 				)),
 				'slug' => new Field_String(array(
 					'unique' => TRUE,
-		/*
-			'rules' => array(
-						'not_empty' => NULL,
-					),
-*/
+					'on_copy' => 'clear',
 				)),
 				'description' => new Field_Text(array(
 					'on_copy' => 'copy',

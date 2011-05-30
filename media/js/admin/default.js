@@ -2,6 +2,14 @@ $(function(){
 
 	$('#nav ul').superfish();
 	
+	$('.datepicker').datepicker({
+		constrainInput: true,
+		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
+		numberOfMonths: 2,
+		selectOtherMonths: true
+	});
+	
 	$('textarea.description').ckeditor({
 		toolbar:
 				[

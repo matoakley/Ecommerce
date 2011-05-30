@@ -25,6 +25,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'foreign' => 'delivery_option.id',
 					'column' => 'delivery_option_id',
 				)),
+				'promotion_code' => new Field_BelongsTo,
+				'promotion_code_code' => new Field_String,
+				'discount_amount' => new Field_Float(array(
+					'places' => 4,
+					'default' => 0,
+				)),
 				'status' => new Field_String,
 				'order_total' => new Field_Float(array(
 					'places' => 2,
@@ -72,6 +78,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
+		
+		// Handle any promotional codes that are added to the basket.
+		if ($basket->promotion_code->loaded())
+		{
+			$sales_order->promotion_code = $basket->promotion_code;
+			$sales_order->promotion_code_code = $basket->promotion_code->code;
+			
+			$basket->promotion_code->redeem();
+			
+			$sales_order->discount_amount = $basket->calculate_discount();
+		}
+		
 		$sales_order->save();
 		
 		foreach ($basket->items as $basket_item)

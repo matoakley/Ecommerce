@@ -71,7 +71,38 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	public function action_update_total()
 	{
 		$this->auto_render = FALSE;		
-		echo $this->basket->calculate_total();
+		
+		$data = array(
+			'basket_total' => $this->basket->calculate_total(),
+			'discount' => $this->basket->calculate_discount(),
+		);
+		
+		echo json_encode($data);
+	}
+	
+	public function action_add_promotion_code()
+	{
+		$this->auto_render = FALSE;
+		
+		if (isset($_POST['code']))
+		{
+			// Check if promotion code exists and if it is valid.
+			$this->basket->add_promotion_code($_POST['code']);
+			echo $_POST['code'];
+		}
+		else
+		{
+			throw new Kohana_Exception('No data received.', array(), 500);
+		}
+			
+		exit;
+	}
+	
+	public function action_remove_promotion_code()
+	{
+		$this->auto_render = FALSE;
+		$this->basket->remove_promotion_code();
+		echo 'OK';
 	}
 	
 }

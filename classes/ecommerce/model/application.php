@@ -4,11 +4,13 @@ class Ecommerce_Model_Application extends Jelly_Model
 {
 	public static function load($id = FALSE)
 	{
+		$model_meta = Jelly::meta(get_called_class());
+	
 		if (is_numeric($id))
 		{
 			return Jelly::select(get_called_class(), $id);
 		}
-		else
+		else if ($model_meta->columns('slug'))
 		{
 			return Jelly::select(get_called_class())
 							->where('slug', '=', $id)
@@ -16,6 +18,7 @@ class Ecommerce_Model_Application extends Jelly_Model
 							->limit(1)
 							->execute();
 		}
+		else return Jelly::factory(get_called_class());
 	}
 	
 	/**
