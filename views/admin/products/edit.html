@@ -20,11 +20,15 @@
 <form method="POST">
 
 	<div class="field">
-		<div class="grid_6 alpha">
+		<div class="grid_5 alpha">
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
-		<div class="grid_10 omega tr">
+		<div class="grid_11 omega tr">
 			{% if product.loaded %}
+				<a href="/admin/products/duplicate/{{product.id}}" class="clone-button">
+					<img src="/images/icons/table_refresh.png" alt="" class="inline-icon" />
+					Duplicate Product
+				</a>
 				<a href="/admin/products/delete/{{product.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
 					Delete Product
@@ -57,12 +61,12 @@
 		</div>
 		<div class="grid_14 omega">
 			<input type="text" id="product-slug" name="product[slug]" value="{{product.slug}}" class="inputtext longest slug" 
-				{% if product.loaded %} disabled {% endif %} />
+				{% if product.loaded and product.slug %} disabled {% endif %} />
 		</div>
 		<div class="clear"></div>
 	</div>
 	
-	{% if product.loaded %}
+	{% if product.loaded and product.slug %}
 	<div class="field">
 		<div class="grid_2 alpha">
 			<label>Public Page</label>
