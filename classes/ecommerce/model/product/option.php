@@ -7,10 +7,18 @@ class Ecommerce_Model_Product_Option extends Model_Application
 		$meta->table('product_options')
 			->fields(array(
 				'id' => new Field_Primary,
-				'product' => new Field_BelongsTo,
-				'key' => new Field_String,
-				'value' => new Field_String,
-				'status' => new Field_String,
+				'product' => new Field_BelongsTo(array(
+					'on_copy' => 'copy',
+				)),
+				'key' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
+				'value' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
+				'status' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

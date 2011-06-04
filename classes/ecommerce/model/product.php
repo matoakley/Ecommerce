@@ -10,42 +10,59 @@ class Ecommerce_Model_Product extends Model_Application
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
 					'rules' => array(
-						'not_empty' => NULL,
+						'not_empty' => NULL,		
 					),
+					'on_copy' => 'copy',
 				)),
 				'slug' => new Field_String(array(
 					'unique' => TRUE,
-					'rules' => array(
-						'not_empty' => NULL,
-					),
+					'on_copy' => 'clear',
 				)),
-				'description' => new Field_Text,
+				'description' => new Field_Text(array(
+					'on_copy' => 'copy',
+				)),
 				'price' => new Field_Float(array(
 					'places' => 4,
+					'on_copy' => 'copy',
 				)),
-				'sku' => new Field_String,
+				'sku' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
 				'categories' => new Field_ManyToMany(array(
 					'foreign' => 'category',
 					'through' => 'categories_products',
+					'on_copy' => 'copy',
 				)),
 				'brand' => new Field_BelongsTo(array(
 					'foreign' => 'brand.id',
+					'on_copy' => 'copy',
 				)),
-				'status' => new Field_String,
-				'meta_description' => new Field_String,
-				'meta_keywords' => new Field_String,
+				'status' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
+				'meta_description' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
+				'meta_keywords' => new Field_String(array(
+					'on_copy' => 'copy',
+				)),
 				'images' => new Field_HasMany(array(
 					'foreign' => 'product_image.product_id',
+					'on_copy' => 'clear',
 				)),
 				'default_image' => new Field_BelongsTo(array(
 					'foreign' => 'product_image.id',
 					'column' => 'default_image_id',
+					'on_copy' => 'copy',
 				)),
 				'thumbnail' => new Field_BelongsTo(array(
 					'foreign' => 'product_image.id',
 					'column' => 'thumbnail_id',
+					'on_copy' => 'copy',
 				)),
-				'product_options' => new Field_HasMany,
+				'product_options' => new Field_HasMany(array(
+					'on_copy' => 'clone',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -260,4 +277,6 @@ class Ecommerce_Model_Product extends Model_Application
 							->where('key', '=', $option_name)
 							->execute()->as_array('value', 'status');
 	}
+	
+
 }

@@ -5,7 +5,7 @@ ALTER TABLE `sales_orders` ADD COLUMN `promotion_code_code` varchar(50) AFTER `p
 -- 26/05/11 - Add promotion code link to basket table
 ALTER TABLE `baskets` ADD COLUMN `promotion_code_id` int AFTER `sales_order_id`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `promotion_code_id`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
 
--- 25/04/11 - Add table for Promotional Codes
+-- 25/05/11 - Add table for Promotional Codes
 CREATE TABLE `promotion_codes` (
   `id` int(11) NOT NULL auto_increment,
   `code` varchar(20) default NULL,
@@ -23,6 +23,9 @@ CREATE TABLE `promotion_codes` (
   `deleted` datetime default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+-- 14/05/2011 - Slug can be null to allow for product duplication
+ALTER TABLE `products` CHANGE COLUMN `slug` `slug` varchar(255);
 
 -- 19/04/2011 - Update new unit price field in sales_order_items
 UPDATE `sales_order_items` SET `unit_price` = (`total_price` / `quantity`);

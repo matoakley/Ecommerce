@@ -25,7 +25,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->items = $items;
 	}
 	
-	function action_edit($id = FALSE)
+	function action_edit($id = FALSE, $cloning = FALSE)
 	{
 		$product = Model_Product::load($id);
 	
@@ -38,7 +38,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)
-		{
+		{	
 			try
 			{
 				$product->update($_POST['product']);
@@ -168,5 +168,19 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->auto_render = FALSE;
 		
 		echo json_encode(Model_Product_Option::$statuses);
+	}
+	
+	public function action_duplicate($id = FALSE)
+	{
+		$product = Model_Product::load($id);
+		
+		if (! $product->loaded())
+		{
+			throw new Kohana_Exception('Product could not be found.');
+		}
+		
+		$cloned_product = $product->copy();
+		
+		$this->request->redirect('/admin/products/edit/'.$cloned_product->id);
 	}
 }
