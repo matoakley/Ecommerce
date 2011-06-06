@@ -2,7 +2,7 @@
 
 {% block custom_scripts %}
 	
-	<script type="text/javascript" src="/media/js/admin/promotion_codes.js?1"></script>
+	<script type="text/javascript" src="/media/js/admin/promotion_codes.js?2"></script>
 
 {% endblock %}
 
@@ -168,10 +168,21 @@
 	<div class="field">
 	
 		<div class="grid_2 alpha">
+			<label for="promotion-code-discount-on">Discount On</label>
+		</div>
+		
+		<div class="grid_4">
+			<select id="promotion-code-discount-on" name="promotion_code[discount_on]">
+				<option value="sales_order" {% if fields.promotion_code.discount_on == 'sales_order' %}selected{% endif %}>Sales Order</option>
+				<option value="sales_order_item" {% if fields.promotion_code.discount_on == 'sales_order_item' %}selected{% endif %}>Sales Order Item</option>
+			</select>
+		</div>
+	
+		<div class="grid_2">
 			<label for="promotion-code-discount-amount">Discount Amt</label>
 		</div>
 		
-		<div class="grid_14 omega">
+		<div class="grid_8 omega">
 			<input type="text" id="promotion-code-discount-amount" name="promotion_code[discount_amount]" 
 				value="{{fields.promotion_code.discount_amount|num_format(2)}}" class="inputtext shortest" />
 			<select name="promotion_code[discount_unit]">
@@ -181,6 +192,43 @@
 		</div>
 	
 		<div class="clear"></div>
+	</div>
+		
+	<div class="field {% if not fields.promotion_code.discount_on == 'sales_order_item' %}hidden{% endif %}" id="promotion-code-products">
+		
+		<div class="grid_2 alpha">
+			<label>On Items</label>
+		</div>
+		
+		<div class="grid_14 omega">
+		
+			<input type="text" id="add-product" value="" class="inputtext" />
+			
+			<em>Start typing name of product you wish to add.</em>
+			
+			<ul id="promotion-code-products-live-search">
+				
+			</ul>
+			
+		</div>
+		
+		<div class="clear"></div>
+	</div>
+	
+	<div id="promotion-code-products-container">
+	{% for product in fields.promotion_code.products %}
+	
+		<div class="field promotion-code-product-container" rel="{{product.id}}">
+			<div class="grid_2 alpha">&nbsp;</div>
+			
+			<div class="grid_14 omega"><a href="/admin/products/edit/{{product.slug}}">{{product.name}}</a> <a href="#" class="remove-promotion-code-product" rel="{{product.id}}">remove</a></div>
+			
+			<input type="hidden" name="promotion_code[products][]" value="{{product.id}}" />
+			
+			<div class="clear"></div>
+		</div>
+	
+	{% endfor %}
 	</div>
 	
 </form>

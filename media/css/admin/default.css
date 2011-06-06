@@ -465,3 +465,6 @@ table.ui-datepicker-calendar td {
 table.ui-datepicker-calendar td a {
 	text-align:center;
 }
+
+/** Promotion Code Styling **/
+.remove-promotion-code-product { color:red; }

@@ -28,12 +28,14 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 				'basket_minimum_value' => new Field_Float(array(
 					'places' => 4,
 				)),
+				'discount_on' => new Field_String,
 				'discount_amount' => new Field_Float(array(
 					'places' => 4,
 				)),
 				'discount_unit' => new Field_String(array(
 					'default' => 'pounds',
 				)),
+				'products' => new Field_ManyToMany,
 				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -134,8 +136,17 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		$this->end_date = $data['end_date'];
 		$this->max_redemptions = $data['max_redemptions'];
 		$this->basket_minimum_value = $data['basket_minimum_value'];
+		$this->discount_on = $data['discount_on'];
 		$this->discount_amount = $data['discount_amount'];
 		$this->discount_unit = $data['discount_unit'];
+		
+		// Clear down and save products.
+		$this->remove('products', $this->products);
+		
+		if (isset($data['products']))
+		{
+			$this->add('products', $data['products']);
+		}
 	
 		return $this->save();
 	}

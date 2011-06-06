@@ -183,4 +183,17 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		$this->request->redirect('/admin/products/edit/'.$cloned_product->id);
 	}
+	
+	// Takes a search term and provides search result in 
+	// JSON format for live searches
+	public function action_live_search()
+	{
+		$this->auto_render = FALSE;
+		
+		if (isset($_GET['q']))
+		{
+			$results = Model_Product::search(array(), 10);
+			echo json_encode($results['results']->as_array());
+		}
+	}
 }

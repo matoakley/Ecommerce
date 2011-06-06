@@ -120,27 +120,46 @@ class Ecommerce_Model_Basket extends Model_Application
 				$this->remove_promotion_code();
 				return 0;
 			}
-/*
-			try
+
+			// Is the discount based upon the sales order or a sales order item?
+			if ($this->promotion_code->discount_on == 'sales_order')
 			{
-				$this->promotion_code->is_valid();
+				switch ($this->promotion_code->discount_unit)
+				{
+					case 'pounds':
+						$discount = $this->promotion_code->discount_amount;
+						break;
+					case 'percent':
+						$discount = $subtotal * ($this->promotion_code->discount_amount / 100);
+						break;
+				}
 			}
-			catch (Kohana_Exception $e)
+			else
 			{
-				// No longer valid, remove it.
-				$this->remove_promotion_code();
-				return 0;
-			}
-*/
-		
-			switch ($this->promotion_code->discount_unit)
-			{
-				case 'pounds':
-					$discount = $this->promotion_code->discount_amount;
-					break;
-				case 'percent':
-					$discount = $subtotal * ($this->promotion_code->discount_amount / 100);
-					break;
+				// Calculate discount based on qualifying products
+				$items_on_offer = $this->promotion_code->products->as_array('id', 'id');
+				$items_in_basket = array();
+				foreach ($this->items as $item)
+				{
+					$items_in_basket[] = $item->product->id;
+				}
+				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
+				
+				$discount = 0;
+				
+				foreach ($qualifying_basket_items as $item_id)
+				{
+					$item = $this->get('items')->where('product_id', '=', $item_id)->limit(1)->execute();
+					switch ($this->promotion_code->discount_unit)
+					{
+						case 'pounds':
+							$discount += $this->promotion_code->discount_amount * $item->quantity;
+							break;
+						case 'percent':
+							$discount += ($item->product->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							break;
+					}
+				}
 			}
 		}
 			
