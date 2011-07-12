@@ -17,12 +17,18 @@ class Ecommerce_Model_Product extends Model_Application
 				'slug' => new Field_String(array(
 					'unique' => TRUE,
 					'on_copy' => 'clear',
+					'callbacks' => array(
+						'slug_valid' => array('Model_Product', '_is_slug_valid'),
+					),
 				)),
 				'description' => new Field_Text(array(
 					'on_copy' => 'copy',
 				)),
 				'price' => new Field_Float(array(
 					'places' => 4,
+					'rules' => array(
+						'not_empty' => NULL,
+					),
 					'on_copy' => 'copy',
 				)),
 				'sku' => new Field_String(array(
@@ -74,6 +80,10 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'duplicating' => new Field_Boolean(array(
+					'in_db' => FALSE,
+					'default' => FALSE,
+				)),
 			));
 	}
 
@@ -103,6 +113,38 @@ class Ecommerce_Model_Product extends Model_Application
 		),
 	);
 
+	/****** Validation Callbacks ******/
+	
+	public static function _is_slug_valid(Validate $array, $field)
+	{
+		$valid = TRUE;
+		
+		// Is slug set (unless duplicating...)
+		if ( ! isset($array['duplicating']))
+		{	
+			if ( ! isset($array['slug']) OR $array['slug'] == '')
+			{
+				$valid = FALSE;
+			}
+			else
+			{
+				// Is slug a duplicate?
+				$is_duplicate = (bool) Jelly::select('product')->where('slug', '=', $array['slug'])->where('deleted', 'IS', NULL)->count();
+				if ($is_duplicate)
+				{
+					$valid = FALSE;
+				}
+			}
+		}
+		
+		if ( ! $valid)
+		{
+			$array->error('slug', 'Slug is a required field.');
+		}
+	}
+
+	/****** Public Functions ******/
+	
 	public static function most_popular_products($num_products = 5)
 	{
 		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold

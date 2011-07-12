@@ -46,21 +46,21 @@
 	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="product-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+			<label for="product-name" {{ errors.product.name ? "class='error'" : "" }}>Name *</label>
 		</div>
 		<div class="grid_8">
-			<input type="text" id="product-name" name="product[name]" value="{{product.name}}"
-				class="inputtext longest {% if not product.loaded %}slugify{% endif %}" />
+			<input type="text" id="product-name" name="product[name]" value="{{fields.product.name}}"
+				class="inputtext longest {% if not product.loaded or not product.slug %}slugify{% endif %}" />
 		</div>
 		<div class="clear"></div>
 	</div>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="product-slug" {{ errors.slug ? "class='error'" : "" }}>SEO Slug *</label>
+			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
 		<div class="grid_14 omega">
-			<input type="text" id="product-slug" name="product[slug]" value="{{product.slug}}" class="inputtext longest slug" 
+			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
 				{% if product.loaded and product.slug %} disabled {% endif %} />
 		</div>
 		<div class="clear"></div>
@@ -85,7 +85,7 @@
 		<div class="grid_14 omega">
 			<select id="product-status" name="product[status]">
 			{% for status in statuses %}
-				<option value="{{status}}" {{ status == product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+				<option value="{{status}}" {{ status == fields.product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
@@ -97,17 +97,17 @@
 			<label for="product-description" class="top">Description</label>
 		</div>
 		<div class="grid_14 omega">		
-			<textarea id="product-description" name="product[description]" class="description">{{product.description}}</textarea>
+			<textarea id="product-description" name="product[description]" class="description">{{fields.product.description}}</textarea>
 		</div>
 		<div class="clear"></div>
 	</div>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="product-price">Price * (&pound;)</label>
+			<label for="product-price"  {{ errors.product.price ? "class='error'" : "" }}>Price * (&pound;)</label>
 		</div>
 		<div class="grid_6">
-			<input type="text" id="product-price" name="product[price]" value="{{product.retail_price}}" class="inputtext shortest" />
+			<input type="text" id="product-price" name="product[price]" value="{{fields.product.retail_price}}" class="inputtext shortest" />
 			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
 		</div>
 		<div class="grid_2">
@@ -120,7 +120,7 @@
 				<select id="product-brand" name="product[brand]">
 					<option value="0">None</option>
 				{% for brand in brands %}
-					<option value="{{brand.id}}" {{ brand.id == product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+					<option value="{{brand.id}}" {{ brand.id == fields.product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
 				{% endfor %}
 				</select>
 			{% endif %}
@@ -133,7 +133,7 @@
 			<label>SKU</label>
 		</div>
 		<div class="grid_14 omega">
-			<input type="text" id="product-sku" name="product[sku]" value="{{product.sku}}" class="inputtext shorter" />
+			<input type="text" id="product-sku" name="product[sku]" value="{{fields.product.sku}}" class="inputtext shorter" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -210,7 +210,7 @@
 			<label for="product-meta-description">Description</label>
 		</div>
 		<div class="grid_6">
-			<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{product.meta_description}}</textarea>
+			<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{fields.product.meta_description}}</textarea>
 		</div>
 		<div class="grid_2 tr">
 			<p><strong>What's this?</strong></p>
@@ -225,7 +225,7 @@
 			<label for="product-meta-keywords">Keywords</label>
 		</div>
 		<div class="grid_6">
-			<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{product.meta_keywords}}</textarea>
+			<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{fields.product.meta_keywords}}</textarea>
 		</div>
 		<div class="grid_2 tr">
 			<p><strong>What's this?</strong></p>
@@ -242,14 +242,14 @@
 		{% if not category.parent.loaded %}
 			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
 				<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
-					class="top-level-category" {% if product.loaded and category.id in product.categories.as_array('id', 'id') %}checked{% endif %} />
+					class="top-level-category" {% if product.loaded and category.id in fields.product_categories %}checked{% endif %} />
 				<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
 				{% if category.categories %}
 					<ul class="subcategory-list">
 						{% for subcategory in category.categories %}
 						<li>
 							<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
-								value="{{subcategory.id}}" {% if product.loaded and subcategory.id in product.categories.as_array('id', 'id') %}checked{% endif %} />
+								value="{{subcategory.id}}" {% if product.loaded and subcategory.id in fields.product_categories %}checked{% endif %} />
 							<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
 						</li>
 						{% endfor %}
@@ -289,7 +289,7 @@
 	
 		<div id="product-images">
 		
-		{% for key, image in product.images %}
+		{% for key, image in fields.product_images %}
 			
 			<div class="product-image-row">
 				

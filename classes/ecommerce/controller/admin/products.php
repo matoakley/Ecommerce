@@ -34,15 +34,60 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			throw new Kohana_Exception('Product could not be found.');
 		}
 		
+		$fields = array(
+			'product' => $product->as_array(),
+			'product_categories' => $product->categories->as_array('id', 'id'),
+		);
+		
+		$fields['product']['retail_price'] = $product->retail_price();
+		
+		foreach ($product->images as $product_image)
+		{
+			$fields['product_images'][] = $product_image->as_array();
+		}
+		
+		$errors = array();
+		
 		$redirect_to = $this->session->get('admin.products.index', 'admin/products');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)
 		{	
+			// Try validating the posted data
 			try
 			{
+				$product->validate($_POST['product']);
+			}
+			catch (Validate_Exception $e)
+			{
+				$errors['product'] = $e->array->errors();
+			}
+			
+			// Loop through and validate each of the product images
+			if (isset($_POST['product_images']))
+			{
+				foreach ($_POST['product_images'] as $key => $values)
+				{
+					$image = Model_Product_Image::load($key);
+					
+					try
+					{
+						$image->validate($values);
+					}
+					catch (Validate_Exception $e)
+					{
+						$errors['product_images'][$key] = $e->array->errors();
+					}
+				}
+			}
+			
+			// No errors, so let's save the data
+			if (empty($errors))
+			{
+				// Save the product
 				$product->update($_POST['product']);
 				
+				// Loop through and save each of the product images
 				if (isset($_POST['product_images']))
 				{
 					foreach ($_POST['product_images'] as $key => $values)
@@ -51,7 +96,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 						$image->update($values);
 					}
 				}
-
+				
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
@@ -62,11 +107,23 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 					$this->request->redirect('/admin/products/edit/' . $product->id);
 				}
 			}
-			catch (Validate_Exception $e)
+			else
 			{
-				$this->template->errors = $e->array->errors();
+				// Otherwise display errors and populate fields with new data
+				$fields['product'] = $_POST['product'];
+				$fields['product']['retail_price'] = $_POST['product']['price'];
+				if (isset($_POST['product_images']))
+				{
+					foreach ($_POST['product_images'] as $key => $values)
+					{
+						$fields['product_images'][$key] = $product_image->as_array();
+					}
+				}
 			}
 		}
+			
+		$this->template->errors = $errors;
+		$this->template->fields = $fields;
 		
 		// Loads the script that counts chars on the fly for Meta fields.
 		$this->scripts[] = 'jquery.counter-1.0.min';
