@@ -59,7 +59,17 @@ $(function(){
 					$('div#basket_left').html(response.basket_items).show('clip');
 				});
 				
+				// Check if we need to update the delivery option.
+				$.ajax({
+					url: '/basket/update_delivery_option',
+					type: 'GET',
+					success: function(response){
+						$('#delivery_price').html(response);
+					}
+				});
+				
 				// Check if we now qualify for checkout
+/*
 				$.ajax({
 					url: '/basket/qualifies_for_checkout',
 					type: 'GET',
@@ -84,6 +94,7 @@ $(function(){
 						}
 					}
 				});
+*/
 			}
 		});
 	});
