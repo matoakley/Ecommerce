@@ -12,6 +12,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				)),
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
+				'promotion_code' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -29,13 +30,13 @@ class Ecommerce_Model_Basket extends Model_Application
 	protected static $_instance;
 	
 	public static function instance()
-	{		
+	{
 		if ( ! isset(Model_Basket::$_instance) AND Session::instance()->get('basket_id'))
 		{
 			// Create a new session instance
 			Model_Basket::$_instance = Jelly::select('basket', Session::instance()->get('basket_id'));
 		}
-		else 
+		else if (! isset(Model_Basket::$_instance))
 		{
 			Model_Basket::$_instance = new Model_Basket();
 		}
@@ -91,9 +92,78 @@ class Ecommerce_Model_Basket extends Model_Application
     {
 		$total = $this->calculate_subtotal();
 		
+		// Let's check for any promotional codes that we may need to consider
+		// before we add the delivery.
+		$total -= $this->calculate_discount();
+		
 		$total += $this->delivery_option->retail_price();
 		
 		return number_format($total, 2);
+	}
+	
+	public function calculate_discount()
+	{	
+		$subtotal = $this->calculate_subtotal();
+		
+		$discount = 0;
+		
+		if ($this->promotion_code->loaded())
+		{
+			// We should chack the promotion code conditions are still met as
+			// we may have changed items in the basket.
+			try
+			{
+				$this->promotion_code->is_valid();
+			}
+			catch (Kohana_Exception $e)
+			{
+				$this->remove_promotion_code();
+				return 0;
+			}
+
+			// Is the discount based upon the sales order or a sales order item?
+			if ($this->promotion_code->discount_on == 'sales_order')
+			{
+				switch ($this->promotion_code->discount_unit)
+				{
+					case 'pounds':
+						$discount = $this->promotion_code->discount_amount;
+						break;
+					case 'percent':
+						$discount = $subtotal * ($this->promotion_code->discount_amount / 100);
+						break;
+				}
+			}
+			else
+			{
+				// Calculate discount based on qualifying products
+				$items_on_offer = $this->promotion_code->products->as_array('id', 'id');
+				$items_in_basket = array();
+				foreach ($this->items as $item)
+				{
+					$items_in_basket[] = $item->product->id;
+				}
+				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
+				
+				$discount = 0;
+				
+				foreach ($qualifying_basket_items as $item_id)
+				{
+					$item = $this->get('items')->where('product_id', '=', $item_id)->limit(1)->execute();
+					switch ($this->promotion_code->discount_unit)
+					{
+						case 'pounds':
+							$discount += $this->promotion_code->discount_amount * $item->quantity;
+							break;
+						case 'percent':
+							$discount += ($item->product->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							break;
+					}
+				}
+			}
+		}
+			
+		return number_format($discount, 2);
 	}
 	
 	public function update_delivery_option($delivery_option_id)
@@ -134,4 +204,17 @@ class Ecommerce_Model_Basket extends Model_Application
 		return $basket_item->update_quantity($basket_item->quantity + $quantity);
 	}
 	
+	// Promotion code management
+	public function add_promotion_code($code)
+	{
+		// Retrieve promotion code.
+		$this->promotion_code = Model_Promotion_Code::retrieve_for_use($code);
+		$this->save();
+	}
+	
+	public function remove_promotion_code()
+	{
+		$this->promotion_code = NULL;
+		return $this->save();
+	}
 }

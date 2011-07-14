@@ -10,6 +10,8 @@
 
 {% block content %}
 
+	{% if google_api_error %}<p style="padding-top:20px;"><img src="/images/icons/error.png" class="inline-icon" alt="" /><strong>We are currently experiencing communication issues with the Google Analytics API and some data may not be available below.</strong></p>{% endif %}
+
 	<div class="dashboard-row" style="margin-bottom:30px;">
 	
 		<div id="chart-container-1" style="height:250px !important;" class="dashboard-element"></div>

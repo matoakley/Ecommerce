@@ -47,10 +47,22 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		// Crop it for good measure
 		$image->crop($full_size_size['width'], $full_size_size['height']);
 		
-		$directory = DOCROOT . '/images/products/full_size/'. date('Y/m/', $i->created);
-		if ( ! is_dir($directory))
+		// Loop through each step of the dir path and check the dir exists or create it
+		$directory_parts = array(
+			'images',
+			'products',
+			'full_size',
+			date('Y', $i->created),
+			date('m', $i->created),
+		);
+		$directory = DOCROOT.'/';
+		foreach ($directory_parts as $dir)
 		{
-			mkdir($directory);
+			$directory .= $dir.'/';
+			if ( ! is_dir($directory))
+			{
+				mkdir($directory);
+			}
 		}
 		
 		$image->save(DOCROOT . $i->get_filepath('full_size'));
@@ -59,13 +71,24 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		$thumbnail_size = Kohana::config('ecommerce.image_sizing.thumbnail');
 		$image->resize($thumbnail_size['width'], $thumbnail_size['height'], Image::INVERSE);
 		
-		// Does the directory exist?
-		$directory = DOCROOT . '/images/products/thumb/'. date('Y/m/', $i->created);
-		if ( ! is_dir($directory))
+		// Loop through each step of the dir path and check the dir exists or create it
+		$directory_parts = array(
+			'images',
+			'products',
+			'thumb',
+			date('Y', $i->created),
+			date('m', $i->created),
+		);
+		$directory = DOCROOT.'/';
+		foreach ($directory_parts as $dir)
 		{
-			mkdir($directory);
+			$directory .= $dir.'/';
+			if ( ! is_dir($directory))
+			{
+				mkdir($directory);
+			}
 		}
-		
+				
 		$image->save(DOCROOT . $i->get_filepath('thumb'));
 		
 		return $i;

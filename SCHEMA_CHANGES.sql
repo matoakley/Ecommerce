@@ -1,3 +1,40 @@
+-- 05/06/11 - Add sales order items to promotion codes
+ALTER TABLE `promotion_codes` ADD COLUMN `discount_on` varchar(30) NOT NULL AFTER `basket_minimum_value`, CHANGE COLUMN `discount_amount` `discount_amount` decimal(10,0) DEFAULT NULL AFTER `discount_on`, CHANGE COLUMN `discount_unit` `discount_unit` varchar(20) DEFAULT NULL AFTER `discount_amount`, CHANGE COLUMN `status` `status` varchar(25) DEFAULT NULL AFTER `discount_unit`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `status`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
+CREATE TABLE `products_promotion_codes` (
+	`product_id` int NOT NULL,
+	`promotion_code_id` int NOT NULL
+);
+
+-- 27/05/11 - Add promotion code link to sales order table
+ALTER TABLE `sales_orders` ADD COLUMN `promotion_code_id` int AFTER `delivery_option_id`, ADD COLUMN `discount_amount` decimal(10,4) AFTER `promotion_code_id`, CHANGE COLUMN `status` `status` varchar(25) NOT NULL AFTER `discount_amount`, CHANGE COLUMN `order_total` `order_total` decimal(10,2) NOT NULL AFTER `status`, CHANGE COLUMN `ip_address` `ip_address` varchar(15) NOT NULL AFTER `order_total`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `ip_address`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+ALTER TABLE `sales_orders` ADD COLUMN `promotion_code_code` varchar(50) AFTER `promotion_code_id`, CHANGE COLUMN `discount_amount` `discount_amount` decimal(10,0) DEFAULT NULL AFTER `promotion_code_code`, CHANGE COLUMN `status` `status` varchar(25) NOT NULL AFTER `discount_amount`, CHANGE COLUMN `order_total` `order_total` decimal(10,2) NOT NULL AFTER `status`, CHANGE COLUMN `ip_address` `ip_address` varchar(15) NOT NULL AFTER `order_total`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `ip_address`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
+-- 26/05/11 - Add promotion code link to basket table
+ALTER TABLE `baskets` ADD COLUMN `promotion_code_id` int AFTER `sales_order_id`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `promotion_code_id`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
+-- 25/05/11 - Add table for Promotional Codes
+CREATE TABLE `promotion_codes` (
+  `id` int(11) NOT NULL auto_increment,
+  `code` varchar(20) default NULL,
+  `description` varchar(255) default NULL,
+  `max_redemptions` int(11) default NULL,
+  `redeemed` int(11) NOT NULL default '0',
+  `start_date` datetime default NULL,
+  `end_date` datetime default NULL,
+  `basket_minimum_value` decimal(10,0) default NULL,
+  `discount_amount` decimal(10,0) default NULL,
+  `discount_unit` varchar(20) default NULL,
+  `status` varchar(25) default NULL,
+  `created` datetime NOT NULL,
+  `modified` datetime default NULL,
+  `deleted` datetime default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+-- 14/05/2011 - Slug can be null to allow for product duplication
+ALTER TABLE `products` CHANGE COLUMN `slug` `slug` varchar(255);
+
 -- 19/04/2011 - Update new unit price field in sales_order_items
 UPDATE `sales_order_items` SET `unit_price` = (`total_price` / `quantity`);
 

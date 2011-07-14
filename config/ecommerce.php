@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.0.8', 
+	'software_version' => '1.0.9', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -18,12 +18,14 @@ return array
 		'categories' => TRUE,
 		'pages' => TRUE,
 		'products' => TRUE,
+		'promotion_codes' => TRUE,
 		'sales_orders' => TRUE,
 		'users' => TRUE,
 	),
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
+	'default_promotion_code_length' => 6,
 	
 	// Image sizing
 	'image_sizing' => array(

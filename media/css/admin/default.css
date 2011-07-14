@@ -385,6 +385,15 @@ a.delete-button:hover {
 	color:red;
 }
 
+a.clone-button {
+	color:green;
+	margin-right:10px;
+}
+
+a.clone-button:hover {
+	color:green;
+}
+
 a.remove-product-option-container {
 	color:red;
 	font-style:italic;
@@ -448,3 +457,14 @@ a.product-option-remove {
 	border:none;
 }
 
+/** Override some jQueryUI styles **/
+table.ui-datepicker-calendar td {
+	line-height:1.6em;
+}
+
+table.ui-datepicker-calendar td a {
+	text-align:center;
+}
+
+/** Promotion Code Styling **/
+.remove-promotion-code-product { color:red; }
