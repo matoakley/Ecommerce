@@ -7,10 +7,21 @@ class Ecommerce_Controller_Blog extends Controller_Application
 		$blog_posts = Model_Blog_Post::search(array(), FALSE, array('created' => 'DESC'));
 		
 		$this->template->blog_posts = $blog_posts['results'];
+		$this->add_breadcrumb('/blog', 'Blog');
 	}
 	
 	public function action_view($slug = FALSE)
 	{
-		$this->template->blog_post = Model_Blog_Post::load($slug);
+		$blog_post = Model_Blog_Post::load($slug);
+		
+		if ( ! $blog_post->loaded())
+		{
+			throw new Kohana_Exception('The blog post that you are searching for could not be found.');
+		}
+		
+		$this->template->blog_post = $blog_post;
+		
+		$this->add_breadcrumb('/blog', 'Blog');
+		$this->add_breadcrumb('/blog/' . $blog_post->slug, $blog_post->name);
 	}
 }
