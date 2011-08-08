@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.0.9', 
+	'software_version' => '1.1.0', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
