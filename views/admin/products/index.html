@@ -33,13 +33,15 @@
 </div>
 
 <div class="clear"></div>
-
 <table>
 	<thead>
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th class="tr">Retail Price</th>
+			{% if modules.stock_control %}
+				<th class="tc">Stock</th>
+			{% endif %}
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -49,6 +51,9 @@
 			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
 			<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
 			<td class="tr">&pound;{{product.retail_price}}</td>
+			{% if modules.stock_control %}
+				<td class="tc">{{product.stock}}</td>
+			{% endif %}
 			<td class="{{product.status}}">{{product.status|title}}</td>
 		</tr>
 	{% endfor %}

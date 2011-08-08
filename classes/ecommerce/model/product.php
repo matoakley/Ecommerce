@@ -80,6 +80,10 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'stock' => new Field_Integer(array(
+					'default' => 0,
+					'on_copy' => 'clear',
+				)),				
 				'duplicating' => new Field_Boolean(array(
 					'in_db' => FALSE,
 					'default' => FALSE,
@@ -231,6 +235,11 @@ class Ecommerce_Model_Product extends Model_Application
 			$data['price'] = self::deduct_tax($data['price']);
 		}
 		
+		if (isset($data['stock']))
+		{
+			$this->stock = $data['stock'];
+		}
+		
 		$this->name = $data['name'];
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];
@@ -320,5 +329,9 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute()->as_array('value', 'status');
 	}
 	
-
+	public function remove_from_stock($quantity = 1)
+	{
+		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
+		$this->save();
+	}
 }

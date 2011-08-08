@@ -217,6 +217,19 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			
 			$this->add_note($note_text, TRUE);
 			
+			// If we are setting an order to payment received then we should decrement the stock count of each item
+			if ($status == 'payment_received')
+			{
+				foreach ($this->items as $item)
+				{
+					if ($item->product->loaded())
+					{
+						$item->product->remove_from_stock($item->quantity);
+					}
+				}
+			}
+
+			
 			return $this->save();
 		}
 		else

@@ -1,3 +1,6 @@
+-- 08/08/2011 - Add a stock field to Products table
+ALTER TABLE `products` ADD COLUMN `stock` int;
+
 -- 05/06/11 - Add sales order items to promotion codes
 ALTER TABLE `promotion_codes` ADD COLUMN `discount_on` varchar(30) NOT NULL AFTER `basket_minimum_value`, CHANGE COLUMN `discount_amount` `discount_amount` decimal(10,0) DEFAULT NULL AFTER `discount_on`, CHANGE COLUMN `discount_unit` `discount_unit` varchar(20) DEFAULT NULL AFTER `discount_amount`, CHANGE COLUMN `status` `status` varchar(25) DEFAULT NULL AFTER `discount_unit`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `status`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
 
