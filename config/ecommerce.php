@@ -16,6 +16,7 @@ return array
 		'blog' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'delivery_options' => FALSE,
 		'pages' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,

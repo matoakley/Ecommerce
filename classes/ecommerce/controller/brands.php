@@ -2,6 +2,16 @@
 
 class Ecommerce_Controller_Brands extends Controller_Application {
 
+	function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.brands'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+	
+		parent::before();
+	}
+	
 	function action_index()
 	{
 		$this->template->brands = Jelly::select('brand')

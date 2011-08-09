@@ -1,7 +1,17 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Blog extends Controller_Application
-{
+class Ecommerce_Controller_Blog extends Controller_Application {
+
+	function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.blog'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+	
+		parent::before();
+	}
+	
 	public function action_index()
 	{
 		$blog_posts = Model_Blog_Post::search(array(), FALSE, array('created' => 'DESC'));

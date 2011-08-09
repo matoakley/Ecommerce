@@ -2,6 +2,16 @@
 
 class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 
+	function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.blog'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+	
+		parent::before();
+	}
+	
 	function action_index()
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
