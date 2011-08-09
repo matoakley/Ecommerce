@@ -189,18 +189,13 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function retail_price()
 	{
-		return number_format($this->price + ($this->price * (Kohana::config('ecommerce.vat_rate') / 100)), 2);
+		return Currency::add_tax($this->price, Kohana::config('ecommerce.vat_rate'));
 	}
 
-	/**
-	 * Deducts the VAT from the price provided. Use to convert Retail Price into Raw Price when saving.
-	 *
-	 * @param   mixed  $price
-	 * @return  float
-	 */
+	// Legacy function for existing code, now moved into Currency helper
 	public static function deduct_tax($price = 0)
 	{
-		return $price / ((Kohana::config('ecommerce.vat_rate') / 100) + 1);
+		return Currency::deduct_tax($price, Kohana::config('ecommerce.vat_rate'));
 	}
 	
 	public static function get_admin_products($page = 1, $limit = 20)

@@ -1,3 +1,12 @@
+-- 09/08/2011 - Change format of price field to decimal for better accuracy WARNING: This will round existing prices!
+ALTER TABLE `delivery_options` CHANGE COLUMN `price` `price` decimal(10,0) DEFAULT NULL;
+
+-- 09/08/2011 - Record Delivery Option statically on Sales Orders in case they are edited at a later date
+ALTER TABLE `sales_orders` ADD COLUMN `delivery_option_name` varchar(255) AFTER `delivery_option_id`, ADD COLUMN `delivery_option_price` decimal(10,0) AFTER `delivery_option_name`;
+
+-- 09/08/2011 - Making Delivery Options user manageable so need some new fields
+ALTER TABLE `delivery_options` ADD COLUMN `status` varchar(255) AFTER `price`, ADD COLUMN `created` datetime NOT NULL AFTER `status`, ADD COLUMN `modified` datetime AFTER `created`, ADD COLUMN `deleted` datetime AFTER `modified`;
+
 -- 08/08/2011 - Add a stock field to Products table
 ALTER TABLE `products` ADD COLUMN `stock` int;
 

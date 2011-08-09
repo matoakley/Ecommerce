@@ -25,6 +25,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'foreign' => 'delivery_option.id',
 					'column' => 'delivery_option_id',
 				)),
+				'delivery_option_name' => new Field_String,
+				'delivery_option_price' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'promotion_code' => new Field_BelongsTo,
 				'promotion_code_code' => new Field_String,
 				'discount_amount' => new Field_Float(array(
@@ -72,6 +76,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->billing_address = $billing_address;
 		$sales_order->delivery_address = $delivery_address;
 		$sales_order->delivery_option = $basket->delivery_option;
+		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$salse_order->delivery_option_price = $basket->delivery_option->retail_price();
 		$sales_order->delivery_firstname = $delivery_name['delivery_firstname'];
 		$sales_order->delivery_lastname = $delivery_name['delivery_lastname'];
 		$sales_order->status = 'awaiting_payment';

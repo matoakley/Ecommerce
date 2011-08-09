@@ -1,0 +1,73 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if delivery_option.loaded %}
+		Edit Delivery Option: <strong>{{delivery_option.name}}</strong>
+	{% else %}
+		Adding: <strong>New Delivery Option</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if delivery_option.loaded %}
+				<a href="/admin/delivery_options/delete/{{delivery_option.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Delivery Option
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Delivery Option Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-name" {{ errors.delivery_option.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="delivery-option-name" name="delivery_option[name]" value="{{fields.delivery_option.name}}"
+				class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-price"  {{ errors.delivery_option.price ? "class='error'" : "" }}>Price * (&pound;)</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="delivery-option-price" name="delivery_option[price]" value="{{fields.delivery_option.price}}" class="inputtext shortest" />
+			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter delivery price including VAT if applicable.</span>
+		</div>
+		<div class="clear"></div>
+	</div>	
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="delivery-option-status" name="delivery_option[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == delivery_option.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+{% endblock %}
