@@ -112,12 +112,6 @@ Route::set('view_page', 'pages/<slug>')->defaults(array(
 	'controller' => 'pages',
 	'action' => 'view',
 ));
-
-Route::set('default', '(<controller>(/<action>(/<id>)))')->defaults(array(
-	'controller' => 'pages',
-	'action'     => 'static',
-	'id'		 => 'home',
-));
 	
 Route::set('search', 'search')->defaults(array(
 	'controller' => 'products',
