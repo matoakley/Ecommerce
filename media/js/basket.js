@@ -24,10 +24,18 @@ $(function(){
 
 		// Use basket item not product!
 		var basketItemId = $(this).attr('rel');
+		var quantity;
+	
+		if ($(this).hasClass('remove')){
+			quantity = 0;
+		}
+		else {
+			quantity = ($(this).hasClass('add')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1; 
+		}
 	
 		var basketItem = {
 			item_id: basketItemId,
-			quantity: ($(this).hasClass('add')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1
+			quantity: quantity
 		};
 	
 		$.ajax({
