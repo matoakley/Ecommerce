@@ -4,7 +4,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 
 	function before()
 	{
-		if(Request::$protocol != 'https' AND IN_PRODUCTION)
+		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('no_ssl'))
 		{
 			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
 		}
