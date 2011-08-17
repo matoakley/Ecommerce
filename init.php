@@ -92,6 +92,11 @@ Route::set('add_basket_item', 'basket/add_item(/<product_id>/<quantity>)')->defa
 	'action' => 'add_item',
 ));
 
+Route::set('adjust_basket_item', 'basket/adjust_item(/<basket_id>/<quantity>)')->defaults(array(
+	'controller' => 'basket',
+	'action' => 'adjust_item',
+));
+
 Route::set('basket', 'basket')->defaults(array(
 	'controller' => 'basket',
 	'action' => 'view'

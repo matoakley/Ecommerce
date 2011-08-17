@@ -53,6 +53,36 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		}
 	}
 	
+	public function action_adjust_item($item_id = FALSE, $quantity = FALSE)
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{
+			$item = Model_Basket_Item::load($_POST['item_id'])->update_quantity($_POST['quantity']);
+		}
+		elseif ($item_id AND $quantity)
+		{
+			$item = Model_Basket_Item::load($item_id)->update_quantity($quantity);
+		}
+		
+		if (Request::$is_ajax)
+		{
+			$data = array(
+				'basket_items' => $this->basket->count_items(),
+				'basket_subtotal' => $this->basket->calculate_subtotal(),
+				'line_items' => ($item !== 0) ? $item->quantity : 0,
+				'line_total' => ($item !== 0) ? number_format(($item->product->retail_price() * $item->quantity), 2) : 0,
+			);
+			
+			echo json_encode($data);
+		}
+		else
+		{
+			$this->request->redirect('/basket');
+		}
+	}
+	
 	public function action_update_basket()
 	{
 		$this->auto_render = FALSE;
