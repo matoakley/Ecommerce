@@ -13,7 +13,7 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 					),
 				)),
 				'price' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 					'rules' => array(
 						'not_empty' => NULL,
 					),
