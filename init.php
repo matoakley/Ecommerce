@@ -77,6 +77,11 @@ Route::set('view_category', 'browse/<slug>')->defaults(array(
 	'action' => 'view'
 ));
 
+Route::set('view_product', 'view/<slug>')->defaults(array(
+	'controller' => 'products',
+	'action' => 'view'
+));
+
 Route::set('view_brand', 'brands/<slug>')->defaults(array(
 	'controller' => 'brands',
 	'action' => 'view'
