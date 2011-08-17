@@ -16,7 +16,7 @@ class Kohana_Currency
 	 */
 	public static function deduct_tax($price, $tax_rate)
 	{
-		return number_format($price / (($tax_rate / 100) + 1), 2);
+		return number_format($price / (($tax_rate / 100) + 1), 4);
 	}
 	
 	/**
