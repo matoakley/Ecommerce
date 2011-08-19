@@ -30,7 +30,7 @@ $(function(){
 			quantity = 0;
 		}
 		else {
-			quantity = ($(this).hasClass('add')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1; 
+			quantity = ($(this).hasClass('increment')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1; 
 		}
 	
 		var basketItem = {
@@ -73,37 +73,11 @@ $(function(){
 					url: '/basket/update_delivery_option',
 					type: 'GET',
 					success: function(response){
-						$('#delivery_price').html(response);
-					}
-				});
-				
-				// Check if we now qualify for checkout
-/*
-				$.ajax({
-					url: '/basket/qualifies_for_checkout',
-					type: 'GET',
-					success: function(response){
-						
-						if (response == '1'){
-						
-							if ($('#not-qualifies-for-checkout').is(':visible')){
-								$('#not-qualifies-for-checkout').hide('clip', function(){
-									$('#qualifies-for-checkout').show('clip');
-								});
-							}
-						}
-						else {
-						
-							if ($('#qualifies-for-checkout').is(':visible')){
-							
-								$('#qualifies-for-checkout').hide('clip', function(){
-									$('#not-qualifies-for-checkout').show('clip');
-								});
-							}
+						if (response != 'false'){
+							$('#delivery_price').html(response);
 						}
 					}
-				});
-*/
+				});				
 			}
 		});
 	});
@@ -197,6 +171,7 @@ $(function(){
 function update_basket_total(){
 	$.ajax({
 		type: 'GET',
+		cache: false,
 		url: '/basket/update_total',
 		dataType: 'json',
 		success: function(response){

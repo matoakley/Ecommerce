@@ -86,6 +86,9 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	public function action_update_basket()
 	{
 		$this->auto_render = FALSE;
+		
+		header('Cache-Control: max-age=0,no-cache,no-store,post-check=0,pre-check=0'); 
+		
 		$this->basket->delivery_option = $_POST['delivery_option'];
 		$this->basket->save($this->session->get('basket_id'));
 		
@@ -95,7 +98,14 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	public function action_update_delivery_option()
 	{
 		$this->auto_render = FALSE;
-		echo $this->basket->update_delivery_option($_POST['id']);
+		if (isset($_POST['id']))
+		{
+			echo $this->basket->update_delivery_option($_POST['id']);
+		}
+		else
+		{
+			echo 'false';
+		}
 	}
 	
 	public function action_update_total()
