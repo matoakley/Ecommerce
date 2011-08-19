@@ -12,6 +12,10 @@ return array
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
 	
+	'pagination' => array(
+		'products' => 10,
+	),
+	
 	'modules' => array(
 		'blog' => FALSE,
 		'brands' => FALSE,

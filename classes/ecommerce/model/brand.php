@@ -71,6 +71,24 @@ class Ecommerce_Model_Brand extends Model_Application
 	{
 		return count($this->products);
 	}
+	
+	/**
+	 * Make a class#member API link using an array of matches from [Kodoc::$regex_class_member]
+	 *
+	 * @param   int   $category
+	 * @return  Database_Result
+	 */
+	public function find_by_category($category)
+	{
+		return DB::select('brands.*')
+									->from('brands')
+									->distinct(TRUE)
+									->join('products')->on('products.brand_id', '=', 'brands.id')
+									->join('categories_products')->on('categories_products.product_id', '=', 'products.id')
+									->where('categories_products.category_id', '=' , $category)							
+									->order_by('brands.name')
+									->execute();
+	}
 
 	/**
 	* Passing FALSE, FALSE will return all brands.

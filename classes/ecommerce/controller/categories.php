@@ -14,23 +14,11 @@ class Ecommerce_Controller_Categories extends Controller_Application {
 		
 		$parent_category = $category->parent;
 		
-		// Super nasty query to pull a distinct list of Brands that exist in this category.
-		// Maybe this should move to a model?
-		$sidebar_brands = DB::select('brands.*')
-								->from('brands')
-								->distinct(TRUE)
-								->join('products')->on('products.brand_id', '=', 'brands.id')
-								->join('categories_products')->on('categories_products.product_id', '=', 'products.id')
-								->where('categories_products.category_id', '=' , $category->id)							
-								->order_by('brands.name')
-								->execute();
-		
-		$items = 10;
-		
+		$items = Kohana::config('ecommerce.pagination.products');
 		$products_search = Model_Product::search(array('category:'.$category->id, 'status:active'), $items);
 		
-		// Only include pagination if it is required
-		if ($products_search['count_all'] > $items)
+		// If number of items is set then we should paginate the results
+		if ($items AND $products_search['count_all'] > $items)
 		{
 			// Pagination
 			$this->template->pagination = Pagination::factory(array(
@@ -43,7 +31,14 @@ class Ecommerce_Controller_Categories extends Controller_Application {
 		$this->template->category = $category;
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
-		$this->template->sidebar_brands = (count($sidebar_brands) > 1) ? $sidebar_brands : FALSE;
+		
+		// If site is using brands then assign them to template
+		if (Kohana::config('ecommerce.modules.brands'))
+		{
+			$brands = $category->get_brands();
+			$this->template->sidebar_brands = (count($brands) > 1) ? $brands : FALSE;
+		}
+		
 		$this->template->products = $products_search['results'];
 		$this->template->sub_categories = Model_Category::build_category_tree($category->id, TRUE);
 		

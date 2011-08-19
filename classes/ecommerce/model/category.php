@@ -145,4 +145,13 @@ class Ecommerce_Model_Category extends Model_Application
 		return $this->save();
 	}
 	
+	/**
+	 * Return a list of the brands that are featured within this category
+	 *
+	 * @return  Database_Result
+	 */
+	public function get_brands()
+	{
+		return Model_Brand::find_by_category($this->id);
+	}
 }
