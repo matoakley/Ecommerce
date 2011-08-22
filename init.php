@@ -128,13 +128,12 @@ Route::set('search', 'search')->defaults(array(
 	'action' => 'search'
 ));
 
-Route::set('sitemap_index', 'sitemap.xml(<gzip>)', array('gzip' => '\.gz'))
-	->defaults(array(
+Route::set('sitemap_with_ext', 'sitemap.xml(<gzip>)', array('gzip' => '\.gz'))->defaults(array(
 		'controller' => 'tools',
 		'action' => 'sitemap'
 	));
 	 
-Route::set('sitemap', 'sitemap')->defaults(array(
+Route::set('sitemap_no_ext', 'sitemap')->defaults(array(
 	'controller' => 'tools',
 	'action' => 'sitemap'
 ));
