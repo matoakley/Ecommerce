@@ -1,6 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 // Admin routes
+Route::set('add_promotion_code', 'admin/promotion_codes/add')	->defaults(array(
+	'directory'		=> 'admin',
+	'controller'	=> 'promotion_codes',
+	'action'		=> 'edit'
+));
+
 Route::set('add_blog_post', 'admin/blog/add_post')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'blog',
