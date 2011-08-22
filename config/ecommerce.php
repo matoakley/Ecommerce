@@ -33,6 +33,8 @@ return array
 	'default_country' => 1,
 	'default_promotion_code_length' => 6,
 	
+	'no_ssl' => FALSE, // Disable SSL redirect on checkout
+	
 	// Image sizing
 	'image_sizing' => array(
 		'thumbnail' => array(
