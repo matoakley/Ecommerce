@@ -78,7 +78,7 @@ class Ecommerce_Model_Brand extends Model_Application
 	 * @param   int   $category
 	 * @return  Database_Result
 	 */
-	public function find_by_category($category)
+	public static function find_by_category($category)
 	{
 		return DB::select('brands.*')
 									->from('brands')
