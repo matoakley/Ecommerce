@@ -127,7 +127,13 @@ Route::set('search', 'search')->defaults(array(
 	'controller' => 'products',
 	'action' => 'search'
 ));
- 
+
+Route::set('sitemap_index', 'sitemap.xml(<gzip>)', array('gzip' => '\.gz'))
+	->defaults(array(
+		'controller' => 'tools',
+		'action' => 'sitemap'
+	));
+	 
 Route::set('sitemap', 'sitemap')->defaults(array(
 	'controller' => 'tools',
 	'action' => 'sitemap'
