@@ -153,9 +153,9 @@
 			</td>
 			<td class="tr">
 			{% if sales_order.delivery_option_price %}
-				&pound;{{sales_order.delivery_option_price}}
+				&pound;{{sales_order.delivery_option_price|num_format(2)}}
 			{% else %}
-				&pound;{{sales_order.delivery_option.price}}
+				&pound;{{sales_order.delivery_option.price|num_format(2)}}
 			{% endif %}
 			</td>
 		</tr>

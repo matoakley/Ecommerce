@@ -38,7 +38,7 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" value="{{delivery_option.id}}" /></td>
 			<td><a href="/admin/delivery_options/edit/{{delivery_option.id}}">{{delivery_option.name}}</a></td>
-			<td class="tr">&pound;{{delivery_option.retail_price}}</td>
+			<td class="tr">&pound;{{delivery_option.retail_price|num_format(2)}}</td>
 			<td class="{{delivery_option.status}}">{{delivery_option.status|title}}</td>
 		</tr>
 	{% endfor %}

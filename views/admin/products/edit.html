@@ -107,7 +107,7 @@
 			<label for="product-price"  {{ errors.product.price ? "class='error'" : "" }}>Price * (&pound;)</label>
 		</div>
 		<div class="grid_6">
-			<input type="text" id="product-price" name="product[price]" value="{{fields.product.retail_price}}" class="inputtext shortest" />
+			<input type="text" id="product-price" name="product[price]" value="{{fields.product.retail_price|num_format(2)}}" class="inputtext shortest" />
 			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
 		</div>
 		<div class="grid_2">

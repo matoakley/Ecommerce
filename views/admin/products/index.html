@@ -50,7 +50,7 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
 			<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
-			<td class="tr">&pound;{{product.retail_price}}</td>
+			<td class="tr">&pound;{{product.retail_price|num_format(2)}}</td>
 			{% if modules.stock_control %}
 				<td class="tc">{{product.stock}}</td>
 			{% endif %}

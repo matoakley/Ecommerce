@@ -48,7 +48,7 @@
 			<label for="delivery-option-price"  {{ errors.delivery_option.price ? "class='error'" : "" }}>Price * (&pound;)</label>
 		</div>
 		<div class="grid_14 omega">
-			<input type="text" id="delivery-option-price" name="delivery_option[price]" value="{{fields.delivery_option.price}}" class="inputtext shortest" />
+			<input type="text" id="delivery-option-price" name="delivery_option[price]" value="{{fields.delivery_option.price|num_format(2)}}" class="inputtext shortest" />
 			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter delivery price including VAT if applicable.</span>
 		</div>
 		<div class="clear"></div>
