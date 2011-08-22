@@ -85,7 +85,7 @@ class Ecommerce_Model_Basket extends Model_Application
 			$subtotal += $item->product->retail_price() * $item->quantity;
 		}
 		
-		return number_format($subtotal, 2);
+		return $subtotal;
 	}
 	
 	public function calculate_total()
@@ -98,7 +98,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		$total += $this->delivery_option->retail_price();
 		
-		return number_format($total, 2);
+		return $total;
 	}
 	
 	public function calculate_discount()
@@ -170,7 +170,7 @@ class Ecommerce_Model_Basket extends Model_Application
 	{
 		$this->delivery_option = $delivery_option_id;
 		$this->save();
-		return $this->delivery_option->retail_price();
+		return number_format($this->delivery_option->retail_price(), 2);
 	}
 	
 	public function add_item($product_id, $quantity, $product_options = NULL)

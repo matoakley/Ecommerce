@@ -1,3 +1,6 @@
+-- 19/08/2011 - Add ISO3611-1 column to countries
+ALTER TABLE `countries` ADD COLUMN `iso_3_code` varchar(2) AFTER `iso_code`;
+
 -- 09/08/2011 - Change format of price field to decimal for better accuracy WARNING: This will round existing prices!
 ALTER TABLE `delivery_options` CHANGE COLUMN `price` `price` decimal(10,4) DEFAULT NULL;
 
