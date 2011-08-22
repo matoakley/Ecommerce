@@ -73,7 +73,7 @@ class Ecommerce_Controller_Products extends Controller_Application {
 	{
 		if (isset($_GET['q']))
 		{
-			$items = 10;
+			$items = Kohana::config('ecommerce.pagination.products');
 			$products_search = Model_Product::search(array('status:active'), $items);
 			
 			$search_term = implode(' ',$products_search['query_string']);
@@ -84,12 +84,16 @@ class Ecommerce_Controller_Products extends Controller_Application {
 			$this->template->search_term = $search_term;
 			$this->template->products = $products_search['results'];
 			
-			// Pagination
-			$this->template->pagination = Pagination::factory(array(
-				'total_items'    => $products_search['count_all'],
-				'items_per_page' => $items,
-				'auto_hide'	=> false,
-			));
+			// If number of items is set then we should paginate the results
+			if ($items AND $products_search['count_all'] > $items)
+			{
+				// Pagination
+				$this->template->pagination = Pagination::factory(array(
+					'total_items'    => $products_search['count_all'],
+					'items_per_page' => $items,
+					'auto_hide'	=> false,
+				));
+			}
 		}
 				
 		$this->add_breadcrumb('/search', 'Search');
