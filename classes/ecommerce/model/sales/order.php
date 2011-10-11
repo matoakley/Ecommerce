@@ -217,7 +217,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		if (in_array($status, self::$statuses))
 		{
 			$user = Auth::instance()->get_user();
-			if (isset($user) AND $user->loaded())
+			if (is_object($user) AND $user->loaded())
 			{
 				$note_text = $user->firstname . ' ' . $user->lastname . ' changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
 			}
