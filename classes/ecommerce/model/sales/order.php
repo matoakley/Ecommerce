@@ -217,7 +217,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		if (in_array($status, self::$statuses))
 		{
 			$user = Auth::instance()->get_user();
-			$note_text = $user->firstname . ' ' . $user->lastname . ' changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+			if ($user->loaded())
+			{
+				$note_text = $user->firstname . ' ' . $user->lastname . ' changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+			}
+			else
+			{
+				$note_text = 'System changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+			}
 			
 			$this->status = $status;
 			
