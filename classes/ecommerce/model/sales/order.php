@@ -230,18 +230,20 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			
 			$this->add_note($note_text, TRUE);
 			
-			// If we are setting an order to payment received then we should decrement the stock count of each item
-			if ($status == 'payment_received')
+			// If we are controlling stock and setting an order to payment received then we should decrement the stock count of each item
+			if (isset(Kohana::config('ecommerce.modules.stock_control')) AND Kohana::config('ecommerce.modules.stock_control'))
 			{
-				foreach ($this->items as $item)
+				if ($status == 'payment_received')
 				{
-					if ($item->product->loaded())
+					foreach ($this->items as $item)
 					{
-						$item->product->remove_from_stock($item->quantity);
+						if ($item->product->loaded())
+						{
+							$item->product->remove_from_stock($item->quantity);
+						}
 					}
 				}
 			}
-
 			
 			return $this->save();
 		}
