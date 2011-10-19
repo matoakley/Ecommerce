@@ -72,6 +72,12 @@ $(function(){
 		});
 	});
 	
+	$('tr').mouseover(function(){$(this).toggleClass('row-hover')}).mouseout(function(){$(this).toggleClass('row-hover')});
+	
+	$('.row-selector').click(function(){
+		$(this).parents('tr').toggleClass('row-selected');
+	});
+	
 });
 
 jQuery.fn.slugify = function(obj) {

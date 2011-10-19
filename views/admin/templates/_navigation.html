@@ -3,7 +3,7 @@
 		<li class="first"><a href="/admin">Dashboard</a></li>
 		
 		<li>
-			<a href="#">Catalog</a>
+			<a href="#">Product Catalog</a>
 			
 			<ul>
 				{% if modules.brands %}
@@ -21,9 +21,17 @@
 
 		</li>
 		
-		{% if modules.sales_orders %}
-			<li><a href="/admin/sales_orders">Sales Orders</a></li>
-		{% endif %}
+		<li><a href="#">Sales Management</a>
+		
+			<ul>
+				<li><a href="/admin/customers">Customers</a></li>
+							
+				{% if modules.sales_orders %}
+					<li><a href="/admin/sales_orders">Sales Orders</a></li>
+				{% endif %}
+			</ul>
+		
+		</li>
 		
 		<li><a href="#">CMS</a>
 		
@@ -47,8 +55,16 @@
 			<li><a href="/admin/delivery_options">Delivery Options</a></li>
 		{% endif %}
 		
-		{% if modules.users %}
-			<li><a href="/admin/users">System Users</a></li>
-		{% endif %}
+		<li><a href="#">Settings</a>
+		
+			<ul>
+				<li><a href="/admin/countries">Shipping Countries</a></li>
+				
+				{% if modules.users %}
+					<li><a href="/admin/users">System Users</a></li>
+				{% endif %}
+			</ul>
+		
+		</li>
 	</ul>
 </div>
