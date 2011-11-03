@@ -58,4 +58,9 @@ class Ecommerce_Model_Sku extends Model_Application
 		return $this->save();
 	}
 
+	public function remove_from_stock($quantity = 1)
+	{
+		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
+		$this->save();
+	}
 }

@@ -238,9 +238,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				{
 					foreach ($this->items as $item)
 					{
-						if ($item->product->loaded())
+						if ($item->sku->loaded())
 						{
-							$item->product->remove_from_stock($item->quantity);
+							$item->sku->remove_from_stock($item->quantity);
 						}
 					}
 				}

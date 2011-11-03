@@ -318,12 +318,6 @@ class Ecommerce_Model_Product extends Model_Application
 							// ->as_array('value', 'status')
 	}
 	
-	public function remove_from_stock($quantity = 1)
-	{
-		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
-		$this->save();
-	}
-	
 	public function active_skus()
 	{
 		return $this->get('skus')->where('status', '=', 'active')->execute();
