@@ -22,18 +22,20 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->add_breadcrumb('/basket', 'Your Basket');
 	}
 	
-	public function action_add_item($product_id = FALSE, $quantity = FALSE)
+	public function action_add_items()
 	{
 		// This function should be called over AJAX, else just process and redirect to action_view.
 		$this->auto_render = FALSE;
 		
-		if (isset($_POST['basket_item']) OR ($product_id AND $quantity))
+		if (isset($_POST['skus']))
 		{	
-			$product_id = ($product_id) ? $product_id : $_POST['basket_item']['product_id'];
-			$quantity = ($quantity) ? $quantity : $_POST['basket_item']['qty'];
-			$product_options = isset($_POST['basket_item']['options']) ? $_POST['basket_item']['options'] : NULL;
-			
-			$item = $this->basket->add_item($product_id, $quantity, $product_options);
+			foreach ($_POST['skus'] as $sku_id => $quantity)
+			{
+				if ($quantity > 0)
+				{
+					$item = $this->basket->add_item($sku_id, $quantity);
+				}
+			}
 		}
 		
 		if (Request::$is_ajax)
@@ -42,7 +44,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => $this->basket->calculate_subtotal(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
-				'line_total' => ($item !== 0) ? number_format(($item->product->retail_price() * $item->quantity), 2) : 0,
+				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 			);
 			
 			echo json_encode($data);
@@ -72,7 +74,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
-				'line_total' => ($item !== 0) ? number_format(($item->product->retail_price() * $item->quantity), 2) : 0,
+				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 			);
 			
 			echo json_encode($data);

@@ -102,117 +102,33 @@
 		<div class="clear"></div>
 	</div>
 	
+	{% if modules.brands %}	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="product-price"  {{ errors.product.price ? "class='error'" : "" }}>Price * (&pound;)</label>
+			<label for="product-brand">Brand</label>
 		</div>
-		<div class="grid_6">
-			<input type="text" id="product-price" name="product[price]" value="{{fields.product.retail_price|num_format(2)}}" class="inputtext shortest" />
-			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
-		</div>
-		<div class="grid_2">
-			{% if modules.stock_control %}
-				<label for="product-stock">Stock</label>
-			{% endif %}
-		</div>
-		<div class="grid_6 omega">
-			{% if modules.stock_control %}
-				<input type="text" id="product-stock" name="product[stock]" value="{{fields.product.stock}}" class="inputtext shortest" />
-			{% endif %}
+		<div class="grid_14 omega">
+			<select id="product-brand" name="product[brand]">
+				<option value="0">None</option>
+			{% for brand in brands %}
+				<option value="{{brand.id}}" {{ brand.id == fields.product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+			{% endfor %}
+			</select>
 		</div>
 		<div class="clear"></div>
 	</div>
+	{% endif %}
 	
-	<div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-sku">SKU</label>
-		</div>
-		<div class="grid_6">
-			<input type="text" id="product-sku" name="product[sku]" value="{{fields.product.sku}}" class="inputtext shorter" />
-		</div>
-		<div class="grid_2">
-			{% if modules.brands %}
-				<label for="product-brand">Brand</label>
-			{% endif %}
-		</div>
-		<div class="grid_6 omega">
-			{% if modules.brands %}
-				<select id="product-brand" name="product[brand]">
-					<option value="0">None</option>
-				{% for brand in brands %}
-					<option value="{{brand.id}}" {{ brand.id == fields.product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
-				{% endfor %}
-				</select>
-			{% endif %}
-		</div>
-		<div class="clear"></div>
-	</div>
-	
-	<h2>Product Options</h2>
-	
-	{% set i = 1 %}
-	
-	<div id="product-options">
-
-		{% for option in product.get_options %}
+	{% if not modules.product_options or product.skus|length == 1 %}
+		{% include "admin/products/_sku_loop.html" %}
+		{% include "admin/products/_product_options.html" %}
+	{% else %}
+		{% set multiple_skus = true %}
+		{% include "admin/products/_product_options.html" %}
+		<h3>Product Variants</h3>
+		{% include "admin/products/_sku_loop.html" %}
+	{% endif %}
 		
-			<div class="grid_8 field product-option-container {% if i%2 > 0 %}alpha{% else %}omega{% endif %}" rel="{{option}}">
-				<div class="grid_2 alpha">
-					<label>{{option|title}}</label>
-					<a href="#" class="remove-product-option-container" rel="{{option}}">remove</a>
-				</div>
-				<div class="grid_6 omega">
-				
-					<div class="option-container">
-					{% set j = 0 %}
-					{% for value, option_status in product.get_option_values(option) %}
-						<div id="{{j}}" class="product-option-row">
-							<input type="text" name="product[product_options][{{option}}][{{j}}][value]" value="{{value}}" class="inputtext short" />
-							<select name="product[product_options][{{option}}][{{j}}][status]">
-							{% for status in product_option_statuses %}
-								<option value="{{status}}" {% if status == option_status %}selected{% endif %}>{{status|title}}</option>
-							{% endfor %}
-							</select>
-							<a href="#" class="product-option-remove">remove</a>
-						</div>
-						{% set j = j + 1 %}
-					{% endfor %}
-					</div>
-					<input type="text" class="inputtext short" placeholder="New value..." />
-					<a href="#" class="add-product-option" rel="{{option}}">
-						<img src="/images/icons/add.png" alt="" class="inline-icon" />
-						Add
-					</a>
-				</div>
-				<div class="clear"></div>
-			</div>
-		
-			{% if i%2 == 0 %}<div class="clear"></div>{% endif %}
-		
-			{% set i = i + 1 %}
-		
-		{% else %}
-			<p id="no-options"><em>No product options added.</em></p>
-		{% endfor %}
-
-	</div>
-
-	<div class="clear"></div>
-
-	<div class="field">
-		<div class="grid_2 alpha">
-			<label>Add new option</label>
-		</div>
-		<div class="grid_8">
-			<input type="text" id="new-product-option" class="inputtext short" />
-			<button id="add-new-option-container">Add</button>
-			<img src="/images/admin/ajax-loader.gif" alt="" id="product-option-spinner" class="hidden" />
-			<em>e.g. Colour, Size ...</em>
-		</div>
-		<div class="clear"></div>
-	</div>
-
-	
 	<h2>Meta Details</h2>
 	
 	<div class="field">

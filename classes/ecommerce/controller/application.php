@@ -38,6 +38,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	{	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		
+		$this->template->modules = Kohana::config('ecommerce.modules');
+		
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
 		

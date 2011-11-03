@@ -369,6 +369,7 @@ ul.subcategory-list {
 
 .product-image {
 	margin:10px;
+	width:100px;
 }
 
 iframe#upload-image {

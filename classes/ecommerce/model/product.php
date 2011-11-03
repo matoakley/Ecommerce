@@ -24,16 +24,10 @@ class Ecommerce_Model_Product extends Model_Application
 				'description' => new Field_Text(array(
 					'on_copy' => 'copy',
 				)),
-				'price' => new Field_Float(array(
+				'price' => new Field_Float(array(  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
 					'places' => 4,
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-					'on_copy' => 'copy',
 				)),
-				'sku' => new Field_String(array(
-					'on_copy' => 'copy',
-				)),
+				'sku' => new Field_String,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
 				'categories' => new Field_ManyToMany(array(
 					'foreign' => 'category',
 					'through' => 'categories_products',
@@ -66,6 +60,9 @@ class Ecommerce_Model_Product extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'skus' => new Field_HasMany(array(
+					'foreign' => 'sku.product_id',
+				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -80,10 +77,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-				'stock' => new Field_Integer(array(
-					'default' => 0,
-					'on_copy' => 'clear',
-				)),				
+				'stock' => new Field_Integer,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases				
 				'duplicating' => new Field_Boolean(array(
 					'in_db' => FALSE,
 					'default' => FALSE,
@@ -182,20 +176,38 @@ class Ecommerce_Model_Product extends Model_Application
 		return $meta_description;
 	}
 
-	/**
-	 * Returns the Retail Price of a product after adding VAT.
-	 *
-	 * @return  float
-	 */
-	public function retail_price()
+	public function summarise_sku_price()
 	{
-		return Currency::add_tax($this->price, Kohana::config('ecommerce.vat_rate'));
-	}
-
-	// Legacy function for existing code, now moved into Currency helper
-	public static function deduct_tax($price = 0)
-	{
-		return Currency::deduct_tax($price, Kohana::config('ecommerce.vat_rate'));
+		$summary = '';
+		
+		if (count($this->skus) > 1)
+		{
+			$multiple_prices = FALSE;
+			$min_price = $this->skus->current()->price;
+			
+			foreach ($this->skus as $sku)
+			{
+				if ($sku->price < $min_price)
+				{
+					$multiple_prices = TRUE;
+					$min_price = $sku->price;
+				}
+				elseif ($sku->price > $min_price)
+				{
+					$multiple_prices = TRUE;
+				}
+				
+				$summary = ($multiple_prices) ? 'From ' : '';
+				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, Kohana::config('ecommerce.vat_rate')), 2);
+			}
+		}
+		else
+		{
+			// Only one SKU so set its price!
+			$summary = '&pound;'.number_format($this->skus->current()->retail_price(), 2);
+		}
+		
+		return $summary;
 	}
 	
 	public static function get_admin_products($page = 1, $limit = 20)
@@ -238,8 +250,6 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->name = $data['name'];
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];
-		$this->price = $data['price'];
-		$this->sku = $data['sku'];
 		$this->status = $data['status'];
 		$this->meta_keywords = $data['meta_keywords'];
 		$this->meta_description = $data['meta_description'];
@@ -253,23 +263,6 @@ class Ecommerce_Model_Product extends Model_Application
 		if (isset($data['categories']))
 		{
 			$this->add('categories', $data['categories']);
-		}
-		
-		// Let's handle product options.
-		foreach ($this->product_options as $product_option)
-		{
-			$product_option->delete();
-		}
-		
-		if (isset($data['product_options']))
-		{
-			foreach ($data['product_options'] as $key => $product_options)
-			{
-				foreach ($product_options as $product_option)
-				{
-					Model_Product_Option::add_option($this->id, $key,  $product_option['value'], $product_option['status']);
-				}
-			}
 		}
 		
 		return $this->save();
@@ -313,7 +306,7 @@ class Ecommerce_Model_Product extends Model_Application
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
 									
-		return array_unique($options);
+		return array_values(array_unique($options));
 	}
 	
 	public function get_option_values($option_name)
@@ -321,12 +314,18 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->execute()->as_array('value', 'status');
+							->execute();
+							// ->as_array('value', 'status')
 	}
 	
 	public function remove_from_stock($quantity = 1)
 	{
 		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
 		$this->save();
+	}
+	
+	public function active_skus()
+	{
+		return $this->get('skus')->where('status', '=', 'active')->execute();
 	}
 }

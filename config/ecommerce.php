@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.1.3', 
+	'software_version' => '1.1.4', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -22,6 +22,7 @@ return array
 		'categories' => FALSE,
 		'delivery_options' => FALSE,
 		'pages' => FALSE,
+		'product_options' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
 		'sales_orders' => FALSE,

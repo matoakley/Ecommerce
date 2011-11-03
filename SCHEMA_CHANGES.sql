@@ -1,3 +1,37 @@
+-- 28/10/2011 - Add SKU table
+CREATE TABLE `skus` (
+	`id` int,
+	`product_id` int,
+	`price` decimal(10,4) NOT NULL,
+	`sku` varchar(255),
+	`stock` int,
+	`created` datetime,
+	`modified` datetime NOT NULL,
+	`deleted` datetime NOT NULL,
+	PRIMARY KEY (`id`)
+);
+ALTER TABLE `skus` ADD COLUMN `status` varchar(25) NOT NULL AFTER `stock`, CHANGE COLUMN `created` `created` datetime DEFAULT NULL AFTER `status`, CHANGE COLUMN `modified` `modified` datetime NOT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime NOT NULL AFTER `modified`;
+ALTER TABLE `skus` CHANGE COLUMN `id` `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `skus` CHANGE COLUMN `created` `created` datetime NOT NULL, CHANGE COLUMN `modified` `modified` datetime, CHANGE COLUMN `deleted` `deleted` datetime;
+
+CREATE TABLE `product_options_skus` (
+	`product_option_id` int NOT NULL,
+	`sku_id` int NOT NULL
+);
+
+-- Basket items should now link to SKUs, keep legacy columns for backwards compatibility
+ALTER TABLE `basket_items` ADD COLUMN `sku_id` int NOT NULL AFTER `basket_id`, CHANGE COLUMN `product_id` `product_id` int(11) NOT NULL AFTER `sku_id`, CHANGE COLUMN `product_options` `product_options` varchar(255) DEFAULT NULL AFTER `product_id`, CHANGE COLUMN `quantity` `quantity` int(11) NOT NULL AFTER `product_options`, CHANGE COLUMN `created` `created` datetime DEFAULT NULL AFTER `quantity`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+ALTER TABLE `basket_items` CHANGE COLUMN `product_id` `product_id` int(11);
+
+-- Sales order items should now link to SKUs, keep legacy columns for backwards compatibility
+ALTER TABLE `sales_order_items` ADD COLUMN `sku_id` int NOT NULL AFTER `sales_order_id`, CHANGE COLUMN `product_id` `product_id` int(11) AFTER `sku_id`, CHANGE COLUMN `product_name` `product_name` varchar(255) NOT NULL AFTER `product_id`, CHANGE COLUMN `product_options` `product_options` text DEFAULT NULL AFTER `product_name`, CHANGE COLUMN `quantity` `quantity` int(11) NOT NULL AFTER `product_options`, CHANGE COLUMN `unit_price` `unit_price` decimal(10,2) NOT NULL AFTER `quantity`, CHANGE COLUMN `total_price` `total_price` decimal(10,2) NOT NULL AFTER `unit_price`, CHANGE COLUMN `vat_rate` `vat_rate` decimal(10,2) NOT NULL AFTER `total_price`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `vat_rate`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
+
+
+
+
+-- ================================================================================================================================================================================================ --
+
 -- 19/08/2011 - Add ISO3611-1 column to countries
 ALTER TABLE `countries` ADD COLUMN `iso_3_code` varchar(2) AFTER `iso_code`;
 

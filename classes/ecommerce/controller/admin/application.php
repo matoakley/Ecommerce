@@ -6,6 +6,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 
 	protected $scripts = array();
 
+	protected $modules = array();
+	
 	/**
 	 * Setup view
 	 *
@@ -17,6 +19,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		{
 			$this->environment = 'development';
 		}
+		
+		$this->modules = Kohana::config('ecommerce.modules');
 		
 		parent::before();
 		
@@ -38,7 +42,7 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	
 	public function after()
 	{	
-		$this->template->modules = Kohana::config('ecommerce.modules');
+		$this->template->modules = $this->modules;
 	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		

@@ -47,9 +47,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
+			'skus' => $product->skus,
 		);
-		
-		$fields['product']['retail_price'] = $product->retail_price();
 		
 		foreach ($product->images as $product_image)
 		{
@@ -71,6 +70,38 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			catch (Validate_Exception $e)
 			{
 				$errors['product'] = $e->array->errors();
+			}
+			
+			foreach ($_POST['skus'] as $sku_id => $sku_data)
+			{
+				$sku = Model_Sku::load($sku_id);
+				
+				try
+				{
+					$sku->validate($sku_data);
+				}
+				catch (Validate_Exception $e)
+				{
+					$errors['skus'][$sku_id] = $e->array->errors();
+				}
+			}
+			
+			// Loop through and validate each of the product options
+			if (isset($_POST['product_options']))
+			{
+				foreach ($_POST['product_options'] as $option_id => $option_data)
+				{
+					$option = Model_Product_Option::load($option_id);
+					
+					try
+					{
+						$option->validate($option_data);
+					}
+					catch (Validate_Exception $e)
+					{
+						$errors['product_options'][$option_id] = $e->array->errors();
+					}
+				}
 			}
 			
 			// Loop through and validate each of the product images
@@ -96,6 +127,20 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Save the product
 				$product->update($_POST['product']);
+
+				// Loop through and save each of the SKUs
+				foreach ($_POST['skus'] as $sku_id => $sku_data)
+				{
+					$sku = Model_Sku::load($sku_id);
+					$sku->update($sku_data);
+				}
+				
+				// Loop through and save each of the Product Options
+				foreach ($_POST['product_options'] as $option_id => $option_data)
+				{
+					$option = Model_Product_Option::load($option_id);
+					$option->update($option_data);
+				}
 				
 				// Loop through and save each of the product images
 				if (isset($_POST['product_images']))
@@ -121,7 +166,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
-				$fields['product']['retail_price'] = $_POST['product']['price'];
+				$fields['skus'] = $_POST['skus'];
+				
 				if (isset($_POST['product_images']))
 				{
 					foreach ($_POST['product_images'] as $key => $values)
@@ -140,9 +186,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
-		$this->template->product_option_statuses = Model_Product_Option::$statuses;
 	}
 	
 	// Bulk price updater

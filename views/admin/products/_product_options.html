@@ -1,0 +1,62 @@
+<script type="text/javascript" src="/media/js/admin/product_options.js"></script>
+
+<h2>Product Options</h2>
+
+{% set i = 1 %}
+
+<div id="product-options">
+
+	{% for option in product.get_options %}
+	
+		<div class="grid_8 field product-option-container {% if i%2 > 0 %}alpha{% else %}omega{% endif %}" rel="{{option}}">
+			<div class="grid_2 alpha">
+				<label>{{option|title}}</label>
+<!-- 				<a href="#" class="remove-product-option-container" rel="{{option}}">remove</a> -->
+			</div>
+			<div class="grid_6 omega">
+			
+				<div class="option-container">
+				{% for value in product.get_option_values(option) %}
+					<div id="{{j}}" class="product-option-row">
+						<input type="text" name="product_options[{{value.id}}][value]" value="{{value.value}}" class="inputtext short" />
+<!-- 						<a href="#" class="product-option-remove">remove</a> -->
+					</div>
+				{% endfor %}
+				</div>
+<!--
+				<input type="text" class="inputtext short" placeholder="New value..." />
+				<a href="#" class="add-product-option" rel="{{option}}">
+					<img src="/images/icons/add.png" alt="" class="inline-icon" />
+					Add
+				</a>
+-->
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		{% if i%2 == 0 %}<div class="clear"></div>{% endif %}
+	
+		{% set i = i + 1 %}
+	
+	{% else %}
+		<p id="no-options"><em>No product options added.</em></p>
+	{% endfor %}
+
+</div>
+
+<div class="clear"></div>
+
+<!--
+<div class="field">
+	<div class="grid_2 alpha">
+		<label>Add new option</label>
+	</div>
+	<div class="grid_8">
+		<input type="text" id="new-product-option" class="inputtext short" />
+		<button id="add-new-option-container">Add</button>
+		<img src="/images/admin/ajax-loader.gif" alt="" id="product-option-spinner" class="hidden" />
+		<em>e.g. Colour, Size ...</em>
+	</div>
+	<div class="clear"></div>
+</div>
+-->
