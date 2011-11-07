@@ -36,8 +36,6 @@ class Ecommerce_Controller_Tools extends Controller_Application
 			// New basic sitemap.
 			$url = new Sitemap_URL;
 
-			echo Kohana::debug(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug))));
-
 			// Set arguments.
 			$url->set_loc(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE))
 			    ->set_last_mod($last_mod)
