@@ -63,6 +63,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 
 	public static $statuses = array(
 		'awaiting_payment',
+		'fraud_shield_review', // HSBC specific
 		'payment_received',
 		'complete',
 		'order_cancelled',
