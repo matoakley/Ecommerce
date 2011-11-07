@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Tools extends Controller_Application {
-
+class Ecommerce_Controller_Tools extends Controller_Application
+{
 	function action_sitemap()
 	{
 		$this->auto_render = FALSE;
@@ -13,7 +13,7 @@ class Ecommerce_Controller_Tools extends Controller_Application {
 		$url = new Sitemap_URL;
 
 		// Set arguments.
-		$url->set_loc('http://www.southwoldpharmacy.co.uk')
+		$url->set_loc(URL::base())
 		    ->set_change_frequency('daily');
 
 		// Add it to sitemap.
@@ -36,6 +36,8 @@ class Ecommerce_Controller_Tools extends Controller_Application {
 			// New basic sitemap.
 			$url = new Sitemap_URL;
 
+			echo Kohana::debug(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug))));
+
 			// Set arguments.
 			$url->set_loc(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE))
 			    ->set_last_mod($last_mod)
@@ -45,7 +47,7 @@ class Ecommerce_Controller_Tools extends Controller_Application {
 			$sitemap->add($url);
 		}		
 		
-		if (Kohana::config('ecommerce.modules.brands'))
+		if ($this->modules['brands'])
 		{
 			$brands = Jelly::select('brand')
 										->where('status', '=', 'active')
