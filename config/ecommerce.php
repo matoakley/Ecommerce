@@ -48,4 +48,5 @@ return array
 		),
 	),
 	
+	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 );

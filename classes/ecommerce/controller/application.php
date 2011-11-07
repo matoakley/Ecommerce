@@ -41,6 +41,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	public function after()
 	{	
 		$this->template->base_url = URL::base(TRUE, TRUE);
+		$this->template->site_name = Kohana::config('ecommerce.site_name');
 		
 		$this->template->modules = $this->modules;
 		

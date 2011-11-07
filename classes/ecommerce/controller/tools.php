@@ -159,7 +159,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		// Products
 		$products = Model_Product::search(array('status:active'));
 		$this->template->products = $products['results'];
-		
+		$this->template->default_google_product_category = Kohana::config('ecommerce.default_google_product_category');
 	}
 	
 	function action_convert_to_skus()
