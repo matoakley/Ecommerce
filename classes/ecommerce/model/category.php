@@ -53,6 +53,18 @@ class Ecommerce_Model_Category extends Model_Application
 		'active', 'disabled'
 	);
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
+	
 	public static function build_category_tree($root_category = NULL, $active_only = FALSE)
 	{				
 		$tree = array();

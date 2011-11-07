@@ -40,8 +40,13 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	
 	public static $searchable_fields = array(
 		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
 		),
 		'search' => array(
+			'name',
+			'body',
 		),
 	);
 

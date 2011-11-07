@@ -33,6 +33,19 @@ class Ecommerce_Model_Page extends Model_Application
 		'active',
 	);
 
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'body',
+		),
+	);
+
+
 	public static function get_admin_pages($page = 1, $limit = 20)
 	{
 		$pages = Jelly::select('page')
