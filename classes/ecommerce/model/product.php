@@ -269,7 +269,7 @@ class Ecommerce_Model_Product extends Model_Application
 		if (IN_PRODUCTION AND $this->status == 'active')
 		{
 			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
-			Kohana::$log->add(Kohana::DEBUG, $sitemap_ping);
+			Kohana::$log->add(Kohana::DEBUG, Kohana::debug($sitemap_ping));
 		}
 		
 		return $this->save();
