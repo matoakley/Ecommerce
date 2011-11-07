@@ -9,6 +9,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	private $recent_products;
 	
 	protected $basket;
+	
+	protected $modules = array();
 
 	/**
 	 * Setup view
@@ -31,6 +33,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// displaying in the Recently Viewed Products list.
 		$this->recent_products = $this->session->get('recent_products', array());
 		
+		$this->modules = Kohana::config('ecommerce.modules');
+		
 		parent::before();
 	}
 	
@@ -38,7 +42,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	{	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		
-		$this->template->modules = Kohana::config('ecommerce.modules');
+		$this->template->modules = $this->modules;
 		
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);

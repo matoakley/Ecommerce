@@ -93,8 +93,6 @@ class Ecommerce_Controller_Tools extends Controller_Application
 			// Products
 			$pages = Model_Page::search(array('status:active'));
 			
-			echo Kohana::debug($pages);
-			
 			foreach ($pages['results'] as $page)
 			{
 				if (is_int($page->modified))
