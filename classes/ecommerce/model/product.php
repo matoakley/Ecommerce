@@ -268,7 +268,7 @@ class Ecommerce_Model_Product extends Model_Application
 		// Ping sitemap to search engines to alert them of content change
 		if (IN_PRODUCTION AND $this->status == 'active')
 		{
-			$sitemp_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 			Kohana::$log->add(Kohana::DEBUG, $sitemap_ping);
 		}
 		
