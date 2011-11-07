@@ -25,12 +25,12 @@
 			<g:item_group_id>{{product_id}}</g:item_group_id>
 			{% for option in sku.product_options %}
 				{% if option.key in ['colour', 'size', 'material', 'pattern'] %}
-					<g:{{option.key}}>{{option.value}}</g:{{option.key}}>
+					<g:{{option.key}}>{{option.value|e}}</g:{{option.key}}>
 				{% endif %}
 			{% endfor %}
 		{% endif %}
-		<g:product_type>{{default_google_product_category}}</g:product_type>
-		<g:google_product_category>{{default_google_product_category}}</g:google_product_category>
+		<g:product_type>{{default_google_product_category|e}}</g:product_type>
+		<g:google_product_category>{{default_google_product_category|e}}</g:google_product_category>
 		{% if modules.stock_control and sku.stock == 0 %}
 			<g:availability>out of stock</g:availability>
 		{% else %}
