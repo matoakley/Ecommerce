@@ -39,6 +39,7 @@
 		{% if product.brand.loaded %}
 		<g:brand>{{product.brand.name|e}}</g:brand>
 		{% endif %}
+		<g:mpn>{{sku.sku}}</g:mpn>
 		</item>
 	{% endfor %}
 {% endfor %}
