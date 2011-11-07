@@ -72,7 +72,7 @@
 			<label>Public Page</label>
 		</div>
 		<div class="grid_14 omega">
-			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{{base_url}}{% url "view_product", ["slug":product.slug] %}</a>
+			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{% url "view_product", ["slug":product.slug] %}</a>
 		</div>
 		<div class="clear"></div>
 	</div>

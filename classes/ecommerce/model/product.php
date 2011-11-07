@@ -330,4 +330,16 @@ class Ecommerce_Model_Product extends Model_Application
 								->where('status', '=', 'active')
 								->execute();
 	}
+	
+	public function total_stock()
+	{
+		$stock = 0;
+		
+		foreach ($this->skus as $sku)
+		{
+			$stock += $sku->stock;
+		}
+		
+		return $stock;
+	}
 }

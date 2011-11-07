@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
 <channel>
-<title>{{site_name}} Products</title>
+<title>{{site_name|e}} Products</title>
 <link>{{base_url}}</link>
-<description>{{site_name}}</description>
+<description>{{site_name|e}}</description>
 {% for product in products %}
 	{% for sku in product.active_skus %}
 		<item>
@@ -37,7 +37,9 @@
 			<g:availability>in stock</g:availability>
 		{% endif %}
 		{% if product.brand.loaded %}
-		<g:brand>{{product.brand.name|e}}</g:brand>
+			<g:brand>{{product.brand.name|e}}</g:brand>
+		{% else %}
+			<g:brand>{{site_name|e}}</g:brand>
 		{% endif %}
 		<g:mpn>{{sku.sku}}</g:mpn>
 		</item>
