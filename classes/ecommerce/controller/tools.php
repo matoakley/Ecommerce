@@ -47,7 +47,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 
 		if ($this->modules['categories'])
 		{
-			$categories = Model_Categories::search(array('status:active'));
+			$categories = Model_Category::search(array('status:active'));
 			
 			foreach ($categories['results'] as $category)
 			{
@@ -92,6 +92,8 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		{
 			// Products
 			$pages = Model_Page::search(array('status:active'));
+			
+			echo Kohana::debug($pages);
 			
 			foreach ($pages['results'] as $page)
 			{
