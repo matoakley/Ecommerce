@@ -43,16 +43,35 @@ class Ecommerce_Controller_Tools extends Controller_Application
 
 			// Add it to sitemap.
 			$sitemap->add($url);
-		}		
+		}
+
+		if ($this->modules['categories'])
+		{
+			$categories = Model_Categories::search(array('status:active'));
+			
+			foreach ($categories['results'] as $category)
+			{
+				$last_mod = time();
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('view_category')->uri(array('slug' => $category->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
+		}
+
 		
 		if ($this->modules['brands'])
 		{
-			$brands = Jelly::select('brand')
-										->where('status', '=', 'active')
-										->order_by('name')
-										->execute();
+			$brands = Model_Brand::search(array('status:active'));
 			
-			foreach ($brands as $brand)
+			foreach ($brands['results'] as $brand)
 			{
 				$last_mod = time();
 				
@@ -61,6 +80,64 @@ class Ecommerce_Controller_Tools extends Controller_Application
 	
 				// Set arguments.
 				$url->set_loc(URL::site(Route::get('view_brand')->uri(array('slug' => $brand->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
+		}
+		
+		if ($this->modules['pages'])
+		{
+			// Products
+			$pages = Model_Page::search(array('status:active'));
+			
+			foreach ($pages['results'] as $page)
+			{
+				if (is_int($page->modified))
+				{
+					$last_mod = $page->modified;
+				}
+				else
+				{
+					$last_mod = $page->created;
+				}
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
+		}
+		
+		if ($this->modules['blog'])
+		{
+			// Products
+			$posts = Model_Blog_Post::search(array('status:active'));
+			
+			foreach ($posts['results'] as $post)
+			{
+				if (is_int($post->modified))
+				{
+					$last_mod = $post->modified;
+				}
+				else
+				{
+					$last_mod = $post->created;
+				}
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('blog_view')->uri(array('slug' => $post->slug)), TRUE))
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
