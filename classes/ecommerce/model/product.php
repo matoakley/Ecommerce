@@ -24,10 +24,10 @@ class Ecommerce_Model_Product extends Model_Application
 				'description' => new Field_Text(array(
 					'on_copy' => 'copy',
 				)),
-				'price' => new Field_Float(array(  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
+				'price' => new Field_Float(array(  // Legacy Field, should not be used after v1.1.3
 					'places' => 4,
 				)),
-				'sku' => new Field_String,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
+				'sku' => new Field_String,  // Legacy Field, should not be used after v1.1.3
 				'categories' => new Field_ManyToMany(array(
 					'foreign' => 'category',
 					'through' => 'categories_products',
@@ -77,7 +77,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-				'stock' => new Field_Integer,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases				
+				'stock' => new Field_Integer,  // Legacy Field, should not be used after v1.1.3
 				'duplicating' => new Field_Boolean(array(
 					'in_db' => FALSE,
 					'default' => FALSE,
@@ -315,11 +315,12 @@ class Ecommerce_Model_Product extends Model_Application
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
 							->execute();
-							// ->as_array('value', 'status')
 	}
 	
 	public function active_skus()
 	{
-		return $this->get('skus')->where('status', '=', 'active')->execute();
+		return $this->get('skus')
+								->where('status', '=', 'active')
+								->execute();
 	}
 }

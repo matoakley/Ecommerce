@@ -5,7 +5,7 @@ class Ecommerce_Model_Product_Option extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('product_options')
-			->sorting(array('value' => 'ASC'))
+			->sorting(array('key' => 'ASC', 'value' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo(array(
@@ -17,7 +17,7 @@ class Ecommerce_Model_Product_Option extends Model_Application
 				'value' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
-				'status' => new Field_String(array(  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
+				'status' => new Field_String(array(  // Legacy Field, should not be used after v1.1.3
 					'on_copy' => 'copy',
 				)),
 				'skus' => new Field_ManyToMany,
