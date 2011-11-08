@@ -181,12 +181,14 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		$summary = '';
 		
-		if (count($this->skus) > 1)
+		$skus = $this->get('skus')->where('status', '=', 'active')->execute();
+		
+		if (count($skus) > 1)
 		{
 			$multiple_prices = FALSE;
 			$min_price = $this->skus->current()->price;
 			
-			foreach ($this->skus as $sku)
+			foreach ($skus as $sku)
 			{
 				if ($sku->price < $min_price)
 				{
@@ -222,10 +224,12 @@ class Ecommerce_Model_Product extends Model_Application
 		return $products;
 	}
 	
+/*
 	public static function update_price($id, $price)
 	{
 		return self::load($id)->set(array('price' => self::deduct_tax($price)))->save();
 	}
+*/
 	
 	/**
 	 * Handles processing of data before saving when a product is edited or created.
