@@ -186,7 +186,7 @@ class Ecommerce_Model_Product extends Model_Application
 		if (count($skus) > 1)
 		{
 			$multiple_prices = FALSE;
-			$min_price = $this->skus->current()->price;
+			$min_price = $skus->current()->price;
 			
 			foreach ($skus as $sku)
 			{
@@ -207,7 +207,7 @@ class Ecommerce_Model_Product extends Model_Application
 		else
 		{
 			// Only one SKU so set its price!
-			$summary = '&pound;'.number_format($this->skus->current()->retail_price(), 2);
+			$summary = '&pound;'.number_format($skus->current()->retail_price(), 2);
 		}
 		
 		return $summary;
