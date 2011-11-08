@@ -126,7 +126,7 @@ textarea.full-width {
 /** General Page Layout **/
 
 #header {
-	background:url(/images/admin/header-bg.png) repeat-x;
+	background:url(/media/images/admin/header-bg.png) repeat-x;
 	height:121px;
 	font-size:1.2em;
 }
