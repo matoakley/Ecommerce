@@ -342,4 +342,13 @@ class Ecommerce_Model_Product extends Model_Application
 		
 		return $stock;
 	}
+	
+	public function remove_options($key)
+	{
+		$options = $this->get('product_options')->where('key', '=', $key)->execute();
+		foreach ($options as $option)
+		{
+			$option->delete();
+		}
+	}
 }

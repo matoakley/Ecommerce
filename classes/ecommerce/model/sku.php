@@ -38,6 +38,18 @@ class Ecommerce_Model_Sku extends Model_Application
 		'active', 'disabled',
 	);
 	
+	public static function create_with_options($product, $options)
+	{
+		$sku = Jelly::factory('sku');
+		$sku->product = $product;
+		$sku->price = 0;
+		$sku->stock = 0;
+		$sku->status = 'disabled';
+		$sku->add('product_options', $options);
+		
+		return $sku->save();
+	}
+	
 	/**
 	 * Returns the Retail Price of a product after adding VAT.
 	 *

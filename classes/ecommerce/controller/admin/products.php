@@ -309,4 +309,77 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			echo json_encode($results['results']->as_array());
 		}
 	}
+	
+	public function action_add_option()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		// Check if option value already exists
+		$product = Model_Product::load($_POST['product_id']);
+		$product_options = $product->get('product_options')
+																->where('key', '=', $_POST['key'])
+																->where('value', '=', $_POST['value'])
+																->execute();
+		
+		$data = array();
+		if (count($product_options) == 0)
+		{
+			$data['option'] = Model_Product_Option::add_option($product, $_POST['key'], $_POST['value'])->as_array();
+		}
+		else
+		{
+			$data['error'] = 'Product option already exists.';
+		}
+		
+		echo json_encode($data);
+	}
+	
+	public function action_remove_option()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		$product_option = Model_Product_Option::load($_POST['option_id']);
+		$product_option->delete();
+	}
+	
+	public function action_remove_options()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		Model_Product::load($_POST['product_id'])->remove_options($_POST['option_key']);
+	}
+	
+	public function action_add_sku()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		$data = array();
+		
+		$product = Model_Product::load($_POST['product_id']);
+		$sku = Model_Sku::create_with_options($product, $_POST['product_options']);
+		
+		$data['sku'] = $sku->as_array();
+		
+		echo json_encode($data);
+	}
 }

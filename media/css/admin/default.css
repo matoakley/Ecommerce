@@ -407,6 +407,12 @@ a.product-option-remove {
 	margin-left:10px;
 }
 
+p.product-option-error {
+	color:red;
+	font-style:italic;
+	margin-bottom:0;
+}
+
 #admin_footer {
 	font-size: 1.2em;
 	color:#666;

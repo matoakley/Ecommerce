@@ -1,3 +1,18 @@
+{% if modules.product_options %}
+<div class="field">
+	<div class="grid_2 alpha">
+		<label>Add new variant</label>
+	</div>
+	<div class="grid_14 omega">
+		<button id="add-new-product-sku" data-product-id="{{product.id}}">Add</button>
+		<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-add-spinner" class="hidden" />
+		<em>Select the product option combination above and click Add to create new Product Variant.</em>
+		<p id="sku-add-error" class="product-option-error hidden"></p>
+	</div>
+	<div class="clear"></div>
+</div>
+{% endif %}
+
 {% for sku_id, sku in fields.skus %}
 	{% if multiple_skus %}
 		{% for option in sku.product_options %}

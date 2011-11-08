@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/media/js/admin/product_options.js"></script>
+<script type="text/javascript" src="/media/js/admin/product_options.js?v=1"></script>
 
 <h2>Product Options</h2>
 
@@ -11,25 +11,34 @@
 		<div class="grid_8 field product-option-container {% if i%2 > 0 %}alpha{% else %}omega{% endif %}" rel="{{option}}">
 			<div class="grid_2 alpha">
 				<label>{{option|title}}</label>
-<!-- 				<a href="#" class="remove-product-option-container" rel="{{option}}">remove</a> -->
+				<img src="/media/images/admin/ajax-loader.gif" alt="Loading…" id="remove-option-spinner-{{option}}"
+					class="hidden left-pad inline-icon" />
+ 				<a href="#" class="remove-product-option-container" data-product-option="{{option}}" data-product-id="{{product.id}}">remove</a>
 			</div>
 			<div class="grid_6 omega">
 			
 				<div class="option-container">
 				{% for value in product.get_option_values(option) %}
-					<div id="{{j}}" class="product-option-row">
+					<div class="product-option-row">
+						<input type="radio" name="new_sku_options_{{option}}" class="new-sku-options" value="{{value.id}}" />
 						<input type="text" name="product_options[{{value.id}}][value]" value="{{value.value}}" class="inputtext short" />
-<!-- 						<a href="#" class="product-option-remove">remove</a> -->
+						<img src="/media/images/admin/ajax-loader.gif" alt="Loading…" id="remove-option-value-spinner-{{value.id}}"
+							class="hidden left-pad inline-icon" />
+ 						<a href="#" class="product-option-remove" data-value-id="{{value.id}}">remove</a>
 					</div>
 				{% endfor %}
 				</div>
-<!--
-				<input type="text" class="inputtext short" placeholder="New value..." />
-				<a href="#" class="add-product-option" rel="{{option}}">
+
+				<input type="radio" name="" class="" value="" disabled="disabled" />
+				<input type="text" class="inputtext short" id="new-option-input-{{option}}" placeholder="New value..." />
+				<img src="/media/images/admin/ajax-loader.gif" alt="Loading…" id="add-option-value-spinner-{{option}}"
+					class="hidden left-pad inline-icon" />
+				<a href="#" class="add-product-option" data-option="{{option}}" data-product-id="{{product.id}}">
 					<img src="/images/icons/add.png" alt="" class="inline-icon" />
 					Add
 				</a>
--->
+				<p id="product-option-error-{{option}}" class="product-option-error hidden">Product option already exists.</p>
+
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -46,17 +55,15 @@
 
 <div class="clear"></div>
 
-<!--
 <div class="field">
 	<div class="grid_2 alpha">
 		<label>Add new option</label>
 	</div>
-	<div class="grid_8">
+	<div class="grid_14 omega">
 		<input type="text" id="new-product-option" class="inputtext short" />
-		<button id="add-new-option-container">Add</button>
+		<button id="add-new-option-container" data-product-id="{{product.id}}">Add</button>
 		<img src="/images/admin/ajax-loader.gif" alt="" id="product-option-spinner" class="hidden" />
-		<em>e.g. Colour, Size ...</em>
+		<em>Use singular classifications where possible e.g. Colour, Size, Material, Pattern ...</em>
 	</div>
 	<div class="clear"></div>
 </div>
--->

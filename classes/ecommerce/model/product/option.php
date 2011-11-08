@@ -20,7 +20,10 @@ class Ecommerce_Model_Product_Option extends Model_Application
 				'status' => new Field_String(array(  // Legacy Field, should not be used after v1.1.3
 					'on_copy' => 'copy',
 				)),
-				'skus' => new Field_ManyToMany,
+				'skus' => new Field_ManyToMany(array(
+          'foreign' => 'sku',
+          'through' => 'product_options_skus',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -35,13 +38,13 @@ class Ecommerce_Model_Product_Option extends Model_Application
 			));
 	}
 	
-	public static function add_option($product_id, $key, $value, $status)
+	public static function add_option($product, $key, $value)
 	{
 		$product_option = Jelly::factory('product_option');
-		$product_option->product = $product_id;
+		$product_option->product = $product;
 		$product_option->key = $key;
 		$product_option->value = $value;
-		$product_option->status = $status;
+		$product_option->status = 'active';
 		return $product_option->save();
 	}
 	

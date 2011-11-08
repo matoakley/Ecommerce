@@ -3,7 +3,7 @@
 {% block custom_scripts %}
 	
 	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?2"></script>
+	<script type="text/javascript" src="/media/js/admin/products.js?3"></script>
 
 {% endblock %}
 
@@ -119,15 +119,12 @@
 	</div>
 	{% endif %}
 	
-	{% if not modules.product_options or product.skus|length == 1 %}
-		{% include "admin/products/_sku_loop.html" %}
-		{% include "admin/products/_product_options.html" %}
-	{% else %}
-		{% set multiple_skus = true %}
-		{% include "admin/products/_product_options.html" %}
+	{% set multiple_skus = true %}
+	{% include "admin/products/_product_options.html" %}
+	{% if modules.product_options and product.skus|length > 1 %}
 		<h3>Product Variants</h3>
-		{% include "admin/products/_sku_loop.html" %}
 	{% endif %}
+	{% include "admin/products/_sku_loop.html" %}
 		
 	<h2>Meta Details</h2>
 	
