@@ -39,6 +39,10 @@ div.field {
 	-moz-border-radius:3px;
 }
 
+div.field.darker {
+	background:#DDD;
+}
+
 label {
 	display:block;
 	text-align:right;
@@ -411,6 +415,10 @@ p.product-option-error {
 	color:red;
 	font-style:italic;
 	margin-bottom:0;
+}
+
+.product-sku-row {
+	margin-bottom:10px;
 }
 
 #admin_footer {

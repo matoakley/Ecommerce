@@ -196,4 +196,29 @@ $(function(){
 			}
 		});
 	});
+	
+	$('.sku-delete-button').live('click', function(e){
+		
+		e.preventDefault();
+		
+		var removeButton = $(this);
+		var skuId = removeButton.attr('data-sku-id');
+		
+		removeButton.hide();
+		$('#product-sku-remove-spinner-'+skuId).show();
+		
+		$.ajax({
+			url: '/admin/products/remove_sku',
+			type: 'POST',
+			dataType: 'json',
+			data: { sku_id: skuId },
+			success: function(response){
+				$('#product-sku-row-'+skuId).slideUp();
+			},
+			complete: function(){
+				$('#product-sku-remove-spinner-'+skuId).hide();
+				removeButton.show();
+			}
+		});
+	});
 });

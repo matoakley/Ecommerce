@@ -14,7 +14,7 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 	
 	public function action_index()
 	{
-		$blog_posts = Model_Blog_Post::search(array(), FALSE, array('created' => 'DESC'));
+		$blog_posts = Model_Blog_Post::search(array('status:active'), FALSE, array('created' => 'DESC'));
 		
 		$this->template->blog_posts = $blog_posts['results'];
 		$this->add_breadcrumb('/blog', 'Blog');

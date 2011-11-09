@@ -14,11 +14,30 @@
 {% endif %}
 
 {% for sku_id, sku in fields.skus %}
-	{% if multiple_skus %}
-		{% for option in sku.product_options %}
-			<strong>{{option.key|title}}:</strong> {{option.value}}&nbsp;
-		{% endfor %}
-	{% endif %}
+<div class="product-sku-row" id="product-sku-row-{{sku.id}}">
+	<div class="field darker">
+		<div class="grid_14 alpha">
+		{% if multiple_skus %}
+			{% for option in sku.product_options %}
+				<strong class="left-pad">{{option.key|title}}:</strong> {{option.value}}
+			{% endfor %}
+		{% else %}
+			Product Data
+		{% endif %}
+		&nbsp;
+		</div>
+		<div class="grid_2 omega tr">
+		{% if multiple_skus %}
+			<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-remove-spinner-{{sku.id}}" class="hidden" />
+			<a href="#" class="delete-button sku-delete-button" data-sku-id="{{sku.id}}">
+				<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+				remove
+			</a>
+		{% endif %}
+		</div>
+		<div class="clear"></div>
+	</div>
+	
 	<div class="field">
 		<div class="grid_2 alpha">
 			<label for="product-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
@@ -61,4 +80,5 @@
 		{% endif %}
 		<div class="clear"></div>
 	</div>
+</div>
 {% endfor %}

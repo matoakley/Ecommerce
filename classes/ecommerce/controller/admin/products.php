@@ -382,4 +382,16 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		
 		echo json_encode($data);
 	}
+	
+	public function action_remove_sku()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		Model_Sku::load($_POST['sku_id'])->delete();
+	}
 }
