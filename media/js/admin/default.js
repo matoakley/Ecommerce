@@ -13,7 +13,7 @@ $(function(){
 	$('textarea.description').ckeditor({
 		toolbar:
 				[
-		            ['Format'],
+		            ['Source', 'Format'],
 		            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'RemoveFormat']
 		        ],
 		width: "810"
