@@ -148,7 +148,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold
 						FROM products
 						JOIN skus ON products.id = skus.product_id
-						JOIN sales_order_items ON skus.id = sales_order_items.sku_id
+						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
 						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
 						WHERE sales_orders.status = 'complete'
 						AND products.deleted IS NULL
