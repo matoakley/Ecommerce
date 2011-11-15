@@ -224,13 +224,6 @@ class Ecommerce_Model_Product extends Model_Application
 		return $products;
 	}
 	
-/*
-	public static function update_price($id, $price)
-	{
-		return self::load($id)->set(array('price' => self::deduct_tax($price)))->save();
-	}
-*/
-	
 	/**
 	 * Handles processing of data before saving when a product is edited or created.
 	 *
@@ -238,15 +231,7 @@ class Ecommerce_Model_Product extends Model_Application
 	 * @return  $this
 	 */
 	public function update($data)
-	{
-		// If no brand is set then set value to NULL
-		$data['brand'] = (isset($data['brand']) AND $data['brand'] > 0) ? $data['brand'] : NULL;
-		
-		if (array_key_exists('price', $data))
-		{
-			$data['price'] = self::deduct_tax($data['price']);
-		}
-		
+	{	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -256,11 +241,11 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];
 		$this->status = $data['status'];
-		$this->meta_keywords = $data['meta_keywords'];
-		$this->meta_description = $data['meta_description'];
+		$this->meta_keywords = isset($data['meta_keywords']) ? $data['meta_keywords'] : '';
+		$this->meta_description = isset($data['meta_description']) ? $data['meta_description'] : '';
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
-		$this->brand = $data['brand'];
+		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
 		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
@@ -276,7 +261,16 @@ class Ecommerce_Model_Product extends Model_Application
 			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 		}
 		
-		return $this->save();
+		$this->save();
+		
+		// If there are no SKUs set for this product then it must
+		// be a new product so create a default SKU.
+		if ( ! count($this->skus))
+		{
+			Model_Sku::create_default($this);
+		}
+		
+		return $this;
 	}
 
 	public function set_default_image($image_id = FALSE)

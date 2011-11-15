@@ -120,6 +120,7 @@ $(function(){
 					$('<a href="#" class="product-option-remove" data-value-id="'+response.option.id+'">remove</a>').appendTo(newOption);
 					newOption.appendTo(addButton.siblings('.option-container')).show('slide');
 					$('#new-option-input-'+newOptionKey).val('');
+					$('#add-new-product-sku').attr('disabled', false);
 				} else {
 					$('#product-option-error-'+newOptionKey).html(response.error);
 					$('#product-option-error-'+newOptionKey).slideDown();
@@ -188,11 +189,9 @@ $(function(){
 				} else {
 					$('#sku-add-error').html(response.error);
 					$('#sku-add-error').slideDown();
+					$('#product-sku-add-spinner').hide();
+					addButton.show();
 				}
-			},
-			complete: function(){
-				$('#product-sku-add-spinner').hide();
-				addButton.show();
 			}
 		});
 	});

@@ -119,181 +119,189 @@
 	</div>
 	{% endif %}
 	
-	{% set multiple_skus = true %}
-	{% include "admin/products/_product_options.html" %}
-	{% if modules.product_options and product.skus|length > 1 %}
-		<h3>Product Variants</h3>
-	{% endif %}
-	{% include "admin/products/_sku_loop.html" %}
-		
-	<h2>Meta Details</h2>
+	{% if not product.loaded %}
 	
-	<div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-meta-description">Description</label>
-		</div>
-		<div class="grid_6">
-			<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{fields.product.meta_description}}</textarea>
-		</div>
-		<div class="grid_2 tr">
-			<p><strong>What's this?</strong></p>
-		</div>
-		<div class="grid_6 omega">
-			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the product.</p>
-		</div>
-		<div class="clear"></div>
-	</div>
-	<div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-meta-keywords">Keywords</label>
-		</div>
-		<div class="grid_6">
-			<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{fields.product.meta_keywords}}</textarea>
-		</div>
-		<div class="grid_2 tr">
-			<p><strong>What's this?</strong></p>
-		</div>
-		<div class="grid_6 omega">
-			<p class="right-pad">Provide a few keywords, separated by commas that relate to this product. These are used by Search Engines when indexing pages.</p>
-		</div>
-		<div class="clear"></div>
-	</div>	
+		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
 	
-	<h2>Categories</h2>
-	{% set i = 1 %}
-	{% for key, category in categories %}
-		{% if not category.parent.loaded %}
-			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
-				<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
-					class="top-level-category" {% if product.loaded and category.id in fields.product_categories %}checked{% endif %} />
-				<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
-				{% if category.categories %}
-					<ul class="subcategory-list">
-						{% for subcategory in category.categories %}
-						<li>
-							<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
-								value="{{subcategory.id}}" {% if product.loaded and subcategory.id in fields.product_categories %}checked{% endif %} />
-							<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
-						</li>
-						{% endfor %}
-					</ul>
-				{% endif %}
-			</div>
-			{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
-			{% set i = i + 1 %}
-		{% endif %}
-	{% endfor %}
-	
-	<div class="clear"></div>
-	
-	<h2>Product Images</h2>
-	
-	{% if product.loaded %}
-	
-		<div id="product-images-header" class="{% if product.images.count() == 0 %}hidden{% endif %}">
-		
-			<div class="grid_3 alpha">&nbsp;</div>
-			
-			<div class="grid_2 tc">
-				<strong>Default</strong>
-			</div>
-			
-			<div class="grid_2 tc">
-				<strong>Thumb</strong>
-			</div>
-			
-			<div class="grid_6 tc">
-				<strong>Short Description</strong>
-			</div>
-			
-			<div class="clear"></div>
-
-		</div>
-	
-		<div id="product-images">
-		
-		{% for key, image in fields.product_images %}
-			
-			<div class="product-image-row">
-				
-				<div class="grid_3 alpha tc">
-					
-					<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
-					
-				</div>
-				
-				<div class="grid_2 tc" style="line-height:120px;">
-				
-					<input type="radio" name="product[default_image]" value="{{image.id}}" {% if image.id == product.default_image.id %}checked{% endif %} />
-				
-				</div>
-				
-				<div class="grid_2 tc" style="line-height:120px;">
-	
-					<input type="radio" name="product[thumbnail]" value="{{image.id}}" {% if image.id == product.thumbnail.id %}checked{% endif %} />
-				
-				</div>
-				
-				<div class="grid_6">
-				
-					<textarea class="wide" name="product_images[{{image.id}}][alt_text]">{{image.alt_text}}</textarea>
-				
-				</div>
-				
-				<div class="grid_3 omega">
-					
-<!--
-					<a href="#">
-						<img src="/images/icons/arrow_inout.png" alt="" class="inline-icon" />
-						Adjust
-					</a>
--->	
-					
-					<a href="/admin/products/delete_image/{{image.id}}" class="delete-product-image">
-						<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-						Delete
-					</a>
-					
-				</div>
-				
-				<div class="clear"></div>
-				
-			</div>
-		
-		{% endfor %}
-
-		</div>
-		
 	{% else %}
-		
-		<p><em>You must save the product before adding images.</em></p>
-		
-	{% endif %}
 	
-</form>
-
-{% if product.loaded %}
-
-	<!-- Async image uploader -->
-	<form enctype="multipart/form-data" action="/admin/products/upload_image" method="post" id="upload-image-form" target="upload-image">
-		
-		<input type="hidden" name="product_id" value="{{product.id}}" />
+		<h2>Product Options</h2>
+		{% include "admin/products/_product_options.html" %}
+		{% if modules.product_options and product.skus|length > 1 %}
+			<h3>Product Variants</h3>
+		{% endif %}
+		{% include "admin/products/_sku_loop.html" %}
+			
+		<h2>Meta Details</h2>
 		
 		<div class="field">
 			<div class="grid_2 alpha">
-				<label>Add new image</label>
+				<label for="product-meta-description">Description</label>
 			</div>
-			<div class="grid_8">
-				<input type="file" id="image-upload" name="image" />
-				<img src="/media/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" />
+			<div class="grid_6">
+				<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{fields.product.meta_description}}</textarea>
+			</div>
+			<div class="grid_2 tr">
+				<p><strong>What's this?</strong></p>
+			</div>
+			<div class="grid_6 omega">
+				<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the product.</p>
 			</div>
 			<div class="clear"></div>
 		</div>
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="product-meta-keywords">Keywords</label>
+			</div>
+			<div class="grid_6">
+				<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{fields.product.meta_keywords}}</textarea>
+			</div>
+			<div class="grid_2 tr">
+				<p><strong>What's this?</strong></p>
+			</div>
+			<div class="grid_6 omega">
+				<p class="right-pad">Provide a few keywords, separated by commas that relate to this product. These are used by Search Engines when indexing pages.</p>
+			</div>
+			<div class="clear"></div>
+		</div>	
+		
+		<h2>Categories</h2>
+		{% set i = 1 %}
+		{% for key, category in categories %}
+			{% if not category.parent.loaded %}
+				<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
+					<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
+						class="top-level-category" {% if product.loaded and category.id in fields.product_categories %}checked{% endif %} />
+					<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+					{% if category.categories %}
+						<ul class="subcategory-list">
+							{% for subcategory in category.categories %}
+							<li>
+								<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
+									value="{{subcategory.id}}" {% if product.loaded and subcategory.id in fields.product_categories %}checked{% endif %} />
+								<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+							</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
+				{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
+				{% set i = i + 1 %}
+			{% endif %}
+		{% endfor %}
+		
+		<div class="clear"></div>
+		
+		<h2>Product Images</h2>
+		
+		{% if product.loaded %}
+		
+			<div id="product-images-header" class="{% if product.images.count() == 0 %}hidden{% endif %}">
+			
+				<div class="grid_3 alpha">&nbsp;</div>
+				
+				<div class="grid_2 tc">
+					<strong>Default</strong>
+				</div>
+				
+				<div class="grid_2 tc">
+					<strong>Thumb</strong>
+				</div>
+				
+				<div class="grid_6 tc">
+					<strong>Short Description</strong>
+				</div>
+				
+				<div class="clear"></div>
+	
+			</div>
+		
+			<div id="product-images">
+			
+			{% for key, image in fields.product_images %}
+				
+				<div class="product-image-row">
+					
+					<div class="grid_3 alpha tc">
+						
+						<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
+						
+					</div>
+					
+					<div class="grid_2 tc" style="line-height:120px;">
+					
+						<input type="radio" name="product[default_image]" value="{{image.id}}" {% if image.id == product.default_image.id %}checked{% endif %} />
+					
+					</div>
+					
+					<div class="grid_2 tc" style="line-height:120px;">
+		
+						<input type="radio" name="product[thumbnail]" value="{{image.id}}" {% if image.id == product.thumbnail.id %}checked{% endif %} />
+					
+					</div>
+					
+					<div class="grid_6">
+					
+						<textarea class="wide" name="product_images[{{image.id}}][alt_text]">{{image.alt_text}}</textarea>
+					
+					</div>
+					
+					<div class="grid_3 omega">
+						
+	<!--
+						<a href="#">
+							<img src="/images/icons/arrow_inout.png" alt="" class="inline-icon" />
+							Adjust
+						</a>
+	-->	
+						
+						<a href="/admin/products/delete_image/{{image.id}}" class="delete-product-image">
+							<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+							Delete
+						</a>
+						
+					</div>
+					
+					<div class="clear"></div>
+					
+				</div>
+			
+			{% endfor %}
+	
+			</div>
+			
+		{% else %}
+			
+			<p><em>You must save the product before adding images.</em></p>
+			
+		{% endif %}
 		
 	</form>
 	
-	<iframe name="upload-image" id="upload-image"></iframe>
-
-{% endif %}
+	{% if product.loaded %}
+	
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/products/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="product_id" value="{{product.id}}" />
+			
+			<div class="field">
+				<div class="grid_2 alpha">
+					<label>Add new image</label>
+				</div>
+				<div class="grid_8">
+					<input type="file" id="image-upload" name="image" />
+					<img src="/media/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" />
+				</div>
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
+	
+{% endif %}	
 
 {% endblock %}

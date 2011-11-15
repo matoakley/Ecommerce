@@ -38,16 +38,43 @@ class Ecommerce_Model_Sku extends Model_Application
 		'active', 'disabled',
 	);
 	
-	public static function create_with_options($product, $options)
+	public static function create_default($product)
 	{
 		$sku = Jelly::factory('sku');
 		$sku->product = $product;
 		$sku->price = 0;
 		$sku->stock = 0;
 		$sku->status = 'disabled';
-		$sku->add('product_options', $options);
 		
 		return $sku->save();
+	}
+	
+	public static function create_with_options($product, $options)
+	{
+		$sku_exists = FALSE;
+		$sku = NULL;
+		
+		// Firstly, check that a SKU with these options does not already exist
+		foreach($product->skus as $existing_sku)
+		{
+			if (count($options) == count($existing_sku->product_options))
+			{	
+				$sku_exists = (count(array_intersect($existing_sku->product_options->as_array('id','id'), $options)) == count($options));
+			}
+		}
+	
+		if ( ! $sku_exists)
+		{
+			$sku = Jelly::factory('sku');
+			$sku->product = $product;
+			$sku->price = 0;
+			$sku->stock = 0;
+			$sku->status = 'disabled';
+			$sku->add('product_options', $options);
+			$sku->save();
+		}
+		
+		return $sku;
 	}
 	
 	/**
@@ -63,9 +90,15 @@ class Ecommerce_Model_Sku extends Model_Application
 	public function update($data)
 	{	
 		$this->price = Currency::deduct_tax($data['price'], Kohana::config('ecommerce.vat_rate'));
-		$this->stock = $data['stock'];
+		if (isset($data['stock']))
+		{
+			$this->stock = $data['stock'];
+		}
 		$this->sku = $data['sku'];
-		$this->status = $data['status'];
+		if (isset($data['status']))
+		{
+			$this->status = $data['status'];
+		}
 		
 		return $this->save();
 	}

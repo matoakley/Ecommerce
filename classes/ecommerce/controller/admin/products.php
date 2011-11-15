@@ -72,20 +72,23 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				$errors['product'] = $e->array->errors();
 			}
 			
-			foreach ($_POST['skus'] as $sku_id => $sku_data)
+			if (isset($_POST['skus']))
 			{
-				$sku = Model_Sku::load($sku_id);
-				
-				try
+				foreach ($_POST['skus'] as $sku_id => $sku_data)
 				{
-					$sku->validate($sku_data);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['skus'][$sku_id] = $e->array->errors();
+					$sku = Model_Sku::load($sku_id);
+					
+					try
+					{
+						$sku->validate($sku_data);
+					}
+					catch (Validate_Exception $e)
+					{
+						$errors['skus'][$sku_id] = $e->array->errors();
+					}
 				}
 			}
-			
+						
 			// Loop through and validate each of the product options
 			if (isset($_POST['product_options']))
 			{
@@ -129,17 +132,23 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				$product->update($_POST['product']);
 
 				// Loop through and save each of the SKUs
-				foreach ($_POST['skus'] as $sku_id => $sku_data)
+				if (isset($_POST['skus']))
 				{
-					$sku = Model_Sku::load($sku_id);
-					$sku->update($sku_data);
+					foreach ($_POST['skus'] as $sku_id => $sku_data)
+					{
+						$sku = Model_Sku::load($sku_id);
+						$sku->update($sku_data);
+					}
 				}
 				
 				// Loop through and save each of the Product Options
-				foreach ($_POST['product_options'] as $option_id => $option_data)
+				if (isset($_POST['product_options']))
 				{
-					$option = Model_Product_Option::load($option_id);
-					$option->update($option_data);
+					foreach ($_POST['product_options'] as $option_id => $option_data)
+					{
+						$option = Model_Product_Option::load($option_id);
+						$option->update($option_data);
+					}
 				}
 				
 				// Loop through and save each of the product images
@@ -166,7 +175,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
-				$fields['skus'] = $_POST['skus'];
+				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
 				
 				if (isset($_POST['product_images']))
 				{
@@ -378,7 +387,14 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$product = Model_Product::load($_POST['product_id']);
 		$sku = Model_Sku::create_with_options($product, $_POST['product_options']);
 		
-		$data['sku'] = $sku->as_array();
+		if ($sku)
+		{
+			$data['sku'] = $sku->as_array();
+		}
+		else
+		{
+			$data['error'] = 'Variant already exists.';
+		}
 		
 		echo json_encode($data);
 	}

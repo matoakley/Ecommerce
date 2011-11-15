@@ -4,14 +4,16 @@
 		<label>Add new variant</label>
 	</div>
 	<div class="grid_14 omega">
-		<button id="add-new-product-sku" data-product-id="{{product.id}}">Add</button>
-		<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-add-spinner" class="hidden" />
+		<button id="add-new-product-sku" data-product-id="{{product.id}}" {% if product.product_options|length < 1 %}disabled="disabled"{% endif %}>Add</button>
+		<img src="/media/images/admin/ajax-loader.gif" alt="" id="product-sku-add-spinner" class="hidden" />
 		<em>Select the product option combination above and click Add to create new Product Variant.</em>
 		<p id="sku-add-error" class="product-option-error hidden"></p>
 	</div>
 	<div class="clear"></div>
 </div>
 {% endif %}
+
+{% set multiple_skus = fields.skus|length > 1 %}
 
 {% for sku_id, sku in fields.skus %}
 <div class="product-sku-row" id="product-sku-row-{{sku.id}}">
@@ -22,7 +24,7 @@
 				<strong class="left-pad">{{option.key|title}}:</strong> {{option.value}}
 			{% endfor %}
 		{% else %}
-			Product Data
+			<strong class="left-pad">Default Variant <em>(no options)</em></strong>
 		{% endif %}
 		&nbsp;
 		</div>
@@ -80,5 +82,5 @@
 		{% endif %}
 		<div class="clear"></div>
 	</div>
-</div>
+</div>	
 {% endfor %}

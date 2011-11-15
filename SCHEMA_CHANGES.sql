@@ -26,6 +26,9 @@ ALTER TABLE `basket_items` CHANGE COLUMN `product_id` `product_id` int(11);
 -- Sales order items should now link to SKUs, keep legacy columns for backwards compatibility
 ALTER TABLE `sales_order_items` ADD COLUMN `sku_id` int NOT NULL AFTER `sales_order_id`, CHANGE COLUMN `product_id` `product_id` int(11) AFTER `sku_id`, CHANGE COLUMN `product_name` `product_name` varchar(255) NOT NULL AFTER `product_id`, CHANGE COLUMN `product_options` `product_options` text DEFAULT NULL AFTER `product_name`, CHANGE COLUMN `quantity` `quantity` int(11) NOT NULL AFTER `product_options`, CHANGE COLUMN `unit_price` `unit_price` decimal(10,2) NOT NULL AFTER `quantity`, CHANGE COLUMN `total_price` `total_price` decimal(10,2) NOT NULL AFTER `unit_price`, CHANGE COLUMN `vat_rate` `vat_rate` decimal(10,2) NOT NULL AFTER `total_price`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `vat_rate`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
 
+-- 15/11/11 - Products no longer require a price
+ALTER TABLE `products` CHANGE COLUMN `price` `price` decimal(10,4) DEFAULT '0.0000';
+
 
 
 
