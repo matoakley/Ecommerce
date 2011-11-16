@@ -17,17 +17,19 @@
 
 {% for sku_id, sku in fields.skus %}
 <div class="product-sku-row" id="product-sku-row-{{sku.id}}">
-	<div class="field darker">
-		<div class="grid_14 alpha">
-		{% if multiple_skus %}
-			{% for option in sku.product_options %}
-				<strong class="left-pad">{{option.key|title}}:</strong> {{option.value}}
-			{% endfor %}
-		{% else %}
-			<strong class="left-pad">Default Variant <em>(no options)</em></strong>
+	{% if modules.product_options %}
+		<div class="field darker">
+			<div class="grid_14 alpha">
+			{% if multiple_skus %}
+				{% for option in sku.product_options %}
+					<strong class="left-pad">{{option.key|title}}:</strong> {{option.value}}
+				{% endfor %}
+			{% else %}
+				<strong class="left-pad">Default Variant <em>(no options)</em></strong>
+			{% endif %}
+			&nbsp;
+			</div>
 		{% endif %}
-		&nbsp;
-		</div>
 		<div class="grid_2 omega tr">
 		{% if multiple_skus %}
 			<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-remove-spinner-{{sku.id}}" class="hidden" />
