@@ -125,10 +125,12 @@
 	
 	{% else %}
 	
-		<h2>Product Options</h2>
-		{% include "admin/products/_product_options.html" %}
-		{% if modules.product_options and product.skus|length > 1 %}
-			<h3>Product Variants</h3>
+		{% if modules.product_options %}
+			<h2>Product Options</h2>
+			{% include "admin/products/_product_options.html" %}
+			{% if modules.product_options and product.skus|length > 1 %}
+				<h3>Product Variants</h3>
+			{% endif %}
 		{% endif %}
 		{% include "admin/products/_sku_loop.html" %}
 			
