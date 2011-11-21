@@ -58,4 +58,9 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		$this->auth->logout();
 		$this->request->redirect(Route::get('customer_login')->uri());
 	}
+	
+	public function action_forgotten_password()
+	{
+		
+	}
 }

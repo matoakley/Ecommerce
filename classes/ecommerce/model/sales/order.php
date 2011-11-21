@@ -185,6 +185,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 
 		$message = Twig::factory('templates/emails/order_confirmation.html');
 		$message->sales_order = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
 			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
@@ -205,6 +206,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$message = Twig::factory('templates/emails/order_shipped.html');
 		$message->sales_order = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
 			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
