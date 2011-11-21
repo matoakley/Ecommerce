@@ -30,8 +30,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		// Initialise Auth
 		$this->auth = Auth::instance();
 		
-		// Check that our guest is logged in...
-		if ( ! $this->auth->logged_in() AND $this->request->uri() != 'admin/login')
+		// Check that our guest is logged in as an admin
+		if ( ! $this->auth->logged_in('admin') AND $this->request->uri() != 'admin/login')
 		{
 			$this->session->set('redirected_from', $this->request->uri());
 			$this->request->redirect('/admin/login');

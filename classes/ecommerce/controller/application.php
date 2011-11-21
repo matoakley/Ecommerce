@@ -11,6 +11,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	protected $basket;
 	
 	protected $modules = array();
+	
+	protected $auth;
 
 	/**
 	 * Setup view
@@ -26,6 +28,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// Initialise session.
 		$this->session = Session::instance();
+		
+		$this->auth = Auth::instance();
 		
 		$this->basket = Model_Basket::instance();
 		
@@ -45,6 +49,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		$this->template->modules = $this->modules;
 		
+		$this->template->auth = $this->auth;
+		
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
 		
@@ -59,12 +65,6 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// Assign Recently Viewed Products to template
 		$this->template->breadcrumbs = $this->build_breadcrumbs();
-		
-		// Show Kohana profiler if viewing from home IP address
-		// if (Request::$client_ip == '95.172.233.145')
-		// {
-		// 	$this->template->kohana_profiler =  View::factory('profiler/stats');
-		// }
 	
 		parent::after();
 	}

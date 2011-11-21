@@ -4,6 +4,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 
 	function before()
 	{
+		// Attempt to use SSH if available as we're dealing with personal data
 		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
 		{
 			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));

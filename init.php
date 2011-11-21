@@ -68,6 +68,21 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')	->defaults(array(
 ));
 	
 // Default Public Routes
+Route::set('customer_dashboard', 'account')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'index',
+)); 
+
+Route::set('customer_login', 'login')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'login',
+)); 
+
+Route::set('customer_logout', 'logout')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'logout',
+)); 
+
 Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'view',

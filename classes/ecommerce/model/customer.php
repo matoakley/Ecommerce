@@ -7,6 +7,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$meta->table('customers')
 			->fields(array(
 				'id' => new Field_Primary,
+				'user' => new Field_BelongsTo,
 				'firstname' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,

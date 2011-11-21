@@ -1,3 +1,25 @@
+-- 21/11/11 - Add customer role
+INSERT INTO `roles` (`name`, `description`) VALUES ('customer', 'Customers who have chosen to create an account.');
+
+-- Link customers to their user
+ALTER TABLE `customers` ADD COLUMN `user_id` int AFTER `id`, CHANGE COLUMN `firstname` `firstname` varchar(255) NOT NULL AFTER `user_id`, CHANGE COLUMN `lastname` `lastname` varchar(255) NOT NULL AFTER `firstname`, CHANGE COLUMN `email` `email` varchar(255) NOT NULL AFTER `lastname`, CHANGE COLUMN `referred_by` `referred_by` varchar(255) DEFAULT NULL AFTER `email`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `referred_by`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
+-- MANUALLY ADD ADMIN ROLE (2) TO EXISTING USERS OR THEY WON'T BE ABLE TO LOG IN
+
+-- Allow 254 characters for username and email address
+ALTER TABLE `users` CHANGE COLUMN `email` `email` varchar(254) NOT NULL, CHANGE COLUMN `username` `username` varchar(254) NOT NULL DEFAULT '';
+
+
+
+
+
+
+
+-- ================================================================================================================================================================================================ --
+
+-- VERSION 1.1.4 UPGRADE
+
+
 -- 28/10/2011 - Add SKU table
 CREATE TABLE `skus` (
 	`id` int,
