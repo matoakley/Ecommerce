@@ -8,6 +8,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 			->sorting(array('username' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer' => new Field_HasOne,
 				'firstname' => new Field_String,
 				'lastname' => new Field_String,
 				'username' => new Field_Email(array(
@@ -213,18 +214,9 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
 	}
 	
-	public function forgotten_password()
+	public function change_password($new_password)
 	{
-		// Send an email to user with a key (maybe use hashed password?)
-		Email::connect();
-		
-		$message = Twig::factory('templates/emails/forgotten_password.html');
-		$message->sales_order = $this;
-
-		$to = array(
-			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
-		);
-
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
+		$this->password = $new_password;
+		return $this->save();
 	}
 }

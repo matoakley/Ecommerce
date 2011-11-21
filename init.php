@@ -68,6 +68,13 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')	->defaults(array(
 ));
 	
 // Default Public Routes
+Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)', array(
+	'email' => '.*', // Allow dots in email address
+))->defaults(array(
+	'controller' => 'customers',
+	'action' => 'forgotten_password',
+));
+
 Route::set('customer_dashboard', 'account')->defaults(array(
 	'controller' => 'customers',
 	'action' => 'index',

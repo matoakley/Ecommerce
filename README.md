@@ -1,6 +1,6 @@
 # Upgrading to v1.1.5
 
-- Add email template for forgotten password views/templates/emails/forgotten_password.html
+- Remove email templates from application/views/templates/emails/*.html and move template to application/views/templates/email_default.html. Other email templates now come from ecommerce module unless they need to be overridden.
 
 # Upgrading to v1.1.4 is quite a hefty task
 
