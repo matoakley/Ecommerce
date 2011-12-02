@@ -66,6 +66,9 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// Assign Recently Viewed Products to template
 		$this->template->breadcrumbs = $this->build_breadcrumbs();
 	
+		// Snippet Manager for templates
+		$this->template->snippet = Snippet::instance();
+	
 		parent::after();
 	}
 	

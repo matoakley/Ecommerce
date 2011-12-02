@@ -9,6 +9,17 @@ ALTER TABLE `customers` ADD COLUMN `user_id` int AFTER `id`, CHANGE COLUMN `firs
 -- Allow 254 characters for username and email address
 ALTER TABLE `users` CHANGE COLUMN `email` `email` varchar(254) NOT NULL, CHANGE COLUMN `username` `username` varchar(254) NOT NULL DEFAULT '';
 
+-- Add Snippets table
+CREATE TABLE `snippets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(254) NOT NULL,
+  `description` varchar(254) DEFAULT NULL,
+  `content` text,
+  `created` datetime NOT NULL,
+  `modified` datetime DEFAULT NULL,
+  `deleted` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
 

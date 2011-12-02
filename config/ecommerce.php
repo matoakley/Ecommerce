@@ -26,6 +26,7 @@ return array
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
 		'sales_orders' => FALSE,
+		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'users' => FALSE,
 	),
