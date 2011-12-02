@@ -19,6 +19,12 @@ Route::set('add_pages', 'admin/pages/add')->defaults(array(
 	'action'		=> 'edit'
 ));
 
+Route::set('add_snippets', 'admin/snippets/add')->defaults(array(
+	'directory'		=> 'admin',
+	'controller'	=> 'snippets',
+	'action'		=> 'edit'
+));
+
 Route::set('add_users', 'admin/users/add')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'users',
