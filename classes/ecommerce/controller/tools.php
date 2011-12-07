@@ -2,6 +2,60 @@
 
 class Ecommerce_Controller_Tools extends Controller_Application
 {
+	public function action_send_contact_form()
+	{
+		$this->auto_render = FALSE;
+		
+		// Email address to send enquiry to
+		$to = Kohana::config('ecommerce.copy_order_confirmations_to');
+		$subject = 'Enquiry Submitted from Website';
+		$message = 'The following enquiry was submitted via the website on ' . date('d/m/Y H:i') . "\r\n\r\n";
+	
+		if ($_POST)
+		{
+			$validates = TRUE;
+			$errors = array();
+			
+			// Validate data posted from enquiry form
+			if ( ! isset($_POST['name']) OR $_POST['name'] == '')
+			{
+				$validates = FALSE;
+				$errors['name'] = 'Please enter your name.';
+			}
+			
+			if ( ! isset($_POST['email']) OR ! preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/', $_POST['email']))
+			{
+				$validates = FALSE;
+				$errors['email'] = 'Please provide a valid email address.';
+			}
+			
+			if ( ! isset($_POST['enquiry']) OR $_POST['enquiry'] == '')
+			{
+				$validates = FALSE;
+				$errors['enquiry'] = 'Enter a brief description of your enquiry.';
+			}
+			
+			if ($validates)
+			{
+				// Send email
+				$headers = 'From: ' . $_POST['name'] . ' <' . $_POST['email'] . '>';
+				$message .= 'Name: ' . $_POST['name'] . "\r\n\r\n";
+				$message .= 'Email: ' . $_POST['email'] . "\r\n\r\n";
+				if (isset($_POST['telephone']) AND $_POST['telephone'] != '')
+				{
+					$message .= 'Phone: ' . $_POST['telephone'] . "\r\n\r\n";
+				}
+				$message .= 'Enquiry: ' . $_POST['enquiry'];
+				
+				mail($to, $subject, $message, $headers);
+			}
+			else
+			{
+				echo json_encode($errors);
+			}
+		}
+	}
+	
 	function action_sitemap()
 	{
 		$this->auto_render = FALSE;
