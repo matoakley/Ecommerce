@@ -37,7 +37,14 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		{
 			if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in('customer'))
 			{
-				$this->request->redirect(Route::get('customer_dashboard')->uri());
+				if (isset($_GET['return_url']))
+				{
+					$this->request->redirect('/'.$_GET['return_url']);
+				}
+				else
+				{
+					$this->request->redirect(Route::get('customer_dashboard')->uri());
+				}
 			}
 			else
 			{
@@ -113,5 +120,25 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
 		$this->add_breadcrumb(URL::site(Route::get('customer_reset_password')->uri()), 'Forgotten Password');		
+	}
+	
+	public function action_create_account()
+	{
+		if ( ! $_POST)
+		{
+			throw new Kohana_Exception('No data posted');
+		}
+		
+		try
+		{
+			$customer = Model_Customer::load($_POST['customer_id']);
+			$customer->create_account($_POST['password']);
+			$this->auth->force_login($customer->user);
+			$this->request->redirect(Route::get('customer_dashboard')->uri());
+		}
+		catch (Kohana_Exception $e)
+		{
+			$this->request->redirect(Route::get('customer_dashboard')->uri());
+		}
 	}
 }

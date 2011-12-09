@@ -68,6 +68,12 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $customer;
 	}
 	
+	public function create_account($password)
+	{
+		$this->user = Model_User::create_for_customer($this, $password);
+		return $this->save();
+	}
+	
 	public static function send_forgotten_password_email($email_address)
 	{
 		// Send an email to user with a key (maybe use hashed password?)

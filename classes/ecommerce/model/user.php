@@ -77,16 +77,15 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return parent::__get($field);
 	}
 	
-	public function get_avatar()
+	public static function create_for_customer($customer, $password)
 	{
-		$file_path = '/images/users/' . $this->id . '.jpg';
-		
-		if ( ! file_exists(DOCROOT . $file_path))
-		{
-			$file_path = '/images/users/default.jpg';
-		}
-		
-		return $file_path;
+		$user = Jelly::factory('user');
+		$user->username = $customer->email;
+		$user->email = $customer->email;
+		$user->password = $password;
+		$user->password_confirm = $password;
+		$user->add('roles', array(1,3));
+		return $user->save();
 	}
 
 	public static function load($id = FALSE)
@@ -164,6 +163,18 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$data['results'] = $results->execute();
 		
 		return $data;
+	}
+
+	public function get_avatar()
+	{
+		$file_path = '/images/users/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/users/default.jpg';
+		}
+		
+		return $file_path;
 	}
 	
 	public function update($data)
