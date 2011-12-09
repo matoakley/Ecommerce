@@ -69,6 +69,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		'order_cancelled',
 		'problem_occurred',
 	);
+	
+	public static function recent_dashboard_orders()
+	{
+		return Jelly::select('sales_order')->where('status', '<>', 'awaiting_payment')->order_by('created', 'DESC')->limit(5)->execute();
+	}
 
 	public static function create_from_basket($basket, $customer, $billing_address, $delivery_address, $delivery_name)
 	{		
