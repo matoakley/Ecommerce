@@ -27,6 +27,8 @@ class Ecommerce_Controller_Customers extends Controller_Application
 			$this->request->redirect(Route::get('customer_login')->uri());
 		}
 		
+		$this->template->customer = $this->auth->get_user()->customer;
+		
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
 	}
 	
