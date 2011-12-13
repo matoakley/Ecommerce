@@ -4,6 +4,12 @@ class Ecommerce_Controller_Customers extends Controller_Application
 {
 	function before()
 	{
+		// Check that customer accounts module is enabled
+		if ( ! Kohana::config('ecommerce.modules.customer_accounts'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
 		// Attempt to use SSH if available as we're dealing with log ins
 		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
 		{

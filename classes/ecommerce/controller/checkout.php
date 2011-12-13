@@ -32,7 +32,9 @@ class Ecommerce_Controller_Checkout extends Controller_Application {
 		{
 			try
 			{
-				$customer = Model_Customer::create($_POST['customer']);
+				// If customer is already logged in then update their account with details provided, else create a new customer
+				$customer = ($this->auth->logged_in('customer')) ?  $this->auth->get_user()->customer->update_at_checkout($_POST['customer']) : Model_Customer::create($_POST['customer']);
+				
 				$delivery_name = array();
 				if (isset($_POST['delivery_address']['same']))
 				{
