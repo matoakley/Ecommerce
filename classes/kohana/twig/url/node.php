@@ -47,7 +47,7 @@ class Kohana_Twig_Url_Node extends Twig_Node
 		$compiler
 			->write('echo Route::url(')
 			->subcompile($this->route)
-			->write(', $route_params, '.Request::$protocol.')')
+			->write(', $route_params, "'.Request::$protocol.'")')
 			->raw(";\n");
 	}
 }
