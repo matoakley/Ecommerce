@@ -130,28 +130,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public static function process_payment_result($data)
 	{
-		$sales_order = Jelly::select('sales_order', $sales_order_id);
-		$sales_order->hsbc_order_hash = $order_hash;
-		$sales_order->hsbc_cpi_results_code = $cpi_results_code;
-		
-		if ($sales_order->hsbc_cpi_results_code == 0)
-		{
-		 	$sales_order->status = 'payment_received';
-			$sales_order->send_confirmation_email();
-		}
-		elseif ($sales_order->hsbc_cpi_results_code == 9)
-		{
-			$sales_order->status = 'fraud_shield_review';
-			$sales_order->send_confirmation_email();
-		}
-		elseif (in_array($sales_order->hsbc_cpi_results_code, array(1, 2, 3, 5, 6, 7, 8, 10, 11, 14, 15, 16)))
-		{
-			$sales_order->status = 'order_cancelled';
-		}
-		else
-		{
-			$sales_order->status = 'problem_occurred';
-		}
+		// Should be implemented on a per driver basis. 
 		
 		return $sales_order->save();
 	}
@@ -165,7 +144,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status = 'complete'
+						WHERE status IN ('payment_received', 'complete')
 						AND EXTRACT(MONTH FROM created) = $month";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
@@ -177,7 +156,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status = 'complete'";
+						WHERE status IN ('payment_received', 'complete')";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
