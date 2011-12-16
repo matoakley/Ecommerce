@@ -1,3 +1,6 @@
+-- 13/12/12 - Add default shipping columns to Customer
+ALTER TABLE `customers` ADD COLUMN `default_billing_address_id` int AFTER `email`, ADD COLUMN `default_shipping_address_id` int AFTER `default_billing_address_id`, CHANGE COLUMN `referred_by` `referred_by` varchar(255) DEFAULT NULL AFTER `default_shipping_address_id`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `referred_by`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
 -- 21/11/11 - Add customer role
 INSERT INTO `roles` (`name`, `description`) VALUES ('customer', 'Customers who have chosen to create an account.');
 

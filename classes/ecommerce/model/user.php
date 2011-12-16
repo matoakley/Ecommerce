@@ -67,6 +67,19 @@ class Ecommerce_Model_User extends Model_Auth_User
 			));
 	}
 
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'role' => array(
+				'join' => array(
+					'roles_users' => array('user.id', 'roles_users.user_id'),
+					'roles' => array('role.id', 'roles_users.role_id'),
+				),
+				'field' => 'role.id',
+			),
+		),
+		'search' => array(),
+	);
+
 	public function __get($field)
 	{
 		if ($field == 'avatar')

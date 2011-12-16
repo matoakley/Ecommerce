@@ -8,6 +8,9 @@ class Ecommerce_Model_Customer extends Model_Application
 			->fields(array(
 				'id' => new Field_Primary,
 				'user' => new Field_BelongsTo,
+				'orders' => new Field_HasMany(array(
+					'foreign' => 'sales_order.customer_id',
+				)),
 				'firstname' => new Field_String(array(
 					'rules' => array(
 						'not_empty' => NULL,
@@ -24,6 +27,14 @@ class Ecommerce_Model_Customer extends Model_Application
 					),					
 				)),
 				'referred_by' => new Field_String,
+				'default_billing_address' => new Field_BelongsTo(array(
+					'foreign' => 'address.id',
+					'column' => 'default_billing_address_id',
+				)),
+				'default_shipping_address' => new Field_BelongsTo(array(
+					'foreign' => 'address.id',
+					'column' => 'default_shipping_address_id',					
+				)),
 				'addresses' => new Field_HasMany(array(
 					'foreign' => 'address.customer_id',
 				)),
@@ -68,12 +79,6 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $customer;
 	}
 	
-	public function create_account($password)
-	{
-		$this->user = Model_User::create_for_customer($this, $password);
-		return $this->save();
-	}
-	
 	public static function send_forgotten_password_email($email_address)
 	{
 		// Send an email to user with a key (maybe use hashed password?)
@@ -107,9 +112,45 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
-	public function set_default_address($address)
+	public function update_at_checkout($data)
 	{
-		$this->default_address = $address;
+		// Format email address to lowercase
+		$data['email'] = strtolower($data['email']);
+		
+		$this->firstname = $data['firstname'];
+		$this->lastname = $data['lastname'];
+		$this->email = $data['email'];
+				
+		$customer->save();
+		
+		if (isset($data['email_subscribe']))
+		{
+			Model_Subscriber::create($this->email, $this->id);
+		}
+		
+		return $this;
+	}
+	
+	public function create_account($password)
+	{
+		$this->user = Model_User::create_for_customer($this, $password);
+		return $this->save();
+	}
+	
+	public function set_default_billing_address($address)
+	{
+		$this->default_billing_address = $address;
 		$this->save();
+	}
+	
+	public function set_default_shipping_address($address)
+	{
+		$this->default_shipping_address = $address;
+		$this->save();
+	}
+	
+	public function completed_orders()
+	{
+		return $this->get('orders')->where('status', '=', 'completed')->execute();
 	}
 }
