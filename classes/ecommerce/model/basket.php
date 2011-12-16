@@ -141,7 +141,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				$items_in_basket = array();
 				foreach ($this->items as $item)
 				{
-					$items_in_basket[] = $item->product->id;
+					$items_in_basket[] = $item->sku->product->id;
 				}
 				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
 				
@@ -149,14 +149,20 @@ class Ecommerce_Model_Basket extends Model_Application
 				
 				foreach ($qualifying_basket_items as $item_id)
 				{
-					$item = $this->get('items')->where('product_id', '=', $item_id)->limit(1)->execute();
+					$item = $this->get('items')
+														->join('skus')
+														->on('skus.id', '=', 'basket_items.sku_id')
+														->where('skus.product_id', '=', $item_id)
+														->limit(1)
+														->execute();
+				
 					switch ($this->promotion_code->discount_unit)
 					{
 						case 'pounds':
 							$discount += $this->promotion_code->discount_amount * $item->quantity;
 							break;
 						case 'percent':
-							$discount += ($item->product->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
 							break;
 					}
 				}
