@@ -121,7 +121,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->lastname = $data['lastname'];
 		$this->email = $data['email'];
 				
-		$customer->save();
+		$this->save();
 		
 		if (isset($data['email_subscribe']))
 		{
