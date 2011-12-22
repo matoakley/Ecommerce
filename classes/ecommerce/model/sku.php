@@ -89,7 +89,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	
 	public function update($data)
 	{	
-		$this->price = Currency::deduct_tax($data['price'], Kohana::config('ecommerce.vat_rate'));
+		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), Kohana::config('ecommerce.vat_rate'));
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
