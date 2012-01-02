@@ -44,6 +44,11 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 		'search' => array(
 		),
 	);
+	
+	public static function get_posts_by_author($user_id, $limit = 5)
+	{
+		return Jelly::select('blog_post')->where('user_id', '=', $user_id)->order_by('created', 'DESC')->limit($limit)->execute();
+	}
 
 	public function body_summary()
 	{

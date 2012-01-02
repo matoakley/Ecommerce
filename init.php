@@ -68,6 +68,11 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')	->defaults(array(
 ));
 	
 // Default Public Routes
+Route::set('contact_form', 'tools/contact-form')->defaults(array(
+	'controller' => 'tools',
+	'action' => 'contact_form',
+));
+
 Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'view',
