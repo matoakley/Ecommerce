@@ -47,9 +47,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
+			'skus' => $product->skus,
 		);
-		
-		$fields['product']['retail_price'] = $product->retail_price();
 		
 		foreach ($product->images as $product_image)
 		{
@@ -71,6 +70,41 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			catch (Validate_Exception $e)
 			{
 				$errors['product'] = $e->array->errors();
+			}
+			
+			if (isset($_POST['skus']))
+			{
+				foreach ($_POST['skus'] as $sku_id => $sku_data)
+				{
+					$sku = Model_Sku::load($sku_id);
+					
+					try
+					{
+						$sku->validate($sku_data);
+					}
+					catch (Validate_Exception $e)
+					{
+						$errors['skus'][$sku_id] = $e->array->errors();
+					}
+				}
+			}
+						
+			// Loop through and validate each of the product options
+			if (isset($_POST['product_options']))
+			{
+				foreach ($_POST['product_options'] as $option_id => $option_data)
+				{
+					$option = Model_Product_Option::load($option_id);
+					
+					try
+					{
+						$option->validate($option_data);
+					}
+					catch (Validate_Exception $e)
+					{
+						$errors['product_options'][$option_id] = $e->array->errors();
+					}
+				}
 			}
 			
 			// Loop through and validate each of the product images
@@ -96,6 +130,26 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Save the product
 				$product->update($_POST['product']);
+
+				// Loop through and save each of the SKUs
+				if (isset($_POST['skus']))
+				{
+					foreach ($_POST['skus'] as $sku_id => $sku_data)
+					{
+						$sku = Model_Sku::load($sku_id);
+						$sku->update($sku_data);
+					}
+				}
+				
+				// Loop through and save each of the Product Options
+				if (isset($_POST['product_options']))
+				{
+					foreach ($_POST['product_options'] as $option_id => $option_data)
+					{
+						$option = Model_Product_Option::load($option_id);
+						$option->update($option_data);
+					}
+				}
 				
 				// Loop through and save each of the product images
 				if (isset($_POST['product_images']))
@@ -121,7 +175,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
-				$fields['product']['retail_price'] = $_POST['product']['price'];
+				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
+				
 				if (isset($_POST['product_images']))
 				{
 					foreach ($_POST['product_images'] as $key => $values)
@@ -140,9 +195,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
-		$this->template->product_option_statuses = Model_Product_Option::$statuses;
 	}
 	
 	// Bulk price updater
@@ -262,5 +317,97 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			$results = Model_Product::search(array(), 10);
 			echo json_encode($results['results']->as_array());
 		}
+	}
+	
+	public function action_add_option()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		// Check if option value already exists
+		$product = Model_Product::load($_POST['product_id']);
+		$product_options = $product->get('product_options')
+																->where('key', '=', $_POST['key'])
+																->where('value', '=', $_POST['value'])
+																->execute();
+		
+		$data = array();
+		if (count($product_options) == 0)
+		{
+			$data['option'] = Model_Product_Option::add_option($product, $_POST['key'], $_POST['value'])->as_array();
+		}
+		else
+		{
+			$data['error'] = 'Product option already exists.';
+		}
+		
+		echo json_encode($data);
+	}
+	
+	public function action_remove_option()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		$product_option = Model_Product_Option::load($_POST['option_id']);
+		$product_option->delete();
+	}
+	
+	public function action_remove_options()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		Model_Product::load($_POST['product_id'])->remove_options($_POST['option_key']);
+	}
+	
+	public function action_add_sku()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		$data = array();
+		
+		$product = Model_Product::load($_POST['product_id']);
+		$sku = Model_Sku::create_with_options($product, $_POST['product_options']);
+		
+		if ($sku)
+		{
+			$data['sku'] = $sku->as_array();
+		}
+		else
+		{
+			$data['error'] = 'Variant already exists.';
+		}
+		
+		echo json_encode($data);
+	}
+	
+	public function action_remove_sku()
+	{
+		$this->auto_render = FALSE;
+		
+		if ( ! Request::$is_ajax OR ! $_POST)
+		{
+			throw new Kohana_Exception('Page not found', array(), 404);
+		}
+		
+		Model_Sku::load($_POST['sku_id'])->delete();
 	}
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+<channel>
+<title>{{site_name|e}} Products</title>
+<link>{{base_url}}</link>
+<description>{{site_name|e}}</description>
+{% for product in products %}
+	{% for sku in product.active_skus %}
+		<item>
+		<title>{{product.name|title|e}}</title>
+		<link>{% url "view_product", ["slug":product.slug] %}</link>
+		<description>{{product.description|striptags|e}}</description>
+		<g:image_link>{{base_url}}{{product.default_image.full_size_path}}</g:image_link>
+		{% set image_count = 0 %}
+		{% for image in product.images %}
+			{% if image.id != product.default_image.id and image_count < 10 %}
+				<g:additional_image_link>{{base_url}}{{image.full_size_path}}</g:additional_image_link>
+				{% set image_count = image_count + 1 %}
+			{% endif %}
+		{% endfor %}
+		<g:price>{{sku.retail_price|num_format(2)}} GBP</g:price>
+		<g:condition>new</g:condition>
+		<g:id>{{sku.id}}</g:id>
+		{% if product.active_skus|length > 1 %}
+			<g:item_group_id>{{product_id}}</g:item_group_id>
+			{% for option in sku.product_options %}
+				{% if option.key in ['colour', 'size', 'material', 'pattern'] %}
+					<g:{{option.key}}>{{option.value|e}}</g:{{option.key}}>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		<g:product_type>{{default_google_product_category|e}}</g:product_type>
+		<g:google_product_category>{{default_google_product_category|e}}</g:google_product_category>
+		{% if modules.stock_control and sku.stock == 0 %}
+			<g:availability>out of stock</g:availability>
+		{% else %}
+			<g:availability>in stock</g:availability>
+		{% endif %}
+		{% if product.brand.loaded %}
+			<g:brand>{{product.brand.name|e}}</g:brand>
+		{% else %}
+			<g:brand>{{site_name|e}}</g:brand>
+		{% endif %}
+		<g:mpn>{{sku.sku}}</g:mpn>
+		</item>
+	{% endfor %}
+{% endfor %}
+</channel>
+</rss>

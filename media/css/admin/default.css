@@ -39,6 +39,10 @@ div.field {
 	-moz-border-radius:3px;
 }
 
+div.field.darker {
+	background:#DDD;
+}
+
 label {
 	display:block;
 	text-align:right;
@@ -126,7 +130,7 @@ textarea.full-width {
 /** General Page Layout **/
 
 #header {
-	background:url(/images/admin/header-bg.png) repeat-x;
+	background:url(/media/images/admin/header-bg.png) repeat-x;
 	height:121px;
 	font-size:1.2em;
 }
@@ -369,6 +373,7 @@ ul.subcategory-list {
 
 .product-image {
 	margin:10px;
+	width:100px;
 }
 
 iframe#upload-image {
@@ -404,6 +409,16 @@ a.product-option-remove {
 	color:red;
 	font-style:italic;
 	margin-left:10px;
+}
+
+p.product-option-error {
+	color:red;
+	font-style:italic;
+	margin-bottom:0;
+}
+
+.product-sku-row {
+	margin-bottom:10px;
 }
 
 #admin_footer {

@@ -1,0 +1,57 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}Viewing: <strong>Customers</strong>{% endblock %}
+
+{% block content %}
+
+<!-- <p>
+	<a href="/admin/products/add" class="img-button">
+		<img src="/images/icons/add.png" alt="" />
+		New Product
+	</a>
+</p> -->
+
+<div class="grid_8 alpha">
+	<select id="bulk-actions">
+		<option value="">-- Bulk Actions --</option>
+	</select>
+
+	<span id="no-rows-selected">No rows selected!</span>	
+</div>
+
+<div class="grid_8 omega tr">
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_customers %}{{page * items}}{% else %}{{total_customers}}{% endif %}</strong> of <strong>{{total_customers}}</strong> items
+</div>
+
+<div class="clear"></div>
+
+<table>
+	<thead>
+		<tr>
+			<th width="1"><input id="check-all" type="checkbox" /></th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Orders</th>
+			<th>Last Login</th>
+			<th>Customer Since</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, user in customers %}
+		{% set customer = user.customer %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="checkbox" class="row-selector" /></td>
+			<td>{{customer.lastname}}, {{customer.firstname}}</td>
+			<td><a href="mailto:{{customer.email}}">{{customer.email}}</a></td>
+			<td>{{customer.completed_orders()|length}} <em>({{customer.orders|length}})</em></td>
+			<td>{{user.last_login|date('d/m/Y')}}</td>
+			<td>{{customer.created|date('d/m/Y')}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{{pagination}}
+
+
+{% endblock %}

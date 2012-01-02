@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
+{
 	function before()
 	{
 		if ( ! Kohana::config('ecommerce.modules.pages'))

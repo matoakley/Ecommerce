@@ -8,8 +8,9 @@ class Ecommerce_Model_Basket_Item extends Model_Application
 			->fields(array(
 				'id' => new Field_Primary,
 				'basket_id' => new Field_Integer,
-				'product' => new Field_BelongsTo,
-				'product_options' => new Field_Serialized,
+				'sku' => new Field_BelongsTo,
+				'product' => new Field_BelongsTo,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
+				'product_options' => new Field_Serialized,  // Legacy Field, should not be used after v1.1.3, consider removing in future releases
 				'quantity' => new Field_Integer,
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -34,6 +35,14 @@ class Ecommerce_Model_Basket_Item extends Model_Application
 		}
 		else
 		{
+			// If stock management then check quantity doesn't exceed stock
+			if (Kohana::config('ecommerce.modules.stock_control'))
+			{
+				if ($quantity > $this->sku->stock)
+				{
+					$quantity = $this->sku->stock;
+				}
+			}
 			return $this->set(array(
 				'quantity' => $quantity,
 			))->save();

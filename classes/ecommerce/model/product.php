@@ -24,16 +24,10 @@ class Ecommerce_Model_Product extends Model_Application
 				'description' => new Field_Text(array(
 					'on_copy' => 'copy',
 				)),
-				'price' => new Field_Float(array(
+				'price' => new Field_Float(array(  // Legacy Field, should not be used after v1.1.3
 					'places' => 4,
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-					'on_copy' => 'copy',
 				)),
-				'sku' => new Field_String(array(
-					'on_copy' => 'copy',
-				)),
+				'sku' => new Field_String,  // Legacy Field, should not be used after v1.1.3
 				'categories' => new Field_ManyToMany(array(
 					'foreign' => 'category',
 					'through' => 'categories_products',
@@ -66,6 +60,9 @@ class Ecommerce_Model_Product extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'skus' => new Field_HasMany(array(
+					'foreign' => 'sku.product_id',
+				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -80,10 +77,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
-				'stock' => new Field_Integer(array(
-					'default' => 0,
-					'on_copy' => 'clear',
-				)),				
+				'stock' => new Field_Integer,  // Legacy Field, should not be used after v1.1.3
 				'duplicating' => new Field_Boolean(array(
 					'in_db' => FALSE,
 					'default' => FALSE,
@@ -153,7 +147,8 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold
 						FROM products
-						JOIN sales_order_items ON products.id = sales_order_items.product_id
+						JOIN skus ON products.id = skus.product_id
+						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
 						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
 						WHERE sales_orders.status = 'complete'
 						AND products.deleted IS NULL
@@ -182,20 +177,40 @@ class Ecommerce_Model_Product extends Model_Application
 		return $meta_description;
 	}
 
-	/**
-	 * Returns the Retail Price of a product after adding VAT.
-	 *
-	 * @return  float
-	 */
-	public function retail_price()
+	public function summarise_sku_price()
 	{
-		return Currency::add_tax($this->price, Kohana::config('ecommerce.vat_rate'));
-	}
-
-	// Legacy function for existing code, now moved into Currency helper
-	public static function deduct_tax($price = 0)
-	{
-		return Currency::deduct_tax($price, Kohana::config('ecommerce.vat_rate'));
+		$summary = '';
+		
+		$skus = $this->get('skus')->where('status', '=', 'active')->execute();
+		
+		if (count($skus) > 1)
+		{
+			$multiple_prices = FALSE;
+			$min_price = $skus->current()->price;
+			
+			foreach ($skus as $sku)
+			{
+				if ($sku->price < $min_price)
+				{
+					$multiple_prices = TRUE;
+					$min_price = $sku->price;
+				}
+				elseif ($sku->price > $min_price)
+				{
+					$multiple_prices = TRUE;
+				}
+				
+				$summary = ($multiple_prices) ? 'From ' : '';
+				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, Kohana::config('ecommerce.vat_rate')), 2);
+			}
+		}
+		else
+		{
+			// Only one SKU so set its price!
+			$summary = '&pound;'.number_format($skus->current()->retail_price(), 2);
+		}
+		
+		return $summary;
 	}
 	
 	public static function get_admin_products($page = 1, $limit = 20)
@@ -209,11 +224,6 @@ class Ecommerce_Model_Product extends Model_Application
 		return $products;
 	}
 	
-	public static function update_price($id, $price)
-	{
-		return self::load($id)->set(array('price' => self::deduct_tax($price)))->save();
-	}
-	
 	/**
 	 * Handles processing of data before saving when a product is edited or created.
 	 *
@@ -221,15 +231,7 @@ class Ecommerce_Model_Product extends Model_Application
 	 * @return  $this
 	 */
 	public function update($data)
-	{
-		// If no brand is set then set value to NULL
-		$data['brand'] = (isset($data['brand']) AND $data['brand'] > 0) ? $data['brand'] : NULL;
-		
-		if (array_key_exists('price', $data))
-		{
-			$data['price'] = self::deduct_tax($data['price']);
-		}
-		
+	{	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -238,14 +240,12 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->name = $data['name'];
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];
-		$this->price = $data['price'];
-		$this->sku = $data['sku'];
 		$this->status = $data['status'];
-		$this->meta_keywords = $data['meta_keywords'];
-		$this->meta_description = $data['meta_description'];
+		$this->meta_keywords = isset($data['meta_keywords']) ? $data['meta_keywords'] : '';
+		$this->meta_description = isset($data['meta_description']) ? $data['meta_description'] : '';
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
-		$this->brand = $data['brand'];
+		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
 		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
@@ -255,24 +255,22 @@ class Ecommerce_Model_Product extends Model_Application
 			$this->add('categories', $data['categories']);
 		}
 		
-		// Let's handle product options.
-		foreach ($this->product_options as $product_option)
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
 		{
-			$product_option->delete();
+			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 		}
 		
-		if (isset($data['product_options']))
+		$this->save();
+		
+		// If there are no SKUs set for this product then it must
+		// be a new product so create a default SKU.
+		if ( ! count($this->skus))
 		{
-			foreach ($data['product_options'] as $key => $product_options)
-			{
-				foreach ($product_options as $product_option)
-				{
-					Model_Product_Option::add_option($this->id, $key,  $product_option['value'], $product_option['status']);
-				}
-			}
+			Model_Sku::create_default($this);
 		}
 		
-		return $this->save();
+		return $this;
 	}
 
 	public function set_default_image($image_id = FALSE)
@@ -313,7 +311,7 @@ class Ecommerce_Model_Product extends Model_Application
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
 									
-		return array_unique($options);
+		return array_values(array_unique($options));
 	}
 	
 	public function get_option_values($option_name)
@@ -321,12 +319,34 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->execute()->as_array('value', 'status');
+							->execute();
 	}
 	
-	public function remove_from_stock($quantity = 1)
+	public function active_skus()
 	{
-		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
-		$this->save();
+		return $this->get('skus')
+								->where('status', '=', 'active')
+								->execute();
+	}
+	
+	public function total_stock()
+	{
+		$stock = 0;
+		
+		foreach ($this->skus as $sku)
+		{
+			$stock += $sku->stock;
+		}
+		
+		return $stock;
+	}
+	
+	public function remove_options($key)
+	{
+		$options = $this->get('product_options')->where('key', '=', $key)->execute();
+		foreach ($options as $option)
+		{
+			$option->delete();
+		}
 	}
 }

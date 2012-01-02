@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.1.3', 
+	'software_version' => '1.1.5', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -20,11 +20,14 @@ return array
 		'blog' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
 		'pages' => FALSE,
+		'product_options' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
 		'sales_orders' => FALSE,
+		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'users' => FALSE,
 	),
@@ -47,4 +50,5 @@ return array
 		),
 	),
 	
+	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 );

@@ -40,8 +40,13 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	
 	public static $searchable_fields = array(
 		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
 		),
 		'search' => array(
+			'name',
+			'body',
 		),
 	);
 	
@@ -79,6 +84,13 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 		{
 			$this->author = Auth::instance()->get_user()->id;
 		}
+		
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
+		{
+			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+		}
+
 		
 		return $this->save();
 	}

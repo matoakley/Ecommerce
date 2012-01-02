@@ -26,8 +26,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 			$this->template->google_api_error = TRUE;
 		}
 		
-		$latest_orders = Model_Sales_Order::search(array(), 5, array('created' => 'DESC'));
-		$this->template->latest_orders = $latest_orders['results'];
+		$latest_orders = Model_Sales_Order::recent_dashboard_orders();
+		$this->template->latest_orders = $latest_orders;
 		
 		$this->template->top_products = Model_Product::most_popular_products(5);
 		

@@ -33,6 +33,19 @@ class Ecommerce_Model_Page extends Model_Application
 		'active',
 	);
 
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'body',
+		),
+	);
+
+
 	public static function get_admin_pages($page = 1, $limit = 20)
 	{
 		$pages = Jelly::select('page')
@@ -59,6 +72,13 @@ class Ecommerce_Model_Page extends Model_Application
 	public function update($data)
 	{	
 		$this->set($data);
+		
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
+		{
+			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+		}
+
 		
 		return $this->save();
 	}

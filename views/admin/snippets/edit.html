@@ -1,0 +1,69 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if snippet.loaded %}
+		Edit Snippet: <strong>{{snippet.name}}</strong>
+	{% else %}
+		Adding: <strong>New Snippet</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if snippet.loaded %}
+				<a href="/admin/snippets/delete/{{snippet.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Snippet
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Snippet Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="snippet-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="snippet-name" name="snippet[name]" value="{{snippet.name}}"
+				class="inputtext long" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="snippet-description">Description</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="snippet-description" name="snippet[description]" value="{{snippet.description}}"
+				class="inputtext long" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="snippet-content" class="top">Content</label>
+		</div>
+		<div class="grid_14 omega">
+			<textarea id="snippet-content" name="snippet[content]" class="description">{{snippet.content}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+{% endblock %}

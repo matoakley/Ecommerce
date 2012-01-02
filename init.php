@@ -19,6 +19,12 @@ Route::set('add_pages', 'admin/pages/add')->defaults(array(
 	'action'		=> 'edit'
 ));
 
+Route::set('add_snippets', 'admin/snippets/add')->defaults(array(
+	'directory'		=> 'admin',
+	'controller'	=> 'snippets',
+	'action'		=> 'edit'
+));
+
 Route::set('add_users', 'admin/users/add')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'users',
@@ -72,6 +78,28 @@ Route::set('contact_form', 'tools/contact-form')->defaults(array(
 	'controller' => 'tools',
 	'action' => 'contact_form',
 ));
+
+Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)', array(
+	'email' => '.*', // Allow dots in email address
+))->defaults(array(
+	'controller' => 'customers',
+	'action' => 'forgotten_password',
+));
+
+Route::set('customer_dashboard', 'account')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'index',
+)); 
+
+Route::set('customer_login', 'login')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'login',
+)); 
+
+Route::set('customer_logout', 'logout')->defaults(array(
+	'controller' => 'customers',
+	'action' => 'logout',
+)); 
 
 Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'controller' => 'blog',

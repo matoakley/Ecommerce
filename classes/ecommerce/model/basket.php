@@ -82,14 +82,14 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->product->retail_price() * $item->quantity;
+			$subtotal += $item->sku->retail_price() * $item->quantity;
 		}
 		
 		return $subtotal;
 	}
 	
 	public function calculate_total()
-    {
+  {
 		$total = $this->calculate_subtotal();
 		
 		// Let's check for any promotional codes that we may need to consider
@@ -141,7 +141,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				$items_in_basket = array();
 				foreach ($this->items as $item)
 				{
-					$items_in_basket[] = $item->product->id;
+					$items_in_basket[] = $item->sku->product->id;
 				}
 				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
 				
@@ -149,14 +149,20 @@ class Ecommerce_Model_Basket extends Model_Application
 				
 				foreach ($qualifying_basket_items as $item_id)
 				{
-					$item = $this->get('items')->where('product_id', '=', $item_id)->limit(1)->execute();
+					$item = $this->get('items')
+														->join('skus')
+														->on('skus.id', '=', 'basket_items.sku_id')
+														->where('skus.product_id', '=', $item_id)
+														->limit(1)
+														->execute();
+				
 					switch ($this->promotion_code->discount_unit)
 					{
 						case 'pounds':
 							$discount += $this->promotion_code->discount_amount * $item->quantity;
 							break;
 						case 'percent':
-							$discount += ($item->product->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
 							break;
 					}
 				}
@@ -173,7 +179,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		return number_format($this->delivery_option->retail_price(), 2);
 	}
 	
-	public function add_item($product_id, $quantity, $product_options = NULL)
+	public function add_item($sku_id, $quantity)
 	{
 		// If we've not created a saved basket yet then we'd best create one now!
 		if ( ! $this->loaded())
@@ -183,15 +189,13 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		// See if this product already exists as a basket item!
 		$basket_item = $this->get('items')
-												->where('product_id', '=', $product_id)
-												->where('product_options', '=', serialize($product_options))
+												->where('sku_id', '=', $sku_id)
 												->limit(1)->execute();
 		
 		if ( ! $basket_item->loaded())
 		{
 			$basket_item->basket_id = $this->id;
-			$basket_item->product = $product_id;
-			$basket_item->product_options = $product_options;
+			$basket_item->sku = $sku_id;
 		}
 		
 		// If we are removing the item altogether then we want the 
