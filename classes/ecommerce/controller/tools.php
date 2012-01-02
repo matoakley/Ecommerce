@@ -56,7 +56,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		}
 	}
 	
-	function action_sitemap()
+	public function action_sitemap()
 	{
 		$this->auto_render = FALSE;
 		
@@ -208,7 +208,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		
 	}
 	
-	function action_product_feed()
+	public function action_product_feed()
 	{
 		// Products
 		$products = Model_Product::search(array('status:active'));
@@ -216,7 +216,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		$this->template->default_google_product_category = Kohana::config('ecommerce.default_google_product_category');
 	}
 	
-	function action_convert_to_skus()
+	public function action_convert_to_skus()
 	{
 		$this->auto_render = FALSE;
 		

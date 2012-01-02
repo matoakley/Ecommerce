@@ -74,9 +74,9 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')	->defaults(array(
 ));
 	
 // Default Public Routes
-Route::set('contact_form', 'tools/contact-form')->defaults(array(
+Route::set('contact_form', 'tools/send-contact-form')->defaults(array(
 	'controller' => 'tools',
-	'action' => 'contact_form',
+	'action' => 'send_contact_form',
 ));
 
 Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)', array(
