@@ -61,7 +61,6 @@ $(function(){
 				}
 				
 				$('span#subtotal').html(response.basket_subtotal);
-				update_basket_total();
 				
 				// Shrinks the number in the basket widget, updates it and expands it back.
 				$('div#basket_left').hide('clip', function(){
@@ -76,6 +75,9 @@ $(function(){
 						if (response != 'false'){
 							$('#delivery_price').html(response);
 						}
+					},
+					complete: function(){
+						update_basket_total();
 					}
 				});				
 			}
