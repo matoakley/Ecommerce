@@ -38,7 +38,7 @@ return array
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	
-	// Image sizing
+	// Product and Category Image sizing
 	'image_sizing' => array(
 		'thumbnail' => array(
 			'width' => 100,
@@ -49,6 +49,10 @@ return array
 			'height' => 280,		
 		),
 	),
+  'blog_image_sizing' => array(
+    'width' => 310,
+    'height' => 250,
+  ),
 	
 	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 );

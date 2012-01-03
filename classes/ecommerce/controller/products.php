@@ -1,6 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Products extends Controller_Application {
+class Ecommerce_Controller_Products extends Controller_Application
+{
+	public function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.products'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
+		parent::before();
+	}
 
 	function action_view($slug = FALSE)
 	{

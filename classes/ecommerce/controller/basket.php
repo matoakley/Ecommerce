@@ -2,6 +2,16 @@
 
 class Ecommerce_Controller_Basket extends Controller_Application
 {
+	public function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.sales_orders'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
+		parent::before();
+	}
+	
 	public function action_view()
 	{
 		if ($_POST)

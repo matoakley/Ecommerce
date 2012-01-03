@@ -8,6 +8,10 @@
 	{% endif %}
 {% endblock %}
 
+{% block custom_scripts %}
+  <script type="text/javascript" src="/media/js/admin/users.js?v=1"></script>
+{% endblock %}
+
 {% block content %}
 
 <form method="POST">
@@ -101,7 +105,7 @@
 					<label>Upload Image</label>
 				</div>
 				<div class="grid_4 omega">
-					<input type="file" name="image" id="image-upload" />
+          <input type="file" name="image" id="image-upload" data-user-id="{{user.id}}" />
 				</div>
 			
 				<div class="clear"></div>
@@ -116,34 +120,5 @@
 </div>
 
 <div class="clear"></div>
-
-<script type="text/javascript" charset="utf-8">
-	
-$(function(){
-
-	$('#image-upload').change(function(){
-	
-		// Remove the current image and replace with a spinner
-		$("#current-image").attr('src', '/images/admin/ajax-loader.gif');
-		
-		// If file upload has changed then do an async upload
-		$('#upload-image-form').submit();
-		
-		// Check the iframe for the response
-		$('#upload-image').load(function(){
-			
-			// Set the new image into the page
-			var date = new Date().getTime();
-			$("#current-image").attr('src', '/images/users/{{user.id}}.png?'+date);
-			
-			// Reset the upload field
-			$('#image-upload-field').val('');
-		});
-		
-	});
-	
-});
-
-</script>
 
 {% endblock %}

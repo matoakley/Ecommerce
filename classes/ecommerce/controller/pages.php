@@ -4,6 +4,11 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 
 	function before()
 	{
+		if ( ! Kohana::config('ecommerce.modules.pages'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
 		if($this->request->action == 'static')
 		{
 			$this->template = 'pages/static/'.$this->request->param('id');

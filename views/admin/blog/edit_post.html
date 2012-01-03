@@ -1,19 +1,16 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-
-{% endblock %}
-
 {% block page_title %}
 	{% if blog_post.loaded %}
 		Edit Blog Post: <strong>{{blog_post.name}}</strong>
 	{% else %}
 		Adding: <strong>New Blog Post</strong>
 	{% endif %}
+{% endblock %}
+
+{% block custom_scripts %}
+	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+  <script type="text/javascript" src="/media/js/admin/blog_posts.js?v=1"></script>
 {% endblock %}
 
 {% block content %}
@@ -133,6 +130,39 @@
 	</div>
 	
 </form>
+
+<h2>Featured Image</h2>
+
+	{% if not blog_post.loaded %}
+	
+		<p><em>You must save the blog post before adding an image.</em></p>
+		
+	{% else %}
+	
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/blog/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="blog_post_id" value="{{blog_post.id}}" />
+						
+			<div class="field">
+				<div class="grid_6 alpha">
+					<img src="{{blog_post.featured_image}}" alt="Featured Image" style="margin-left:10px;" id="current-image" />
+				</div>
+				<div class="grid_2">
+					<label>Upload Image</label>
+				</div>
+				<div class="grid_4 omega">
+          <input type="file" name="image" id="image-upload" data-blog-post-id="{{blog_post.id}}" />
+				</div>
+			
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
 
 <script type="text/javascript" charset="utf-8">
 	$('#blog-post-meta-description').counter({

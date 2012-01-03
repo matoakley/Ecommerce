@@ -1,7 +1,17 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Checkout extends Controller_Application {
-
+class Ecommerce_Controller_Checkout extends Controller_Application
+{
+	public function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.sales_orders'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
+		parent::before();
+	}
+	
 	function before()
 	{
 		// Attempt to use SSH if available as we're dealing with personal data

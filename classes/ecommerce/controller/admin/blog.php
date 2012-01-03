@@ -86,4 +86,15 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		$this->request->redirect($this->session->get('admin.blog.index', 'admin/blog'));
 	}
 	
+	public function action_upload_image()
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{	
+			$blog_post = Model_Blog_Post::load($_POST['blog_post_id']);
+			$blog_post->upload_image($_FILES['image']['tmp_name']);
+		}
+	}
+
 }

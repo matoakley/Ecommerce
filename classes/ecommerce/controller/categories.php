@@ -1,7 +1,17 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Categories extends Controller_Application {
-
+class Ecommerce_Controller_Categories extends Controller_Application
+{
+	public function before()
+	{
+		if ( ! Kohana::config('ecommerce.modules.categories'))
+		{
+			throw new Kohana_Exception('This module is not enabled');
+		}
+		
+		parent::before();
+	}
+	
 	function action_view($slug = FALSE)
 	{
 		$category = Model_Category::load($slug);
