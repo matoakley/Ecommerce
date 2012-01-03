@@ -70,7 +70,7 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 
 	public function body_summary()
 	{
-		return Text::limit_words($this->body, 100, ' &hellip;');
+		return Text::limit_words(strip_tags($this->body, '<p><br>') , 100, ' &hellip;');
 	}
 	
 	public function update($data)

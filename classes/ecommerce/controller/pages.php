@@ -21,6 +21,11 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 	{		
 		$page = Model_Page::get_by_slug($slug);
 		
+		if ( ! $page->loaded())
+		{
+			throw new Kohana_Exception('Page not found');
+		}
+		
 		$this->template->page = $page;
 		
 		$this->add_breadcrumb('/pages/view/' . $page->slug, $page->name);

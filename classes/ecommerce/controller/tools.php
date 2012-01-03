@@ -73,30 +73,33 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		// Add it to sitemap.
 		$sitemap->add($url);
 
-		// Products
-		$products = Model_Product::search(array('status:active'));
-		
-		foreach ($products['results'] as $product)
+		if ($this->modules['products'])
 		{
-			if (is_int($product->modified))
-			{
-				$last_mod = $product->modified;
-			}
-			else
-			{
-				$last_mod = $product->created;
-			}
+			// Products
+			$products = Model_Product::search(array('status:active'));
 			
-			// New basic sitemap.
-			$url = new Sitemap_URL;
-
-			// Set arguments.
-			$url->set_loc(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE))
-			    ->set_last_mod($last_mod)
-			    ->set_change_frequency('daily');
-
-			// Add it to sitemap.
-			$sitemap->add($url);
+			foreach ($products['results'] as $product)
+			{
+				if (is_int($product->modified))
+				{
+					$last_mod = $product->modified;
+				}
+				else
+				{
+					$last_mod = $product->created;
+				}
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
 		}
 
 		if ($this->modules['categories'])
@@ -144,7 +147,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		
 		if ($this->modules['pages'])
 		{
-			// Products
+			// CMS Pages
 			$pages = Model_Page::search(array('status:active'));
 			
 			foreach ($pages['results'] as $page)
@@ -168,6 +171,27 @@ class Ecommerce_Controller_Tools extends Controller_Application
 	
 				// Add it to sitemap.
 				$sitemap->add($url);
+			}
+			
+			// Read through static pages
+			if ($handle = opendir(APPPATH.'views/pages/static'))
+			{
+				while (FALSE !== ($page_file = readdir($handle)))
+				{
+					$file = APPPATH.'views/pages/static/'.$page_file;
+					$file_bits = pathinfo($file);
+					$last_mod = filemtime($file);
+				
+					$url = new Sitemap_URL;
+					
+					// Set arguments.
+					$url->set_loc(URL::site(Route::get('view_page')->uri(array('action' => 'static', 'slug' => $file_bits['filename'])), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+				}
 			}
 		}
 		
