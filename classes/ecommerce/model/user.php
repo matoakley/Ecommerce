@@ -45,6 +45,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 				'last_login' => new Field_Timestamp(array(
 					'pretty_format' => 'D M Y H:i',
 				)),
+				'short_bio' => new Field_Text,
 				'tokens' => new Field_HasMany(array(
 					'foreign' => 'user_token'
 				)),
@@ -199,6 +200,8 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		$this->firstname = $data['firstname'];
 		$this->lastname = $data['lastname'];
+		
+		$this->short_bio = Text::auto_p($data['short_bio']);
 		
 		foreach ($this->roles as $role)
 		{
