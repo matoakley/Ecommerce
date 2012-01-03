@@ -185,7 +185,7 @@ class Ecommerce_Controller_Tools extends Controller_Application
 					$url = new Sitemap_URL;
 					
 					// Set arguments.
-					$url->set_loc(URL::site(Route::get('view_page')->uri(array('action' => 'static', 'slug' => $file_bits['filename'])), TRUE))
+					$url->set_loc(URL::site(Route::get('view_static_page')->uri(array('slug' => $file_bits['filename'])), TRUE))
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	

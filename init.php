@@ -161,7 +161,12 @@ Route::set('view_page', 'pages/<slug>')->defaults(array(
 	'controller' => 'pages',
 	'action' => 'view',
 ));
-	
+
+Route::set('view_static_page', 'pages/static/<slug>')->defaults(array(
+	'controller' => 'pages',
+	'action' => 'static',
+));
+
 Route::set('search', 'search')->defaults(array(
 	'controller' => 'products',
 	'action' => 'search'
