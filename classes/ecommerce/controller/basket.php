@@ -14,6 +14,8 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	
 	public function action_view()
 	{
+		$this->basket->calculate_shipping();
+	
 		if ($_POST)
 		{
 			if (isset($_POST['checkout_x']))
@@ -110,14 +112,10 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	public function action_update_delivery_option()
 	{
 		$this->auto_render = FALSE;
-		if (isset($_POST['id']))
-		{
-			echo $this->basket->update_delivery_option($_POST['id']);
-		}
-		else
-		{
-			echo 'false';
-		}
+		
+		$this->basket->calculate_shipping();
+
+		echo number_format($this->basket->delivery_option->retail_price(), 2);
 	}
 	
 	public function action_update_total()

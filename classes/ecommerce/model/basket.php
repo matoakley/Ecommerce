@@ -221,4 +221,6 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->promotion_code = NULL;
 		return $this->save();
 	}
+	
+	public function calculate_shipping() {} // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
 }

@@ -1,5 +1,6 @@
 -- 03/01/2012 - Add short bio to system users
-ALTER TABLE `creative_intent_cc`.`users` ADD COLUMN `short_bio` text AFTER `last_login`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `short_bio`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+ALTER TABLE `users` ADD COLUMN `short_bio` text AFTER `last_login`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `short_bio`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+
 
 
 
