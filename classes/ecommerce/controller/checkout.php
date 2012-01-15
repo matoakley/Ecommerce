@@ -8,13 +8,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		{
 			throw new Kohana_Exception('This module is not enabled');
 		}
-		
-		parent::before();
-	}
-	
-	function before()
-	{
-		// Attempt to use SSH if available as we're dealing with personal data
+
 		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
 		{
 			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
@@ -22,7 +16,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		parent::before();
 	}
-
+	
 	function action_index()
 	{					
 		if ( ! $this->basket->loaded())
