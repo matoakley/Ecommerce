@@ -109,4 +109,29 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		exit;
 	}
+	
+	// Bulk ship and email
+	public function action_bulk_ship_and_email()
+	{
+		if ($_POST)
+		{
+			try
+			{
+				foreach ($_POST['sales_orders'] as $sales_order_id)
+				{
+					$sales_order = Model_Sales_Order::load($sales_order_id);
+					
+					if ($sales_order->status == 'payment_received')
+					{
+						$sales_order->update_status('complete')->send_shipped_email();
+					}
+				}
+			}
+			catch (Validate_Exception $e)
+			{
+			
+			}
+		}
+	}
+
 }

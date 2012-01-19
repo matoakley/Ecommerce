@@ -1,22 +1,4 @@
 $(function(){
-
-	$('#bulk-actions').change(function(){
-		
-		if ($(this).val() == 'update_price'){
-			
-			$.fancybox({
-				'href': '/admin/products/bulk_update_price',
-		        'autoDimensions': false,
-				'width': 525,
-				'height': 'auto',
-				'transitionIn': 'none',
-				'transitionOut': 'none',
-				'showCloseButton': false
-			});
-		}
-		
-		$(this).val('');
-	});
 	
 	$('#bulk-update-prices').live('click', function(){
 	

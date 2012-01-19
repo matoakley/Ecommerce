@@ -200,25 +200,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
 	}
 	
-	// Bulk price updater
-	public function action_bulk_update_price()
-	{
-		if ($_POST)
-		{
-			try
-			{
-				foreach ($_POST['products'] as $product_id)
-				{
-					Model_Product::update_price($product_id, $_POST['price']);
-				}
-			}
-			catch (Validate_Exception $e)
-			{
-			
-			}
-		}
-	}
-	
 	public function action_delete($id = NULL)
 	{
 		$this->auto_render = FALSE;
