@@ -17,9 +17,10 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		parent::before();
 	}
 	
+	
 	function action_index()
 	{					
-		if ( ! $this->basket->loaded())
+		if ( ! $this->basket->loaded() OR count($this->basket->items) == 0)
 		{
 			$this->request->redirect('/basket');
 		}
