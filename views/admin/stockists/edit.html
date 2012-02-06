@@ -1,0 +1,220 @@
+{% extends "admin/templates/default.html" %}
+
+{% block head %}
+
+	{% parent %}
+	
+	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/media/js/admin/stockists.js?v=1"></script>
+
+{% endblock %}
+
+{% block page_title %}
+	{% if stockist.loaded %}
+		Edit Stockist: <strong>{{stockist.name}}</strong>
+	{% else %}
+		Adding: <strong>New Stockist</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if stockist.loaded %}
+				<a href="/admin/stockists/delete/{{stockist.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Stockist
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Stockist Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-name" {{ errors.stockist.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="stockist-name" name="stockist[name]" value="{{fields.stockist.name}}"
+				class="inputtext longest {% if not stockist.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-slug" {{ errors.stockist.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="stockist-slug" name="stockist[slug]" value="{{fields.stockist.slug}}" class="inputtext longest slug" 
+				{% if stockist.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if stockist.loaded %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="{% url "view_stockist", ["slug":stockist.slug] %}" target="_blank">
+				{% url "view_stockist", ["slug":stockist.slug] %}
+			</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="stockist-status" name="stockist[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == fields.stockist.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="stockist-description" name="stockist[description]" class="description">{{fields.stockist.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="grid_8 alpha">
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="stockist-website">Website</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="stockist-website" name="stockist[website]" value="{{fields.stockist.website}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+	</div>
+	
+	<div class="grid_8 omega">
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-line-1" {{ errors.address.line_1 ? "class='error'" : "" }}>Address 1</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-line-1" name="address[line_1]" value="{{fields.address.line_1}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-line-2" {{ errors.address.line_2 ? "class='error'" : "" }}>Address 2</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-line-2" name="address[line_2]" value="{{fields.address.line_2}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-town" {{ errors.address.town ? "class='error'" : "" }}>Town</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-town" name="address[town]" value="{{fields.address.town}}" class="inputtext long {% if not stockist.loaded %}slugify{% endif %}" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-county" {{ errors.address.county ? "class='error'" : "" }}>County</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-county" name="address[county]" value="{{fields.address.county}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-postcode" {{ errors.address.postcode ? "class='error'" : "" }}>Postcode</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-postcode" name="address[postcode]" value="{{fields.address.postcode}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+	</div>
+	
+	<div class="clear"></div>
+	
+	<h2>Meta Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-meta-description">Description</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="stockist-meta-description" name="stockist[meta_description]" class="wide">{{fields.stockist.meta_description}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the category.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="stockist-meta-keywords">Keywords</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="stockist-meta-keywords" name="stockist[meta_keywords]" class="wide">{{fields.stockist.meta_keywords}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this category. These are used by Search Engines when indexing pages.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#stockist-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#stockist-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+</script>
+
+{% endblock %}

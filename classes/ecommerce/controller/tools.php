@@ -123,7 +123,6 @@ class Ecommerce_Controller_Tools extends Controller_Application
 			}
 		}
 
-		
 		if ($this->modules['brands'])
 		{
 			$brands = Model_Brand::search(array('status:active'));
@@ -137,6 +136,27 @@ class Ecommerce_Controller_Tools extends Controller_Application
 	
 				// Set arguments.
 				$url->set_loc(URL::site(Route::get('view_brand')->uri(array('slug' => $brand->slug)), TRUE))
+				    ->set_last_mod($last_mod)
+				    ->set_change_frequency('daily');
+	
+				// Add it to sitemap.
+				$sitemap->add($url);
+			}
+		}
+		
+		if ($this->modules['stockists'])
+		{
+			$stockists = Model_Stockist::search(array('status:active'));
+			
+			foreach ($stockists['results'] as $stockist)
+			{
+				$last_mod = time();
+				
+				// New basic sitemap.
+				$url = new Sitemap_URL;
+	
+				// Set arguments.
+				$url->set_loc(URL::site(Route::get('view_stockist')->uri(array('slug' => $stockist->slug)), TRUE))
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	

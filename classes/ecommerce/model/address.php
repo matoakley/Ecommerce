@@ -42,6 +42,27 @@ class Ecommerce_Model_Address extends Model_Application
 				)),
 			));
 	}
+	
+	public function __toString()
+	{
+		$address_parts = array(
+			$this->line_1,
+			$this->line_2,
+			$this->town,
+			$this->county,
+			$this->postcode,
+		);
+		
+		foreach ($address_parts as $key => $part)
+		{
+			if (is_null($part) OR $part == '')
+			{
+				unset($address_parts[$key]);
+			}
+		}
+	
+		return implode(', ', $address_parts);
+	}
 
 	public static function create($data, $customer_id, $is_delivery = FALSE)
 	{
@@ -61,5 +82,16 @@ class Ecommerce_Model_Address extends Model_Application
 		}
 	
 		return $address->save();
+	}
+	
+	public function update($data)
+	{
+		$this->line_1 = $data['line_1'];
+		$this->line_2 = $data['line_2'];
+		$this->town = $data['town'];
+		$this->county = $data['county'];
+		$this->postcode = $data['postcode'];
+	
+		return $this->save();
 	}
 }

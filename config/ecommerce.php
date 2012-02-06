@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.1.6', 
+	'software_version' => '1.1.7', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -29,6 +29,7 @@ return array
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
+		'stockists' => FALSE,
 		'users' => FALSE,
 	),
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),
