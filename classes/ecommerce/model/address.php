@@ -28,6 +28,12 @@ class Ecommerce_Model_Address extends Model_Application
 				'postcode' => new Field_String,
 				'country' => new Field_BelongsTo,
 				'telephone' => new Field_String,
+				'latitude' => new Field_Float(array(
+					'places' => 6,
+				)),
+				'longitude' => new Field_Float(array(
+					'places' => 6,
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -50,7 +56,8 @@ class Ecommerce_Model_Address extends Model_Application
 			$this->line_2,
 			$this->town,
 			$this->county,
-			$this->postcode,
+			// DON'T PUT POSTCODE HERE, IT BREAKS THE GEOCODE LOOKUP
+			// (apologies for shouting, but it's quite important)
 		);
 		
 		foreach ($address_parts as $key => $part)
@@ -93,5 +100,35 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->postcode = $data['postcode'];
 	
 		return $this->save();
+	}
+	
+	public function save($key = NULL)
+	{
+		//TODO: Only save if address has changed.
+		$this->geocode();
+	
+		return parent::save($key);
+	}
+	
+	private function geocode()
+	{
+		// Geoding service using Open Street Maps (that's how we roll) http://wiki.openstreetmap.org/wiki/Nominatim
+		$base_url = 'http://nominatim.openstreetmap.org/search';
+		$request_parts = array(
+			'q' => $this->__toString(),
+			'format' => 'json',
+		);
+	
+		//TODO: This should be put into a queue and processed to avoid holding checkout up if unavailable
+		$response = json_decode(Remote::get($base_url.'?'.http_build_query($request_parts)));
+		
+		if (isset($response[0]))
+		{
+			$this->latitude = $response[0]->lat;
+			echo Kohana::debug($response[0]->lat);
+			echo Kohana::debug($this->latitude);
+			$this->longitude = $response[0]->lon;
+		}
+		return $this; // DON'T RETURN $this->save() BECAUSE IT CREATES AN INFINITE LOOP.
 	}
 }

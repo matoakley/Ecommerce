@@ -1,0 +1,2 @@
+-- Add latitude and longitude fields to address table
+ALTER TABLE `addresses` DROP COLUMN `latitude`, DROP COLUMN `longitude`, ADD COLUMN `latitude` decimal(10,6) AFTER `country_id`, ADD COLUMN `longitude` decimal(10,6) AFTER `latitude`, CHANGE COLUMN `telephone` `telephone` varchar(20) DEFAULT NULL AFTER `longitude`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `telephone`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;

@@ -68,6 +68,9 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	
 		// Snippet Manager for templates
 		$this->template->snippet = Snippet::instance();
+		
+		// API key when using Leaflet.js for maps
+		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 	
 		parent::after();
 	}
