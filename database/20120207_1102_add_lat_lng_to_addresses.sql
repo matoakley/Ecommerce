@@ -11,3 +11,5 @@ CREATE TABLE `address_geocode_requests` (
 	`deleted` datetime,
 	PRIMARY KEY (`id`)
 );
+-- Allow null fields
+ALTER TABLE `addresses` CHANGE COLUMN `line_1` `line_1` varchar(255), CHANGE COLUMN `town` `town` varchar(255), CHANGE COLUMN `county` `county` varchar(255);

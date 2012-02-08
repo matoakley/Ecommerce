@@ -47,7 +47,7 @@ class Ecommerce_Model_Address_Geocode_Request extends Model_Application
 		// Geoding service using Open Street Maps (that's how we roll) http://wiki.openstreetmap.org/wiki/Nominatim
 		$base_url = 'http://nominatim.openstreetmap.org/search';
 		$request_parts = array(
-			'q' => (string)$address,
+			'q' => (string)$this->address,
 			'format' => 'json',
 		);
 	
@@ -59,7 +59,7 @@ class Ecommerce_Model_Address_Geocode_Request extends Model_Application
 			
 			if (isset($response[0]))
 			{
-				$address->set_lat_lng($response[0]->lat, $response[0]->lon);
+				$this->address->set_lat_lng($response[0]->lat, $response[0]->lon);
 			}
 			
 			$this->status = 'completed';

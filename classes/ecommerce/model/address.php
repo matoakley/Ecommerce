@@ -9,22 +9,10 @@ class Ecommerce_Model_Address extends Model_Application
 				'id' => new Field_Primary,
 				'customer' => new Field_BelongsTo,
 				'is_delivery' => new Field_Boolean,
-				'line_1' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
+				'line_1' => new Field_String,
 				'line_2' => new Field_String,
-				'town' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
-				'county' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
+				'town' => new Field_String,
+				'county' => new Field_String,
 				'postcode' => new Field_String,
 				'country' => new Field_BelongsTo,
 				'telephone' => new Field_String,
@@ -47,6 +35,22 @@ class Ecommerce_Model_Address extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 			));
+	}
+	
+	public static function customer_address_validator($data)
+	{
+		$validator = Validate::factory($data)
+											->filter(TRUE, 'trim')
+											->rule('line_1', 'not_empty')
+											->rule('town', 'not_empty')
+											->rule('postcode', 'not_empty');
+		
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
 	}
 	
 	public function __toString()
@@ -102,7 +106,7 @@ class Ecommerce_Model_Address extends Model_Application
 		return $this->save();
 	}
 	
-	public function save($key = NULL)
+	public function save($key = NULL, $geocode = TRUE)
 	{
 		$has_changed = $this->changed();
 		
@@ -110,7 +114,7 @@ class Ecommerce_Model_Address extends Model_Application
 		
 		// Only queue for geocoding if the address has been changed
 		// We must call this after save so that we have an id
-		if ($has_changed)
+		if ($has_changed AND $geocode)
 		{
 			$this->geocode();
 		}
@@ -122,5 +126,12 @@ class Ecommerce_Model_Address extends Model_Application
 	{
 		Model_Address_Geocode_Request::queue($this);
 		return $this;
+	}
+	
+	public function set_lat_lng($lat, $lng)
+	{
+		$this->latitude = $lat;
+		$this->longitude = $lng;
+		$this->save(NULL, FALSE);
 	}
 }

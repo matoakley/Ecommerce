@@ -22,6 +22,7 @@ return array
 		'categories' => FALSE,
 		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
+		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
 		'product_options' => FALSE,
 		'products' => FALSE,
@@ -32,6 +33,7 @@ return array
 		'stockists' => FALSE,
 		'users' => FALSE,
 	),
+	
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
