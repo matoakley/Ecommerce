@@ -104,31 +104,23 @@ class Ecommerce_Model_Address extends Model_Application
 	
 	public function save($key = NULL)
 	{
-		//TODO: Only save if address has changed.
-		$this->geocode();
+		$has_changed = $this->changed();
+		
+		parent::save($key);
+		
+		// Only queue for geocoding if the address has been changed
+		// We must call this after save so that we have an id
+		if ($has_changed)
+		{
+			$this->geocode();
+		}
 	
-		return parent::save($key);
+		return $this;
 	}
 	
 	private function geocode()
 	{
-		// Geoding service using Open Street Maps (that's how we roll) http://wiki.openstreetmap.org/wiki/Nominatim
-		$base_url = 'http://nominatim.openstreetmap.org/search';
-		$request_parts = array(
-			'q' => $this->__toString(),
-			'format' => 'json',
-		);
-	
-		//TODO: This should be put into a queue and processed to avoid holding checkout up if unavailable
-		$response = json_decode(Remote::get($base_url.'?'.http_build_query($request_parts)));
-		
-		if (isset($response[0]))
-		{
-			$this->latitude = $response[0]->lat;
-			echo Kohana::debug($response[0]->lat);
-			echo Kohana::debug($this->latitude);
-			$this->longitude = $response[0]->lon;
-		}
-		return $this; // DON'T RETURN $this->save() BECAUSE IT CREATES AN INFINITE LOOP.
+		Model_Address_Geocode_Request::queue($this);
+		return $this;
 	}
 }
