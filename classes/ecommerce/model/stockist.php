@@ -109,4 +109,21 @@ class Ecommerce_Model_Stockist extends Model_Application
 		
 		return $this;
 	}
+	
+	public function tidied_website()
+	{
+		if (empty($this->website))
+		{
+			return FALSE;
+		}
+	
+		$url = $this->website;
+		
+		if (substr($url, 0, 7) != 'http://' AND substr($url, 0, 8) != 'https://')
+		{
+			$url = 'http://'.$url;
+		}
+	
+		return $url;
+	}
 }
