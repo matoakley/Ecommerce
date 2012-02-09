@@ -127,10 +127,20 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 		
 		// Full Size first
 		$image_size = Kohana::config('ecommerce.blog_image_sizing');
-		$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
-		
-		// Crop it for good measure
-		$image->crop($image_size['width'], $image_size['height']);
+		if ($image_size['width'] > 0 AND $image_size['height'] > 0)
+		{
+			$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
+			// Crop it for good measure
+			$image->crop($image_size['width'], $image_size['height']);
+		}
+		elseif ($image_size['width'] == 0)
+		{
+			$image->resize(NULL, $image_size['height']);
+		}
+		else
+		{
+			$image->resize($image_size['width'], NULL);
+		}
 		
 		$directory = DOCROOT . '/images/blog-posts';
 		if ( ! is_dir($directory))
