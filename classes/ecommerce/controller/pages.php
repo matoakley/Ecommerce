@@ -26,8 +26,13 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 			throw new Kohana_Exception('Page not found');
 		}
 		$this->template->page = $page;
-		
-		$this->add_breadcrumb('/pages/view/' . $page->slug, $page->name);
+	
+		// build breadcrumb
+		if ($page->parent->loaded())
+		{
+			$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->parent->slug))), $page->parent->name);
+		}	
+		$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug))), $page->name);
 	}
 	
 	function action_static($slug = FALSE)

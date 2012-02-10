@@ -1,0 +1,4 @@
+-- Add parent_id field to mimic parent-child relationship from categories
+ALTER TABLE `pages` ADD COLUMN `parent_id` int AFTER `status`, CHANGE COLUMN `created` `created` datetime DEFAULT NULL AFTER `parent_id`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
+-- Add order field
+ALTER TABLE `pages` ADD COLUMN `order` int AFTER `parent_id`, CHANGE COLUMN `created` `created` datetime DEFAULT NULL AFTER `order`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;

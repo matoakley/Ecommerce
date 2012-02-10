@@ -95,6 +95,22 @@
 		<textarea name="page[body]" id="cms_body">{{page.body|e}}</textarea>
 	</div>
 	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="page-parent">Parent Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="page-parent" name="page[parent]">
+				<option value="0">-- Top Level Page --</option>
+			{% for tlp in top_level_pages %}
+				<option value="{{tlp.id}}" {{ tlp.id == page.parent.id ? "selected" : "" }}>{{tlp.name}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	
 	<h2>Meta Details</h2>
 	
 	<div class="field">

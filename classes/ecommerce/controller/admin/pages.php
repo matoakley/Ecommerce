@@ -79,6 +79,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 		
 		$this->template->page = $page;
 		$this->template->statuses = Model_Page::$statuses;
+		$this->template->top_level_pages = Model_Page::build_page_tree();
 	}
 
 	public function action_delete($id = NULL)
