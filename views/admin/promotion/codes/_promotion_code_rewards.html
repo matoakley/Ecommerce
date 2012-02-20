@@ -1,0 +1,96 @@
+{% for reward in fields.rewards %}
+	<div class="promotion-code-reward-row">
+	
+		<hr/>
+			
+		<div class="field">
+		
+			<div class="grid_2 alpha">
+				<label for="rewards_{{reward.id}}_reward_type">Type</label>
+			</div>
+			
+			<div class="grid_4">
+				<select name="rewards[{{reward.id}}][reward_type]" id="reward_{{reward.id}}_reward_type" disabled="disabled">
+					<option value=""></option>
+					{% for type in reward_types %}
+						<option value="{{type}}" {% if type == reward.reward_type %}selected="selected"{% endif %}>{{type|title}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			
+			<div class="grid_3">
+				<label for="rewards_{{reward.id}}_basket_minimum_value">Min. Basket Value</label>
+			</div>
+			
+			<div class="grid_6 omega">
+				<input type="text" id="rewards_{{reward.id}}_basket_minimum_value" name="rewards[{{reward.id}}][basket_minimum_value]" value="{{reward.basket_minimum_value|num_format(2)}}" class="inputtext shorter" disabled="disabled" />
+			</div>
+			
+			<div class="clear"></div>
+		
+		</div>
+		
+		{% if reward.reward_type == 'item' %}
+			<div class="field">
+			
+				<div class="grid_2 alpha">
+					<label for="">Item</label>
+				</div>
+				
+				<div class="grid_4">
+					<select disabled="disabled">
+						<option value=""></option>
+						{% for sku in all_skus %}
+							<option value="{{sku.id}}" {% if sku.id == reward.sku.id %}selected="selected"{% endif %}>{{sku.name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				
+				<div class="grid_3">
+					<label for="reward_{{reward.id}}_sku_reward_price">Reward Price</label>
+				</div>
+				
+				<div class="grid_6 omega">
+					<input type="text" name="reward[{{reward.id}}][sku_reward_price]" id="reward_{{reward.id}}_sku_reward_price" value="{{reward.sku_reward_price|num_format(2)}}" class="inputtext shorter" disabled="disabled" />
+				</div>
+	
+				<div class="clear"></div>		
+			</div>
+		{% else %}
+			<div class="field">
+			
+				<div class="grid_2 alpha">
+					<label for="reward_{{reward.id}}_discount_amount">Discount Amt</label>
+				</div>
+				
+				<div class="grid_4">
+					<input type="text" id="reward_{{reward.id}}_discount_amount" name="rewards[{{reward.id}}][discount_amount]" value="{{reward.discount_amount|num_format(2)}}" class="inputtext shorter" disabled="disabled" />
+				</div>
+				
+				<div class="grid_3">
+					<label for="reward_{{reward.id}}_discount_unit">Discount Unit</label>
+				</div>
+				
+				<div class="grid_6 omega">
+					<select id="reward_{{reward.id}}_discount_unit" name="rewards[{{reward.id}}][discount_unit]" disabled="disabled">
+						<option value="pound" {% if reward.discount_unit == 'pound' %}selected="selected"{% endif %}>&pound;</option>
+						<option value="percent" {% if reward.discount_unit == 'percent' %}selected="selected"{% endif %}>%</option>
+					</select>
+				</div>
+	
+				<div class="clear"></div>		
+			</div>		
+		{% endif %}
+
+		<div style="margin-top:15px;margin-bottom:15px;">	
+			<a href="{% url "edit_promotion_code_reward", ["promotion_code_id": promotion_code.id, "promotion_code_reward_id": reward.id] %}" class="edit_reward left-pad img-button">
+				<img src="/images/icons/pencil.png" alt="" class="" /> Edit Reward
+			</a>
+			<a href="{% url "delete_promotion_code_reward", ["promotion_code_id": promotion_code.id, "promotion_code_reward_id": reward.id] %}" class="delete-reward left-pad img-button">
+				<img src="/images/icons/delete.png" alt="" class="" />
+				Delete Reward
+			</a>
+		</div>
+
+	</div>
+{% endfor %}

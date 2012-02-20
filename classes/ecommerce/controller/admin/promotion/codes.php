@@ -49,6 +49,12 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		
 		$fields = array();
 		$fields['promotion_code'] = $promotion_code->as_array();
+		$fields['rewards'] = array();
+		foreach ($promotion_code->rewards as $reward)
+		{
+			$sku = $reward->sku->as_array();
+			$fields['rewards'][] = Arr::merge($reward->as_array(), array('sku', $sku));
+		}
 		
 		$errors = array();
 		
@@ -92,8 +98,12 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$this->template->fields = $fields;
 		$this->template->errors = $errors;
 		
+		$all_skus = Model_Sku::search();
+		
 		$this->template->promotion_code = $promotion_code;
+		$this->template->all_skus = $all_skus['results'];
 		$this->template->statuses = Model_Promotion_Code::$statuses;
+		$this->template->reward_types = Model_Promotion_Code_Reward::$reward_types;
 	}
 
 	public function action_auto_generate()
@@ -111,5 +121,110 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$promotion_code->delete();
 		
 		$this->request->redirect($this->session->get('admin.promotion_codes.index', 'admin/promotion_codes'));
+	}
+	
+	/** AJAX FUNCTIONS **/
+	
+	public function action_edit_reward()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Must be accessed via AJAX', NULL, 404);
+		}
+	
+		$promotion_code = Model_Promotion_Code::load($this->request->param('promotion_code_id'));
+		
+		if ( ! $promotion_code->loaded())
+		{
+			throw new Kohana_Exception('Promotion code could not be found');
+		}
+		
+		$promotion_code_reward = Model_Promotion_Code_Reward::load($this->request->param('promotion_code_reward_id'));
+		
+		$fields = array(
+			'reward' => $promotion_code_reward->as_array(),
+		);
+		$errors = array();
+		
+		$all_skus = Model_Sku::search();
+		
+		if ($_POST)
+		{	
+			try
+			{
+				$promotion_code_reward->validate($_POST['reward']);
+			}
+			catch (Validate_Exception $e)
+			{
+				$errors['reward'] = $e->array->errors();
+			}
+			
+			if (empty($errors))
+			{
+				$promotion_code_reward->update($promotion_code, $_POST['reward']);
+				
+				$all_rewards = array();
+				
+				foreach ($promotion_code->rewards as $reward)
+				{
+					$sku = $reward->sku->as_array();
+					$all_rewards[] = Arr::merge($reward->as_array(), array('sku' => $sku));
+				}
+				
+				$template_data = array(
+					'promotion_code' => $promotion_code,
+					'fields' => array(
+						'rewards' => $all_rewards,
+					),
+					'reward_types' => Model_Promotion_Code_Reward::$reward_types,
+					'all_skus' => $all_skus['results'],
+				);
+				$view = Twig::factory('admin/promotion/codes/_promotion_code_rewards.html', $template_data, $this->environment)->render();
+				
+				$data = array(
+					'data' => $promotion_code_reward->as_array(),
+					'view' => $view,
+				);
+				
+				echo json_encode($data);
+				exit;
+			}
+			else
+			{
+				echo json_encode($errors);
+				exit;
+			}
+		}
+		
+		$this->template->fields = $fields;
+		$this->template->errors = $errors;
+		
+		$this->template->promotion_code = $promotion_code;
+		$this->template->promotion_code_reward = $promotion_code_reward;
+		$this->template->all_skus = $all_skus['results'];
+		$this->template->reward_types = Model_Promotion_Code_Reward::$reward_types;
+	}
+	
+	public function action_delete_reward()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Must be accessed via AJAX', NULL, 404);
+		}
+		
+		$promotion_code = Model_Promotion_Code::load($this->request->param('promotion_code_id'));
+		
+		if ( ! $promotion_code->loaded())
+		{
+			throw new Kohana_Exception('Promotion code could not be found');
+		}
+		
+		$this->auto_render = FALSE;
+		
+		$promotion_code_reward = Model_Promotion_Code_Reward::load($this->request->param('promotion_code_reward_id'));
+		
+		$promotion_code_reward->delete();
+		
+		echo 'okay';
 	}
 }

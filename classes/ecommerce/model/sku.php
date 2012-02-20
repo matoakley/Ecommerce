@@ -108,4 +108,16 @@ class Ecommerce_Model_Sku extends Model_Application
 		$this->stock = ($this->stock - $quantity >= 0) ? $this->stock - $quantity : 0;
 		$this->save();
 	}
+	
+	public function name()
+	{
+		$name = $this->product->name;
+		
+		foreach ($this->product_options as $option)
+		{
+			$name .= ' '.$option->value;
+		}
+	
+		return $name;
+	}
 }

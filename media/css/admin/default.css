@@ -122,9 +122,9 @@ textarea.full-width {
 }
 
 .buttons {
-	border-top:1px dotted #CCC;
-	padding:10px;
-	margin-top:10px;
+	border-top: 1px dotted #CCC;
+	padding: 10px;
+	margin-top: 20px;
 }
 
 /** General Page Layout **/
@@ -345,10 +345,8 @@ select#bulk-actions {
 		padding:0 10px;
 	}
 	
-	.modal label {
-		width:120px;
-		padding-right:10px;
-		display:inline-block;
+	.modal .field {
+		background-color: #FFF;
 	}
 	
 /** Product Admin **/

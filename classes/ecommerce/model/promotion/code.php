@@ -37,6 +37,9 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 				)),
 				'products' => new Field_ManyToMany,
 				'status' => new Field_String,
+				'rewards' => new Field_HasMany(array(
+					'foreign' => 'promotion_code_reward.promotion_code_id',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

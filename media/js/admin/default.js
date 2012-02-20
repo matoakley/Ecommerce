@@ -79,6 +79,11 @@ $(function(){
 		});
 	});
 	
+	$('a.close-modal').live('click', function(e){
+		e.preventDefault();
+		$.fancybox.close();
+	});
+	
 });
 
 jQuery.fn.slugify = function(obj) {

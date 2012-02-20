@@ -7,7 +7,26 @@ Route::set('add_stockist', 'admin/stockists/add')->defaults(array(
 	'action'		=> 'edit',
 ));
 
-Route::set('add_promotion_code', 'admin/promotion_codes/add')	->defaults(array(
+Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'promotion_codes',
+	'action' => 'edit_reward',
+	'promotion_code_reward_id' => NULL,
+));
+
+Route::set('edit_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/edit_reward/<promotion_code_reward_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'promotion_codes',
+	'action' => 'edit_reward',
+));
+
+Route::set('delete_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/delete_reward/<promotion_code_reward_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'promotion_codes',
+	'action' => 'delete_reward',
+));
+
+Route::set('add_promotion_code', 'admin/promotion_codes/add')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'promotion_codes',
 	'action'		=> 'edit',
