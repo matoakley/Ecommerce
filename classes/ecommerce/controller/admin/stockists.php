@@ -30,7 +30,7 @@ class Ecommerce_Controller_Admin_Stockists extends Controller_Admin_Application
 		$this->session->set('admin.stockists.index', $_SERVER['REQUEST_URI']);
 		
 		$this->template->stockists = $search['results'];
-		$this->template->total_stcokists = $search['count_all'];
+		$this->template->total_stockists = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
 	}

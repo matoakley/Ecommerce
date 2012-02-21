@@ -102,6 +102,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->town = $data['town'];
 		$this->county = $data['county'];
 		$this->postcode = $data['postcode'];
+		$this->telephone = $data['telephone'];
 	
 		return $this->save();
 	}
