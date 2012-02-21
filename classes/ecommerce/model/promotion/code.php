@@ -19,6 +19,9 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 				'redeemed' => new Field_Integer(array(
 					'default' => 0,
 				)),
+				'run_indefinitely' => new Field_Boolean(array(
+					'default' => TRUE,
+				)),
 				'start_date' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i',
 				)),
@@ -135,13 +138,14 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		$this->code = $data['code'];
 		$this->description = $data['description'];
 		$this->status = $data['status'];
-		$this->start_date = $data['start_date'];
-		$this->end_date = $data['end_date'];
+		$this->run_indefinitely = $data['run_indefinitely'];
+		if ( ! $this->run_indefinitely)
+		{
+			$this->start_date = $data['start_date'];
+			$this->end_date = $data['end_date'];
+		}
 		$this->max_redemptions = $data['max_redemptions'];
-		$this->basket_minimum_value = $data['basket_minimum_value'];
 		$this->discount_on = $data['discount_on'];
-		$this->discount_amount = $data['discount_amount'];
-		$this->discount_unit = $data['discount_unit'];
 		
 		// Clear down and save products.
 		$this->remove('products', $this->products);

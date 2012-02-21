@@ -44,7 +44,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			throw new Kohana_Exception('Blog Post could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.blog.index', 'admin/blog');
+		$redirect_to = $this->session->get('admin.blog.index', '/admin/blog');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

@@ -106,8 +106,6 @@ $(function(){
 		
 	});
 	
-	// Matt's new JS begins here
-	
 	$('a.edit_reward').fancybox({
 		modal: true
 	});
@@ -183,7 +181,24 @@ $(function(){
 				$('a.edit_reward').fancybox();
 			}
 		});
-		
+	});
+	
+	$('#promotion-code-run-indefinitely').change(function(){
+		if ($(this).is(':checked')){
+			$('#promotion-code-valid-from').attr('disabled', 'disabled');
+			$('#promotion-code-valid-from-hour').attr('disabled', 'disabled');
+			$('#promotion-code-valid-from-minute').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until-hour').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until-minute').attr('disabled', 'disabled');
+		} else {
+			$('#promotion-code-valid-from').removeAttr('disabled');
+			$('#promotion-code-valid-from-hour').removeAttr('disabled');
+			$('#promotion-code-valid-from-minute').removeAttr('disabled');
+			$('#promotion-code-valid-until').removeAttr('disabled');
+			$('#promotion-code-valid-until-hour').removeAttr('disabled');
+			$('#promotion-code-valid-until-minute').removeAttr('disabled');		
+		}
 	});
 
 });

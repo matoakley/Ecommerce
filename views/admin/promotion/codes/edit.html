@@ -101,6 +101,15 @@
 		<div class="clear"></div>
 	</div>
 		
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="promotion-code-run-indefinitely">Lifetime</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="checkbox" name="promotion_code[run_indefinitely]" id="promotion-code-run-indefinitely" value="1" {% if fields.promotion_code.run_indefinitely %}checked="checked"{% endif %} /> Run indefinitely
+		</div>
+		<div class="clear"></div>
+	</div>
 	
 	<div class="field">
 		
@@ -108,15 +117,15 @@
 			<label for="promotion-code-valid-from">Valid From</label>
 		</div>
 		<div class="grid_4">
-			<input type="text" name="valid_from_date" value="{{fields.promotion_code.start_date|date('d/m/Y')}}"
-				class="datepicker inputtext shorter" />
-			<select name="valid_from_hour">
+			<input type="text" name="valid_from_date" value="{{fields.promotion_code.start_date|date('d/m/Y')}}" id="promotion-code-valid-from"
+				class="datepicker inputtext shorter" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} />
+			<select name="valid_from_hour" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} id="promotion-code-valid-from-hour">
 			{% for i in 0..23 %}
 				<option value="{{i}}" {% if fields.promotion_code.start_date|date('G') == i %}selected{% endif %}>{{'%02s'|format(i)}}</option>
 			{% endfor %}
 			</select>
 			:
-			<select name="valid_from_minute">
+			<select name="valid_from_minute" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} id="promotion-code-valid-from-minute">
 			{% for i in 0..59 %}
 				<option value="{{i}}" {% if fields.promotion_code.start_date|date('i') == '%02s'|format(i) %}selected{% endif %}>{{'%02s'|format(i)}}</option>
 			{% endfor %}
@@ -126,69 +135,40 @@
 			<label for="promotion-code-valid-until">Valid Until</label>
 		</div>
 		<div class="grid_4">
-			<input type="text" name="valid_to_date" value="{{fields.promotion_code.end_date|date('d/m/Y')}}"
-				class="datepicker inputtext shorter" />
-			<select name="valid_to_hour">
+			<input type="text" name="valid_to_date" value="{{fields.promotion_code.end_date|date('d/m/Y')}}" id="promotion-code-valid-until"
+				class="datepicker inputtext shorter" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} />
+			<select name="valid_to_hour" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} id="promotion-code-valid-until-hour">
 			{% for i in 0..23 %}
 				<option value="{{i}}" {% if fields.promotion_code.end_date|date('G') == i %}selected{% endif %}>{{'%02s'|format(i)}}</option>
 			{% endfor %}
 			</select>
 			:
-			<select name="valid_to_minute">
+			<select name="valid_to_minute" {% if fields.promotion_code.run_indefinitely %}disabled="disabled"{% endif %} id="promotion-code-valid-until-minute">
 			{% for i in 0..59 %}
 				<option value="{{i}}" {% if fields.promotion_code.end_date|date('i') == '%02s'|format(i) %}selected{% endif %}>{{'%02s'|format(i)}}</option>
 			{% endfor %}
 			</select>
 		</div>
-		<div class="grid_4 omega"><em>Leave blank to run indefinitely.</em></div>
+		<div class="grid_4 omega">&nbsp;</div>
 		<div class="clear"></div>
 		
 	</div>
 	
-	<h2>Promotion Code Rewards</h2>
-	
-	<p>
-		<a href="{% url "add_promotion_code_reward", ["promotion_code_id": promotion_code.id] %}" class="img-button edit_reward">
-			<img src="/images/icons/add.png" alt="" />
-			Add Reward
-		</a>
-	</p>
-	
-<!--
 	<div class="field">
-	
-		<div class="grid_2 alpha tr">
-			<select>
-				<option value="">Discount</option>
-				<option value="">Free item</option>
+		<div class="grid_2 alpha">
+			<label for="promotion-code-promotion-type">Promotion on</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="promotion-code-promotion-type" name="promotion_code[discount_on]">
+			{% for type in promotion_types %}
+				<option value="{{type}}" {% if type == fields.promotion_code.discount_on %}selected="selected"{% endif %}>{{type|title|humanize}}</option>
+			{% endfor %}
 			</select>
 		</div>
-		
-		<div class="grid_4">
-			on
-			<select id="promotion-code-discount-on" name="promotion_code[discount_on]">
-				<option value="sales_order" {% if fields.promotion_code.discount_on == 'sales_order' %}selected{% endif %}>Sales Order</option>
-				<option value="sales_order_item" {% if fields.promotion_code.discount_on == 'sales_order_item' %}selected{% endif %}>Sales Order Item</option>
-			</select>
-		</div>
-	
-		<div class="grid_2">
-			<label for="promotion-code-discount-amount">Discount Amt</label>
-		</div>
-		
-		<div class="grid_8 omega">
-			<input type="text" id="promotion-code-discount-amount" name="promotion_code[discount_amount]" 
-				value="{{fields.promotion_code.discount_amount|num_format(2)}}" class="inputtext shortest" />
-			<select name="promotion_code[discount_unit]">
-				<option value="pounds" {% if fields.promotion_code.discount_unit == "pounds" %}selected{% endif %}>Pounds</option>
-				<option value="percent" {% if fields.promotion_code.discount_unit == "percent" %}selected{% endif %}>Percent</option>
-			</select>
-		</div>
-	
 		<div class="clear"></div>
 	</div>
-		
-	<div class="field {% if not fields.promotion_code.discount_on == 'sales_order_item' %}hidden{% endif %}" id="promotion-code-products">
+	
+	<div class="field {% if fields.promotion_code.discount_on != 'sales_order_item' %}hidden{% endif %}" id="promotion-code-products">
 		
 		<div class="grid_2 alpha">
 			<label>On Items</label>
@@ -224,13 +204,27 @@
 	
 	{% endfor %}
 	</div>
--->
 	
+	<h2>Promotion Code Rewards</h2>
+	
+	{% if promotion_code.loaded %}
+	
+	<p>
+		<a href="{% url "add_promotion_code_reward", ["promotion_code_id": promotion_code.id] %}" class="img-button edit_reward">
+			<img src="/images/icons/add.png" alt="" />
+			Add Reward
+		</a>
+	</p>
+		
 	<div id="promotion-code-rewards">
 	
 	{% include "admin/promotion/codes/_promotion_code_rewards.html" %}
 	
 	</div>
+	
+	{% else %}
+		<p><em>You must save the promotion code before adding rewards.</em></p>
+	{% endif %}
 	
 </form>
 

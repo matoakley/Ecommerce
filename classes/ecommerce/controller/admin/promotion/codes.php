@@ -44,7 +44,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 			throw new Kohana_Exception('Promotion Code could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.promotion_codes.index', 'admin/promotion_codes');
+		$redirect_to = $this->session->get('admin.promotion_codes.index', '/admin/promotion_codes');
 		$this->template->cancel_url = $redirect_to;
 		
 		$fields = array();
@@ -60,11 +60,13 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		
 		if ($_POST)
 		{
-			$start_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_from_date'].' '.$_POST['valid_from_hour'].':'.$_POST['valid_from_minute']);
-			$end_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_to_date'].' '.$_POST['valid_to_hour'].':'.$_POST['valid_to_minute']);
-		
-			$_POST['promotion_code']['start_date'] = $start_date->format('U');
-			$_POST['promotion_code']['end_date'] = $end_date->format('U');
+			if ( ! $_POST['promotion_code']['run_indefinitely'])
+			{
+				$start_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_from_date'].' '.$_POST['valid_from_hour'].':'.$_POST['valid_from_minute']);
+				$end_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_to_date'].' '.$_POST['valid_to_hour'].':'.$_POST['valid_to_minute']);
+				$_POST['promotion_code']['start_date'] = $start_date->format('U');
+				$_POST['promotion_code']['end_date'] = $end_date->format('U');
+			}
 			
 			try
 			{
@@ -103,6 +105,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$this->template->promotion_code = $promotion_code;
 		$this->template->all_skus = $all_skus['results'];
 		$this->template->statuses = Model_Promotion_Code::$statuses;
+		$this->template->promotion_types = Model_Promotion_Code::$types;
 		$this->template->reward_types = Model_Promotion_Code_Reward::$reward_types;
 	}
 
