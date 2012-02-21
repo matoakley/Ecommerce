@@ -45,7 +45,7 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 			throw new Kohana_Exception('System user could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.users.index', 'admin/users');
+		$redirect_to = $this->session->get('admin.users.index', '/admin/users');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

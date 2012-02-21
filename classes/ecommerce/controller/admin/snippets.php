@@ -44,7 +44,7 @@ class Ecommerce_Controller_Admin_Snippets extends Controller_Admin_Application {
 			throw new Kohana_Exception('Snippet could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.snippets.index', 'admin/snippets');
+		$redirect_to = $this->session->get('admin.snippets.index', '/admin/snippets');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

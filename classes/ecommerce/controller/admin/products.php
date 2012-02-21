@@ -57,7 +57,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		
 		$errors = array();
 		
-		$redirect_to = $this->session->get('admin.products.index', 'admin/products');
+		$redirect_to = $this->session->get('admin.products.index', '/admin/products');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

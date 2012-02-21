@@ -51,7 +51,7 @@ class Ecommerce_Controller_Admin_Delivery_Options extends Controller_Admin_Appli
 		
 		$fields['delivery_option']['price'] = $delivery_option->retail_price();
 		
-		$redirect_to = $this->session->get('admin.delivery_options.index', 'admin/delivery_options');
+		$redirect_to = $this->session->get('admin.delivery_options.index', '/admin/delivery_options');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

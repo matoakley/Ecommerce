@@ -44,7 +44,7 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 			throw new Kohana_Exception('Brand could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.brands.index', 'admin/brands');
+		$redirect_to = $this->session->get('admin.brands.index', '/admin/brands');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

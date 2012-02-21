@@ -49,7 +49,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 			throw new Kohana_Exception('Page could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.pages.index', 'admin/pages');
+		$redirect_to = $this->session->get('admin.pages.index', '/admin/pages');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

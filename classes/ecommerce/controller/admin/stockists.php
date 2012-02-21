@@ -50,7 +50,7 @@ class Ecommerce_Controller_Admin_Stockists extends Controller_Admin_Application
 		);
 		$errors = array();
 		
-		$redirect_to = $this->session->get('admin.stockists.index', 'admin/stockists');
+		$redirect_to = $this->session->get('admin.stockists.index', '/admin/stockists');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)
