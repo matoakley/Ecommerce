@@ -77,4 +77,20 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		
 		return $item->save();
 	}
+	
+	public static function create_from_promotion_code_reward($sales_order, $promotion_code_reward)
+	{
+		$item = Jelly::factory('sales_order_item');
+		
+		$item->sales_order = $sales_order;
+		$item->sku = $promotion_code_reward->sku;
+		
+		$item->product_name = 'Promotional Item: '.$promotion_code_reward->sku->name();
+		$item->quantity = 1;
+		$item->unit_price = $promotion_code_reward->sku_reward_retail_price();
+		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
+		$item->total_price = $promotion_code_reward->sku_reward_retail_price(); 
+		
+		return $item->save();
+	}
 }

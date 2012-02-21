@@ -52,8 +52,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$fields['rewards'] = array();
 		foreach ($promotion_code->rewards as $reward)
 		{
-			$sku = $reward->sku->as_array();
-			$fields['rewards'][] = Arr::merge($reward->as_array(), array('sku', $sku));
+			$fields['rewards'][] = Arr::merge($reward->as_array(), array('sku_reward_retail_price' => $reward->sku_reward_retail_price()));
 		}
 		
 		$errors = array();
@@ -147,6 +146,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$fields = array(
 			'reward' => $promotion_code_reward->as_array(),
 		);
+		$fields['reward']['sku_reward_retail_price'] = $promotion_code_reward->sku_reward_retail_price();
 		$errors = array();
 		
 		$all_skus = Model_Sku::search();
@@ -170,8 +170,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 				
 				foreach ($promotion_code->rewards as $reward)
 				{
-					$sku = $reward->sku->as_array();
-					$all_rewards[] = Arr::merge($reward->as_array(), array('sku' => $sku));
+					$all_rewards[] = Arr::merge($reward->as_array(), array('sku_reward_retail_price' => $reward->sku_reward_retail_price()));
 				}
 				
 				$template_data = array(

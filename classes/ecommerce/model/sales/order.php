@@ -96,22 +96,35 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		
-		// Handle any promotional codes that are added to the basket.
-		if ($basket->promotion_code->loaded())
-		{
-			$sales_order->promotion_code = $basket->promotion_code;
-			$sales_order->promotion_code_code = $basket->promotion_code->code;
-			
-			$basket->promotion_code->redeem();
-			
-			$sales_order->discount_amount = $basket->calculate_discount();
-		}
-		
 		$sales_order->save();
 		
 		foreach ($basket->items as $basket_item)
 		{
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		// Handle any promotional codes that are added to the basket.
+		if ($basket->promotion_code_reward->loaded())
+		{
+			$sales_order->promotion_code = $basket->promotion_code;
+			$sales_order->promotion_code_code = $basket->promotion_code->code;
+			$basket->promotion_code->redeem();
+			
+			switch ($basket->promotion_code_reward->reward_type)
+			{
+				case 'discount':
+					$sales_order->discount_amount = $basket->calculate_discount();
+					break;
+					
+				case 'item':
+					Model_Sales_Order_Item::create_from_promotion_code_reward($sales_order, $basket->promotion_code_reward);
+					break;
+					
+				default:
+					break;
+			}
+			
+			$sales_order->save();
 		}
 		
 		$session = Session::instance();

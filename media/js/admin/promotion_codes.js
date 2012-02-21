@@ -204,8 +204,10 @@ $(function(){
 	$('#promotion-code-promotion-type').change(function(){
 		if ($(this).val() == 'sales_order_item'){
 			$('#promotion-code-products').slideDown();
+			$('#promotion-code-products-container').slideDown();
 		} else {
 			$('#promotion-code-products').slideUp();
+			$('#promotion-code-products-container').slideUp();
 		}
 		
 	});

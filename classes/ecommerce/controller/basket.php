@@ -123,6 +123,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->auto_render = FALSE;		
 		
 		$data = array(
+			'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
 			'basket_total' => number_format($this->basket->calculate_total(), 2),
 			'discount' => number_format($this->basket->calculate_discount(), 2),
 		);
@@ -138,7 +139,17 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		{
 			// Check if promotion code exists and if it is valid.
 			$this->basket->add_promotion_code($_POST['code']);
-			echo $_POST['code'];
+			
+			$template_data = array(
+				'basket' => $this->basket,
+			);
+			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
+						
+			$data = array(
+				'code' => $this->basket->promotion_code->code,
+				'reward_item' => $reward_item,
+			);
+			echo json_encode($data);
 		}
 		else
 		{

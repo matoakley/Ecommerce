@@ -103,6 +103,7 @@ $(function(){
 				url: '/basket/add_promotion_code',
 				type: 'POST',
 				data: { code: promotionCode },
+				dataType: 'json',
 				beforeSend: function(){
 				
 					// Show AJAX spinner
@@ -121,10 +122,14 @@ $(function(){
 				},
 				success: function(response){
 					
+					console.log(response);
+					
 					$('#promotion-code').val('');
-					$('#current-promotion-code').show();
-					$('#promotion-code-form').hide();
-					$('#current-promotion-code-code').html(response);
+					$('#promotion-code-form').hide('slow', function(){
+						$('#current-promotion-code').removeClass('hidden').show('slow');
+					});
+					$('#current-promotion-code-code').html(response.code);
+					$('#promotion-code-reward-item').html(response.reward_item).removeClass('hidden').slideDown();
 					
 					update_basket_total();
 				},
@@ -156,8 +161,11 @@ $(function(){
 				$('#promotion-code-spinner').show();
 			},
 			success: function(){
-				$('#current-promotion-code').hide();
-				$('#promotion-code-form').show();
+				$('#current-promotion-code').hide('slow', function(){
+					$('#promotion-code-form').removeClass('hidden').show('slow');
+				});
+				
+				$('#promotion-code-reward-item').slideUp();
 				
 				update_basket_total();
 			},
@@ -182,10 +190,9 @@ function update_basket_total(){
 				$('#basket_discount').show();
 			} else {
 				$('#basket_discount').hide();
-				$('#current-promotion-code').hide();
-				$('#promotion-code-form').show();
 			}
 			$('#basket_total').html(response.basket_total);
+			$('#subtotal').html(response.basket_subtotal);
 		}
 	});
 }

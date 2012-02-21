@@ -150,9 +150,12 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		// Clear down and save products.
 		$this->remove('products', $this->products);
 		
-		if (isset($data['products']))
+		if ($this->discount_on == 'sales_order_item')
 		{
-			$this->add('products', $data['products']);
+			if (isset($data['products']))
+			{
+				$this->add('products', $data['products']);
+			}
 		}
 	
 		return $this->save();
@@ -162,5 +165,11 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 	{
 		$this->redeemed++;
 		$this->save();
+	}
+	
+	public function calculate_most_suitable_reward($basket)
+	{
+		$reward = $this->get('rewards')->where('basket_minimum_value', '<', $basket->calculate_subtotal())->order_by('basket_minimum_value', 'DESC')->limit(1)->execute();
+		return $reward->loaded() ? $reward : NULL;
 	}
 }

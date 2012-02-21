@@ -11,8 +11,11 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 			$this->template->visits = $analytics->daily_visit_count();
 			$this->template->top_referrers = $analytics->query('source', 'visits', '-visits', 5);	
 						
+			$visit_data = $analytics->monthly_visit_count();
+			ksort($visit_data);
+			
 			$monthly_totals = array();
-			foreach ($analytics->monthly_visit_count() as $month => $visits)
+			foreach ($visit_data as $month => $visits)
 			{
 				$monthly_totals[Date::month2string($month)] = array(
 					'visits' => $visits,

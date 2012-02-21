@@ -13,6 +13,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
+				'promotion_code_reward' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -53,6 +54,11 @@ class Ecommerce_Model_Basket extends Model_Application
 	
 	public function save($key = NULL)
 	{	
+		if ($this->promotion_code->loaded())
+		{
+			$this->promotion_code_reward = $this->promotion_code->calculate_most_suitable_reward($this);
+		}
+	
 		parent::save($key);
 		
 		if ( ! Session::instance()->get('basket_id'))
@@ -83,6 +89,12 @@ class Ecommerce_Model_Basket extends Model_Application
 		foreach ($this->items as $item)
 		{
 			$subtotal += $item->sku->retail_price() * $item->quantity;
+		}
+		
+		// Are there any special priced items to add due to promotion codes?
+		if ($this->promotion_code->loaded() AND $this->promotion_code_reward->reward_type == 'item')
+		{
+			$subtotal += $this->promotion_code_reward->sku_reward_retail_price();
 		}
 		
 		return $subtotal;
@@ -124,13 +136,13 @@ class Ecommerce_Model_Basket extends Model_Application
 			// Is the discount based upon the sales order or a sales order item?
 			if ($this->promotion_code->discount_on == 'sales_order')
 			{
-				switch ($this->promotion_code->discount_unit)
+				switch ($this->promotion_code_reward->discount_unit)
 				{
 					case 'pounds':
-						$discount = $this->promotion_code->discount_amount;
+						$discount = $this->promotion_code_reward->discount_amount;
 						break;
 					case 'percent':
-						$discount = $subtotal * ($this->promotion_code->discount_amount / 100);
+						$discount = $subtotal * ($this->promotion_code_reward->discount_amount / 100);
 						break;
 				}
 			}
@@ -156,13 +168,13 @@ class Ecommerce_Model_Basket extends Model_Application
 														->limit(1)
 														->execute();
 				
-					switch ($this->promotion_code->discount_unit)
+					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
 							break;
 						case 'percent':
-							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
 							break;
 					}
 				}
@@ -213,12 +225,13 @@ class Ecommerce_Model_Basket extends Model_Application
 	{
 		// Retrieve promotion code.
 		$this->promotion_code = Model_Promotion_Code::retrieve_for_use($code);
-		$this->save();
+		return $this->save();
 	}
 	
 	public function remove_promotion_code()
 	{
 		$this->promotion_code = NULL;
+		$this->promotion_code_reward = NULL;
 		return $this->save();
 	}
 	

@@ -132,7 +132,7 @@ class Ecommerce_Model_Promotion_Code_Reward extends Model_Application
 				
 			case 'item':
 				$this->sku = $data['sku'];
-				$this->sku_reward_price = $data['sku_reward_price'];
+				$this->sku_reward_price = Currency::deduct_tax(str_replace(',', '', $data['sku_reward_price']), Kohana::config('ecommerce.vat_rate'));
 				break;
 				
 			default:
@@ -141,5 +141,15 @@ class Ecommerce_Model_Promotion_Code_Reward extends Model_Application
 		}
 		
 		return $this->save();
+	}
+	
+	/**
+	 * Returns the Retail Price of a product after adding VAT.
+	 *
+	 * @return  float
+	 */
+	public function sku_reward_retail_price()
+	{
+		return Currency::add_tax($this->sku_reward_price, Kohana::config('ecommerce.vat_rate'));
 	}
 }
