@@ -136,6 +136,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				{
 					foreach ($_POST['skus'] as $sku_id => $sku_data)
 					{
+						if (count($_POST['skus']) == 1)
+						{
+							$sku_data['status'] = 'active';
+						}
+						
 						$sku = Model_Sku::load($sku_id);
 						$sku->update($sku_data);
 					}
