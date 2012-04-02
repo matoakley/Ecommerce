@@ -65,7 +65,7 @@
 				{% if sales_order.status == 'payment_received' %}
 					<a href="#" id="complete-and-email">
 						<img src="/images/icons/tick.png" alt="" class="inline-icon" />
-						<img src="/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
+						<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
 						Complete &amp; Send Email
 					</a>
 				{% endif %}
@@ -170,7 +170,7 @@
 
 <textarea class="full-width" id="new-note"></textarea>
 <button id="add-note">Add Note</button>
-<img src="/images/admin/ajax-loader.gif" alt="" id="add-note-spinner" class="hidden" />
+<img src="/media/images/admin/ajax-loader.gif" alt="" id="add-note-spinner" class="hidden" />
 
 <div id="sales-order-notes">
 {% for key, note in sales_order.notes %}

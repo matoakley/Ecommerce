@@ -39,6 +39,14 @@ div.field {
 	-moz-border-radius:3px;
 }
 
+div.field:hover {
+	background:#DDD;
+}
+
+div.field.darker {
+	background:#DDD;
+}
+
 label {
 	display:block;
 	text-align:right;
@@ -106,7 +114,7 @@ textarea {
 }
 
 textarea.wide {
-	width:330px;
+	width:320px;
 }
 
 textarea.tall {
@@ -118,15 +126,15 @@ textarea.full-width {
 }
 
 .buttons {
-	border-top:1px dotted #CCC;
-	padding:10px;
-	margin-top:10px;
+	border-top: 1px dotted #CCC;
+	padding: 10px;
+	margin-top: 20px;
 }
 
 /** General Page Layout **/
 
 #header {
-	background:url(/images/admin/header-bg.png) repeat-x;
+	background:url(/media/images/admin/header-bg.png) repeat-x;
 	height:121px;
 	font-size:1.2em;
 }
@@ -341,12 +349,6 @@ select#bulk-actions {
 		padding:0 10px;
 	}
 	
-	.modal label {
-		width:120px;
-		padding-right:10px;
-		display:inline-block;
-	}
-	
 /** Product Admin **/
 #product-meta-description { height:60px; }
 
@@ -369,6 +371,7 @@ ul.subcategory-list {
 
 .product-image {
 	margin:10px;
+	width:100px;
 }
 
 iframe#upload-image {
@@ -404,6 +407,16 @@ a.product-option-remove {
 	color:red;
 	font-style:italic;
 	margin-left:10px;
+}
+
+p.product-option-error {
+	color:red;
+	font-style:italic;
+	margin-bottom:0;
+}
+
+.product-sku-row {
+	margin-bottom:10px;
 }
 
 #admin_footer {

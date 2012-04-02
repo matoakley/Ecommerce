@@ -13,10 +13,17 @@ $(function(){
 	$('textarea.description').ckeditor({
 		toolbar:
 				[
-		            ['Format'],
-		            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'RemoveFormat']
+		            ['Source', 'Format'],
+		            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'RemoveFormat'],
+		            ['Image']
 		        ],
-		width: "810"
+		width: "810",
+
+		// CKFinder integration		
+		filebrowserBrowseUrl : '/ckfinder/ckfinder.html',
+    filebrowserImageBrowseUrl : '/ckfinder/ckfinder.html?Type=Images',
+    filebrowserUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+    filebrowserImageUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
 	});
 
 	$('.slugify').keyup(function(){
@@ -70,6 +77,11 @@ $(function(){
 				window.location.reload();
 			}
 		});
+	});
+	
+	$('a.close-modal').live('click', function(e){
+		e.preventDefault();
+		$.fancybox.close();
 	});
 	
 });

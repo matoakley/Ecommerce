@@ -132,8 +132,15 @@ class Ecommerce_Model_Brand extends Model_Application
 	public function update($data)
 	{		
 		$this->set($data);
+		$this->save();
 		
-		return $this->save();
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
+		{
+			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+		}
+		
+		return $this;
 	}
 
 }

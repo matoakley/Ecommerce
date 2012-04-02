@@ -105,5 +105,111 @@ $(function(){
 		productContainer.appendTo($('#promotion-code-products-container'));
 		
 	});
+	
+	$('a.edit_reward').fancybox({
+		modal: true
+	});
+	
+	$('a.delete-reward').live('click', function(e){
+		
+		e.preventDefault();
+		
+		var button = $(this);
+		
+		if (confirm('Are you sure that you want to permanently delete this reward?')){
+			$.ajax({
+				url: button.attr('href'),
+				beforeSend: function(){},
+				error: function(){},
+				success: function(){
+					var row = button.parents('div.promotion-code-reward-row');
+					row.slideUp('slow', function(){
+						row.remove();
+					});
+				},
+			});
+		}
+	});
+	
+	$('#reward_reward_type').live('change', function(){
+		
+		if ($(this).val() == 'item'){
+			$('#reward-discount-fields').slideUp('slow', function(){
+				$('#reward-item-fields').slideDown('slow', function(){
+					$.fancybox.resize();
+				});
+			});
+		}
+		else if ($(this).val() == 'discount'){
+			$('#reward-item-fields').slideUp('slow', function(){
+				$('#reward-discount-fields').slideDown('slow', function(){
+					$.fancybox.resize();
+				});
+			});
+		}
+	});
+	
+	$('#add-promotion-code-reward').live('click', function(){
+		
+		var button = $(this);
+		
+		var data = {
+			reward: {
+				reward_type: $('#reward_reward_type').val(),
+				basket_minimum_value: $('#reward_basket_minimum_value').val(),
+				discount_amount: $('#reward_discount_amount').val(),
+				discount_unit: $('#reward_discount_unit').val(),
+				sku: $('#reward_sku').val(),
+				sku_reward_price: $('#reward_sku_reward_price').val()
+			}
+		};
+		
+		$.ajax({
+			url: button.attr('data-submit-url'),
+			type: 'POST',
+			data: data,
+			dataType: 'json',
+			beforeSend: function(){},
+			error: function(response){
+			},
+			success: function(response){
+				//close the modal
+				$.fancybox.close();
+				//add the new reward to the page
+				$('#promotion-code-rewards').html(response.view);
+				// Re-add the fancybox functionality to include new elements
+				$('a.edit_reward').fancybox();
+			}
+		});
+	});
+	
+	$('#promotion-code-run-indefinitely').change(function(){
+		if ($(this).is(':checked')){
+			$('#promotion-code-valid-from').attr('disabled', 'disabled');
+			$('#promotion-code-valid-from-hour').attr('disabled', 'disabled');
+			$('#promotion-code-valid-from-minute').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until-hour').attr('disabled', 'disabled');
+			$('#promotion-code-valid-until-minute').attr('disabled', 'disabled');
+		} else {
+			$('#promotion-code-valid-from').removeAttr('disabled');
+			$('#promotion-code-valid-from-hour').removeAttr('disabled');
+			$('#promotion-code-valid-from-minute').removeAttr('disabled');
+			$('#promotion-code-valid-until').removeAttr('disabled');
+			$('#promotion-code-valid-until-hour').removeAttr('disabled');
+			$('#promotion-code-valid-until-minute').removeAttr('disabled');		
+		}
+	});
+	
+	$('#promotion-code-promotion-type').change(function(){
+		if ($(this).val() == 'sales_order_item'){
+			$('#promotion-code-products').slideDown();
+			$('#promotion-code-products-container').slideDown();
+		} else {
+			$('#promotion-code-products').slideUp();
+			$('#promotion-code-products-container').slideUp();
+		}
+		
+	});
 
 });

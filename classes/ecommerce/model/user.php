@@ -8,6 +8,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 			->sorting(array('username' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer' => new Field_HasOne,
 				'firstname' => new Field_String,
 				'lastname' => new Field_String,
 				'username' => new Field_Email(array(
@@ -44,6 +45,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 				'last_login' => new Field_Timestamp(array(
 					'pretty_format' => 'D M Y H:i',
 				)),
+				'short_bio' => new Field_Text,
 				'tokens' => new Field_HasMany(array(
 					'foreign' => 'user_token'
 				)),
@@ -66,6 +68,19 @@ class Ecommerce_Model_User extends Model_Auth_User
 			));
 	}
 
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'role' => array(
+				'join' => array(
+					'roles_users' => array('user.id', 'roles_users.user_id'),
+					'roles' => array('role.id', 'roles_users.role_id'),
+				),
+				'field' => 'role.id',
+			),
+		),
+		'search' => array(),
+	);
+
 	public function __get($field)
 	{
 		if ($field == 'avatar')
@@ -76,16 +91,15 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return parent::__get($field);
 	}
 	
-	public function get_avatar()
+	public static function create_for_customer($customer, $password)
 	{
-		$file_path = '/images/users/' . $this->id . '.jpg';
-		
-		if ( ! file_exists(DOCROOT . $file_path))
-		{
-			$file_path = '/images/users/default.jpg';
-		}
-		
-		return $file_path;
+		$user = Jelly::factory('user');
+		$user->username = $customer->email;
+		$user->email = $customer->email;
+		$user->password = $password;
+		$user->password_confirm = $password;
+		$user->add('roles', array(1,3));
+		return $user->save();
 	}
 
 	public static function load($id = FALSE)
@@ -164,6 +178,18 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		return $data;
 	}
+
+	public function get_avatar()
+	{
+		$file_path = '/images/users/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/users/default.jpg';
+		}
+		
+		return $file_path;
+	}
 	
 	public function update($data)
 	{	
@@ -174,6 +200,8 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		$this->firstname = $data['firstname'];
 		$this->lastname = $data['lastname'];
+		
+		$this->short_bio = Text::auto_p($data['short_bio']);
 		
 		foreach ($this->roles as $role)
 		{
@@ -211,5 +239,11 @@ class Ecommerce_Model_User extends Model_Auth_User
 		}
 		
 		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+	}
+	
+	public function change_password($new_password)
+	{
+		$this->password = $new_password;
+		return $this->save();
 	}
 }

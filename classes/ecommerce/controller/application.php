@@ -9,6 +9,10 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	private $recent_products;
 	
 	protected $basket;
+	
+	protected $modules = array();
+	
+	protected $auth;
 
 	/**
 	 * Setup view
@@ -25,11 +29,15 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// Initialise session.
 		$this->session = Session::instance();
 		
+		$this->auth = Auth::instance();
+		
 		$this->basket = Model_Basket::instance();
 		
 		// Assigning this before the controller is called will prevent the CURRENT product
 		// displaying in the Recently Viewed Products list.
 		$this->recent_products = $this->session->get('recent_products', array());
+		
+		$this->modules = Kohana::config('ecommerce.modules');
 		
 		parent::before();
 	}
@@ -37,6 +45,11 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	public function after()
 	{	
 		$this->template->base_url = URL::base(TRUE, TRUE);
+		$this->template->site_name = Kohana::config('ecommerce.site_name');
+		
+		$this->template->modules = $this->modules;
+		
+		$this->template->auth = $this->auth;
 		
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
@@ -52,12 +65,12 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// Assign Recently Viewed Products to template
 		$this->template->breadcrumbs = $this->build_breadcrumbs();
+	
+		// Snippet Manager for templates
+		$this->template->snippet = Snippet::instance();
 		
-		// Show Kohana profiler if viewing from home IP address
-		// if (Request::$client_ip == '95.172.233.145')
-		// {
-		// 	$this->template->kohana_profiler =  View::factory('profiler/stats');
-		// }
+		// API key when using Leaflet.js for maps
+		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 	
 		parent::after();
 	}

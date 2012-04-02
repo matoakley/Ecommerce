@@ -44,7 +44,7 @@ class Ecommerce_Controller_Admin_Categories extends Controller_Admin_Application
 			throw new Kohana_Exception('Category could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.categories.index', 'admin/categories');
+		$redirect_to = $this->session->get('admin.categories.index', '/admin/categories');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

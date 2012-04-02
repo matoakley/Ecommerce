@@ -1,0 +1,87 @@
+{% if modules.product_options %}
+<div class="field">
+	<div class="grid_2 alpha">
+		<label>Add new variant</label>
+	</div>
+	<div class="grid_14 omega">
+		<button id="add-new-product-sku" data-product-id="{{product.id}}" {% if product.product_options|length < 1 %}disabled="disabled"{% endif %}>Add</button>
+		<img src="/media/images/admin/ajax-loader.gif" alt="" id="product-sku-add-spinner" class="hidden" />
+		<em>Select the product option combination above and click Add to create new Product Variant.</em>
+		<p id="sku-add-error" class="product-option-error hidden"></p>
+	</div>
+	<div class="clear"></div>
+</div>
+{% endif %}
+
+{% set multiple_skus = fields.skus|length > 1 %}
+
+{% for sku_id, sku in fields.skus %}
+<div class="product-sku-row" id="product-sku-row-{{sku.id}}">
+	{% if modules.product_options %}
+		<div class="field darker">
+			<div class="grid_14 alpha">
+			{% if multiple_skus %}
+				{% for option in sku.product_options %}
+					<strong class="left-pad">{{option.key|title}}:</strong> {{option.value}}
+				{% endfor %}
+			{% else %}
+				<strong class="left-pad">Default Variant <em>(no options)</em></strong>
+			{% endif %}
+			&nbsp;
+			</div>
+	{% endif %}
+	<div class="grid_2 omega tr">
+	{% if multiple_skus %}
+		<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-remove-spinner-{{sku.id}}" class="hidden" />
+		<a href="#" class="delete-button sku-delete-button" data-sku-id="{{sku.id}}">
+			<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+			remove
+		</a>
+	{% endif %}
+	</div>
+	<div class="clear"></div>
+</div>
+	
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="product-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
+	</div>
+	<div class="grid_6">
+		<input type="text" id="sku-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
+		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
+	</div>
+	<div class="grid_2">
+		{% if modules.stock_control %}
+			<label for="product-stock">Stock</label>
+		{% endif %}
+	</div>
+	<div class="grid_2 omega">
+		{% if modules.stock_control %}
+			<input type="text" id="product-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
+		{% endif %}
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="sku-sku-id">SKU</label>
+	</div>
+	<div class="grid_6">
+		<input type="text" id="sku-sku-{{sku.id}}" name="skus[{{sku.id}}][sku]" value="{{sku.sku}}" class="inputtext" />
+	</div>
+	{% if multiple_skus %}
+		<div class="grid_2">
+			<label for="sku-status">Status</label>
+		</div>
+		<div class="grid_6 omega">
+			<select id="sku-status" name="skus[{{sku.id}}][status]">
+			{% for status in sku_statuses %}
+				<option value="{{status}}" {{ status == sku.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+	{% endif %}
+	<div class="clear"></div>
+</div>
+{% endfor %}

@@ -20,6 +20,9 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 				'status' => new Field_String,
 				'meta_description' => new Field_String,
 				'meta_keywords' => new Field_String,
+        'featured_image' => new Field_String(array(
+          'in_db' => FALSE,
+        )),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -40,14 +43,34 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	
 	public static $searchable_fields = array(
 		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
 		),
 		'search' => array(
+			'name',
+			'body',
 		),
 	);
+	
+  public function __get($field)
+  {
+    if ($field == 'featured_image')
+    {
+      return $this->get_featured_image();
+    }
+
+    return parent::__get($field);
+  }
+
+	public static function get_posts_by_author($user_id, $limit = 5)
+	{
+		return Jelly::select('blog_post')->where('user_id', '=', $user_id)->where('status', '=', 'active')->order_by('created', 'DESC')->limit($limit)->execute();
+	}
 
 	public function body_summary()
 	{
-		return Text::limit_words($this->body, 100, ' &hellip;');
+		return Text::limit_words(strip_tags($this->body, '<p><br>') , 100, ' &hellip;');
 	}
 	
 	public function update($data)
@@ -75,6 +98,56 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 			$this->author = Auth::instance()->get_user()->id;
 		}
 		
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
+		{
+			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+		}
+
+		
 		return $this->save();
+	}
+
+	public function get_featured_image()
+	{
+		$file_path = '/images/blog-posts/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/blog-posts/default.jpg';
+		}
+		
+		return $file_path;
+	}
+
+	public function upload_image($tmp_file)
+	{
+		// Let's get to work on resizing this image
+		$image = Image::factory($tmp_file);
+		
+		// Full Size first
+		$image_size = Kohana::config('ecommerce.blog_image_sizing');
+		if ($image_size['width'] > 0 AND $image_size['height'] > 0)
+		{
+			$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
+			// Crop it for good measure
+			$image->crop($image_size['width'], $image_size['height']);
+		}
+		elseif ($image_size['width'] == 0)
+		{
+			$image->resize(NULL, $image_size['height']);
+		}
+		else
+		{
+			$image->resize($image_size['width'], NULL);
+		}
+		
+		$directory = DOCROOT . '/images/blog-posts';
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
+		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
 	}
 }

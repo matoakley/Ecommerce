@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.1.3', 
+	'software_version' => '1.1.7', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -20,14 +20,20 @@ return array
 		'blog' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
+		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
+		'product_options' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
 		'sales_orders' => FALSE,
+		'snippets' => FALSE,
 		'stock_control' => FALSE,
+		'stockists' => FALSE,
 		'users' => FALSE,
 	),
+	
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
@@ -35,7 +41,7 @@ return array
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	
-	// Image sizing
+	// Product and Category Image sizing
 	'image_sizing' => array(
 		'thumbnail' => array(
 			'width' => 100,
@@ -46,5 +52,12 @@ return array
 			'height' => 280,		
 		),
 	),
+  'blog_image_sizing' => array(
+    'width' => 310,
+    'height' => 250,
+  ),
 	
+	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
+	
+	'cloudmade_api_key' => '', // API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
 );

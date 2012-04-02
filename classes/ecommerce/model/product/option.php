@@ -5,6 +5,7 @@ class Ecommerce_Model_Product_Option extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('product_options')
+			->sorting(array('key' => 'ASC', 'value' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo(array(
@@ -16,8 +17,12 @@ class Ecommerce_Model_Product_Option extends Model_Application
 				'value' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
-				'status' => new Field_String(array(
+				'status' => new Field_String(array(  // Legacy Field, should not be used after v1.1.3
 					'on_copy' => 'copy',
+				)),
+				'skus' => new Field_ManyToMany(array(
+          'foreign' => 'sku',
+          'through' => 'product_options_skus',
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -33,18 +38,20 @@ class Ecommerce_Model_Product_Option extends Model_Application
 			));
 	}
 	
-	public static $statuses = array(
-		'active',
-		'disabled',
-	);
-	
-	public static function add_option($product_id, $key, $value, $status)
+	public static function add_option($product, $key, $value)
 	{
 		$product_option = Jelly::factory('product_option');
-		$product_option->product = $product_id;
+		$product_option->product = $product;
 		$product_option->key = $key;
 		$product_option->value = $value;
-		$product_option->status = $status;
+		$product_option->status = 'active';
 		return $product_option->save();
+	}
+	
+	public function update($data)
+	{	
+		$this->value = $data['value'];
+		
+		return $this->save();
 	}
 }

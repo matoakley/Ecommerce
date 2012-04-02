@@ -6,6 +6,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 
 	protected $scripts = array();
 
+	protected $modules = array();
+	
 	/**
 	 * Setup view
 	 *
@@ -13,10 +15,18 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	 */
 	public function before()
 	{
+		// Attempt to use SSH if available as we're dealing with log ins
+		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
+		{
+			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
+		}
+	
 		if ( ! IN_PRODUCTION)
 		{
 			$this->environment = 'development';
 		}
+		
+		$this->modules = Kohana::config('ecommerce.modules');
 		
 		parent::before();
 		
@@ -26,8 +36,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		// Initialise Auth
 		$this->auth = Auth::instance();
 		
-		// Check that our guest is logged in...
-		if ( ! $this->auth->logged_in() AND $this->request->uri() != 'admin/login')
+		// Check that our guest is logged in as an admin
+		if ( ! $this->auth->logged_in('admin') AND $this->request->uri() != 'admin/login')
 		{
 			$this->session->set('redirected_from', $this->request->uri());
 			$this->request->redirect('/admin/login');
@@ -38,7 +48,7 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	
 	public function after()
 	{	
-		$this->template->modules = Kohana::config('ecommerce.modules');
+		$this->template->modules = $this->modules;
 	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		
@@ -50,7 +60,9 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		
 		$this->template->version_number = Kohana::config('ecommerce.software_version');
 		
-		// $this->template->kohana_profiler =  View::factory('profiler/stats');
+		// API key when using Leaflet.js for maps
+		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
+
 		
 		parent::after();
 	}

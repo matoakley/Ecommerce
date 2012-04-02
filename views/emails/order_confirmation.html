@@ -1,0 +1,46 @@
+{% extends "templates/email_default.html" %}
+
+{% block content %}
+
+	Dear {{sales_order.customer.firstname|title}} {{sales_order.customer.lastname|title}},
+
+	<p>Thank you for placing your order with {{site_name}}. This email is a confirmation of your order. Our friendly staff be working to pack your order and ship it out to you shortly.</p>
+	<p>If you need to contact us about your order then please quote your order number which can be found in your order summary below.</p>
+	
+	<p>Order #: <strong>{{sales_order.id}}</strong></p>
+	
+	<table width="100%" style="font-family:arial;font-size:11px;color:#000;line-height:19px">
+		<tr>
+			<th style="text-align:left;">Product</th>
+			<th style="text-align:center;">Qty</th>
+			<th style="text-align:right;">Price</th>
+		</tr>
+	{% for item in sales_order.items %}
+		<tr>
+			<td style="text-align:left;">{{item.product_name}}</td>
+			<td style="text-align:center;">{{item.quantity}}</td>
+			<td style="text-align:right;">&pound;{{item.total_price|num_format(2)}}</td>
+		</tr>
+	{% endfor %}
+		<tr>
+			<td colspan="2" style="text-align:right;">{{sales_order.delivery_option_name}}</td>
+			<td style="text-align:right;">&pound;{{sales_order.delivery_option_price|num_format(2)}}</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="text-align:right;"><strong>Order Total</strong></td>
+			<td style="text-align:right;"><strong>&pound;{{sales_order.order_total|num_format(2)}}</strong></td>
+		</tr>
+	</table>
+	
+	<p><strong>Delivery Address:</strong><br/>
+		{{sales_order.delivery_firstname}} {{sales_order.delivery_lastname}}<br/>
+		{{sales_order.delivery_address.line_1}}<br/>
+		{% if sales_order.delivery_address.line_2 %}
+			{{sales_order.delivery_address.line_2}}<br/>
+		{% endif %}
+		{{sales_order.delivery_address.town}}<br/>
+		{{sales_order.delivery_address.county}}<br/>
+		{{sales_order.delivery_address.postcode}}<br/>
+	</p>
+
+{% endblock %}

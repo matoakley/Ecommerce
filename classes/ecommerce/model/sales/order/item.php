@@ -11,12 +11,15 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 					'foreign' => 'sales_order.id',
 					'column' => 'sales_order_id',
 				)),
-				'product' => new Field_BelongsTo(array(
+				'sku' => new Field_BelongsTo(array(
+					'foreign' => 'sku.id',
+				)),
+				'product' => new Field_BelongsTo(array(  // Legacy Field, should not be used after v1.1.3
 					'foreign' => 'product.id',
 					'column' => 'product_id',
 				)),
 				'product_name' => new Field_String,
-				'product_options' => new Field_Serialized,
+				'product_options' => new Field_Serialized,  // Legacy Field, should not be used after v1.1.3
 				'quantity' => new Field_Integer,
 				'unit_price' => new Field_Float(array(
 					'places' => 2,
@@ -47,31 +50,46 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item = Jelly::factory('sales_order_item');
 		
 		$item->sales_order = $sales_order;
-		$item->product = $basket_item->product;
+		$item->sku = $basket_item->sku;
 		
 		// Build product name including product options added onto end.
-		$product_name = $basket_item->product->name;
-		if (count($basket_item->product_options) > 0)
+		$product_name = $basket_item->sku->product->name;
+		if (count($basket_item->sku->product_options) > 0)
 		{
 			$product_name .= ' (';
 			$i = 0;
-			foreach ($basket_item->product_options as $option => $value)
+			foreach ($basket_item->sku->product_options as $option)
 			{
 				if ($i++ > 0)
 				{
 					$product_name .= ', ';
 				}
-				$product_name .= ucwords($option) . ': "' . $value . '"';
+				$product_name .= ucwords($option->key) . ': "' . $option->value . '"';
 			}
 			$product_name .= ')';
 		}
 		$item->product_name = $product_name;
 		
-		$item->product_options = $basket_item->product_options;
 		$item->quantity = $basket_item->quantity;
-		$item->unit_price = $basket_item->product->retail_price();
+		$item->unit_price = $basket_item->sku->retail_price();
 		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
-		$item->total_price = $basket_item->product->retail_price() * $basket_item->quantity;
+		$item->total_price = $basket_item->sku->retail_price() * $basket_item->quantity;
+		
+		return $item->save();
+	}
+	
+	public static function create_from_promotion_code_reward($sales_order, $promotion_code_reward)
+	{
+		$item = Jelly::factory('sales_order_item');
+		
+		$item->sales_order = $sales_order;
+		$item->sku = $promotion_code_reward->sku;
+		
+		$item->product_name = 'Promotional Item: '.$promotion_code_reward->sku->name();
+		$item->quantity = 1;
+		$item->unit_price = $promotion_code_reward->sku_reward_retail_price();
+		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
+		$item->total_price = $promotion_code_reward->sku_reward_retail_price(); 
 		
 		return $item->save();
 	}

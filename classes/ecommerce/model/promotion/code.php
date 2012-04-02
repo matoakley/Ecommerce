@@ -19,6 +19,9 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 				'redeemed' => new Field_Integer(array(
 					'default' => 0,
 				)),
+				'run_indefinitely' => new Field_Boolean(array(
+					'default' => TRUE,
+				)),
 				'start_date' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i',
 				)),
@@ -37,6 +40,9 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 				)),
 				'products' => new Field_ManyToMany,
 				'status' => new Field_String,
+				'rewards' => new Field_HasMany(array(
+					'foreign' => 'promotion_code_reward.promotion_code_id',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -132,20 +138,24 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		$this->code = $data['code'];
 		$this->description = $data['description'];
 		$this->status = $data['status'];
-		$this->start_date = $data['start_date'];
-		$this->end_date = $data['end_date'];
+		$this->run_indefinitely = $data['run_indefinitely'];
+		if ( ! $this->run_indefinitely)
+		{
+			$this->start_date = $data['start_date'];
+			$this->end_date = $data['end_date'];
+		}
 		$this->max_redemptions = $data['max_redemptions'];
-		$this->basket_minimum_value = $data['basket_minimum_value'];
 		$this->discount_on = $data['discount_on'];
-		$this->discount_amount = $data['discount_amount'];
-		$this->discount_unit = $data['discount_unit'];
 		
 		// Clear down and save products.
 		$this->remove('products', $this->products);
 		
-		if (isset($data['products']))
+		if ($this->discount_on == 'sales_order_item')
 		{
-			$this->add('products', $data['products']);
+			if (isset($data['products']))
+			{
+				$this->add('products', $data['products']);
+			}
 		}
 	
 		return $this->save();
@@ -155,5 +165,11 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 	{
 		$this->redeemed++;
 		$this->save();
+	}
+	
+	public function calculate_most_suitable_reward($basket)
+	{
+		$reward = $this->get('rewards')->where('basket_minimum_value', '<', $basket->calculate_subtotal())->order_by('basket_minimum_value', 'DESC')->limit(1)->execute();
+		return $reward->loaded() ? $reward : NULL;
 	}
 }

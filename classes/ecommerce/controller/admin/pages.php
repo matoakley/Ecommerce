@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
+{
 	function before()
 	{
 		if ( ! Kohana::config('ecommerce.modules.pages'))
@@ -49,7 +49,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 			throw new Kohana_Exception('Page could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.pages.index', 'admin/pages');
+		$redirect_to = $this->session->get('admin.pages.index', '/admin/pages');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)
@@ -79,6 +79,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application {
 		
 		$this->template->page = $page;
 		$this->template->statuses = Model_Page::$statuses;
+		$this->template->top_level_pages = Model_Page::build_page_tree();
 	}
 
 	public function action_delete($id = NULL)

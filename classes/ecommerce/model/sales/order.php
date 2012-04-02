@@ -63,11 +63,22 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 
 	public static $statuses = array(
 		'awaiting_payment',
+		'fraud_shield_review', // HSBC specific
 		'payment_received',
 		'complete',
 		'order_cancelled',
 		'problem_occurred',
 	);
+	
+	public static function recent_dashboard_orders()
+	{
+		return Jelly::select('sales_order')
+										->where('status', '<>', 'awaiting_payment')
+										->where('status', '<>', 'order_cancelled')
+										->order_by('created', 'DESC')
+										->limit(5)
+										->execute();
+	}
 
 	public static function create_from_basket($basket, $customer, $billing_address, $delivery_address, $delivery_name)
 	{		
@@ -85,22 +96,35 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		
-		// Handle any promotional codes that are added to the basket.
-		if ($basket->promotion_code->loaded())
-		{
-			$sales_order->promotion_code = $basket->promotion_code;
-			$sales_order->promotion_code_code = $basket->promotion_code->code;
-			
-			$basket->promotion_code->redeem();
-			
-			$sales_order->discount_amount = $basket->calculate_discount();
-		}
-		
 		$sales_order->save();
 		
 		foreach ($basket->items as $basket_item)
 		{
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		// Handle any promotional codes that are added to the basket.
+		if ($basket->promotion_code_reward->loaded())
+		{
+			$sales_order->promotion_code = $basket->promotion_code;
+			$sales_order->promotion_code_code = $basket->promotion_code->code;
+			$basket->promotion_code->redeem();
+			
+			switch ($basket->promotion_code_reward->reward_type)
+			{
+				case 'discount':
+					$sales_order->discount_amount = $basket->calculate_discount();
+					break;
+					
+				case 'item':
+					Model_Sales_Order_Item::create_from_promotion_code_reward($sales_order, $basket->promotion_code_reward);
+					break;
+					
+				default:
+					break;
+			}
+			
+			$sales_order->save();
 		}
 		
 		$session = Session::instance();
@@ -124,28 +148,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public static function process_payment_result($data)
 	{
-		$sales_order = Jelly::select('sales_order', $sales_order_id);
-		$sales_order->hsbc_order_hash = $order_hash;
-		$sales_order->hsbc_cpi_results_code = $cpi_results_code;
-		
-		if ($sales_order->hsbc_cpi_results_code == 0)
-		{
-		 	$sales_order->status = 'payment_received';
-			$sales_order->send_confirmation_email();
-		}
-		elseif ($sales_order->hsbc_cpi_results_code == 9)
-		{
-			$sales_order->status = 'fraud_shield_review';
-			$sales_order->send_confirmation_email();
-		}
-		elseif (in_array($sales_order->hsbc_cpi_results_code, array(1, 2, 3, 5, 6, 7, 8, 10, 11, 14, 15, 16)))
-		{
-			$sales_order->status = 'order_cancelled';
-		}
-		else
-		{
-			$sales_order->status = 'problem_occurred';
-		}
+		// Should be implemented on a per driver basis. 
 		
 		return $sales_order->save();
 	}
@@ -161,7 +164,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status = 'complete'
+						WHERE status IN ('payment_received', 'complete')
 						AND EXTRACT(MONTH FROM created) = $month
 						AND EXTRACT(YEAR FROM created) = $year";
 						
@@ -174,7 +177,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status = 'complete'";
+						WHERE status IN ('payment_received', 'complete')";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -185,8 +188,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		Email::connect();
 
-		$message = Twig::factory('templates/emails/order_confirmation.html');
+		$message = Twig::factory('emails/order_confirmation.html');
 		$message->sales_order = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
 			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
@@ -205,8 +209,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		Email::connect();
 		
-		$message = Twig::factory('templates/emails/order_shipped.html');
+		$message = Twig::factory('emails/order_shipped.html');
 		$message->sales_order = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
 			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
@@ -241,9 +246,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				{
 					foreach ($this->items as $item)
 					{
-						if ($item->product->loaded())
+						if ($item->sku->loaded())
 						{
-							$item->product->remove_from_stock($item->quantity);
+							$item->sku->remove_from_stock($item->quantity);
 						}
 					}
 				}

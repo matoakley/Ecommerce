@@ -13,6 +13,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
+				'promotion_code_reward' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -53,6 +54,11 @@ class Ecommerce_Model_Basket extends Model_Application
 	
 	public function save($key = NULL)
 	{	
+		if ($this->promotion_code->loaded())
+		{
+			$this->promotion_code_reward = $this->promotion_code->calculate_most_suitable_reward($this);
+		}
+	
 		parent::save($key);
 		
 		if ( ! Session::instance()->get('basket_id'))
@@ -82,14 +88,20 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->product->retail_price() * $item->quantity;
+			$subtotal += $item->sku->retail_price() * $item->quantity;
+		}
+		
+		// Are there any special priced items to add due to promotion codes?
+		if ($this->promotion_code->loaded() AND $this->promotion_code_reward->reward_type == 'item')
+		{
+			$subtotal += $this->promotion_code_reward->sku_reward_retail_price();
 		}
 		
 		return $subtotal;
 	}
 	
 	public function calculate_total()
-    {
+  {
 		$total = $this->calculate_subtotal();
 		
 		// Let's check for any promotional codes that we may need to consider
@@ -124,13 +136,13 @@ class Ecommerce_Model_Basket extends Model_Application
 			// Is the discount based upon the sales order or a sales order item?
 			if ($this->promotion_code->discount_on == 'sales_order')
 			{
-				switch ($this->promotion_code->discount_unit)
+				switch ($this->promotion_code_reward->discount_unit)
 				{
 					case 'pounds':
-						$discount = $this->promotion_code->discount_amount;
+						$discount = $this->promotion_code_reward->discount_amount;
 						break;
 					case 'percent':
-						$discount = $subtotal * ($this->promotion_code->discount_amount / 100);
+						$discount = $subtotal * ($this->promotion_code_reward->discount_amount / 100);
 						break;
 				}
 			}
@@ -141,7 +153,7 @@ class Ecommerce_Model_Basket extends Model_Application
 				$items_in_basket = array();
 				foreach ($this->items as $item)
 				{
-					$items_in_basket[] = $item->product->id;
+					$items_in_basket[] = $item->sku->product->id;
 				}
 				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
 				
@@ -149,14 +161,20 @@ class Ecommerce_Model_Basket extends Model_Application
 				
 				foreach ($qualifying_basket_items as $item_id)
 				{
-					$item = $this->get('items')->where('product_id', '=', $item_id)->limit(1)->execute();
-					switch ($this->promotion_code->discount_unit)
+					$item = $this->get('items')
+														->join('skus')
+														->on('skus.id', '=', 'basket_items.sku_id')
+														->where('skus.product_id', '=', $item_id)
+														->limit(1)
+														->execute();
+				
+					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
 							break;
 						case 'percent':
-							$discount += ($item->product->retail_price() * $item->quantity) * ($this->promotion_code->discount_amount / 100);
+							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
 							break;
 					}
 				}
@@ -173,7 +191,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		return number_format($this->delivery_option->retail_price(), 2);
 	}
 	
-	public function add_item($product_id, $quantity, $product_options = NULL)
+	public function add_item($sku_id, $quantity)
 	{
 		// If we've not created a saved basket yet then we'd best create one now!
 		if ( ! $this->loaded())
@@ -183,15 +201,13 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		// See if this product already exists as a basket item!
 		$basket_item = $this->get('items')
-												->where('product_id', '=', $product_id)
-												->where('product_options', '=', serialize($product_options))
+												->where('sku_id', '=', $sku_id)
 												->limit(1)->execute();
 		
 		if ( ! $basket_item->loaded())
 		{
 			$basket_item->basket_id = $this->id;
-			$basket_item->product = $product_id;
-			$basket_item->product_options = $product_options;
+			$basket_item->sku = $sku_id;
 		}
 		
 		// If we are removing the item altogether then we want the 
@@ -209,12 +225,15 @@ class Ecommerce_Model_Basket extends Model_Application
 	{
 		// Retrieve promotion code.
 		$this->promotion_code = Model_Promotion_Code::retrieve_for_use($code);
-		$this->save();
+		return $this->save();
 	}
 	
 	public function remove_promotion_code()
 	{
 		$this->promotion_code = NULL;
+		$this->promotion_code_reward = NULL;
 		return $this->save();
 	}
+	
+	public function calculate_shipping() {} // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
 }

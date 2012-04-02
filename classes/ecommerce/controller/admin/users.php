@@ -16,7 +16,7 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 	{			
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_User::search(array(), $items);
+		$search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'admin')->limit(1)->execute()->id), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
@@ -40,12 +40,12 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 	{
 		$user = Model_User::load($id);
 	
-		if ($id AND ! $user->loaded())
+		if ($id AND (! $user->loaded() OR ! $user->has('roles', Jelly::select('role')->where('name', '=', 'admin')->limit(1)->execute())))
 		{
-			throw new Kohana_Exception('User could not be found.');
+			throw new Kohana_Exception('System user could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.users.index', 'admin/users');
+		$redirect_to = $this->session->get('admin.users.index', '/admin/users');
 		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)

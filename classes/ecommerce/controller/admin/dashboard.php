@@ -11,8 +11,11 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 			$this->template->visits = $analytics->daily_visit_count();
 			$this->template->top_referrers = $analytics->query('source', 'visits', '-visits', 5);	
 						
+			$visit_data = $analytics->monthly_visit_count();
+			ksort($visit_data);
+			
 			$monthly_totals = array();
-			foreach ($analytics->monthly_visit_count() as $month => $visits)
+			foreach ($visit_data as $month => $visits)
 			{
 				$monthly_totals[Date::month2string($month)] = array(
 					'visits' => $visits,
@@ -26,8 +29,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 			$this->template->google_api_error = TRUE;
 		}
 		
-		$latest_orders = Model_Sales_Order::search(array(), 5, array('created' => 'DESC'));
-		$this->template->latest_orders = $latest_orders['results'];
+		$latest_orders = Model_Sales_Order::recent_dashboard_orders();
+		$this->template->latest_orders = $latest_orders;
 		
 		$this->template->top_products = Model_Product::most_popular_products(5);
 		

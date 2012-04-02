@@ -2,6 +2,10 @@
 
 {% block page_title %}Viewing: <strong>Sales Orders</strong>{% endblock %}
 
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/sales_orders.js?v=1"></script>
+{% endblock %}
+
 {% block content %}
 
 <!-- <p>
@@ -14,6 +18,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="ship_and_email">Mark Shipped &amp; Email</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -41,7 +46,7 @@
 	<tbody>
 	{% for key, sales_order in sales_orders %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{sales_order.id}}" /></td>
 			<td><a href="/admin/sales_orders/view/{{sales_order.id}}">{{sales_order.id}}</a></td>
 			<td>{{sales_order.customer.lastname}}, {{sales_order.customer.firstname}}</td>
 			<td>{{sales_order.delivery_address.town}}, {{sales_order.delivery_address.postcode}}</td>
