@@ -26,6 +26,7 @@
 			{{sales_order.billing_address.town}}<br/>
 			{{sales_order.billing_address.county}}<br/>
 			{% if sales_order.billing_address.postcode %}{{sales_order.billing_address.postcode}}<br/>{% endif %}
+			{{sales_order.billing_address.country.name}}<br/>
 		</p>
 		<p>
 			{% if sales_order.billing_address.telephone %}Tel: {{sales_order.billing_address.telephone}}<br/>{% endif %}
@@ -42,6 +43,7 @@
 			{{sales_order.delivery_address.town}}<br/>
 			{{sales_order.delivery_address.county}}<br/>
 			{% if sales_order.delivery_address.postcode %}{{sales_order.delivery_address.postcode}}<br/>{% endif %}
+			{{sales_order.delivery_address.country.name}}<br/>
 		</p>
 		{% if sales_order.billing_address.telephone %}<p>Tel: {{sales_order.billing_address.telephone}}</p>{% endif %}
 	</div>
