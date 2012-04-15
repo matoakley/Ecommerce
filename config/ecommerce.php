@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.1.7', 
+	'software_version' => '1.1.8', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -22,6 +22,7 @@ return array
 		'categories' => FALSE,
 		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
+		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
 		'product_options' => FALSE,
@@ -60,4 +61,6 @@ return array
 	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 	
 	'cloudmade_api_key' => '', // API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
+	
+	'forum_post_name_max_length' => 245,
 );

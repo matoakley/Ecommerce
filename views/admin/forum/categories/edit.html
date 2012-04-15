@@ -10,9 +10,9 @@
 
 {% block page_title %}
 	{% if category.loaded %}
-		Edit Category: <strong>{{category.name}}</strong>
+		Edit Forum Category: <strong>{{category.name}}</strong>
 	{% else %}
-		Adding: <strong>New Category</strong>
+		Adding: <strong>New Forum Category</strong>
 	{% endif %}
 {% endblock %}
 
@@ -26,9 +26,9 @@
 		</div>
 		<div class="grid_10 omega tr">
 			{% if category.loaded %}
-				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
+				<a href="/admin/forum_categories/delete/{{category.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-					Delete Category
+					Delete Forum Category
 				</a>
 			{% endif %}
 			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>

@@ -1,11 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Model_Category extends Model_Application
+class Ecommerce_Model_Forum_Category extends Model_Application
 {	
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->table('categories')
-			->fields(array(
+		$meta->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
 					'rules' => array(
@@ -30,9 +29,8 @@ class Ecommerce_Model_Category extends Model_Application
 				'status' => new Field_String,
 				'meta_description' => new Field_String,
 				'meta_keywords' => new Field_String,
-				'products' => new Field_ManyToMany(array(
-					'foreign' => 'product',
-					'through' => 'categories_products',
+				'posts' => new Field_HasMany(array(
+					'foreign' => 'forum_post.category_id',
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -48,7 +46,7 @@ class Ecommerce_Model_Category extends Model_Application
 				)),
 		));
 	}
-
+	
 	public static $statuses = array(
 		'active', 'disabled'
 	);
@@ -69,7 +67,7 @@ class Ecommerce_Model_Category extends Model_Application
 	{				
 		$tree = array();
 		
-		$tree = Jelly::select('category')->where('parent_id', '=', $root_category);
+		$tree = Jelly::select('forum_category')->where('parent_id', '=', $root_category);
 		
 		if ($active_only)
 		{
@@ -81,68 +79,9 @@ class Ecommerce_Model_Category extends Model_Application
 		foreach ($tree as $key => $values)
 		{
 			$tree[$key]['children'] = self::build_category_tree($values['id'], $active_only);
-			$tree[$key]['num_products'] = count(Jelly::select('category', $values['id'])->products);
-			$tree[$key]['thumbnail'] = self::get_thumbnail_path($values['id']);
 		}
 		
 		return $tree;
-	}
-	
-	public function __get($name)
-	{
-		if ($name == 'thumbnail_path')
-		{
-			return $this->get_thumbnail_path();
-		}
-		
-		return parent::__get($name);
-	}
-	
-	public function has_children()
-	{
-		return (bool) count($this->categories);
-	}
-	
-	public function display_active_products($order_by = 'name', $order_dir = 'ASC')
-	{
-		return $this->get('products')
-					->where('status', '=', 'active')
-					->order_by($order_by, $order_dir)
-					->execute();
-	}
-	
-	/**
-	* Passing FALSE, FALSE will return all categories.
-	*
-	**/
-	public static function get_admin_categories($page = 1, $limit = 20)
-	{
-		$categories = Jelly::select('category')
-						->order_by('name');
-						
-		if ($page AND $limit)
-		{
-			$categories->limit($limit)->offset(($page - 1) * $limit);
-		}		
-		
-		return $categories->execute();
-	}
-	
-	public static function get_thumbnail_path($id)
-	{
-		$path = '/images/categories/' . $id . '.jpg';
-		
-		if ( ! file_exists(DOCROOT . $path))
-		{
-			$path = '/images/categories/default_thumb.jpg';
-		}
-		
-		return $path;
-	}
-	
-	public function count_products()
-	{
-		return count($this->products);
 	}
 	
 	public function update($data)
@@ -158,15 +97,6 @@ class Ecommerce_Model_Category extends Model_Application
 		$this->meta_keywords = $data['meta_keywords'];
 		$this->parent = $data['parent'] > 0 ? $data['parent'] : NULL;
 		
-		return $this->save();	}
-	
-	/**
-	 * Return a list of the brands that are featured within this category
-	 *
-	 * @return  Database_Result
-	 */
-	public function get_brands()
-	{
-		return Model_Brand::find_by_category($this->id);
+		return $this->save();
 	}
 }

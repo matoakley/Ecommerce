@@ -51,6 +51,21 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 ));
 	
 // Default Public Routes
+Route::set('forum_post_view', 'forums/post/<post_slug>')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'view_post',
+));
+
+Route::set('forum_view', 'forums/<category_slug>')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'view_category',
+));
+
+Route::set('forums', 'forums')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'index',
+));
+
 Route::set('stockists', 'stockists')->defaults(array(
 	'controller' => 'stockists',
 	'action' => 'index',
