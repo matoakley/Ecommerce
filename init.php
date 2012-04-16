@@ -51,7 +51,13 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 ));
 	
 // Default Public Routes
-Route::set('forum_post_view', 'forums/post/<post_slug>')->defaults(array(
+
+Route::set('forum_post_new', 'forums/<category_slug>/new')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'new_post',
+));
+
+Route::set('forum_post_view', 'forums/<category_slug>/<post_slug>')->defaults(array(
 	'controller' => 'forums',
 	'action' => 'view_post',
 ));

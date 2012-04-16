@@ -99,4 +99,14 @@ class Ecommerce_Model_Forum_Category extends Model_Application
 		
 		return $this->save();
 	}
+	
+	public function add_post($data, $user)
+	{
+		return Model_Forum_Post::create_new_post($data, $this, $user);
+	}
+	
+	public function latest_threads($number_of_threads, $offset)
+	{
+		return $this->get('posts')->where('in_response_to', 'IS', NULL)->order_by('created', 'DESC')->offset($offset)->limit($number_of_threads)->execute();
+	}
 }
