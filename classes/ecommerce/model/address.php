@@ -12,7 +12,7 @@ class Ecommerce_Model_Address extends Model_Application
 				'line_1' => new Field_String,
 				'line_2' => new Field_String,
 				'town' => new Field_String,
-				'county' => new Field_String,
+				'county' => new Field_BelongsTo,
 				'postcode' => new Field_String,
 				'country' => new Field_BelongsTo,
 				'telephone' => new Field_String,
@@ -123,7 +123,7 @@ class Ecommerce_Model_Address extends Model_Application
 		return $this;
 	}
 	
-	private function geocode()
+	public function geocode()
 	{
 		Model_Address_Geocode_Request::queue($this);
 		return $this;

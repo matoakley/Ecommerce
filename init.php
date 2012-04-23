@@ -52,6 +52,16 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	
 // Default Public Routes
 
+Route::set('event_view', 'events/<event_slug>')->defaults(array(
+	'controller' => 'events',
+	'action' => 'view',
+));
+
+Route::set('events_index', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
 Route::set('forum_post_new', 'forums/<category_slug>/new')->defaults(array(
 	'controller' => 'forums',
 	'action' => 'new_post',

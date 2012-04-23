@@ -22,6 +22,7 @@ return array
 		'categories' => FALSE,
 		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
+		'events' => FALSE,
 		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
