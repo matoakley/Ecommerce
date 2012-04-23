@@ -67,6 +67,31 @@ class Ecommerce_Model_Forum_Post extends Model_Application
 		return $post->save();
 	}
 	
+	public static function hottest_posts($hours = 24, $limit = NULL, $offset = NULL)
+	{
+		$timestamp = date('Y-m-d H:i:s', strtotime('- '.$hours.' hours'));
+	
+		$posts = Jelly::select('forum_post')
+								->join('forum_post_views')
+								->on('forum_post_views.forum_post_id', '=', 'forum_posts.id')
+								->where('in_response_to', 'IS', NULL)
+								->where('forum_post_views.created', '>', $timestamp)
+								->group_by('forum_post_views.forum_post_id')
+								->order_by(DB::expr('COUNT(forum_post_views.id)'), 'DESC');
+		
+		if ($limit)
+		{
+			$posts->limit($limit);
+		}
+
+		if ($offset)
+		{
+			$posts->limit($offset);
+		}
+				
+		return $posts->execute();
+	}
+	
 	public function build_thread($number_of_posts, $offset)
 	{	
 		return Jelly::select('forum_post')->where('id', '=', $this->id)->or_where('in_response_to', '=', $this->id)->limit($number_of_posts)->offset($offset)->execute();

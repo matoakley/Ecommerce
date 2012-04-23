@@ -33,7 +33,7 @@ class Ecommerce_Controller_Forums extends Controller_Application
 		$this->template->pagination = Pagination::factory(array(
 				'total_items'    => count($forum_category->posts),
 				'items_per_page' => $posts_per_page,
-				'auto_hide'	=> TRUE,
+				'auto_hide'	=> FALSE,
 			));
 		
 		$this->template->forum_category = $forum_category;
@@ -58,11 +58,13 @@ class Ecommerce_Controller_Forums extends Controller_Application
 		
 		if ($_POST)
 		{
+			$this->requires_login();
+		
 			try
 			{
 				$post->add_reply($_POST['post'], $this->auth->get_user());
 				// Redirect to last page of comments
-				$this->request->redirect(Route::get('forum_post_view')->uri(array('category_slug' => $post->category->slug, 'post_slug' => $post->slug)).'?page='.ceil($post->calculate_thread_length()/$posts_per_page));
+				$this->request->redirect(Route::get('forum_post_view')->uri(array('category_slug' => $post->category->slug, 'post_slug' => $post->slug)).'?page='.ceil($post->calculate_thread_length()/$posts_per_page).'#latest-post');
 			}
 			catch (Validate_Exception $e)
 			{
@@ -77,17 +79,19 @@ class Ecommerce_Controller_Forums extends Controller_Application
 		$this->template->pagination = Pagination::factory(array(
 				'total_items'    => $post->calculate_thread_length(),
 				'items_per_page' => $posts_per_page,
-				'auto_hide'	=> TRUE,
 			));
 		
 		$this->template->post = $post;
-
-		
 		$this->template->thread_posts = $thread;
+		
+		// Record the post view
+		Model_Forum_Post_View::record($post, Request::$client_ip);
 	}
 	
 	public function action_new_post()
 	{
+		$this->requires_login();
+	
 		$forum_category = Model_Forum_Category::load($this->request->param('category_slug'));
 		
 		if ( ! $forum_category->loaded())
