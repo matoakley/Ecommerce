@@ -26,6 +26,9 @@ class Ecommerce_Model_Forum_Post extends Model_Application
 					),
 				)),
 				'status' => new Field_String,
+				'last_post' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
 				'replies' => new Field_HasMany(array(
 					'foreign' => 'forum_post.in_response_to',
 				)),
@@ -63,6 +66,8 @@ class Ecommerce_Model_Forum_Post extends Model_Application
 		$post->slug = Text::slugify($post->name.'-'.Text::random());
 		
 		$post->status = 'active';
+		
+		$post->last_post = time();
 		
 		return $post->save();
 	}
@@ -116,6 +121,10 @@ class Ecommerce_Model_Forum_Post extends Model_Application
 		$reply_post->in_response_to = $this;
 		$reply_post->status = 'active';
 		
-		return $reply_post->save();
+		$reply_post->save();
+		
+		$this->last_post = time();
+		
+		return $this->save();
 	}
 }
