@@ -249,6 +249,18 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
 	}
 	
+	public function delete_image()
+	{	
+		$directory = DOCROOT . '/images/users';
+		
+		try
+		{
+			unlink($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+		}
+		catch (Exception $e)
+		{}		
+	}
+	
 	public function change_password($new_password)
 	{
 		$this->password = $new_password;
