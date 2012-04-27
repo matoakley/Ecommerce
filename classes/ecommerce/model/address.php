@@ -64,6 +64,11 @@ class Ecommerce_Model_Address extends Model_Application
 			// (apologies for shouting, but it's quite important)
 		);
 		
+		if ($this->country->loaded())
+		{
+			$address_parts[] = $this->country->name;
+		}
+		
 		foreach ($address_parts as $key => $part)
 		{
 			if (is_null($part) OR $part == '')
