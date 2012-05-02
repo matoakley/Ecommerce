@@ -59,7 +59,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		
 		if ($_POST)
 		{
-			if ( ! $_POST['promotion_code']['run_indefinitely'])
+			if ( ! isset($_POST['promotion_code']['run_indefinitely']))
 			{
 				$start_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_from_date'].' '.$_POST['valid_from_hour'].':'.$_POST['valid_from_minute']);
 				$end_date = DateTime::CreateFromFormat('d/m/Y H:i', $_POST['valid_to_date'].' '.$_POST['valid_to_hour'].':'.$_POST['valid_to_minute']);
