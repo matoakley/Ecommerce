@@ -46,7 +46,7 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 			throw new Kohana_Exception('Custom Field could not be found.');
 		}
 		
-		$redirect_to = $this->session->get('admin.custom_fields.index', '/admin/categories');
+		$redirect_to = $this->session->get('admin.custom_fields.index', '/admin/custom_fields');
 		$this->template->cancel_url = $redirect_to;
 		
 		$fields = array(

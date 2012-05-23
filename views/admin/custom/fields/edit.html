@@ -47,7 +47,7 @@
 		<div class="grid_2 alpha">
 			<label for="custom-field-object" {{ errors.custom_field.object ? "class='error'" : "" }}>Object *</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="custom-field-object" name="custom_field[object]">
 				<option value=""></option>
 			{% for object in objects %}
@@ -55,6 +55,15 @@
 			{% endfor %}
 			</select>
 		</div>
+		
+		<div class="grid_1 tr">
+			<input type="checkbox" id="custom-field-show-editor" name="custom_field[show_editor]" value="1" {% if fields.custom_field.show_editor %}checked="checked"{% endif %} />
+		</div>
+		
+		<div class="grid_9 omega">
+			<label for="custom-field-show-editor" class="tl">Show WYSIWYG editor?</label>
+		</div>
+
 		<div class="clear"></div>
 	</div>
 		

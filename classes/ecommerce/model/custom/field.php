@@ -19,6 +19,10 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 					'valid' => array('Model_Custom_Field', '_check_valid_object')
 				),
 			)),
+			'show_editor' => new Field_Boolean,
+			'values' => new Field_HasMany(array(
+				'foreign' => 'custom_field_value.custom_field_id',
+			)),
 			'created' =>  new Field_Timestamp(array(
 				'auto_now_create' => TRUE,
 				'format' => 'Y-m-d H:i:s',
@@ -52,6 +56,12 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	{
 		$this->name = $data['name'];
 		$this->object = $data['object'];
+		$this->show_editor = isset($data['show_editor']);
 		return $this->save();
+	}
+	
+	public function value_for_object_id($object_id)
+	{
+		return $this->get('values')->where('object_id', '=', $object_id)->load()->value;
 	}
 }

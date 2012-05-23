@@ -30,7 +30,8 @@
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
-			<th>Object</th>
+			<th class="tc">Object</th>
+			<th class="tr">Show editor?</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -38,7 +39,8 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" /></td>
 			<td><a href="/admin/custom_fields/edit/{{custom_field.id}}">{{custom_field.name}}</a></td>
-			<td>{{custom_field.object|title}}</td>
+			<td class="tc">{{custom_field.object|title}}</td>
+			<td class="tr">{% if custom_field.show_editor %}Yes{% else %}No{% endif %}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
