@@ -1,1 +1,1 @@
-ALTER TABLE `preowned_cycles_dev`.`addresses` CHANGE COLUMN `county` `county_id` int DEFAULT NULL;
+ALTER TABLE `addresses` CHANGE COLUMN `county` `county_id` int DEFAULT NULL;

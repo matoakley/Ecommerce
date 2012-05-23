@@ -20,6 +20,7 @@ return array
 		'blog' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'custom_fields' => FALSE,
 		'customer_accounts' => FALSE,
 		'delivery_options' => FALSE,
 		'events' => FALSE,

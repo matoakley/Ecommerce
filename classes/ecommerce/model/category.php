@@ -158,7 +158,8 @@ class Ecommerce_Model_Category extends Model_Application
 		$this->meta_keywords = $data['meta_keywords'];
 		$this->parent = $data['parent'] > 0 ? $data['parent'] : NULL;
 		
-		return $this->save();	}
+		return $this->save();
+	}
 	
 	/**
 	 * Return a list of the brands that are featured within this category
