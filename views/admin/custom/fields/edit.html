@@ -38,7 +38,18 @@
 		</div>
 		<div class="grid_8">
 			<input type="text" id="custom-field-name" name="custom_field[name]" value="{{fields.custom_field.name}}"
-				class="inputtext longer" />
+				class="inputtext longer {% if not custom_fields.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="custom-field-tag" {{ errors.custom_field.tag ? "class='error'" : "" }}>Tag *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="custom-field-tag" name="custom_field[tag]" value="{{fields.custom_field.tag}}" class="inputtext longer slug" 
+				{% if custom_field.loaded %} disabled {% endif %} />
 		</div>
 		<div class="clear"></div>
 	</div>

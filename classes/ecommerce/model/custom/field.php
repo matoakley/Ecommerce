@@ -11,6 +11,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 					'not_empty' => NULL,
 				),
 			)),
+			'tag' => new Field_String(array(
+				'rules' => array(
+					'not_empty' => NULL,
+				),
+				'callbacks' => array(
+					'unique_to_object' => array('Model_Custom_Field', '_is_unique_to_object'),
+				),
+			)),
 			'object' => new Field_String(array(
 				'rules' => array(
 					'not_empty' => NULL,
@@ -52,9 +60,25 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		}
 	}
 	
+	public static function _is_unique_to_object(Validate $array, $field)
+	{
+		$exists = (BOOL) Jelly::select('custom_field')->where('tag', '=', $array[$field])->where('object', '=', $array['object'])->count();
+		
+		if ($exists)
+		{
+			$array->error($field, 'unique');
+		}
+	}
+	
 	public function update($data)
 	{
 		$this->name = $data['name'];
+
+		if (isset($data['tag']))
+		{
+			$this->tag = $data['tag'];
+		}
+
 		$this->object = $data['object'];
 		$this->show_editor = isset($data['show_editor']);
 		return $this->save();
@@ -63,5 +87,16 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	public function value_for_object_id($object_id)
 	{
 		return $this->get('values')->where('object_id', '=', $object_id)->load()->value;
+	}
+	
+	public function delete($key = NULL)
+	{
+		// Loop through and delete all of the values linked to this custom field.
+		foreach ($this->values as $value)
+		{
+			$value->delete();
+		}
+	
+		return parent::delete($key);
 	}
 }

@@ -134,29 +134,11 @@
 		{% endif %}
 		{% include "admin/products/_sku_loop.html" %}
 			
-		{% if modules.custom_fields %}
-			<h2>Custom Fields</h2>
-			
+		{% if modules.custom_fields and product.custom_fields|length > 0 %}
+		<h2>Custom Fields</h2>
+	
 			{% for custom_field in product.custom_fields %}
-				
-				<div class="field">
-				
-					<div class="grid_2 alpha">
-						<label for="custom-field-{{custom_field.id}}">{{custom_field.name}}</label>
-					</div>
-					
-					<div class="grid_14 omega">
-					{% if custom_field.show_editor %}
-						<textarea id="custom-field-{{custom_field.id}}" class="description">{{custom_field.value_for_object_id(product.id)}}</textarea>
-					{% else %}
-						<input type="text" id="custom-field-{{custom_field.id}}" class="inputtext long" value="{{custom_field.value_for_object_id(product.id)}}" />
-					{% endif %}
-					</div>
-				
-					<div class="clear"></div>
-				
-				</div>
-				
+				{% include "admin/custom/fields/_edit_form_snippet.html" %}
 			{% endfor %}
 		{% endif %}
 			

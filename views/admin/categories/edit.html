@@ -115,6 +115,14 @@
 		<div class="clear"></div>
 	</div>
 	
+	{% if modules.custom_fields and category.custom_fields|length > 0 %}
+		<h2>Custom Fields</h2>
+
+		{% for custom_field in category.custom_fields %}
+			{% include "admin/custom/fields/_edit_form_snippet.html" %}
+		{% endfor %}
+	{% endif %}
+	
 	<h2>Meta Details</h2>
 	
 	<div class="field">

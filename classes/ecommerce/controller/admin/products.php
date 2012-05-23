@@ -130,6 +130,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Save the product
 				$product->update($_POST['product']);
+				$product->update_custom_field_values($_POST['custom_fields']);
 
 				// Loop through and save each of the SKUs
 				if (isset($_POST['skus']))
@@ -165,7 +166,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 						$image->update($values);
 					}
 				}
-				
+								
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{

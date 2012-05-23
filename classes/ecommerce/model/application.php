@@ -131,7 +131,6 @@ class Ecommerce_Model_Application extends Jelly_Model
 	}
 	
 	/**
-	*
 	* Returns a collection of custom fields for the object.
 	*/
 	public function custom_fields()
@@ -146,5 +145,35 @@ class Ecommerce_Model_Application extends Jelly_Model
 		$object = strtolower(substr($class, 6));
 		
 		return Jelly::select('custom_field')->where('object', '=', $object)->execute();
+	}
+	
+	/**
+	* Returns the value for the custom_field with matching tag for calling object.
+	*/
+	public function custom_field($tag)
+	{
+		if ( ! Kohana::config('ecommerce.modules.custom_fields'))
+		{
+			throw new Kohana_Exception('The custom fields module is not enabled.');
+		}
+		
+		// Trim the 'Model_'part from the start of the class name and convert to lowercase for DB query
+		$class = get_called_class();
+		$object = strtolower(substr($class, 6));
+		
+		return Jelly::select('custom_field_value')
+							->join('custom_fields')->on('custom_field_values.custom_field_id', '=', 'custom_fields.id')
+							->where('custom_fields.object', '=', $object)->where('custom_fields.tag', '=', $tag)->where('object_id', '=', $this->id)
+							->load()->value;
+	}
+	
+	public function update_custom_field_values($fields)
+	{
+		// Save custom fields
+		foreach ($fields as $key => $value)
+		{
+			Model_Custom_Field_Value::update($key, $this->id, $value);
+		}
+
 	}
 }
