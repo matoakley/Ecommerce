@@ -4,7 +4,7 @@ class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->table('customers')
+		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'user' => new Field_BelongsTo,
@@ -151,6 +151,6 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	public function completed_orders()
 	{
-		return $this->get('orders')->where('status', '=', 'completed')->execute();
+		return $this->get('orders')->where('status', '=', 'complete')->execute();
 	}
 }

@@ -16,7 +16,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'customer')->limit(1)->execute()->id), $items, array('created' => 'DESC'));
+		$search = Model_Customer::search(array(), $items);
+
+//		$search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'customer')->limit(1)->execute()->id), $items, array('created' => 'DESC'));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(

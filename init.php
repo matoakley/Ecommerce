@@ -164,6 +164,11 @@ Route::set('basket', 'basket')->defaults(array(
 	'action' => 'view',
 ));
 
+Route::set('checkout_login', 'checkout/login')->defaults(array(
+	'controller' => 'checkout',
+	'action' => 'login',
+));
+
 Route::set('checkout', 'checkout')->defaults(array(
 	'controller' => 'checkout',
 	'action' => 'index',
