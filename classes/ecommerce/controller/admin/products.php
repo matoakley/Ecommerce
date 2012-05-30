@@ -48,6 +48,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
 			'skus' => $product->skus,
+			'custom_fields' => $product->custom_fields(),
 		);
 		
 		foreach ($product->images as $product_image)
@@ -182,6 +183,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
 				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
+				$fields['custom_fields'] = isset($_POST['custom_fields']) ? $_POST['custom_fields'] : array();
 				
 				if (isset($_POST['product_images']))
 				{
