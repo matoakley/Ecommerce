@@ -26,7 +26,7 @@ class Ecommerce_Model_Custom_Field_Value extends Model_Application
 	
 	public static function update($custom_field_id, $object_id, $value)
 	{
-		$custom_field_value = Jelly::select('custom_field_value')->where('custom_field_id', '=', $custom_field_id)->load();
+		$custom_field_value = Jelly::select('custom_field_value')->where('custom_field_id', '=', $custom_field_id)->where('object_id', '=', $object_id)->load();
 		
 		if ( ! $custom_field_value->loaded())
 		{
