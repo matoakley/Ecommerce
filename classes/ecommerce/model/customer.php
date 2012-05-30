@@ -21,6 +21,8 @@ class Ecommerce_Model_Customer extends Model_Application
 						'not_empty' => NULL,
 					),
 				)),
+				'company' => new Field_String,
+				'customer_type' => new Field_BelongsTo,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
@@ -152,5 +154,13 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function completed_orders()
 	{
 		return $this->get('orders')->where('status', '=', 'complete')->execute();
+	}
+	
+	/*
+	 * Little helper method to spit out the customer's full name.
+	 */
+	public function name()
+	{
+		return $this->firstname.' '.$this->lastname;
 	}
 }

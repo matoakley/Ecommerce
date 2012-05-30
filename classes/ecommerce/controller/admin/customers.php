@@ -18,8 +18,6 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 
 		$search = Model_Customer::search(array(), $items);
 
-//		$search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'customer')->limit(1)->execute()->id), $items, array('created' => 'DESC'));
-
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'  => $search['count_all'],
@@ -35,6 +33,14 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->total_customers = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
-
+	}
+	
+	public function action_edit()
+	{
+		$customer = Model_Customer::load($this->request->param('id'));
+	
+		
+	
+		$this->template->customer = $customer;
 	}
 }
