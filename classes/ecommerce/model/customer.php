@@ -22,7 +22,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					),
 				)),
 				'company' => new Field_String,
-				'customer_type' => new Field_BelongsTo,
+				'customer_type' => new Field_ManyToMany,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
@@ -54,6 +54,21 @@ class Ecommerce_Model_Customer extends Model_Application
 				)),
 			));
 	}
+	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'customer_type' => array(
+				'join' => array(
+					'customer_types_customers' => array('customer.id', 'customer_types_customers.customer_id'),
+					'customer_types' => array('customer_types.id', 'customer_types_customers.customer_type_id'),
+				),
+				'field' => 'customer_type.id',
+			),		),
+		'search' => array(
+			'firstname',
+			'lastname',
+		),
+	);
 
 	public static function create($data)
 	{

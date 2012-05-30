@@ -1,1 +1,36 @@
-ALTER TABLE `customers` ADD COLUMN `company` varchar(255) AFTER `lastname`, ADD COLUMN `customer_type` int AFTER `company`, CHANGE COLUMN `email` `email` varchar(255) NOT NULL AFTER `customer_type`, CHANGE COLUMN `referred_by` `referred_by` varchar(255) DEFAULT NULL AFTER `email`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `referred_by`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`, CHANGE COLUMN `default_billing_address_id` `default_billing_address_id` int(11) DEFAULT NULL AFTER `deleted`, CHANGE COLUMN `default_shipping_address_id` `default_shipping_address_id` int(11) DEFAULT NULL AFTER `default_billing_address_id`;
+-- Add company field.
+ALTER TABLE `customers` ADD COLUMN `company` varchar(255) AFTER `lastname`, CHANGE COLUMN `email` `email` varchar(255) NOT NULL AFTER `company`, CHANGE COLUMN `referred_by` `referred_by` varchar(255) DEFAULT NULL AFTER `email`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `referred_by`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`, CHANGE COLUMN `default_billing_address_id` `default_billing_address_id` int(11) DEFAULT NULL AFTER `deleted`, CHANGE COLUMN `default_shipping_address_id` `default_shipping_address_id` int(11) DEFAULT NULL AFTER `default_billing_address_id`;
+
+
+-- Add HABTM for customer types
+
+-- ----------------------------
+--  Table structure for `customer_types`
+-- ----------------------------
+DROP TABLE IF EXISTS `customer_types`;
+CREATE TABLE `customer_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `description` text,
+  `created` datetime NOT NULL,
+  `modified` datetime DEFAULT NULL,
+  `deleted` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+SET NAMES utf8;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+--  Table structure for `customer_customer_type`
+-- ----------------------------
+DROP TABLE IF EXISTS `customer_types_customers`;
+CREATE TABLE `customer_customer_type` (
+  `customer_id` int(11) NOT NULL,
+  `customer_type_id` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+SET FOREIGN_KEY_CHECKS = 1;

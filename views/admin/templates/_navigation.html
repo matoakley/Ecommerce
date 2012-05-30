@@ -32,7 +32,14 @@
 			<li><a href="/admin/sales_orders">Sales Orders</a></li>
 		{% endif %}
 
-		{% if modules.customer_accounts %}
+		{% if modules.crm %}
+			<li><a href="#">CRM</a>
+				<ul>
+					<li><a href="/admin/customers">Customers</a></li>
+					<li><a href="/admin/customer_types">Customer Types</a></li>
+				</ul>
+			</li>
+		{% elseif modules.customer_accounts %}
 			<li><a href="/admin/customers">Customers</a></li>
 		{% endif %}
 						
