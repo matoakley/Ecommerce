@@ -11,13 +11,6 @@ $(function(){
 	});
 	
 	$('textarea.description').ckeditor({
-		toolbar:
-				[
-		            ['Source', 'Format'],
-		            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', '-', 'RemoveFormat'],
-		            ['Image']
-		        ],
-		width: "810",
 
 		// CKFinder integration		
 		filebrowserBrowseUrl : '/ckfinder/ckfinder.html',
