@@ -4,12 +4,12 @@ class Ecommerce_Controller_Admin_Blog_Categories extends Controller_Admin_Applic
 
 	function before()
 	{
+		parent::before();
+	
 		if ( ! $this->modules['blog'] OR ! $this->modules['blog_categories'] )
 		{
 			throw new Kohana_Exception('This module is not enabled');
 		}
-	
-		parent::before();
 	}
 	
 	public function action_index()
