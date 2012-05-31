@@ -124,6 +124,11 @@ Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'action' => 'view',
 )); 
 
+Route::set('view_blog_category', 'blog/category/<slug>')->defaults(array(
+	'controller' => 'blog_categories',
+	'action' => 'view',
+));
+
 Route::set('blog', 'blog')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'index',

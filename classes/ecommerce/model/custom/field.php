@@ -47,7 +47,7 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	}
 	
 	public static $objects = array(
-		'category',
+		'blog_post',
 		'customer',
 		'product',
 	);

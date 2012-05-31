@@ -103,11 +103,8 @@
 	</div>
 	
 	{# Custom Fields #}
-	{% if modules.custom_fields and fields.custom_fields %}
-		{% for custom_field in fields.custom_fields %}
-			{% include "admin/custom/fields/_edit_form_snippet.html" %}
-		{% endfor %}
-	{% endif %}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	{% if modules.brands %}	
 	<div class="field">

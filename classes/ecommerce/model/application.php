@@ -144,6 +144,11 @@ class Ecommerce_Model_Application extends Jelly_Model
 		$class = get_called_class();
 		$object = strtolower(substr($class, 6));
 		
+		if ( ! in_array($object, Model_Custom_Field::$objects))
+		{
+			throw new Kohana_Exception('The type of object does not comply to Custom Field pattern.');
+		}
+		
 		return Jelly::select('custom_field')->where('object', '=', $object)->execute();
 	}
 	
@@ -161,6 +166,11 @@ class Ecommerce_Model_Application extends Jelly_Model
 		$class = get_called_class();
 		$object = strtolower(substr($class, 6));
 		
+		if ( ! in_array($object, Model_Custom_Field::$objects))
+		{
+			throw new Kohana_Exception('The type of object does not comply to Custom Field pattern.');
+		}
+		
 		return Jelly::select('custom_field_value')
 							->join('custom_fields')->on('custom_field_values.custom_field_id', '=', 'custom_fields.id')
 							->where('custom_fields.object', '=', $object)->where('custom_fields.tag', '=', $tag)->where('object_id', '=', $this->id)
@@ -169,6 +179,20 @@ class Ecommerce_Model_Application extends Jelly_Model
 	
 	public function update_custom_field_values($fields)
 	{
+		if ( ! Kohana::config('ecommerce.modules.custom_fields'))
+		{
+			throw new Kohana_Exception('The custom fields module is not enabled.');
+		}
+		
+		// Trim the 'Model_'part from the start of the class name and convert to lowercase for DB query
+		$class = get_called_class();
+		$object = strtolower(substr($class, 6));
+		
+		if ( ! in_array($object, Model_Custom_Field::$objects))
+		{
+			throw new Kohana_Exception('The type of object does not comply to Custom Field pattern.');
+		}
+	
 		// Save custom fields
 		foreach ($fields as $key => $value)
 		{

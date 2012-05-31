@@ -14,10 +14,12 @@ return array
 	
 	'pagination' => array(
 		'products' => 10,
+		'blog_posts' => 10,
 	),
 	
 	'modules' => array(
 		'blog' => FALSE,
+		'blog_categories' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
 		'crm' => FALSE,

@@ -95,6 +95,11 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{# Custom Fields #}
+	{% set object = blog_post %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
+		
 		
 	<h2>Meta Details</h2>
 	
@@ -128,6 +133,33 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	<h2>Categories</h2>
+	{% set i = 1 %}
+	{% for key, category in categories %}
+		{% if not category.parent.loaded %}
+			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
+				<input type="checkbox" id="blog-category-{{category.id}}" name="blo_post[categories][]" value="{{category.id}}" 
+					class="top-level-category" {% if blog_post.loaded and category.id in fields.blog_categories %}checked{% endif %} />
+				<label for="blog-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+				{% if category.categories %}
+					<ul class="subcategory-list">
+						{% for subcategory in category.categories %}
+						<li>
+							<input type="checkbox" id="blog-category-{{subcategory.id}}" name="blog_post[categories][]" 
+								value="{{subcategory.id}}" {% if blog_post.loaded and subcategory.id in fields.blog_categories %}checked{% endif %} />
+							<label for="blog-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+						</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+			</div>
+			{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
+			{% set i = i + 1 %}
+		{% endif %}
+	{% endfor %}
+		
+		<div class="clear"></div>
 	
 </form>
 

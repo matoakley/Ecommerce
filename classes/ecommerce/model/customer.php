@@ -53,6 +53,16 @@ class Ecommerce_Model_Customer extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 			));
+			
+		// Include relationships that exist with CRM module
+		if (Kohana::config('ecommerce.modules.crm'))
+		{
+			$meta->fields(array(
+				'communications' => new Field_HasMany(array(
+					'foreign' => 'customer_communication.customer_id',
+				)),
+			));
+		}
 	}
 	
 	public static $searchable_fields = array(

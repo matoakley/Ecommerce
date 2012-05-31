@@ -10,9 +10,9 @@
 
 {% block page_title %}
 	{% if category.loaded %}
-		Edit Category: <strong>{{category.name}}</strong>
+		Edit Blog Category: <strong>{{category.name}}</strong>
 	{% else %}
-		Adding: <strong>New Category</strong>
+		Adding: <strong>New Blog Category</strong>
 	{% endif %}
 {% endblock %}
 
@@ -26,7 +26,7 @@
 		</div>
 		<div class="grid_10 omega tr">
 			{% if category.loaded %}
-				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
+				<a href="/admin/blog_categories/delete/{{category.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
 					Delete Category
 				</a>
@@ -38,14 +38,14 @@
 		<div class="clear"></div>
 	</div>
 
-	<h2>Category Details</h2>
+	<h2>Blog Category Details</h2>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="category-name" {{ errors.name ? "class='error'" : "" }}>Name *</label>
+			<label for="category-name" {{ errors.category.name ? "class='error'" : "" }}>Name *</label>
 		</div>
 		<div class="grid_8">
-			<input type="text" id="category-name" name="category[name]" value="{{category.name}}"
+			<input type="text" id="category-name" name="category[name]" value="{{fields.category.name}}"
 				class="inputtext longest {% if not category.loaded %}slugify{% endif %}" />
 		</div>
 		<div class="clear"></div>
@@ -53,10 +53,10 @@
 	
 	<div class="field">
 		<div class="grid_2 alpha">
-			<label for="category-slug" {{ errors.slug ? "class='error'" : "" }}>SEO Slug *</label>
+			<label for="category-slug" {{ errors.category.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
 		<div class="grid_14 omega">
-			<input type="text" id="category-slug" name="category[slug]" value="{{category.slug}}" class="inputtext longest slug" 
+			<input type="text" id="category-slug" name="category[slug]" value="{{fields.category.slug}}" class="inputtext longest slug" 
 				{% if category.loaded %} disabled {% endif %} />
 		</div>
 		<div class="clear"></div>
@@ -68,8 +68,8 @@
 			<label>Public Page</label>
 		</div>
 		<div class="grid_14 omega">
-			<a href="{% url "view_category", ["slug":category.slug] %}" target="_blank">
-				{% url "view_category", ["slug":category.slug] %}
+			<a href="{% url "view_blog_category", ["slug":category.slug] %}" target="_blank">
+				{% url "view_blog_category", ["slug":category.slug] %}
 			</a>
 		</div>
 		<div class="clear"></div>
@@ -83,7 +83,7 @@
 		<div class="grid_14 omega">
 			<select id="category-status" name="category[status]">
 			{% for status in statuses %}
-				<option value="{{status}}" {{ status == category.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+				<option value="{{status}}" {{ status == fields.category.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
@@ -95,14 +95,10 @@
 			<label for="category-description" class="top">Description</label>
 		</div>
 		<div class="grid_14 omega">		
-			<textarea id="category-description" name="category[description]" class="description">{{category.description}}</textarea>
+			<textarea id="category-description" name="category[description]" class="description">{{fields.category.description}}</textarea>
 		</div>
 		<div class="clear"></div>
 	</div>
-	
-	{# Custom Fields #}
-	{% set object = product %}
-	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	<div class="field">
 		<div class="grid_2 alpha">
@@ -112,7 +108,7 @@
 			<select id="category-parent" name="category[parent]">
 				<option value="0">-- Top Level Category --</option>
 			{% for tlc in top_level_categories %}
-				<option value="{{tlc.id}}" {{ tlc.id == category.parent.id ? "selected" : "" }}>{{tlc.name}}</option>
+				<option value="{{tlc.id}}" {{ tlc.id == fields.category.parent.id ? "selected" : "" }}>{{tlc.name}}</option>
 			{% endfor %}
 			</select>
 		</div>
@@ -126,7 +122,7 @@
 			<label for="category-meta-description">Description</label>
 		</div>
 		<div class="grid_6">
-			<textarea id="category-meta-description" name="category[meta_description]" class="wide">{{category.meta_description}}</textarea>
+			<textarea id="category-meta-description" name="category[meta_description]" class="wide">{{fields.category.meta_description}}</textarea>
 		</div>
 		<div class="grid_2 tr">
 			<p><strong>What's this?</strong></p>
@@ -141,7 +137,7 @@
 			<label for="category-meta-keywords">Keywords</label>
 		</div>
 		<div class="grid_6">
-			<textarea id="category-meta-keywords" name="category[meta_keywords]" class="wide">{{category.meta_keywords}}</textarea>
+			<textarea id="category-meta-keywords" name="category[meta_keywords]" class="wide">{{fields.category.meta_keywords}}</textarea>
 		</div>
 		<div class="grid_2 tr">
 			<p><strong>What's this?</strong></p>
