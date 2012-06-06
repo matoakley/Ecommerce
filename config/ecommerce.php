@@ -40,6 +40,7 @@ return array
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
+		'tiered_pricing' => FALSE,
 		'users' => FALSE,
 	),
 	
