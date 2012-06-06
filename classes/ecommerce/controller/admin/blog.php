@@ -59,7 +59,10 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			try
 			{
 				$blog_post->update($_POST['blog_post']);
-				$blog_post->update_custom_field_values($_POST['custom_fields']);
+				if (isset($_POST['custom_fields']))
+				{
+					$blog_post->update_custom_field_values($_POST['custom_fields']);
+				}
 				
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
