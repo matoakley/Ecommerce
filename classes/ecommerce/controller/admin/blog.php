@@ -49,7 +49,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		
 		$fields = array(
 			'blog_post' => $blog_post->as_array(),
-			'product_categories' => $blog_post->categories->as_array('id', 'id'),
+			'blog_categories' => $blog_post->categories->as_array('id', 'id'),
 			'custom_fields' => $blog_post->custom_fields(),
 		);
 		$errors = array();
