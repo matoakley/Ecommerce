@@ -139,7 +139,7 @@
 	{% for key, category in categories %}
 		{% if not category.parent.loaded %}
 			<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
-				<input type="checkbox" id="blog-category-{{category.id}}" name="blo_post[categories][]" value="{{category.id}}" 
+				<input type="checkbox" id="blog-category-{{category.id}}" name="blog_post[categories][]" value="{{category.id}}" 
 					class="top-level-category" {% if blog_post.loaded and category.id in fields.blog_categories %}checked{% endif %} />
 				<label for="blog-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
 				{% if category.categories %}
