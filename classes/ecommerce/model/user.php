@@ -266,4 +266,9 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$this->password = $new_password;
 		return $this->save();
 	}
+	
+	public function name()
+	{
+		return $this->firstname.' '.$this->lastname;
+	}
 }

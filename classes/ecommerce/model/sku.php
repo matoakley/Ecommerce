@@ -20,6 +20,7 @@ class Ecommerce_Model_Sku extends Model_Application
 					'default' => 0,
 				)),				
 				'status' => new Field_String,
+				'commercial_only' => new Field_Boolean,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -45,6 +46,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		$sku->price = 0;
 		$sku->stock = 0;
 		$sku->status = 'disabled';
+		$sku->commercial_only = FALSE;
 		
 		return $sku->save();
 	}
@@ -70,6 +72,7 @@ class Ecommerce_Model_Sku extends Model_Application
 			$sku->price = 0;
 			$sku->stock = 0;
 			$sku->status = 'disabled';
+			$sku->commercial_only = FALSE;
 			$sku->add('product_options', $options);
 			$sku->save();
 		}
@@ -99,6 +102,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			$this->status = $data['status'];
 		}
+		$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
 		
 		return $this->save();
 	}

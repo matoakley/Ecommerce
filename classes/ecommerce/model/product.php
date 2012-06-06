@@ -181,8 +181,8 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		$summary = '';
 		
-		// If this is a call from the admin then we want all SKUs, else just the ones that are live to the public
-		$skus = $is_admin ? $this->get('skus')->execute() : $this->get('skus')->where('status', '=', 'active')->execute();
+		// If this is a call from the admin then we want all SKUs, else just the ones that are live to the public and non-commercial
+		$skus = $is_admin ? $this->get('skus')->execute() : $this->get('skus')->where('commercial_only', '=', 0)->where('status', '=', 'active')->execute();
 		
 		if (count($skus) > 1)
 		{
@@ -327,7 +327,14 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		return $this->get('skus')
 								->where('status', '=', 'active')
+								->where('commercial_only', '=', 0)
 								->execute();
+	}
+	
+	// Alias of active_skus()
+	public function retail_skus()
+	{
+		return $this->active_skus();
 	}
 	
 	public function total_stock()

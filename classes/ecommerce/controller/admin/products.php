@@ -198,9 +198,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
-		// Loads the script that counts chars on the fly for Meta fields.
-		$this->scripts[] = 'jquery.counter-1.0.min';
-		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->sku_statuses = Model_Sku::$statuses;

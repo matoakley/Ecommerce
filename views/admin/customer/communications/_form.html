@@ -1,0 +1,63 @@
+<div class="grid_4 alpha">
+
+	<div class="datetimepicker" id="communication-date"></div>
+</div>
+
+<div class="grid_12 omega">
+	
+	<div class="field">
+	
+		<div class="grid_2 alpha">
+			<label for="communication-title">Title *</label>
+		</div>
+		
+		<div class="grid_8">
+			<input type="text" class="inputtext longest" id="communication-title" />
+		</div>
+		
+		<div class="grid_2 omega">
+			<select id="communication-type">
+			{% for type in communication_types %}
+				<option value="{{type}}">{{type|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		
+		<div class="clear"></div>
+		
+	</div>
+	
+	<div class="field">
+	
+		<div class="grid_2 alpha">
+			<label for="communication-text">Text</label>
+		</div>
+		
+		<div class="grid_10 omega">
+			<textarea id="communication-text" rows="300" id="communication-text"></textarea>
+		</div>
+		
+		<div class="clear"></div>
+	
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">&nbsp;</div>
+		<div class="grid_3">
+			<input type="submit" value="Add Communication" id="add-communication" data-url="{% url "customer_communication_add", ['customer_id': customer.id] %}" />
+			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="add-communication-spinner" />
+		</div>
+		<div class="grid_6">
+<!-- 			<label for="communication-send-to-customer">Email copy to customer?</label> -->
+		</div>
+		<div class="grid_1 omega">
+			<!-- <input type="checkbox" id="communication-send-to-customer" class="inline-icon" {% if not customer.email %}disabled="disabled"{% endif %} />  -->
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</div>
+
+<div class="clear"></div>
+
+<br/>

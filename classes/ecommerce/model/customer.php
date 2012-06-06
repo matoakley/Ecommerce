@@ -22,7 +22,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					),
 				)),
 				'company' => new Field_String,
-				'customer_type' => new Field_ManyToMany,
+				'customer_types' => new Field_ManyToMany,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
@@ -40,6 +40,7 @@ class Ecommerce_Model_Customer extends Model_Application
 				'addresses' => new Field_HasMany(array(
 					'foreign' => 'address.customer_id',
 				)),
+				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -65,6 +66,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		}
 	}
 	
+	public static $statuses = array(
+		'active',
+		'on_hold',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'customer_type' => array(
@@ -73,7 +79,11 @@ class Ecommerce_Model_Customer extends Model_Application
 					'customer_types' => array('customer_types.id', 'customer_types_customers.customer_type_id'),
 				),
 				'field' => 'customer_type.id',
-			),		),
+			),
+			'status' => array(
+				'field' => 'status',
+			),
+		),
 		'search' => array(
 			'firstname',
 			'lastname',
@@ -95,7 +105,13 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$customer->referred_by = $data['referred_by'];
 		}
-				
+		
+		if (Kohana::config('ecommerce.modules.crm'))
+		{
+			$customer->add('customer_types', Kohana::config('ecommerce.default_web_customer_type'));
+		}
+		
+		$customer->status = 'active';
 		$customer->save();
 		
 		if (isset($data['email_subscribe']))
@@ -187,5 +203,47 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function name()
 	{
 		return $this->firstname.' '.$this->lastname;
+	}
+	
+	public function add_communication($data)
+	{
+		return Model_Customer_Communication::create_communication_for_customer($this, $data);
+	}
+
+	public function add_address($data)
+	{
+		return Model_Address::create($data, $this->id);
+	}
+	
+	public function admin_update($data)
+	{
+		$this->firstname = $data['firstname'];
+		$this->lastname = $data['lastname'];
+		$this->company = $data['company'];
+		$this->email = $data['email'];
+		if (isset($data['default_billing_address']))
+		{
+			$this->default_billing_address = $data['default_billing_address'];
+		}
+		if (isset($data['default_shipping_address']))
+		{
+			$this->default_shipping_address = $data['default_shipping_address'];
+		}
+	
+		// Clear down and save customer types.
+		$this->remove('customer_types', $this->customer_types);
+		if (isset($data['customer_types']))
+		{
+			$this->add('customer_types', $data['customer_types']);
+		}
+		
+		$this->status = $data['status'];
+	
+		return $this->save();
+	}
+	
+	public function is_commercial_customer()
+	{
+		return (bool) $this->get('customer_types')->where('id', '=', Kohana::config('ecommerce.default_commercial_customer_type'))->count();
 	}
 }

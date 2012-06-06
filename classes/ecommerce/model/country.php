@@ -24,4 +24,12 @@ class Ecommerce_Model_Country extends Model_Application
 				)),
 			));
 	}
+	
+	// This should only return countries which are set as active
+	// within the system, however there is no management for 
+	// this yet and so it is simply a placeholder at present
+	public static function list_active()
+	{
+		return Jelly::select('country')->order_by('name', 'ASC')->execute()
+	}
 }

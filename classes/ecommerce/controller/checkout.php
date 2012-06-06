@@ -112,6 +112,9 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 					$delivery_address = Model_Address::create($_POST['delivery_address'], $customer->id, TRUE);
 					$delivery_name = $_POST['sales_order'];
 				}
+				
+				$customer->set_default_billing_address($billing_address);
+				$customer->set_default_shipping_address($delivery_address);
 			
 				$sales_order = Model_Sales_Order::create_from_basket($this->basket, $customer, $billing_address, $delivery_address, $delivery_name);
 				$this->request->redirect('/checkout/confirm');

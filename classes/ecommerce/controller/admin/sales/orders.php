@@ -134,4 +134,36 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		}
 	}
 
+	public function action_new()
+	{
+		if ( ! $this->modules['commercial_sales_orders'])
+		{
+			throw new Kohana_Exception('Module is not enabled.');
+		}
+	
+		if (isset($_GET['customer']))
+		{
+			$customer = Model_Customer::load($_GET['customer']);
+			
+			if ( ! $customer->loaded() OR ! $customer->is_commercial_customer())
+			{
+				throw new Kohana_Exception('Unable to load Customer.');
+			}
+			
+			$this->template->customer = $customer;
+			
+			$items_per_page = 5;
+			$page = isset($_GET['orders_page']) ? $_GET['orders_page'] : 1;
+		
+			$this->template->customer_delivery_addresses = $customer->get('addresses')->where('is_delivery', '=', 1)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+			$this->template->customer_delivery_addresses_pagination = Pagination::factory(array(
+				'total_items' => $customer->get('addresses')->where('is_delivery', '=', 1)->count(),
+				'items_per_page' => $items_per_page,
+				'auto_hide'	=> false,
+				'current_page'   => array('source' => 'query_string', 'key' => 'customer_delivery_addresses_page'),
+			));
+		}
+		
+		$this->template->countries = Model_Country::list_active();
+	}
 }

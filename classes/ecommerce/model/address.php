@@ -79,6 +79,27 @@ class Ecommerce_Model_Address extends Model_Application
 	
 		return implode(', ', $address_parts);
 	}
+	
+	public function human_string()
+	{
+		$address_parts = array(
+			$this->line_1,
+			$this->line_2,
+			$this->town,
+			$this->county,
+			$this->postcode,
+		);
+		
+		foreach ($address_parts as $key => $part)
+		{
+			if (is_null($part) OR $part == '')
+			{
+				unset($address_parts[$key]);
+			}
+		}
+	
+		return implode(', ', $address_parts);
+	}
 
 	public static function create($data, $customer_id, $is_delivery = FALSE)
 	{
