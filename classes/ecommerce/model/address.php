@@ -9,6 +9,7 @@ class Ecommerce_Model_Address extends Model_Application
 				'id' => new Field_Primary,
 				'customer' => new Field_BelongsTo,
 				'is_delivery' => new Field_Boolean,
+				'house_name' => new Field_String,
 				'line_1' => new Field_String,
 				'line_2' => new Field_String,
 				'town' => new Field_String,
@@ -111,6 +112,39 @@ class Ecommerce_Model_Address extends Model_Application
 	{
 		$has_changed = $this->changed();
 		
+		// Sometimes, lazy ass people like to shorten the county name and 
+		// this breaks the postcode lookup. This is where we try and put
+		// the correct county name back in.
+		switch (strtolower($this->county))
+		{
+			case 'bucks':
+				$this->county = 'Buckinghamshire';
+				break;
+		
+			case 'cambs':
+				$this->county = 'Cambridgeshire';
+				break;
+		
+			case 'herts':
+				$this->county = 'Hertfordshire';
+				break;
+				
+			case 'northants':
+				$this->county = 'Northamptonshire';
+				break;
+			
+			case 'staffs':
+				$this->county = 'Staffordshire';
+				break;
+				
+			case 'wilts':
+				$this->county = 'Wiltshire';
+				break;
+				
+			default:
+				break;
+		}
+		
 		parent::save($key);
 		
 		// Only queue for geocoding if the address has been changed
@@ -134,5 +168,26 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->latitude = $lat;
 		$this->longitude = $lng;
 		$this->save(NULL, FALSE);
+	}
+	
+	public function generic_string()
+	{
+		$address_parts = array(
+			$this->line_2,
+			$this->town,
+			$this->county,
+			// DON'T PUT POSTCODE HERE, IT BREAKS THE GEOCODE LOOKUP
+			// (apologies for shouting, but it's quite important)
+		);
+		
+		foreach ($address_parts as $key => $part)
+		{
+			if (is_null($part) OR $part == '')
+			{
+				unset($address_parts[$key]);
+			}
+		}
+	
+		return implode(', ', $address_parts);
 	}
 }
