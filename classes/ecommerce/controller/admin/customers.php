@@ -54,6 +54,10 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
 		$fields['customer']['default_billing_address'] = $customer->default_billing_address->id;
 		$fields['customer']['default_shipping_address'] = $customer->default_shipping_address->id; 
+		if ($this->modules['tiered_pricing'])
+		{
+			$fields['customer']['price_tier'] = $customer->price_tier->id;
+		}
 		$errors = array();
 		
 		if ($_POST)
@@ -134,6 +138,11 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->customer_types = Jelly::select('customer_type')->execute();
 		$this->template->customer_statuses = Model_Customer::$statuses;
 		$this->template->countries = Model_Country::list_active();
+		
+		if ($this->modules['tiered_pricing'])
+		{
+			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
 	}
 	
 	public function action_add_communication()

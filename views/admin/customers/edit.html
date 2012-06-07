@@ -87,13 +87,26 @@
 		<div class="grid_2 alpha">
 			<label form="customer-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="customer-status" name="customer[status]">
 			{% for status in customer_statuses %}
 				<option value="{{status}}" {% if customer.status == status %}selected="selected"{% endif %}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
+		{% if modules.tiered_pricing %}
+			<div class="grid_2">
+				<label for="customer-price-tier">Price Tier</label>
+			</div>
+			<div class="grid_8 omega">
+				<select name="customer[price_tier]" id="customer-price-tier">
+					<option value="">Default</option>
+					{% for tier in price_tiers %}
+						<option value="{{tier.id}}" {% if tier.id == fields.customer.price_tier %}selected="selected"{% endif %}>{{tier.name}}</option>
+					{% endfor %}
+				</select>
+			</div>
+		{% endif %}
 		<div class="clear"></div>
 	</div>
 	

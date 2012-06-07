@@ -241,6 +241,11 @@ class Ecommerce_Model_Customer extends Model_Application
 			$this->add('customer_types', $data['customer_types']);
 		}
 		
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['price_tier']))
+		{
+			$this->price_tier = $data['price_tier'];
+		}
+		
 		$this->status = $data['status'];
 	
 		return $this->save();
