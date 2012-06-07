@@ -64,6 +64,31 @@
 	<div class="clear"></div>
 </div>
 
+{% if modules.tiered_pricing and price_tiers|length > 0 %}
+	<div class="field">
+		<div class="grid_2 alpha">&nbsp;</div>
+		<div class="grid_4">
+			<a href="#" class="show-sku-tiered-prices" data-sku-id="{{sku.id}}"><img src="/media/images/icons/magnifier.png" class="inline-icon" alt="" /> Show Tiered Prices</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="hidden sku-tiered-price-container" data-sku-id="{{sku.id}}">
+	{% for key, tier in price_tiers %}
+		<div class="field">
+			<div class="grid_4 alpha">
+				<label for="product-price-tier-{{tier.id}}">{{tier.name}} (&pound;)</label>
+			</div>
+			<div class="grid_12 omega">
+				<input type="text" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices[key].price|num_format(2)}}" class="inputtext shortest" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endfor %}
+	</div>
+
+{% endif %}
+
 <div class="field">
 	<div class="grid_2 alpha">
 		<label for="sku-sku-id">SKU</label>

@@ -212,6 +212,20 @@ $(function(){
 			}
 		});
 	});
+	
+	// Deal with hiding/showing sku tiered prices
+	$('a.show-sku-tiered-prices').live('mouseenter', function(){
+		if ($('div.sku-tiered-price-container[data-sku-id="'+$(this).attr('data-sku-id')+'"]').is(':visible')){
+			$(this).children('img').attr('src', '/media/images/icons/magifier_zoom_out.png');
+		} else {
+			$(this).children('img').attr('src', '/media/images/icons/magnifier_zoom_in.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).children('img').attr('src', '/media/images/icons/magnifier.png');
+	}).live('click', function(e){
+		e.preventDefault();
+		$('div.sku-tiered-price-container[data-sku-id="'+$(this).attr('data-sku-id')+'"]').slideToggle('slow');
+	});
 });
 
 jQuery.fn.slugify = function(obj) {

@@ -21,6 +21,9 @@ class Ecommerce_Model_Sku extends Model_Application
 				)),				
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
+				'tiered_prices' => new Field_HasMany(array(
+					'foreign' => 'sku_tiered_price.sku_id',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -91,7 +94,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	}
 	
 	public function update($data)
-	{	
+	{
 		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), Kohana::config('ecommerce.vat_rate'));
 		if (isset($data['stock']))
 		{
@@ -103,6 +106,15 @@ class Ecommerce_Model_Sku extends Model_Application
 			$this->status = $data['status'];
 		}
 		$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
+		
+		// Update SKUs tiered prices
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['tiered_prices']))
+		{
+			foreach ($data['tiered_prices'] as $price_tier_id => $price)
+			{
+				Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);
+			}
+		}
 		
 		return $this->save();
 	}

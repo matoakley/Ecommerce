@@ -27,4 +27,12 @@ class Ecommerce_Model_Sku_Tiered_Price extends Model_Application
 			)),
 		));
 	}
+	
+	public function update($sku_id, $price_tier_id, $price)
+	{
+		$this->sku = $sku_id;
+		$this->price_tier = $price_tier_id;
+		$this->price = $price;
+		return $this->save();
+	}
 }
