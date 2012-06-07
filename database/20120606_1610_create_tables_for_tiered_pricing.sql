@@ -20,3 +20,6 @@ CREATE TABLE `sku_tiered_prices` (
   `deleted` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- Add tiered pricing field to customers
+ALTER TABLE `customers` ADD COLUMN `price_tier_id` int AFTER `status`;

@@ -41,6 +41,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					'foreign' => 'address.customer_id',
 				)),
 				'status' => new Field_String,
+				'price_tier' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
