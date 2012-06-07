@@ -65,7 +65,7 @@ return array
 	
 	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 	
-	'cloudmade_api_key' => '', // API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
+	'cloudmade_api_key' => 'af4f31e0445f463ebe783a749812d374', // Generic API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
 	
 	'forum_post_name_max_length' => 245,
 );
