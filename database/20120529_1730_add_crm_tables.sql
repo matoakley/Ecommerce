@@ -7,7 +7,6 @@ ALTER TABLE `customers` ADD COLUMN `company` varchar(255) AFTER `lastname`, CHAN
 -- ----------------------------
 --  Table structure for `customer_types`
 -- ----------------------------
-DROP TABLE IF EXISTS `customer_types`;
 CREATE TABLE `customer_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -27,8 +26,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 --  Table structure for `customer_customer_type`
 -- ----------------------------
-DROP TABLE IF EXISTS `customer_types_customers`;
-CREATE TABLE `customer_customer_type` (
+CREATE TABLE `customer_types_customers` (
   `customer_id` int(11) NOT NULL,
   `customer_type_id` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -38,7 +36,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 --  Table structure for `customer_communications`
 -- ----------------------------
-DROP TABLE IF EXISTS `customer_communications`;
 CREATE TABLE `customer_communications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
