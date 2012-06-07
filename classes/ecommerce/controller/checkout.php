@@ -27,7 +27,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		// If customer accounts module is enabled, we should check if they are logged in
 		// or set as a new customer in session and if not, offer them the chance to log in.
-		if ($this->modules['customer_accounts'] AND ! $this->session->get('new_customer') AND ! $this->auth->logged_in('customer'))
+		if ($this->modules['customer_accounts'] AND ! $this->session->get('new_customer') AND ! $this->auth->logged_in())
 		{
 			$this->request->redirect(Route::get('checkout_login')->uri());
 		}
@@ -166,7 +166,18 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		{
 			if (isset($_POST['existing_x']))
 			{
-				// Log in	
+				// Log in
+				if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in())
+				{
+					$this->request->redirect(Route::get('checkout')->uri());
+				}
+				else
+				{
+					// Force a log out in case the user has authenticated as an admin rather than customer
+					$this->auth->logout();
+					$this->template->fields = $_POST;
+					$this->template->login_failed = TRUE;
+				}
 			}
 			else
 			{
