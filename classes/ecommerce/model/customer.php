@@ -84,6 +84,9 @@ class Ecommerce_Model_Customer extends Model_Application
 			'status' => array(
 				'field' => 'status',
 			),
+			'price_tier' => array(
+				'field' => 'price_tier',
+			),
 		),
 		'search' => array(
 			'firstname',

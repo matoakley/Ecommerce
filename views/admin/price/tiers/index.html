@@ -30,6 +30,7 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th>Description</th>
+			<th>Customers</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -38,6 +39,7 @@
 			<td><input type="checkbox" class="row-selector" /></td>
 			<td><a href="/admin/price_tiers/edit/{{tier.id}}">{{tier.name}}</td>
 			<td>{{tier.description}}</td>
+			<td><a href="/admin/customers?q=price_tier:{{tier.id}}">{{tier.customers|length}}</a></td>
 		</tr>
 	{% endfor %}
 	</tbody>
