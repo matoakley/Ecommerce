@@ -1,11 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 // Admin routes
-Route::set('add_stockist', 'admin/stockists/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'stockists',
-	'action'		=> 'edit',
-));
 
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
 	'directory' => 'admin',
@@ -26,58 +21,10 @@ Route::set('delete_promotion_code_reward', 'admin/promotion_codes/<promotion_cod
 	'action' => 'delete_reward',
 ));
 
-Route::set('add_promotion_code', 'admin/promotion_codes/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'promotion_codes',
-	'action'		=> 'edit',
-));
-
 Route::set('add_blog_post', 'admin/blog/add_post')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'blog',
 	'action'		=> 'edit_post',
-));
-
-Route::set('add_pages', 'admin/pages/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'pages',
-	'action'		=> 'edit',
-));
-
-Route::set('add_snippets', 'admin/snippets/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'snippets',
-	'action'		=> 'edit',
-));
-
-Route::set('add_users', 'admin/users/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'users',
-	'action'		=> 'edit',
-));
-
-Route::set('add_product', 'admin/products/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'products',
-	'action'		=> 'edit',
-));
-
-Route::set('category_product', 'admin/categories/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'categories',
-	'action'		=> 'edit',
-));
-
-Route::set('add_brand', 'admin/brands/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'brands',
-	'action'		=> 'edit',
-));
-	
-Route::set('add_delivery_option', 'admin/delivery_options/add')->defaults(array(
-	'directory'		=> 'admin',
-	'controller'	=> 'delivery_options',
-	'action'		=> 'edit',
 ));
 
 Route::set('admin_logout', 'admin/logout')->defaults(array(
@@ -92,13 +39,49 @@ Route::set('admin_login', 'admin/login')->defaults(array(
 	'action'		=> 'login',
 ));
 
-Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')	->defaults(array(
+Route::set('admin_add', 'admin/<controller>/add')->defaults(array(
+	'directory' => 'admin',
+	'action' => 'edit',
+));
+
+Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'dashboard',
 	'action'		=> 'index',
 ));
 	
 // Default Public Routes
+
+Route::set('event_view', 'events/<event_slug>')->defaults(array(
+	'controller' => 'events',
+	'action' => 'view',
+));
+
+Route::set('events_index', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
+Route::set('forum_post_new', 'forums/<category_slug>/new')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'new_post',
+));
+
+Route::set('forum_post_view', 'forums/<category_slug>/<post_slug>')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'view_post',
+));
+
+Route::set('forum_view', 'forums/<category_slug>')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'view_category',
+));
+
+Route::set('forums', 'forums')->defaults(array(
+	'controller' => 'forums',
+	'action' => 'index',
+));
+
 Route::set('stockists', 'stockists')->defaults(array(
 	'controller' => 'stockists',
 	'action' => 'index',
@@ -141,6 +124,11 @@ Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'action' => 'view',
 )); 
 
+Route::set('view_blog_category', 'blog/category/<slug>')->defaults(array(
+	'controller' => 'blog_categories',
+	'action' => 'view',
+));
+
 Route::set('blog', 'blog')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'index',
@@ -179,6 +167,11 @@ Route::set('adjust_basket_item', 'basket/adjust_item(/<basket_id>/<quantity>)')-
 Route::set('basket', 'basket')->defaults(array(
 	'controller' => 'basket',
 	'action' => 'view',
+));
+
+Route::set('checkout_login', 'checkout/login')->defaults(array(
+	'controller' => 'checkout',
+	'action' => 'login',
 ));
 
 Route::set('checkout', 'checkout')->defaults(array(

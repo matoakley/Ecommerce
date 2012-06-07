@@ -1,0 +1,83 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if custom_field.loaded %}
+		Edit Custom Field: <strong>{{custom_field.name}}</strong>
+	{% else %}
+		Adding: <strong>New Custom Field</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if custom_field.loaded %}
+				<a href="/admin/custom_fields/delete/{{custom_field.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Custom Field
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Custom Field Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="custom-field-name" {{ errors.custom_field.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="custom-field-name" name="custom_field[name]" value="{{fields.custom_field.name}}"
+				class="inputtext longer {% if not custom_fields.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="custom-field-tag" {{ errors.custom_field.tag ? "class='error'" : "" }}>Tag *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="custom-field-tag" name="custom_field[tag]" value="{{fields.custom_field.tag}}" class="inputtext longer slug" 
+				{% if custom_field.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+		
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="custom-field-object" {{ errors.custom_field.object ? "class='error'" : "" }}>Object *</label>
+		</div>
+		<div class="grid_4">
+			<select id="custom-field-object" name="custom_field[object]">
+				<option value=""></option>
+			{% for object in objects %}
+				<option value="{{object}}" {{ object == fields.custom_field.object ? "selected" : "" }}>{{object|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		
+		<div class="grid_1 tr">
+			<input type="checkbox" id="custom-field-show-editor" name="custom_field[show_editor]" value="1" {% if fields.custom_field.show_editor %}checked="checked"{% endif %} />
+		</div>
+		
+		<div class="grid_9 omega">
+			<label for="custom-field-show-editor" class="tl">Show WYSIWYG editor?</label>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+		
+</form>
+
+{% endblock %}

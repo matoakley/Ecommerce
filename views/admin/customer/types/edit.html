@@ -1,0 +1,59 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if customer.loaded %}
+		Edit Customer Type: <strong>{{customer_type.name}}</strong>
+	{% else %}
+		Adding: <strong>New Customer Type</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if customer_type.loaded %}
+				<a href="/admin/customer_types/delete/{{customer_type.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Customer Type
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Customer Type Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-type-name" {{ errors.customer_type.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="customer-type-name" name="customer_type[name]" value="{{fields.customer_type.name}}"
+				class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-type-description">Description *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="customer-type-description" name="customer_type[description]" value="{{fields.customer_type.description}}"
+				class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>	
+		
+</form>
+
+{% endblock %}

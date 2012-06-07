@@ -9,10 +9,9 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		{
 			$analytics = Kohanalytics::instance();
 			$this->template->visits = $analytics->daily_visit_count();
-			$this->template->top_referrers = $analytics->query('source', 'visits', '-visits', 5);	
+			$this->template->top_referrers = $analytics->query('source', 'visits', '-visits', 6);	
 						
 			$visit_data = $analytics->monthly_visit_count();
-			ksort($visit_data);
 			
 			$monthly_totals = array();
 			foreach ($visit_data as $month => $visits)

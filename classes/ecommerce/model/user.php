@@ -5,7 +5,6 @@ class Ecommerce_Model_User extends Model_Auth_User
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->name_key('username')
-			->sorting(array('username' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'customer' => new Field_HasOne,
@@ -107,7 +106,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return Jelly::select(get_called_class(), $id);
 	}
 	
-	public static function search($conditions = array(), $items = FALSE)
+	public static function search($conditions = array(), $items = FALSE, $order = FALSE)
 	{
 		$data = array();
 		
@@ -174,6 +173,15 @@ class Ecommerce_Model_User extends Model_Auth_User
 		}
 		
 		$data['count_all'] = $results->count();
+		
+		if ($order)
+		{
+			foreach ($order as $key => $value)
+			{
+				$results->order_by($key, $value);
+			}
+		}
+		
 		$data['results'] = $results->execute();
 		
 		return $data;
@@ -239,6 +247,18 @@ class Ecommerce_Model_User extends Model_Auth_User
 		}
 		
 		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+	}
+	
+	public function delete_image()
+	{	
+		$directory = DOCROOT . '/images/users';
+		
+		try
+		{
+			unlink($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+		}
+		catch (Exception $e)
+		{}		
 	}
 	
 	public function change_password($new_password)

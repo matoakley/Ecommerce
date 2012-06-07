@@ -4,7 +4,7 @@ class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->table('customers')
+		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'user' => new Field_BelongsTo,
@@ -21,6 +21,8 @@ class Ecommerce_Model_Customer extends Model_Application
 						'not_empty' => NULL,
 					),
 				)),
+				'company' => new Field_String,
+				'customer_type' => new Field_ManyToMany,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
@@ -51,7 +53,32 @@ class Ecommerce_Model_Customer extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 			));
+			
+		// Include relationships that exist with CRM module
+		if (Kohana::config('ecommerce.modules.crm'))
+		{
+			$meta->fields(array(
+				'communications' => new Field_HasMany(array(
+					'foreign' => 'customer_communication.customer_id',
+				)),
+			));
+		}
 	}
+	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'customer_type' => array(
+				'join' => array(
+					'customer_types_customers' => array('customer.id', 'customer_types_customers.customer_id'),
+					'customer_types' => array('customer_types.id', 'customer_types_customers.customer_type_id'),
+				),
+				'field' => 'customer_type.id',
+			),		),
+		'search' => array(
+			'firstname',
+			'lastname',
+		),
+	);
 
 	public static function create($data)
 	{
@@ -151,6 +178,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	public function completed_orders()
 	{
-		return $this->get('orders')->where('status', '=', 'completed')->execute();
+		return $this->get('orders')->where('status', '=', 'complete')->execute();
+	}
+	
+	/*
+	 * Little helper method to spit out the customer's full name.
+	 */
+	public function name()
+	{
+		return $this->firstname.' '.$this->lastname;
 	}
 }

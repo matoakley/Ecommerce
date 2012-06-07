@@ -23,6 +23,10 @@ class Ecommerce_Model_Blog_Post extends Model_Application
         'featured_image' => new Field_String(array(
           'in_db' => FALSE,
         )),
+        'categories' => new Field_ManyToMany(array(
+					'foreign' => 'blog_category',
+					'through' => 'blog_categories_blog_posts',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -96,6 +100,14 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 		if ( ! $this->author->loaded())
 		{
 			$this->author = Auth::instance()->get_user()->id;
+		}
+		
+		// Clear down and save categories.
+		$this->remove('categories', $this->categories);
+		
+		if (isset($data['categories']))
+		{
+			$this->add('categories', $data['categories']);
 		}
 		
 		// Ping sitemap to search engines to alert them of content change

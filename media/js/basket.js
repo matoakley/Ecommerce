@@ -79,7 +79,7 @@ $(function(){
 					complete: function(){
 						update_basket_total();
 					}
-				});				
+				});
 			}
 		});
 	});

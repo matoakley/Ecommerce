@@ -2,6 +2,8 @@
 	<ul>
 		<li class="first"><a href="/admin">Dashboard</a></li>
 		
+		
+		{% if modules.brands or modules.categories or modules.products or modules.stockists %}
 		<li>
 			<a href="#">Catalog</a>
 			
@@ -24,20 +26,31 @@
 			</ul>
 
 		</li>
+		{% endif %}
 		
 		{% if modules.sales_orders %}
 			<li><a href="/admin/sales_orders">Sales Orders</a></li>
 		{% endif %}
 
-		{% if modules.customer_accounts %}
+		{% if modules.crm %}
+			<li><a href="#">CRM</a>
+				<ul>
+					<li><a href="/admin/customers">Customers</a></li>
+					<li><a href="/admin/customer_types">Customer Types</a></li>
+				</ul>
+			</li>
+		{% elseif modules.customer_accounts %}
 			<li><a href="/admin/customers">Customers</a></li>
 		{% endif %}
-				
+						
+		{% if modules.blog or modules.pages or modules.snippets %}
 		<li><a href="#">CMS</a>
-		
 			<ul>
 				{% if modules.blog %}
-					<li><a href="/admin/blog">Blog</a></li>
+					{% if modules.blog_categories %}
+						<li><a href="/admin/blog_categories">Blog Categories</a></li>
+					{% endif %}
+					<li><a href="/admin/blog">Blog Posts</a></li>
 				{% endif %}
 				
 				{% if modules.pages %}
@@ -48,8 +61,17 @@
 					<li><a href="/admin/snippets">Snippets</a></li>
 				{% endif %}
 			</ul>
-		
 		</li>
+		{% endif %}
+		
+		{% if modules.forums %}
+		<li><a href="#">Forums</a>
+			<ul>
+				<li><a href="/admin/forum_banned_words">Banned Words</a></li>
+				<li><a href="/admin/forum_categories">Forum Categories</a></li>
+			</ul>
+		</li>
+		{% endif %}
 		
 		{% if modules.promotion_codes %}
 			<li><a href="/admin/promotion_codes">Promotion Codes</a></li>
@@ -59,8 +81,15 @@
 			<li><a href="/admin/delivery_options">Delivery Options</a></li>
 		{% endif %}
 		
-		{% if modules.users %}
-			<li><a href="/admin/users">System Users</a></li>
-		{% endif %}
+		<li><a href="#">System</a>
+			<ul>
+			{% if modules.users %}
+				<li><a href="/admin/users">System Users</a></li>
+			{% endif %}
+			{% if modules.custom_fields %}
+				<li><a href="/admin/custom_fields">Custom Fields</a></li>
+			{% endif %}
+			</ul>
+		</li>
 	</ul>
 </div>

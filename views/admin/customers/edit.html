@@ -1,0 +1,87 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if customer.loaded %}
+		Edit Customer: <strong>{{customer.name}}</strong>
+	{% else %}
+		Adding: <strong>New Customer</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if category.loaded %}
+				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Category
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Customer Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-firstname">Firstname</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" id="customer-firstname" name="customer[firstname]" value="{{fields.customer.firstname}}"
+				class="inputtext" />
+		</div>
+	
+		<div class="grid_2">
+			<label for="customer-lastname">Lastname</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" id="customer-lastname" name="customer[lastname]" value="{{fields.customer.lastname}}"
+				class="inputtext" />
+		</div>
+		<div class="clear"></div>
+	</div>	
+		
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-company">Company</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" id="customer-company" name="customer[company]" value="{{fields.customer.company}}"
+				class="inputtext" />
+		</div>
+		
+		<div class="grid_2">
+			<label for="customer-email">Email</label>
+		</div>
+		<div class="grid_5">
+			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
+				class="inputtext long" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<h2>Orders</h2>
+	
+	{% if modules.crm %}
+		<h2>Customer Communication</h2>
+		
+		{% for communication in communications %}
+			<p>{{communication.text|auto_p|auto_link}}</p>
+		{% endfor %}
+		
+		{{communication_pagination}}
+	{% endif %}
+		
+</form>
+
+{% endblock %}

@@ -65,6 +65,11 @@ class Ecommerce_Model_Address extends Model_Application
 			// (apologies for shouting, but it's quite important)
 		);
 		
+		if ($this->country->loaded())
+		{
+			$address_parts[] = $this->country->name;
+		}
+		
 		foreach ($address_parts as $key => $part)
 		{
 			if (is_null($part) OR $part == '')
@@ -157,7 +162,7 @@ class Ecommerce_Model_Address extends Model_Application
 		return $this;
 	}
 	
-	private function geocode()
+	public function geocode()
 	{
 		Model_Address_Geocode_Request::queue($this);
 		return $this;

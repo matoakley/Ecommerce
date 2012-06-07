@@ -4,19 +4,32 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 
 	function before()
 	{
-		if ( ! Kohana::config('ecommerce.modules.blog'))
+		parent::before();
+		
+		if ( ! $this->modules['blog'])
 		{
 			throw new Kohana_Exception('This module is not enabled');
 		}
-	
-		parent::before();
 	}
 	
 	public function action_index()
 	{
-		$blog_posts = Model_Blog_Post::search(array('status:active'), FALSE, array('created' => 'DESC'));
+		$items = Kohana::config('ecommerce.pagination.blog_posts');
 		
-		$this->template->blog_posts = $blog_posts['results'];
+		$blog_post_search = Model_Blog_Post::search(array('status:active'), $items, array('created' => 'DESC'));
+		
+		// Pagination
+		$this->template->pagination = Pagination::factory(array(
+			'total_items'    => $blog_post_search['count_all'],
+			'items_per_page' => $items,
+			'auto_hide'	=> false,
+		));
+		
+		$this->template->blog_posts = $blog_post_search['results'];
+		if ($this->modules['blog_categories'])
+		{
+			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
+		}
 		$this->add_breadcrumb('/blog', 'Blog');
 	}
 	

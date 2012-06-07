@@ -69,7 +69,7 @@
 		</div>
 		<div class="grid_14 omega">
 			<a href="{% url "view_category", ["slug":category.slug] %}" target="_blank">
-				{{base_url}}{% url "view_category", ["slug":category.slug] %}
+				{% url "view_category", ["slug":category.slug] %}
 			</a>
 		</div>
 		<div class="clear"></div>
@@ -99,6 +99,10 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{# Custom Fields #}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	<div class="field">
 		<div class="grid_2 alpha">

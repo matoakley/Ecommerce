@@ -85,4 +85,12 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		return array_merge(array('/' => 'Home'), $this->breadcrumbs);
 	}
 	
+	public function requires_login()
+	{
+		if ( ! $this->auth->logged_in('login'))
+		{
+			$this->request->redirect(Route::get('login')->uri(array('get' => '?return_url='.$this->request->uri)));
+		}
+	}
+	
 }

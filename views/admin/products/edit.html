@@ -102,6 +102,10 @@
 		<div class="clear"></div>
 	</div>
 	
+	{# Custom Fields #}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
+	
 	{% if modules.brands %}	
 	<div class="field">
 		<div class="grid_2 alpha">

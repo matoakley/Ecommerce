@@ -25,6 +25,13 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			$this->request->redirect('/basket');
 		}
 		
+		// If customer accounts module is enabled, we should check if they are logged in
+		// or set as a new customer in session and if not, offer them the chance to log in.
+		if ($this->modules['customer_accounts'] AND ! $this->session->get('new_customer') AND ! $this->auth->logged_in('customer'))
+		{
+			$this->request->redirect(Route::get('checkout_login')->uri());
+		}
+		
 		// If the customer is logged in we should attempt to 
 		// auto fill some of the fields
 		if ($this->auth->logged_in('customer'))
@@ -147,5 +154,25 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			$this->request->redirect('checkout');
 		}
 	}
-
+	
+	public function action_login()
+	{
+		if ( ! $this->basket->loaded() OR count($this->basket->items) == 0)
+		{
+			$this->request->redirect('/basket');
+		}
+	
+		if ($_POST)
+		{
+			if (isset($_POST['existing_x']))
+			{
+				// Log in	
+			}
+			else
+			{
+				$this->session->set('new_customer', TRUE);
+				$this->request->redirect(Route::get('checkout')->uri());
+			}
+		}
+	}
 }

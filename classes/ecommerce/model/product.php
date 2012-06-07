@@ -177,11 +177,12 @@ class Ecommerce_Model_Product extends Model_Application
 		return $meta_description;
 	}
 
-	public function summarise_sku_price()
+	public function summarise_sku_price($is_admin = FALSE)
 	{
 		$summary = '';
 		
-		$skus = $this->get('skus')->where('status', '=', 'active')->execute();
+		// If this is a call from the admin then we want all SKUs, else just the ones that are live to the public
+		$skus = $is_admin ? $this->get('skus')->execute() : $this->get('skus')->where('status', '=', 'active')->execute();
 		
 		if (count($skus) > 1)
 		{

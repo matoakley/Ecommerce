@@ -27,5 +27,6 @@ class Ecommerce_Controller_Cron extends Controller_Application
 				$request->process();
 			}
 		}
+		exit();
 	}
 }

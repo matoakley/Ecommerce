@@ -1,0 +1,52 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}Viewing: <strong>Customer Types</strong>{% endblock %}
+
+{% block content %}
+
+<p>
+	<a href="/admin/customer_types/add" class="img-button">
+		<img src="/images/icons/add.png" alt="" />
+		New Customer Type
+	</a>
+</p>
+
+<div class="grid_8 alpha">
+	<select id="bulk-actions">
+		<option value="">-- Bulk Actions --</option>
+	</select>
+
+	<span id="no-rows-selected">No rows selected!</span>	
+</div>
+
+<div class="grid_8 omega tr">
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_customer_types %}{{page * items}}{% else %}{{total_customer_types}}{% endif %}</strong> of <strong>{{total_customer_types}}</strong> items
+</div>
+
+<div class="clear"></div>
+
+<table>
+	<thead>
+		<tr>
+			<th width="1"><input id="check-all" type="checkbox" /></th>
+			<th>Name</th>
+			<th>Description</th>
+			<th># Customers</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, customer_type in customer_types %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="checkbox" class="row-selector" /></td>
+			<td><a href="/admin/customer_types/edit/{{customer_type.id}}">{{customer_type.name}}</td>
+			<td>{{customer_type.description}}</a></td>
+			<td><a href="/admin/customers?q=customer_type:{{customer_type.id}}">{{customer_type.customer_count}}</a></td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{{pagination}}
+
+
+{% endblock %}

@@ -48,6 +48,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
 			'skus' => $product->skus,
+			'custom_fields' => $product->custom_fields(),
 		);
 		
 		foreach ($product->images as $product_image)
@@ -130,12 +131,21 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Save the product
 				$product->update($_POST['product']);
+				if (isset($_POST['custom_fields']))
+				{
+					$product->update_custom_field_values($_POST['custom_fields']);
+				}
 
 				// Loop through and save each of the SKUs
 				if (isset($_POST['skus']))
 				{
 					foreach ($_POST['skus'] as $sku_id => $sku_data)
 					{
+						if (count($_POST['skus']) == 1)
+						{
+							$sku_data['status'] = 'active';
+						}
+						
 						$sku = Model_Sku::load($sku_id);
 						$sku->update($sku_data);
 					}
@@ -160,7 +170,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 						$image->update($values);
 					}
 				}
-				
+								
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
@@ -176,6 +186,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
 				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
+				$fields['custom_fields'] = isset($_POST['custom_fields']) ? $_POST['custom_fields'] : array();
 				
 				if (isset($_POST['product_images']))
 				{

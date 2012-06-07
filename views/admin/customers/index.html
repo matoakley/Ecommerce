@@ -37,11 +37,10 @@
 		</tr>
 	</thead>
 	<tbody>
-	{% for key, user in customers %}
-		{% set customer = user.customer %}
+	{% for key, customer in customers %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" /></td>
-			<td>{{customer.lastname}}, {{customer.firstname}}</td>
+			<td><a href="/admin/customers/edit/{{customer.id}}">{{customer.lastname}}, {{customer.firstname}}</td>
 			<td><a href="mailto:{{customer.email}}">{{customer.email}}</a></td>
 			<td>{{customer.completed_orders()|length}} <em>({{customer.orders|length}})</em></td>
 			<td>{{user.last_login|date('d/m/Y')}}</td>
