@@ -166,8 +166,9 @@
 		<div id="new-address" class="hidden">
 			{% include "admin/customer/addresses/_form.html" %}
 		</div>
-		{% include "admin/customer/addresses/_table.html" %}
-		{{addresses_pagination}}
+		<div id="customer-address-table-container">
+			{% include "admin/customer/addresses/_table.html" %}
+		</div>
 	{% endif %}
 	
 	{% if modules.crm %}

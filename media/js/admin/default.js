@@ -174,6 +174,7 @@ $(function(){
 		var postcode = $('input#address-postcode');
 		var country = $('select#address-country');
 		var telephone = $('input#address-telephone');
+		var module = button.attr('data-module');
 		var data = {
 			address: {
 				line_1: line1.val(),
@@ -183,7 +184,8 @@ $(function(){
 				postcode: postcode.val(),
 				country: country.val(),
 				telephone: telephone.val()
-			}
+			},
+			template: module,
 		};
 		$.ajax({
 			url: button.attr('data-url'),
@@ -195,6 +197,8 @@ $(function(){
 			},
 			success: function(response){
 				$('div#customer-address-table-container').html(response);
+				$('div#sales-order-address-table-container').html(response);
+				$('div#sales-order-address-table-container').find('input[type="radio"]:first').attr('checked', 'checked');
 				// Reset and hide form
 				line1.val('');
 				line2.val('');
@@ -229,10 +233,10 @@ $(function(){
 });
 
 jQuery.fn.slugify = function(obj) {
-    jQuery(this).data('obj', jQuery(obj));
-    jQuery(this).keyup(function() {
-        var obj = jQuery(this).data('obj');
-        var slug = jQuery(this).val().replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
-        obj.val(slug);
-    });
+  jQuery(this).data('obj', jQuery(obj));
+  jQuery(this).keyup(function() {
+      var obj = jQuery(this).data('obj');
+      var slug = jQuery(this).val().replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
+      obj.val(slug);
+  });
 }

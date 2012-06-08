@@ -59,21 +59,9 @@
 			<div id="new-address" class="hidden">
 				{% include "admin/customer/addresses/_form_small.html" %}
 			</div>
-			<table>
-				<thead>
-					<th width="1">&nbsp;</th>
-					<th class="tr">Previous Delivery Addresses</th>
-				</thead>
-				<tbody>	
-				{% for key, address in customer_delivery_addresses %}
-					<tr class="{{['', 'alternate']|cycle(key)}}">
-						<td><input type="radio" {% if address.id == customer.default_shipping_address.id %}checked="checked"{% endif %} /></td>
-						<td class="tr">{{address.human_string}}</td>
-					</tr>
-				{% endfor %}
-				</tbody>
-			</table>
-			{{customer_delivery_addresses_pagination}}
+			<div id="sales-order-address-table-container">
+				{% include "admin/customer/addresses/_table_small.html" %}
+			</div>
 		</div>
 		<div class="clear"></div>
 	{% else %}

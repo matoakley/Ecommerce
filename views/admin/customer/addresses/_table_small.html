@@ -1,0 +1,15 @@
+<table>
+	<thead>
+		<th width="1">&nbsp;</th>
+		<th class="tr">Previous Delivery Addresses</th>
+	</thead>
+	<tbody>	
+	{% for key, address in addresses %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="radio" {% if address.id == customer.default_shipping_address.id %}checked="checked"{% endif %} /></td>
+			<td class="tr">{{address.human_string}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{{addresses_pagination}}

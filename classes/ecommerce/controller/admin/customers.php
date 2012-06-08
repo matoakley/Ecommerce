@@ -202,7 +202,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$address = $customer->add_address($_POST['address']);
-			$items_per_page = 20;
+			$items_per_page = $_POST['template'] == 'customer' ? 20 : 5;
 			$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 			
 			$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -226,5 +226,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 				'default_shipping_address' => $customer->default_shipping_address->id,
 			),
 		);
+		
+		$this->template->template = $_POST['template'];
 	}
 }
