@@ -13,7 +13,7 @@
 </div>
 {% endif %}
 
-{% set multiple_skus = fields.skus|length > 1 %}
+{% set multiple_skus = fields.skus|length > 1 or fields.skus.0.product_options|length > 0 %}
 
 {% for sku_id, sku in fields.skus %}
 <div class="product-sku-row" id="product-sku-row-{{sku.id}}">
