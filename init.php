@@ -2,6 +2,18 @@
 
 // Admin routes
 
+Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'add_address',
+));
+
+Route::set('customer_communication_add', 'admin/customers/<customer_id>/add_communication')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'add_communication',
+));
+
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',

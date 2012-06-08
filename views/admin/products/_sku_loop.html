@@ -29,19 +29,19 @@
 			{% endif %}
 			&nbsp;
 			</div>
+			<div class="grid_2 omega tr">
+				{% if multiple_skus %}
+					<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-remove-spinner-{{sku.id}}" class="hidden" />
+					<a href="#" class="delete-button sku-delete-button" data-sku-id="{{sku.id}}">
+						<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+						remove
+					</a>
+				{% endif %}
+			</div>
+			<div class="clear"></div>
+		</div>
 	{% endif %}
-	<div class="grid_2 omega tr">
-		{% if multiple_skus %}
-			<img src="/images/admin/ajax-loader.gif" alt="" id="product-sku-remove-spinner-{{sku.id}}" class="hidden" />
-			<a href="#" class="delete-button sku-delete-button" data-sku-id="{{sku.id}}">
-				<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-				remove
-			</a>
-		{% endif %}
-	</div>
-	<div class="clear"></div>
-	</div>
-</div> {# DON'T DELETE THESE CLOSING DIVS. THEY MAKE STUFF WORK. #}
+</div>
 	
 <div class="field">
 	<div class="grid_2 alpha">
@@ -85,4 +85,17 @@
 	{% endif %}
 	<div class="clear"></div>
 </div>
+
+{% if modules.commercial_sales_orders %}
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="sku-commercial-only">Commercial only?</label>
+	</div>
+	<div class="grid_14 omega">
+		<input type="checkbox" name="skus[{{sku.id}}][commercial_only]" {% if sku.commercial_only %}checked="checked"{% endif %} />
+	</div>
+	<div class="clear"></div>
+</div>
+{% endif %}
+
 {% endfor %}

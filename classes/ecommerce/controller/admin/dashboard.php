@@ -35,7 +35,6 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		
 		$this->template->monthly_total = Model_Sales_Order::monthly_completed_total();
 		$this->template->all_time_total = Model_Sales_Order::overall_completed_total();
-
 	}
 	
 }

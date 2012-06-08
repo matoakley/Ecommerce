@@ -1,9 +1,53 @@
 {% extends "admin/templates/dashboard.html" %}
 
 {% block custom_scripts %}
-
 	<script type="text/javascript" src="/media/js/admin/highcharts/highcharts.js"></script>
-
+	<script type="text/javascript">	
+		var chart1; // globally available
+		$(function() {
+			chart1 = new Highcharts.Chart({
+				chart: {
+					renderTo: 'chart-container-1',
+					defaultSeriesType: 'line'
+				},
+				credits: {
+					enabled: false
+				},
+				legend: {
+					align: 'right',
+					floating: true,
+					x: -10,
+	        y: 10,
+					verticalAlign: 'top'
+				},
+				tooltip: {
+	     		formatter: function() {
+	        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
+	      	}
+	    	},
+				xAxis: {
+					categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
+					labels: {
+						formatter: function() {
+	          	return Highcharts.dateFormat('%a %d %b', Date.UTC(this.value.toString().substr(0,4), this.value.toString().substr(4,2) - 1, this.value.toString().substr(6,2)));
+	          },
+	          showFirstLabel: false,
+	          step: 7
+					}
+				},
+				series: [{
+					name: 'Daily Visitors',
+					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
+				}],
+				title: {
+					text: null
+				},
+				yAxis: {
+					title: null
+				}
+			});
+		});
+	</script>
 {% endblock %}
 
 {% block page_title %}<strong>Admin Dashboard</strong>{% endblock %}
@@ -153,57 +197,4 @@
 		<div class="clear"></div>
 		
 	</div>
-
-	<script type="text/javascript">
-	
-	var chart1; // globally available
-	
-	$(function() {
-	
-		chart1 = new Highcharts.Chart({
-			chart: {
-				renderTo: 'chart-container-1',
-				defaultSeriesType: 'line'
-			},
-			credits: {
-				enabled: false
-			},
-			legend: {
-				align: 'right',
-				floating: true,
-				x: -10,
-        y: 10,
-				verticalAlign: 'top'
-			},
-			tooltip: {
-     		formatter: function() {
-        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
-      	}
-    	},
-			xAxis: {
-				categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
-				labels: {
-					formatter: function() {
-          	return Highcharts.dateFormat('%a %d %b', Date.UTC(this.value.toString().substr(0,4), this.value.toString().substr(4,2) - 1, this.value.toString().substr(6,2)));
-          },
-          showFirstLabel: false,
-          step: 7
-				}
-			},
-			series: [{
-				name: 'Daily Visitors',
-				data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
-			}],
-			title: {
-				text: null
-			},
-			yAxis: {
-				title: null
-			}
-		});
-	
-	});
-	
-	</script>
-	
 {% endblock %}

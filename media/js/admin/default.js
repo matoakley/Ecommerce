@@ -77,6 +77,141 @@ $(function(){
 		$.fancybox.close();
 	});
 	
+	$('img.show-communication').live('mouseenter', function(){
+		if ($('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').is(':visible')){
+			$(this).attr('src', '/media/images/icons/magifier_zoom_out.png');
+		} else {
+			$(this).attr('src', '/media/images/icons/magnifier_zoom_in.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).attr('src', '/media/images/icons/magnifier.png');
+	}).live('click', function(){
+		$('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').slideToggle('slow');
+		$('td.communication-body-container[data-communication-id="'+$(this).attr('data-communication-id')+'"]').toggleClass('active-communication-body-container');
+	});
+	
+	var today = new Date();
+	$('.datetimepicker').datetimepicker({
+		hour: today.getHours(),
+		minute: today.getMinutes(),
+		showButtonPanel: false
+	});
+	
+	// CRM Customer Communications
+	$('a#show-new-communication').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		$('div#new-communication').slideToggle(600, function(){
+			if ($('div#new-communication').is(':visible')) {
+				button.children('span').html('Hide New Communication');
+			} else {
+				button.children('span').html('New Communication');
+			}
+		});
+	});
+	$('input#add-communication').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		var type = $('select#communication-type');
+		var title = $('input#communication-title');
+		var text = $('textarea#communication-text');
+		var date = $('div#communication-date');
+		/* var sendToCustomer = $('input#communication-send-to-customer'); */
+		var data = {
+			communication: {
+				type: type.val(),
+				title: title.val(),
+				text: text.val(),
+				date: Math.round(date.datetimepicker('getDate').getTime() /1000),
+/* 				send_to_customer: sendToCustomer.is(':checked') */
+			}
+		};
+		$.ajax({
+			url: button.attr('data-url'),
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+				button.attr('disabled', 'disabled');
+				$('#add-communication-spinner').show();
+			},
+			success: function(response){
+				$('div#customer-communications-table-container').html(response);
+				// Reset and hide form
+				type.val('');
+				title.val('');
+				text.val('');
+				title.val('');
+				date.datetimepicker('setDate', (new Date()));
+				$('div#new-communication').slideUp(600);
+				$('a#show-new-communication').children('span').html('New Communication');
+			},
+			complete: function(){
+				$('#add-communication-spinner').hide();
+				button.removeAttr('disabled');
+			}
+		});
+	});
+	
+	// CRM Customer Addresses
+	$('a#show-new-address').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		$('div#new-address').slideToggle(600, function(){
+			if ($('div#new-address').is(':visible')) {
+				button.children('span').html('Hide New Address');
+			} else {
+				button.children('span').html('New Address');
+			}
+		});
+	});
+	$('input#add-address').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		var line1 = $('input#address-line-1');
+		var line2 = $('input#address-line-2');
+		var town = $('input#address-town');
+		var county = $('input#address-county');
+		var postcode = $('input#address-postcode');
+		var country = $('select#address-country');
+		var telephone = $('input#address-telephone');
+		var data = {
+			address: {
+				line_1: line1.val(),
+				line_2: line2.val(),
+				town: town.val(),
+				county: county.val(),
+				postcode: postcode.val(),
+				country: country.val(),
+				telephone: telephone.val()
+			}
+		};
+		$.ajax({
+			url: button.attr('data-url'),
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+				button.attr('disabled', 'disabled');
+				$('#add-address-spinner').show();
+			},
+			success: function(response){
+				$('div#customer-address-table-container').html(response);
+				// Reset and hide form
+				line1.val('');
+				line2.val('');
+				town.val('');
+				county.val('');
+				postcode.val('');
+				country.val('');
+				telephone.val('');
+				$('div#new-address').slideUp(600);
+				$('a#show-new-address').children('span').html('New Address');
+			},
+			complete: function(){
+				$('#add-address-spinner').hide();
+				button.removeAttr('disabled');
+			}
+		});
+	});
 });
 
 jQuery.fn.slugify = function(obj) {

@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
+{
 	function before()
 	{
 		if ( ! Kohana::config('ecommerce.modules.products'))
@@ -200,9 +200,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
-		
-		// Loads the script that counts chars on the fly for Meta fields.
-		$this->scripts[] = 'jquery.counter-1.0.min';
 		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;

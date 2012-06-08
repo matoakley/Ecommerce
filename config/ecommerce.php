@@ -6,6 +6,8 @@ return array
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
+	'default_web_customer_type' => 1, // When using CRM customer types
+	'default_commercial_customer_type' => 2,
 	
 	'site_name' => 'Creative Intent Ecommerce Software',
 	'email_from_address' => 'ecommerce@creativeintent.co.uk',
@@ -22,6 +24,7 @@ return array
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'commercial_sales_orders' => FALSE,
 		'crm' => FALSE,
 		'custom_fields' => FALSE,
 		'customer_accounts' => FALSE,
@@ -37,6 +40,7 @@ return array
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
+		'tiered_pricing' => FALSE,
 		'users' => FALSE,
 	),
 	

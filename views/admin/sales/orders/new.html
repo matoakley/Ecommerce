@@ -1,0 +1,87 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	New Commercial Sales Order
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if promotion_code.loaded %}
+				<a href="/admin/promotion_codes/delete/{{promotion_code.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Promotion Code
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<br />
+
+	{% if customer %}
+		<div class="grid_6 alpha">
+			<h2>Customer Details</h2>
+			<p>
+				{{customer.name}}<br/>
+				{{customer.default_billing_address.line_1}}<br/>
+				{% if customer.default_billing_address.line_2 %}{{customer.default_billing_address.line_2}}<br/>{% endif %}
+				{{customer.default_billing_address.town}}<br/>
+				{{customer.default_billing_address.county}}<br/>
+				{% if customer.default_billing_address.postcode %}{{customer.default_billing_address.postcode}}<br/>{% endif %}
+				{{customer.default_billing_address.country.name}}<br/>
+			</p>
+			<p>
+				{% if customer.default_billing_address.telephone %}Tel: {{customer.default_billing_address.telephone}}<br/>{% endif %}
+				<a href="mailto:{{customer.email}}">{{customer.email}}</a>
+			</p>
+		</div>
+		<div class="grid_10 omega">
+			<div class="grid_6 alpha">
+				<h2>Delivery Address</h2>
+			</div>
+			<div class="grid_4 omega tr">
+				<a href="#" class="img-button" id="show-new-address">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Address</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-address" class="hidden">
+				{% include "admin/customer/addresses/_form_small.html" %}
+			</div>
+			<table>
+				<thead>
+					<th width="1">&nbsp;</th>
+					<th class="tr">Previous Delivery Addresses</th>
+				</thead>
+				<tbody>	
+				{% for key, address in customer_delivery_addresses %}
+					<tr class="{{['', 'alternate']|cycle(key)}}">
+						<td><input type="radio" {% if address.id == customer.default_shipping_address.id %}checked="checked"{% endif %} /></td>
+						<td class="tr">{{address.human_string}}</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			{{customer_delivery_addresses_pagination}}
+		</div>
+		<div class="clear"></div>
+	{% else %}
+		Find customer.
+	{% endif %}
+	
+	<h2>Sales Order Items</h2>
+
+</form>
+	
+{% endblock %}
