@@ -30,6 +30,6 @@ class Ecommerce_Model_Country extends Model_Application
 	// this yet and so it is simply a placeholder at present
 	public static function list_active()
 	{
-		return Jelly::select('country')->order_by('name', 'ASC')->execute()
+		return Jelly::select('country')->order_by('name', 'ASC')->execute();
 	}
 }
