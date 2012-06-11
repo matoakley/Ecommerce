@@ -48,8 +48,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
 			'skus' => $product->skus,
-			'custom_fields' => $product->custom_fields(),
 		);
+		if ($this->modules['custom_fields'])
+		{
+			$fields['custom_fields'] = $product->custom_fields();
+		}
 		
 		foreach ($product->images as $product_image)
 		{
@@ -131,7 +134,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			{
 				// Save the product
 				$product->update($_POST['product']);
-				if (isset($_POST['custom_fields']))
+				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
 				{
 					$product->update_custom_field_values($_POST['custom_fields']);
 				}
