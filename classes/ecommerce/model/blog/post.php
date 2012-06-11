@@ -50,6 +50,13 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 			'status' => array(
 				'field' => 'status',
 			),
+			'category' => array(
+				'join' => array(
+					'blog_categories_blog_posts' => array('blog_post.id', 'blog_categories_blog_posts.blog_post_id'),
+					'blog_categories' => array('blog_category.id', 'blog_categories_blog_posts.blog_category_id'),
+				),
+				'field' => 'blog_category.id',
+			),
 		),
 		'search' => array(
 			'name',

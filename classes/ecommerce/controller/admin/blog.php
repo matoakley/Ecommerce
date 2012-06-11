@@ -50,8 +50,11 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		$fields = array(
 			'blog_post' => $blog_post->as_array(),
 			'blog_categories' => $blog_post->categories->as_array('id', 'id'),
-			'custom_fields' => $blog_post->custom_fields(),
 		);
+		if ($this->modules['custom_fields'])
+		{
+			$fields['custom_fields'] = $blog_post->custom_fields();
+		}
 		$errors = array();
 		
 		if ($_POST)
@@ -59,7 +62,7 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			try
 			{
 				$blog_post->update($_POST['blog_post']);
-				if (isset($_POST['custom_fields']))
+				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
 				{
 					$blog_post->update_custom_field_values($_POST['custom_fields']);
 				}
