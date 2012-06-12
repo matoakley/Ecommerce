@@ -80,7 +80,7 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 			$this->add_breadcrumb(URL::site(Route::get('view_static_page')->uri(array('slug' => $slug))), $page_name);			
 		}
 		
-		$this->template = Twig::factory('pages/static/'.end($slug_parts));
+		$this->template = Twig::factory('pages/static/'.end($slug_parts), array(), IN_PRODUCTION ? 'production' : 'development');
 	}
 	
 }
