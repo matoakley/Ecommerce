@@ -48,6 +48,8 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 			$slug_parts[] = $slug;
 		}
 
+		$this->template = Twig::factory('pages/static/'.end($slug_parts), array(), IN_PRODUCTION ? 'production' : 'development');
+
 		if (end($slug_parts) == 'home')
 		{
 			$this->template->featured_products = Jelly::select('product')
@@ -79,8 +81,6 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 		{
 			$this->add_breadcrumb(URL::site(Route::get('view_static_page')->uri(array('slug' => $slug))), $page_name);			
 		}
-		
-		$this->template = Twig::factory('pages/static/'.end($slug_parts), array(), IN_PRODUCTION ? 'production' : 'development');
 	}
 	
 }
