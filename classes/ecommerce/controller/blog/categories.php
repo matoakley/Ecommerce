@@ -38,10 +38,10 @@ class Ecommerce_Controller_Blog_Categories extends Controller_Application
 			));
 		}
 		
-		$this->template->category = $category;
+		$this->template->blog_category = $category;
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;		
-		$this->template->products = $posts_search['results'];
+		$this->template->blog_posts = $posts_search['results'];
 		$this->template->sub_categories = Model_Category::build_category_tree($category->id, TRUE);
 		
 		// If a meta description has not been set then we'll build one from the description.

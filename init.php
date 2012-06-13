@@ -221,9 +221,11 @@ Route::set('search', 'search')->defaults(array(
 Route::set('sitemap_with_ext', 'sitemap.xml(<gzip>)', array('gzip' => '\.gz'))->defaults(array(
 		'controller' => 'tools',
 		'action' => 'sitemap',
+		'human' => FALSE,
 	));
 	 
-Route::set('sitemap_no_ext', 'sitemap')->defaults(array(
+Route::set('human-sitemap', 'sitemap')->defaults(array(
 	'controller' => 'tools',
 	'action' => 'sitemap',
+	'human' => TRUE,
 ));

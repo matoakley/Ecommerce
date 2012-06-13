@@ -10,6 +10,11 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		{
 			throw new Kohana_Exception('This module is not enabled');
 		}
+		
+		if ($this->modules['blog_categories'])
+		{
+			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
+		}
 	}
 	
 	public function action_index()
@@ -26,10 +31,6 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		));
 		
 		$this->template->blog_posts = $blog_post_search['results'];
-		if ($this->modules['blog_categories'])
-		{
-			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
-		}
 		$this->add_breadcrumb('/blog', 'Blog');
 	}
 	
