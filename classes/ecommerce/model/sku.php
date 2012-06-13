@@ -1,5 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Customers purchase SKUs within the system. A Product may have 1 - n SKUs.
+ *
+ * @package    Ecommerce
+ * @author     Matt Oakley
+ */
 class Ecommerce_Model_Sku extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
@@ -83,6 +88,16 @@ class Ecommerce_Model_Sku extends Model_Application
 		return $sku;
 	}
 	
+	public static function list_all()
+	{
+		return Jelly::select('sku')
+							->join('products')->on('products.id', '=', 'skus.product_id')
+							->where('products.status', '=', 'active')
+							->where('skus.status', '=', 'active')
+							->order_by('products.name', 'ASC')
+							->execute();
+	}
+	
 	/**
 	 * Returns the Retail Price of a product after adding VAT.
 	 *
@@ -135,5 +150,24 @@ class Ecommerce_Model_Sku extends Model_Application
 		}
 	
 		return $name;
+	}
+	
+	/**
+	 * Fetch the price that the for this SKU and Price Tier combination.
+	 * @author  Matt Oakley
+	 * @param   Model_Price_Tier   	Tier to fetch price for
+	 * @return  float								price
+	 */
+	public function price_for_tier($tier)
+	{
+		$tiered_price = $this->get('tiered_prices')->where('price_tier_id', '=', $tier->id)->load();
+		if ($tiered_price->loaded() AND $tiered_price->price > 0)
+		{
+			return $tiered_price->retail_price();
+		}
+		else
+		{
+			return $this->retail_price();
+		}
 	}
 }

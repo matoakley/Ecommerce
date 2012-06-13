@@ -1,5 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Represents a Customer within the ecommerce system.
+ *
+ * @package    Ecommerce
+ * @author     Matt Oakley
+ */
 class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
@@ -254,5 +259,23 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function is_commercial_customer()
 	{
 		return (bool) $this->get('customer_types')->where('id', '=', Kohana::config('ecommerce.default_commercial_customer_type'))->count();
+	}
+	
+	/**
+	 * Fetch the price that the Customer should pay for a SKU, taking tiered pricing into account when necessary.
+	 * @author  Matt Oakley
+	 * @param   Model_Sku   SKU to fetch price for
+	 * @return  float				price
+	 */
+	public function price_for_sku($sku)
+	{
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND $this->price_tier->loaded())
+		{
+			return $sku->price_for_tier($this->price_tier);
+		}
+		else
+		{
+			return $sku->retail_price();
+		}
 	}
 }

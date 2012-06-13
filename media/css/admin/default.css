@@ -504,3 +504,12 @@ textarea#communication-text {
 .ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
 .ui-timepicker-div td { font-size: 90%; }
 .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+/** Commercial Sales Orders **/
+table#sales-order-items tfoot {
+	border-top: 2px solid #333;
+}
+table#sales-order-items tfoot td {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}

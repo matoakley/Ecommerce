@@ -1,0 +1,14 @@
+<tr class="sales-order-line" data-sku-id="{{sku.id}}">
+	<td>{{sku.name}}</td>
+	{% if modules.stock %}
+		<td>{{sku.stock}}</td>
+	{% endif %}
+	<td class="tc">
+		<input type="text" class="inputtext shortest tc sales-order-item-unit-price" name="sales_order[skus][{{sku.id}}][price]" value="{{unit_price_for_tier|num_format(2)}}" />
+	</td>
+	<td class="tc">
+		<input type="text" class="inputtext shortest tc sales-order-item-quantity" name="sales_order[skus][{{sku.id}}][quantity]" value="1" />
+	</td>
+	<td class="tr">&pound;<span class="sales-order-item-total">{{unit_price_for_tier|num_format(2)}}</span></td>
+	<td><a href="#" class="sales-order-line-delete"><img src="/media/images/icons/delete.png" class="inline-icon" alt="" /></a></td>
+</tr>

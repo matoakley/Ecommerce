@@ -29,6 +29,7 @@
 	<br />
 
 	{% if customer %}
+		<input type="hidden" name="sales_order[customer_id]" id="sales-order-customer-id" value="{{customer.id}}" />
 		<div class="grid_6 alpha">
 			<h2>Customer Details</h2>
 			<p>
@@ -44,6 +45,7 @@
 				{% if customer.default_billing_address.telephone %}Tel: {{customer.default_billing_address.telephone}}<br/>{% endif %}
 				<a href="mailto:{{customer.email}}">{{customer.email}}</a>
 			</p>
+			<p><strong>Price Tier:</strong> {{customer.price_tier.name}}</p>
 		</div>
 		<div class="grid_10 omega">
 			<div class="grid_6 alpha">
@@ -69,6 +71,38 @@
 	{% endif %}
 	
 	<h2>Sales Order Items</h2>
+	
+	<table id="sales-order-items">
+		<thead>
+			<th>Item Name</th>
+			{% if modules.stock %}
+				<th>Stock</th>
+			{% endif %}
+			<th class="tc">Unit Price</th>
+			<th class="tc">Qty</th>
+			<th class="tr">Total</th>
+			<th width="1">&nbsp;</th>
+		</thead>
+		<tbody>
+			
+		</tbody>
+		<tfoot>
+			<tr id="new-sales-order-item-container">
+				<td colspan="2">
+					<select id="new-sales-order-item">
+						<option value="">Select sales order item to add new row...</option>
+						{% for sku in skus %}
+							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{{sku.name}}</option>
+						{% endfor %}
+					</select>
+					<img src="/media/images/admin/ajax-loader.gif" alt="Loading..." class="hidden" id="new-sales-order-item-spinner" />
+				</td>
+				<td class="tr"><strong>Total</strong></td>
+				<td class="tr"><strong>&pound;<span id="sales-order-total">0.00</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+		</tfoot>
+	</table>
 
 </form>
 	

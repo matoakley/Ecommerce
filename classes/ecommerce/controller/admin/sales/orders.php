@@ -161,9 +161,60 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 				'items_per_page' => $items_per_page,
 				'auto_hide'	=> false,
 				'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+				'view' => 'pagination/asynchronous',
 			));
 		}
 		
 		$this->template->countries = Model_Country::list_active();
+		$this->template->skus = Model_Sku::list_all();
+	}
+	
+	public function action_add_sales_order_line()
+	{	
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		$sku = Model_Sku::load($this->request->param('sku_id'));
+		
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer not found.');
+		}
+		
+		if (! $sku->loaded())
+		{
+			throw new Kohana_Exception('SKU not found.');
+		}
+		
+		$data = array();
+
+		$data['html'] = Twig::factory('admin/sales/orders/_add_sales_order_line.html', array(
+			'sku' => $sku,
+			'unit_price_for_tier' => $customer->price_for_sku($sku),
+		))->render();
+		$data['sku'] = $sku->as_array();
+		
+		echo json_encode($data);
+	}
+	
+	public function action_new_sales_order_addresses()
+	{
+		$customer = Model_Customer::load($_GET['customer']);
+		
+		$items_per_page = 5;
+		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
+	
+		$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('addresses')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+			'view' => 'pagination/asynchronous',
+		));
+		
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
 	}
 }

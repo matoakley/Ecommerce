@@ -56,7 +56,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			$fields['skus'][$sku->id] = $sku->as_array();
 			$fields['skus'][$sku->id]['retail_price'] = $sku->retail_price();
 			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
-			$fields['skus'][$sku->id]['tiered_prices'] = $sku->tiered_prices->as_array();
 		}
 		
 		foreach ($product->images as $product_image)

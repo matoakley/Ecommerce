@@ -80,7 +80,7 @@
 				<label for="product-price-tier-{{tier.id}}">{{tier.name}} (&pound;)</label>
 			</div>
 			<div class="grid_12 omega">
-				<input type="text" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices[key].price|num_format(2)}}" class="inputtext shortest" />
+				<input type="text" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices[key].retail_price|num_format(2)}}" class="inputtext shortest" />
 			</div>
 			<div class="clear"></div>
 		</div>

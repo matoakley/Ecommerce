@@ -2,6 +2,12 @@
 
 // Admin routes
 
+Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'add_sales_order_line',
+));
+
 Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
