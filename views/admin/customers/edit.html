@@ -120,12 +120,12 @@
 		<h2>Orders</h2>
 	</div>
 	<div class="grid_8 omega tr">
-		{% if modules.commercial_sales_orders and customer.is_commercial_customer %}
+		{% if modules.commercial_sales_orders %}
 			<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
 				<img src="/images/icons/add.png" alt="" />
 				<span>New Commercial Sales Order</span>
-				</a>
-			{% endif %}
+			</a>
+		{% endif %}
 	</div>
 	<div class="clear"></div>
 	<table>

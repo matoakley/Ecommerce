@@ -12,6 +12,12 @@ Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_lin
 	'action' => 'add_sales_order_line',
 ));
 
+Route::set('customer_address_delete', 'admin/customers/<customer_id>/delete_address/<address_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_address',
+));
+
 Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',

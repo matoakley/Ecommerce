@@ -216,6 +216,24 @@ $(function(){
 			}
 		});
 	});
+	$('div#customer-address-table-container').on('click', 'a.customer-address-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			beforeSend: function(){
+				button.hide();
+				$('img.custom-address-delete-spinner[data-address-id="'+button.data('address-id')+'"]').show();
+			},
+			success: function(response){
+				button.parents('tr').slideUp();
+			},
+			complete: function(){
+				$('img.custom-address-delete-spinner[data-address-id="'+button.data('address-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
 	
 	// Deal with hiding/showing sku tiered prices
 	$('a.show-sku-tiered-prices').live('mouseenter', function(){

@@ -229,4 +229,22 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$this->template->template = $_POST['template'];
 	}
+	
+	public function action_delete_address()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+		
+		// Load address through customer to avoid any mishaps
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		$address = $customer->get('addresses')->where('id', '=', $this->request->param('address_id'))->load();
+		
+		$address->delete();
+	}
 }

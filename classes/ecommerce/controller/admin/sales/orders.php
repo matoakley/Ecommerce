@@ -151,7 +151,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$customer_id = isset($_GET['customer']) ? $_GET['customer'] : NULL;
 		$customer = Model_Customer::load($customer_id);
 			
-		if ( ! $customer->loaded() OR ! $customer->is_commercial_customer())
+		if ( ! $customer->loaded())
 		{
 			throw new Kohana_Exception('Unable to load Customer.');
 		}
