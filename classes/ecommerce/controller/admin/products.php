@@ -47,7 +47,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
-			'skus' => $product->skus,
 		);
 		if ($this->modules['custom_fields'])
 		{

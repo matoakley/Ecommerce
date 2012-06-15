@@ -270,6 +270,9 @@ $(function(){
 		$('span#sales-order-total').html(calculateSalesOrderTotal());
 		$('select#new-sales-order-item').find('option[data-sku-id="'+skuId+'"]').removeAttr('disabled');
 	});
+	$('input#sales-order-delivery-charge').keyup(function(){
+		$('span#sales-order-total').html(calculateSalesOrderTotal());
+	});
 	function restripeRows(tableId){
 		$('table#'+tableId+' tbody tr:even').removeClass('alternate');
 		$('table#'+tableId+' tbody tr:odd').addClass('alternate');
@@ -279,6 +282,7 @@ $(function(){
 		$('span.sales-order-item-total').each(function(){
 			total += parseFloat($(this).html());
 		});
+		total += parseFloat($('input#sales-order-delivery-charge').val());
 		return number_format(total, 2);
 	}
 	// Asynchronous pagination for sales order addresses
@@ -292,6 +296,60 @@ $(function(){
 			dataType: 'json',
 			success: function(response){
 				$('div#sales-order-address-table-container').html(response.html);
+			}
+		});
+	});
+	
+	// View sales order page
+	$('#complete-and-email').click(function(e){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to mark this order as complete and send confirmation email to customer?')) {
+			$.ajax({
+				url: $(this).data('url'),
+				type: 'GET',
+				beforeSend: function(){
+					$('#complete-and-email img').hide();
+					$('#ajax-spinner').show();
+				},
+				success: function(response){
+					if (response == 'ok')
+					{
+						$('#sales-order-status').val('complete');
+						$('#complete-and-email').hide();
+					}
+				}
+			});
+		}
+	});
+	$('#add-sales-order-note').click(function(){
+		var button = $(this);
+		$.ajax({
+			url: '/admin/sales_orders/add_note',
+			type: 'POST',
+			data: { sales_order:button.data('sales-order-id'), note: $('#new-note').val() },
+			dataType: 'json',
+			beforeSend: function(){
+				$('#add-note-spinner').show();
+				$('#add-note').attr('disabled', 'disabled');
+			},
+			success: function(response){
+				var rowClass;
+				if ($('.sales_order_note').first().hasClass('alternate')){
+					 rowClass = '';
+				}
+				else {
+					rowClass = 'alternate';
+				}
+				// Add note into list
+				var newRow = $('<div>').addClass('sales_order_note hidden ' + rowClass); // Hidden to start so we can slide in :)
+				var noteHeader = $('<p>').html('<img src="/images/icons/user_suit.png" alt="" class="inline-icon" /><strong>On ' + response.created + ' ' + response.user + ' said:</strong>').appendTo(newRow);
+				var noteBody = $('<div>').html(response.text).appendTo(newRow);
+				newRow.prependTo($('#sales-order-notes')).show('slide');
+				$('#new-note').val('');
+			},
+			complete: function(){
+				$('#add-note-spinner').hide();
+				$('#add-note').removeAttr('disabled');
 			}
 		});
 	});

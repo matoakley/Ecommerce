@@ -1,7 +1,7 @@
 {% extends "admin/templates/default.html" %}
 
 {% block page_title %}
-	New Commercial Sales Order
+	New Commercial Sales Order: <strong>{{customer.name}}</strong>
 {% endblock %}
 
 {% block content %}
@@ -13,15 +13,15 @@
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
 		<div class="grid_10 omega tr">
-			{% if promotion_code.loaded %}
-				<a href="/admin/promotion_codes/delete/{{promotion_code.id}}" class="delete-button">
+			{% if sales_order.loaded %}
+				<a href="/admin/sales_orders/delete/{{sales_order.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-					Delete Promotion Code
+					Delete Sales Order
 				</a>
 			{% endif %}
 			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
 			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
-			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue" class="right-pad" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -29,7 +29,7 @@
 	<br />
 
 	{% if customer %}
-		<input type="hidden" name="sales_order[customer_id]" id="sales-order-customer-id" value="{{customer.id}}" />
+		<input type="hidden" name="sales_order[customer]" id="sales-order-customer-id" value="{{customer.id}}" />
 		<div class="grid_6 alpha">
 			<h2>Customer Details</h2>
 			<p>
@@ -84,9 +84,20 @@
 			<th width="1">&nbsp;</th>
 		</thead>
 		<tbody>
-			
+		{% for sku in fields.sales_order.skus %}
+			{% include "admin/sales/orders/_add_sales_order_line.html" %}
+		{% endfor %}
 		</tbody>
 		<tfoot>
+			<tr>
+				<td colspan="3">
+					<label for="sales-order-delivery-charge">Delivery charge (&pound;)</label>
+				</td>
+				<td class="tr">
+					<input type="text" name="sales_order[delivery_charge]" id="sales-order-delivery-charge" value="{{fields.sales_order.delivery_charge|num_format(2)}}" class="inputtext shortest tr" />
+				</td>
+				<td>&nbsp;</td>
+			</tr>
 			<tr id="new-sales-order-item-container">
 				<td colspan="2">
 					<select id="new-sales-order-item">
@@ -98,7 +109,7 @@
 					<img src="/media/images/admin/ajax-loader.gif" alt="Loading..." class="hidden" id="new-sales-order-item-spinner" />
 				</td>
 				<td class="tr"><strong>Total</strong></td>
-				<td class="tr"><strong>&pound;<span id="sales-order-total">0.00</span></strong></td>
+				<td class="tr"><strong>&pound;<span id="sales-order-total">{{fields.sales_order_total|num_format(2)}}</span></strong></td>
 				<td>&nbsp;</td>
 			</tr>
 		</tfoot>

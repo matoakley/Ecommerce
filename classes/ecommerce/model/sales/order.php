@@ -20,6 +20,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'delivery_address' => new Field_BelongsTo(array(
 					'foreign' => 'address.id',
 					'column' => 'delivery_address_id',
+					'rules' => array(
+						'not_empty' => NULL,
+					),
 				)),
 				'delivery_option' => new Field_BelongsTo(array(
 					'foreign' => 'delivery_option.id',
@@ -35,6 +38,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'places' => 4,
 					'default' => 0,
 				)),
+				'type' => new Field_String,
 				'status' => new Field_String,
 				'order_total' => new Field_Float(array(
 					'places' => 2,
@@ -68,6 +72,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		'complete',
 		'order_cancelled',
 		'problem_occurred',
+		// Commercial specific
+		'open',
+		'invoice_generated',
+	);
+	
+	public static $types = array(
+		'commercial',
+		'retail',
 	);
 	
 	public static function recent_dashboard_orders()
@@ -184,6 +196,53 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
 	}
 	
+	public static function create_commercial_sales_order($data)
+	{
+		$sales_order = Jelly::factory('sales_order');
+		
+		$customer = Model_Customer::load($data['customer']);
+		
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Unable to find Customer.');
+		}
+		
+		$sales_order->type = "commercial";
+		$sales_order->customer = $customer;
+		$sales_order->billing_address = $customer->default_billing_address;
+		$sales_order->delivery_address = $data['delivery_address'];
+		$sales_order->delivery_option_name = 'Commercial Delivery';
+		$sales_order->delivery_option_price = $data['delivery_charge'];
+		$sales_order->status = 'invoice_generated';
+		$sales_order->order_total = $data['delivery_charge'];
+		$sales_order->ip_address = Request::$client_ip;
+		$sales_order->save();
+		
+		foreach ($data['skus'] as $sku)
+		{
+			$line = Model_Sales_Order_Item::create_commercial_sales_order_item($sales_order, $sku);
+			$sales_order->order_total += $line->total_price;
+		}
+		
+		$sales_order->generate_invoice();
+		
+		return $sales_order->save();
+	}
+	
+/*
+	public function update_commercial_sales_order($data)
+	{
+		
+	}
+*/
+	public function generate_invoice()
+	{
+		if ( ! $this->type == 'commercial')
+		{
+			throw new Kohana_Exception('Not a Commercial Sales Order.');
+		}
+	}
+	
 	public function send_confirmation_email()
 	{
 		Email::connect();
@@ -227,11 +286,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$user = Auth::instance()->get_user();
 			if (is_object($user) AND $user->loaded())
 			{
-				$note_text = $user->firstname . ' ' . $user->lastname . ' changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+				$note_text = $user->firstname.' '.$user->lastname.' changed order status from '. ucwords(Inflector::humanize($this->status)).' to '.ucwords(Inflector::humanize($status)).'.';
 			}
 			else
 			{
-				$note_text = 'System changed order status from ' . ucwords(Inflector::humanize($this->status)) . ' to ' . ucwords(Inflector::humanize($status)) . '.';
+				$note_text = 'System changed order status from '.ucwords(Inflector::humanize($this->status)).' to '.ucwords(Inflector::humanize($status)).'.';
 			}
 			
 			$this->status = $status;

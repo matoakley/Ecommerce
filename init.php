@@ -1,5 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+Kohana::modules(Kohana::modules()+array(
+	'html2pdf' => 'modules/html2pdf',
+));
+
 // Admin routes
 
 Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
