@@ -1,12 +1,14 @@
 <table>
 	<thead>
 		<th width="1">&nbsp;</th>
+		<th>Name</th>
 		<th class="tr">Previous Delivery Addresses</th>
 	</thead>
 	<tbody>	
 	{% for key, address in addresses %}
 		<tr width="1" class="{{['', 'alternate']|cycle(key)}}">
 			<td class="tc"><input type="radio" name="sales_order[delivery_address]" value="{{address.id}}" {% if fields.sales_order.delivery_address %}{% if address.id == fields.sales_order.delivery_address %}checked="checked"{% endif %}{% else %}{% if address.id == customer.default_shipping_address.id %}checked="checked"{% endif %}{% endif %} /></td>
+			<td>{{address.name}}</td>
 			<td class="tr">{{address.human_string}}</td>
 		</tr>
 	{% endfor %}

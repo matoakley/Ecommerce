@@ -90,12 +90,19 @@ $(function(){
 		$('td.communication-body-container[data-communication-id="'+$(this).attr('data-communication-id')+'"]').toggleClass('active-communication-body-container');
 	});
 	
+/*
 	var today = new Date();
 	$('.datetimepicker').datetimepicker({
 		hour: today.getHours(),
 		minute: today.getMinutes(),
 		showButtonPanel: false
 	});
+*/
+	$('div#communication-date').datetimepicker({
+/* 		setDate: new Date(), */
+		showButtonPanel: false
+	}).datetimepicker('setDate', (new Date()));
+	
 	
 	// CRM Customer Communications
 	$('a#show-new-communication').click(function(e){
@@ -130,12 +137,13 @@ $(function(){
 			url: button.attr('data-url'),
 			type: 'POST',
 			data: data,
+			dataType: 'json',
 			beforeSend: function(){
 				button.attr('disabled', 'disabled');
 				$('#add-communication-spinner').show();
 			},
 			success: function(response){
-				$('div#customer-communications-table-container').html(response);
+				$('div#customer-communications-table-container').html(response.html);
 				// Reset and hide form
 				type.val('');
 				title.val('');
@@ -174,6 +182,7 @@ $(function(){
 		var postcode = $('input#address-postcode');
 		var country = $('select#address-country');
 		var telephone = $('input#address-telephone');
+		var name = $('input#address-name');
 		var module = button.attr('data-module');
 		var data = {
 			address: {
@@ -183,21 +192,23 @@ $(function(){
 				county: county.val(),
 				postcode: postcode.val(),
 				country: country.val(),
-				telephone: telephone.val()
+				telephone: telephone.val(),
+				name: name.val(),
 			},
 			template: module,
 		};
 		$.ajax({
 			url: button.attr('data-url'),
 			type: 'POST',
+			dataType: 'json',
 			data: data,
 			beforeSend: function(){
 				button.attr('disabled', 'disabled');
 				$('#add-address-spinner').show();
 			},
 			success: function(response){
-				$('div#customer-address-table-container').html(response);
-				$('div#sales-order-address-table-container').html(response);
+				$('div#customer-address-table-container').html(response.html);
+				$('div#sales-order-address-table-container').html(response.html);
 				$('div#sales-order-address-table-container').find('input[type="radio"]:first').attr('checked', 'checked');
 				// Reset and hide form
 				line1.val('');
@@ -207,6 +218,7 @@ $(function(){
 				postcode.val('');
 				country.val('');
 				telephone.val('');
+				name.val('');
 				$('div#new-address').slideUp(600);
 				$('a#show-new-address').children('span').html('New Address');
 			},
@@ -221,12 +233,13 @@ $(function(){
 		var button = $(this);
 		$.ajax({
 			url: button.data('url'),
+			dataType: 'json',
 			beforeSend: function(){
 				button.hide();
 				$('img.custom-address-delete-spinner[data-address-id="'+button.data('address-id')+'"]').show();
 			},
 			success: function(response){
-				button.parents('tr').slideUp();
+				$('div#customer-address-table-container').html(response.html);
 			},
 			complete: function(){
 				$('img.custom-address-delete-spinner[data-address-id="'+button.data('address-id')+'"]').hide();

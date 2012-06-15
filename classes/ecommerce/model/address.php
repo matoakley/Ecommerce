@@ -23,6 +23,10 @@ class Ecommerce_Model_Address extends Model_Application
 				'longitude' => new Field_Float(array(
 					'places' => 6,
 				)),
+				'archived' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
+				'name' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -113,6 +117,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$address->county = $data['county'];
 		$address->postcode = $data['postcode'];
 		$address->country = $data['country'];
+		$address->name = $data['name'];
 		
 		if (isset($data['telephone']))
 		{
@@ -215,5 +220,11 @@ class Ecommerce_Model_Address extends Model_Application
 		}
 	
 		return implode(', ', $address_parts);
+	}
+	
+	public function archive()
+	{
+		$this->archived = time();
+		return $this->save();
 	}
 }

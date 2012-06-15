@@ -2,6 +2,7 @@
 	<input type="hidden" name="sales_order[skus][{{sku.id}}][id]" value="{{sku.id}}" />
 	<input type="hidden" name="sales_order[skus][{{sku.id}}][name]" value="{{sku.name}}" />
 	<td>{{sku.name}}</td>
+	<td>{{sku.sku}}</td>
 	{% if modules.stock %}
 		<td>{{sku.stock}}</td>
 	{% endif %}

@@ -31,7 +31,7 @@
 	{% if customer %}
 		<input type="hidden" name="sales_order[customer]" id="sales-order-customer-id" value="{{customer.id}}" />
 		<div class="grid_6 alpha">
-			<h2>Customer Details</h2>
+			<h2>Billing Address</h2>
 			<p>
 				{{customer.name}}<br/>
 				{{customer.default_billing_address.line_1}}<br/>
@@ -75,6 +75,7 @@
 	<table id="sales-order-items">
 		<thead>
 			<th>Item Name</th>
+			<th>SKU</th>
 			{% if modules.stock %}
 				<th>Stock</th>
 			{% endif %}
