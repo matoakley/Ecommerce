@@ -1,5 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Ecommerce Address Model
+ * @package Ecommerce
+ * @author	Matt Oakley
+ */
 class Ecommerce_Model_Address extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
@@ -54,6 +58,32 @@ class Ecommerce_Model_Address extends Model_Application
 		return TRUE;
 	}
 	
+	/**
+	 * Find addresses with specified postcode
+	 * @param string $postcode		Postcode string to search for
+	 * @return Jelly_Collection		Iterable collection of matching addresses
+	 */
+	public static function find_by_postcode($postcode)
+	{
+		return Jelly::select('address')->where(DB::expr('REPLACE(postcode, \' \', \'\')'), 'LIKE', '%'.$postcode.'%')->execute();
+	}
+	
+	/**
+	 * Find a geocoded address with specified postcode
+	 * @param string $postcode		Postcode string to search for
+	 * @return Ecommerce_Model_Address		Iterable collection of matching addresses
+	 */
+	public static function find_lat_lng_by_postcode($postcode)
+	{
+		$lat_lng = array();
+		$address = Jelly::select('address')->where(DB::expr('REPLACE(postcode, \' \', \'\')'), 'LIKE', str_replace(' ', '', $postcode))->where('latitude', '<>', '')->where('longitude', '<>', '')->load();
+		if ($address->loaded())
+		{
+			$lat_lng = array($address->latitude, $address->longitude);
+		}
+		return $lat_lng;
+	}
+	
 	public function __toString()
 	{
 		$address_parts = array(
@@ -102,7 +132,7 @@ class Ecommerce_Model_Address extends Model_Application
 		return implode(', ', $address_parts);
 	}
 
-	public static function create($data, $customer_id, $is_delivery = FALSE)
+	public static function create($data, $customer_id = NULL, $is_delivery = FALSE)
 	{
 		$address = Jelly::factory('address');
 		$address->customer = $customer_id;

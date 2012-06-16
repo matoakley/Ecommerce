@@ -37,9 +37,18 @@ class Ecommerce_Model_Event extends Model_Application
 		));
 	}
 	
-	public static function get_events_by_month($month, $limit = NULL, $offset = NULL)
+	public static function get_events_by_month($month, $limit = NULL, $offset = NULL, $bounding_box = NULL)
 	{
 		$query = Jelly::select('event')->where(DB::expr('MONTH(start_date)'), '=', $month)->where('status', '=', 'active')->order_by('start_date', 'ASC');
+		
+		if ($bounding_box)
+		{
+			$query->join('addresses')->on('events.address_id', '=', 'addresses.id')
+						->where('latitude', '>',  $bounding_box[0])
+						->where('latitude', '<',  $bounding_box[1])
+						->where('longitude', '>',  $bounding_box[2])
+						->where('longitude', '<',  $bounding_box[3]);
+		}
 		
 		if ($limit)
 		{
