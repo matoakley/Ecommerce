@@ -138,37 +138,40 @@ class Ecommerce_Model_Address extends Model_Application
 	{
 		$has_changed = $this->changed();
 		
-		// Sometimes, lazy ass people like to shorten the county name and 
-		// this breaks the postcode lookup. This is where we try and put
-		// the correct county name back in.
-		switch (strtolower($this->county))
-		{
-			case 'bucks':
-				$this->county = 'Buckinghamshire';
-				break;
-		
-			case 'cambs':
-				$this->county = 'Cambridgeshire';
-				break;
-		
-			case 'herts':
-				$this->county = 'Hertfordshire';
-				break;
-				
-			case 'northants':
-				$this->county = 'Northamptonshire';
-				break;
+		if (get_class($this->meta()->fields('county')) == 'Field_String')
+		{		
+			// Sometimes, lazy ass people like to shorten the county name and 
+			// this breaks the postcode lookup. This is where we try and put
+			// the correct county name back in.
+			switch (strtolower($this->county))
+			{
+				case 'bucks':
+					$this->county = 'Buckinghamshire';
+					break;
 			
-			case 'staffs':
-				$this->county = 'Staffordshire';
-				break;
+				case 'cambs':
+					$this->county = 'Cambridgeshire';
+					break;
+			
+				case 'herts':
+					$this->county = 'Hertfordshire';
+					break;
+					
+				case 'northants':
+					$this->county = 'Northamptonshire';
+					break;
 				
-			case 'wilts':
-				$this->county = 'Wiltshire';
-				break;
-				
-			default:
-				break;
+				case 'staffs':
+					$this->county = 'Staffordshire';
+					break;
+					
+				case 'wilts':
+					$this->county = 'Wiltshire';
+					break;
+					
+				default:
+					break;
+			}
 		}
 		
 		parent::save($key);
