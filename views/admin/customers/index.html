@@ -44,7 +44,7 @@
 			<td><a href="/admin/customers/edit/{{customer.id}}">{{customer.lastname}}, {{customer.firstname}}</td>
 			<td>{{customer.company}}</td>
 			<td><a href="mailto:{{customer.email}}">{{customer.email}}</a></td>
-			<td class="tc">{{customer.completed_orders()|length}} <em>({{customer.orders|length}})</em></td>
+			<td class="tc">{{customer.completed_orders()|length}}</td>
 			<td class="{{customer.status}}">{{customer.status|humanize|title}}</td>
 <!-- 			<td class="tr">{{user.last_login|date('d/m/Y')}}</td> -->
 			<td class="tr">{{customer.created|date('d/m/Y')}}</td>
