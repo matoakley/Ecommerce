@@ -513,3 +513,7 @@ table#sales-order-items tfoot td {
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
+
+div.search-bar {
+	margin-bottom: 10px;
+}
