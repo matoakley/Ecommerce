@@ -311,7 +311,7 @@ $(function(){
 	function calculateSalesOrderTotal(){
 		var total = 0.00;
 		$('span.sales-order-item-total').each(function(){
-			total += parseFloat($(this).html());
+			total += parseFloat($(this).html().replace(',', ''));
 		});
 		total += parseFloat($('input#sales-order-delivery-charge').val());
 		return number_format(total, 2);
