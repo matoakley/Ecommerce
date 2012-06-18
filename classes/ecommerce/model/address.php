@@ -79,7 +79,10 @@ class Ecommerce_Model_Address extends Model_Application
 		$address = Jelly::select('address')->where(DB::expr('REPLACE(postcode, \' \', \'\')'), 'LIKE', str_replace(' ', '', $postcode))->where('latitude', '<>', '')->where('longitude', '<>', '')->load();
 		if ($address->loaded())
 		{
-			$lat_lng = array($address->latitude, $address->longitude);
+			$lat_lng = array(
+				'lat' => $address->latitude,
+				'lng' => $address->longitude,
+			);
 		}
 		return $lat_lng;
 	}

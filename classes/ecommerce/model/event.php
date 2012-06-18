@@ -38,8 +38,13 @@ class Ecommerce_Model_Event extends Model_Application
 	}
 	
 	public static function get_events_by_month($month, $limit = NULL, $offset = NULL, $bounding_box = NULL)
-	{
-		$query = Jelly::select('event')->where(DB::expr('MONTH(start_date)'), '=', $month)->where('status', '=', 'active')->order_by('start_date', 'ASC');
+	{	
+		$year = floor($month / 12);
+		$month = ($month % 12 != 0) ? $month % 12 : 12;
+	
+		$date = mktime(12, 0, 0, $month, 1, date('Y') + $year);
+	
+		$query = Jelly::select('event')->where(DB::expr('MONTH(start_date)'), '=', date('m', $date))->where(DB::expr('YEAR(start_date)'), '=', date('Y', $date))->where('status', '=', 'active')->order_by('start_date', 'ASC');
 		
 		if ($bounding_box)
 		{
