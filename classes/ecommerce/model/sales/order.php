@@ -77,6 +77,20 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		'invoice_generated',
 	);
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+			'type' => array(
+				'field' => 'type',
+			),
+		),
+		'search' => array(
+			'id',
+		),
+	);
+	
 	public static $types = array(
 		'commercial',
 		'retail',
