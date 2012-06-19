@@ -26,6 +26,10 @@
 					
 					<p class="tc"><em>Access to this area is restricted to {{site_name}} employees only.</em></p> 		
 		
+					{% if error %}
+						<p class="tc error"><em>Email/Password combination was incorrect.</em></p>
+					{% endif %}
+		
 					<form method="POST"> 
 						<div class="field"> 
 							<label for="email">Email</label> 
