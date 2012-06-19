@@ -28,6 +28,14 @@ class Ecommerce_Model_Price_Tier extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
+	
 	public function update($data)
 	{
 		$this->name = $data['name'];

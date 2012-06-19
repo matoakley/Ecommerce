@@ -27,6 +27,13 @@ class Ecommerce_Model_Forum_Banned_Word extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(),
+		'search' => array(
+			'word',
+		),
+	);
+	
 	// Returns string with banned words censored out
 	public static function censor($string)
 	{

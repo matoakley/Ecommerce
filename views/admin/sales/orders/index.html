@@ -15,7 +15,17 @@
 	</a>
 </p> -->
 
-{% include "admin/templates/_search_bar.html" %}
+<div class="search-bar">
+	<div class="grid_8 alpha">&nbsp;</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">

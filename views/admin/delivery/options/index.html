@@ -4,12 +4,21 @@
 
 {% block content %}
 
-<p>
-	<a href="/admin/delivery_options/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Delivery Option
-	</a>
-</p>
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/delivery_options/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Delivery Option
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">

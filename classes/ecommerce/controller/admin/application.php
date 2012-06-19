@@ -67,6 +67,8 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		
 		$this->template->version_number = Kohana::config('ecommerce.software_version');
 		
+		$this->template->q = isset($_GET['q']) ? $_GET['q'] : '';
+		
 		// API key when using Leaflet.js for maps
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 
