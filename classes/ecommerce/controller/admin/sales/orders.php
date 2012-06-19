@@ -16,7 +16,10 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	{				
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_Sales_Order::search(array(), $items, array('created' => 'DESC'));
+		$filter_by_type = (isset($_GET['type']) AND $_GET['type'] != '') ? 'type:'.$_GET['type'] : '';
+		$filter_by_status = (isset($_GET['status']) AND $_GET['status'] != '') ? 'status:'.$_GET['status'] : '';
+
+		$search = Model_Sales_Order::search(array($filter_by_type, $filter_by_status), $items, array('created' => 'DESC'));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
@@ -33,6 +36,11 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$this->template->total_products = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
+		$this->template->types = Model_Sales_Order::$types;
+		$this->template->filtered_by_type = (isset($_GET['type']) AND $_GET['type'] != '') ? $_GET['type'] : FALSE;
+		$this->template->statuses = Model_Sales_Order::$statuses;
+		$this->template->filtered_by_status = (isset($_GET['status']) AND $_GET['status'] != '') ? $_GET['status'] : FALSE;
+
 	}
 	
 	function action_view($id = FALSE)

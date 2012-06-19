@@ -16,10 +16,22 @@
 </p> -->
 
 <div class="search-bar">
-	<div class="grid_8 alpha">&nbsp;</div>
-	<div class="grid_8 omega tr">
+	<div class="grid_4 alpha">&nbsp;</div>
+	<div class="grid_12 omega tr">
 		<form>
-			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<select name="status">
+				<option value="">-- Filter by status: --</option>
+				{% for status in statuses %}
+					<option value="{{status}}" {% if filtered_by_status == status %}selected="selected"{% endif %}>{{status|humanize|title}}</option>
+				{% endfor %}
+			</select>
+			<select name="type">
+				<option value="">-- Filter by type: --</option>
+				{% for type in types %}
+					<option value="{{type}}" {% if filtered_by_type == type %}selected="selected"{% endif %}>{{type|humanize|title}}</option>
+				{% endfor %}
+			</select>
+			<input type="text" name="q" value="{{q}}" class="inputtext shorter" placeholder="Search by order #" />
 			<input type="submit" value="Search" />
 		</form>
 	</div>

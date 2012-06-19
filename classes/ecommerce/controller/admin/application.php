@@ -72,7 +72,11 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		// API key when using Leaflet.js for maps
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 
-		
 		parent::after();
+		
+		if ( ! IN_PRODUCTION)
+		{
+			$this->request->response .= View::factory('profiler/stats');
+		}
 	}
 }
