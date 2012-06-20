@@ -42,6 +42,7 @@ return array
 		'stockists' => FALSE,
 		'tiered_pricing' => FALSE,
 		'users' => FALSE,
+		'vat_codes' => FALSE,
 	),
 	
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),

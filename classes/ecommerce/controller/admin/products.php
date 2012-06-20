@@ -52,7 +52,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		{
 			$fields['custom_fields'] = $product->custom_fields();
 		}
-		
+		$fields['product']['vat_code'] = $product->vat_code->id;
 		
 		foreach ($product->skus as $sku)
 		{
@@ -220,6 +220,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		if ($this->modules['tiered_pricing'])
 		{
 			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
+		
+		if ($this->modules['vat_codes'])
+		{
+			$this->template->vat_codes = Jelly::select('vat_code')->execute();
 		}
 	}
 	

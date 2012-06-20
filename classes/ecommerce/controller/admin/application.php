@@ -74,9 +74,11 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 
 		parent::after();
 		
+/*
 		if ( ! IN_PRODUCTION)
 		{
 			$this->request->response .= View::factory('profiler/stats');
 		}
+*/
 	}
 }
