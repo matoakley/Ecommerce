@@ -388,6 +388,15 @@ a.delete-button:hover {
 	color:red;
 }
 
+a.archive-button {
+	color:#FF7C14;
+	margin-right:10px;
+}
+
+a.archive-button:hover {
+	color:#FF7C14;
+}
+
 a.clone-button {
 	color:green;
 	margin-right:10px;

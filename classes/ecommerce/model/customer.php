@@ -75,6 +75,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	public static $statuses = array(
 		'active',
 		'on_hold',
+		'archived',
 	);
 	
 	public static $searchable_fields = array(
@@ -277,5 +278,22 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			return $sku->retail_price();
 		}
+	}
+	
+	public function delete($key = NULL)
+	{
+		// Remove any communications held against the customer to keep the DB tidy
+		foreach ($this->communications as $communication)
+		{
+			$communication->delete();
+		} 
+	
+		return parent::delete($key);
+	}
+	
+	public function archive()
+	{
+		$this->status = 'archived';
+		return $this->save();
 	}
 }

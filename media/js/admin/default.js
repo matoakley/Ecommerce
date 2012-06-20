@@ -52,8 +52,14 @@ $(function(){
 	});
 	
 	$('a.delete-button').click(function(e){
-		
 		if ( ! confirm('Are you sure that you want to permanently delete this item?'))
+		{
+			e.preventDefault();
+		}
+	});
+	
+	$('a.archive-button').click(function(e){
+		if ( ! confirm('Are you sure that you want to archive this item?'))
 		{
 			e.preventDefault();
 		}

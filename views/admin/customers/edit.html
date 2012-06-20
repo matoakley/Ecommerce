@@ -13,14 +13,18 @@
 <form method="POST">
 
 	<div class="field">
-		<div class="grid_6 alpha">
+		<div class="grid_4 alpha">
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
-		<div class="grid_10 omega tr">
+		<div class="grid_12 omega tr">
 			{% if customer.loaded %}
 				<a href="/admin/customers/delete/{{customer.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
 					Delete Customer
+				</a>
+				<a href="/admin/customers/archive/{{customer.id}}" class="archive-button">
+					<img src="/images/icons/door_out.png" alt="" class="inline-icon" />
+					Archive Customer
 				</a>
 			{% endif %}
 			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>

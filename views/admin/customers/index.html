@@ -15,6 +15,7 @@
 	<div class="grid_8 alpha">&nbsp;</div>
 	<div class="grid_8 omega tr">
 		<form>
+			<span class="right-pad"><input type="checkbox" name="include_archived" value="true" {% if showing_archived %}checked="checked"{% endif %} /> Show Archived?</span>
 			<input type="text" name="q" value="{{q}}" class="inputtext" />
 			<input type="submit" value="Search" />
 		</form>

@@ -16,7 +16,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_Customer::search(array(), $items);
+		$search = Model_Customer::search(array(), $items, FALSE, isset($_GET['include_archived']));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
@@ -33,6 +33,8 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->total_customers = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
+		
+		$this->template->showing_archived = isset($_GET['include_archived']);
 	}
 	
 	public function action_edit()
@@ -276,5 +278,25 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		);
 		
 		echo json_encode($data);
+	}
+	
+	public function action_delete()
+	{
+		$this->auto_render = FALSE;
+		
+		$customer = Model_Customer::load($this->request->param('id'));
+		$customer->delete();
+		
+		$this->request->redirect($this->session->get('admin.customers.index', 'admin/customers'));
+	}
+	
+	public function action_archive()
+	{
+		$this->auto_render = FALSE;
+		
+		$customer = Model_Customer::load($this->request->param('id'));
+		$customer->archive();
+		
+		$this->request->redirect($this->session->get('admin.customers.index', 'admin/customers'));
 	}
 }
