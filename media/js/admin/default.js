@@ -189,6 +189,7 @@ $(function(){
 		var button = $(this);
 		var line1 = $('input#address-line-1');
 		var line2 = $('input#address-line-2');
+		var line3 = $('input#address-line-3');
 		var town = $('input#address-town');
 		var county = $('input#address-county');
 		var postcode = $('input#address-postcode');
@@ -201,6 +202,7 @@ $(function(){
 			address: {
 				line_1: line1.val(),
 				line_2: line2.val(),
+				line_3: line3.val(),
 				town: town.val(),
 				county: county.val(),
 				postcode: postcode.val(),
@@ -227,6 +229,7 @@ $(function(){
 				// Reset and hide form
 				line1.val('');
 				line2.val('');
+				line3.val('');
 				town.val('');
 				county.val('');
 				postcode.val('');

@@ -16,6 +16,7 @@ class Ecommerce_Model_Address extends Model_Application
 				'house_name' => new Field_String,
 				'line_1' => new Field_String,
 				'line_2' => new Field_String,
+				'line_3' => new Field_String,
 				'town' => new Field_String,
 				'county' => new Field_String,
 				'postcode' => new Field_String,
@@ -97,6 +98,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$address_parts = array(
 			$this->line_1,
 			$this->line_2,
+			$this->line_3,
 			$this->town,
 			$this->county,
 			// DON'T PUT POSTCODE HERE, IT BREAKS THE GEOCODE LOOKUP
@@ -124,6 +126,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$address_parts = array(
 			$this->line_1,
 			$this->line_2,
+			$this->line_3,
 			$this->town,
 			$this->county,
 			$this->postcode,
@@ -152,6 +155,11 @@ class Ecommerce_Model_Address extends Model_Application
 		$address->postcode = $data['postcode'];
 		$address->country = $data['country'];
 		$address->name = $data['name'];
+
+		if (isset($data['line_3']))
+		{
+			$address->line_3 = $data['line_3'];
+		}
 		
 		if (isset($data['telephone']))
 		{
@@ -174,6 +182,11 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->county = $data['county'];
 		$this->postcode = $data['postcode'];
 		$this->telephone = $data['telephone'];
+		
+		if (isset($data['line_3']))
+		{
+			$this->line_3 = $data['line_3'];
+		}
 		
 		if (isset($data['notes']))
 		{
