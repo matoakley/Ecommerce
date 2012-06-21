@@ -18,7 +18,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	
 		if ($_POST)
 		{
-			if (isset($_POST['checkout_x']))
+			if (isset($_POST['checkout_x']) OR isset($_POST['checkout']))
 			{
 				$this->request->redirect('/checkout');
 			}
