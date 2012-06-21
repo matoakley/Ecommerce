@@ -104,7 +104,7 @@
 			</div>
 			<div class="grid_8 omega">
 				<select name="customer[price_tier]" id="customer-price-tier">
-					<option value="">Default</option>
+					<option value="">Retail</option>
 					{% for tier in price_tiers %}
 						<option value="{{tier.id}}" {% if tier.id == fields.customer.price_tier %}selected="selected"{% endif %}>{{tier.name}}</option>
 					{% endfor %}

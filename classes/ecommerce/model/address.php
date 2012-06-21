@@ -31,6 +31,7 @@ class Ecommerce_Model_Address extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 				'name' => new Field_String,
+				'notes' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -156,6 +157,11 @@ class Ecommerce_Model_Address extends Model_Application
 		{
 			$address->telephone = $data['telephone'];
 		}
+		
+		if (isset($data['notes']))
+		{
+			$address->notes = $data['notes'];
+		}
 	
 		return $address->save();
 	}
@@ -168,6 +174,11 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->county = $data['county'];
 		$this->postcode = $data['postcode'];
 		$this->telephone = $data['telephone'];
+		
+		if (isset($data['notes']))
+		{
+			$this->notes = $data['notes'];
+		}
 	
 		return $this->save();
 	}

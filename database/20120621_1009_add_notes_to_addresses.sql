@@ -1,0 +1,1 @@
+ALTER TABLE `addresses` DROP COLUMN `notes`, ADD COLUMN `notes` varchar(255) AFTER `deleted`;

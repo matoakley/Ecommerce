@@ -83,6 +83,7 @@ $(function(){
 		$.fancybox.close();
 	});
 	
+	// Show/hide body of customer communications
 	$('img.show-communication').live('mouseenter', function(){
 		if ($('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').is(':visible')){
 			$(this).attr('src', '/media/images/icons/magifier_zoom_out.png');
@@ -95,17 +96,22 @@ $(function(){
 		$('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').slideToggle('slow');
 		$('td.communication-body-container[data-communication-id="'+$(this).attr('data-communication-id')+'"]').toggleClass('active-communication-body-container');
 	});
-	
-/*
-	var today = new Date();
-	$('.datetimepicker').datetimepicker({
-		hour: today.getHours(),
-		minute: today.getMinutes(),
-		showButtonPanel: false
+
+	// Show/hide notes of customer addresses	
+	$('img.show-address-notes').live('mouseenter', function(){
+		if ($('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').is(':visible')){
+			$(this).attr('src', '/media/images/icons/note_delete.png');
+		} else {
+			$(this).attr('src', '/media/images/icons/note_add.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).attr('src', '/media/images/icons/note.png');
+	}).live('click', function(){
+		$('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').slideToggle('slow');
+		$('td.address-notes-container[data-address-id="'+$(this).attr('data-address-id')+'"]');
 	});
-*/
+	
 	$('div#communication-date').datetimepicker({
-/* 		setDate: new Date(), */
 		showButtonPanel: false
 	}).datetimepicker('setDate', (new Date()));
 	
@@ -189,6 +195,7 @@ $(function(){
 		var country = $('select#address-country');
 		var telephone = $('input#address-telephone');
 		var name = $('input#address-name');
+		var notes = $('input#address-notes');
 		var module = button.attr('data-module');
 		var data = {
 			address: {
@@ -200,6 +207,7 @@ $(function(){
 				country: country.val(),
 				telephone: telephone.val(),
 				name: name.val(),
+				notes: notes.val()
 			},
 			template: module,
 		};
@@ -225,6 +233,7 @@ $(function(){
 				country.val('');
 				telephone.val('');
 				name.val('');
+				notes.val('');
 				$('div#new-address').slideUp(600);
 				$('a#show-new-address').children('span').html('New Address');
 			},
