@@ -76,7 +76,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	
 		$sales_order = Model_Sales_Order::load($id);
 	
-		if ($sales_order->loaded() AND $sales_order->status == 'payment_received')
+		if ($sales_order->loaded() AND in_array($sales_order->status, array('payment_received', 'invoice_generated')))
 		{
 			$sales_order->update_status('complete')->send_shipped_email();
 			echo 'ok';
@@ -140,30 +140,138 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		{
 			throw new Kohana_Exception('Module is not enabled.');
 		}
+		
+		$sales_order = Model_Sales_Order::load($this->request->param('id'));
 	
-		if (isset($_GET['customer']))
+		if ($this->request->param('id') AND ! $sales_order->loaded())
 		{
-			$customer = Model_Customer::load($_GET['customer']);
+			throw new Kohana_Exception('Sales Order could not be found.');
+		}
+
+		$customer_id = isset($_GET['customer']) ? $_GET['customer'] : NULL;
+		$customer = Model_Customer::load($customer_id);
 			
-			if ( ! $customer->loaded() OR ! $customer->is_commercial_customer())
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Unable to load Customer.');
+		}
+			
+		$this->template->customer = $customer;
+			
+		$items_per_page = 5;
+		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
+		
+		$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('addresses')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+			'view' => 'pagination/asynchronous',
+		));
+		
+		$fields = array(
+			'sales_order' => array(
+				'delivery_address' => $customer->default_shipping_address->id,
+				'delivery_charge' => 0,
+			),
+		);
+		$errors = array();
+		
+		if ($_POST)
+		{
+			try
 			{
-				throw new Kohana_Exception('Unable to load Customer.');
+				$sales_order->validate($_POST['sales_order']);
+			}
+			catch (Validate_Exception $e)
+			{
+				$errors['sales_order'] = $e->array->errors();
 			}
 			
-			$this->template->customer = $customer;
+			if (empty($errors))
+			{
+				$sales_order = Model_Sales_Order::create_commercial_sales_order($_POST['sales_order']);
+				
+				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
+				if (isset($_POST['save_exit']))
+				{
+					$this->request->redirect($redirect_to);
+				}
+				else
+				{
+					$this->request->redirect('/admin/sales_orders/view/'.$sales_order->id);
+				}
+			}
 			
-			$items_per_page = 5;
-			$page = isset($_GET['orders_page']) ? $_GET['orders_page'] : 1;
-		
-			$this->template->customer_delivery_addresses = $customer->get('addresses')->where('is_delivery', '=', 1)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
-			$this->template->customer_delivery_addresses_pagination = Pagination::factory(array(
-				'total_items' => $customer->get('addresses')->where('is_delivery', '=', 1)->count(),
-				'items_per_page' => $items_per_page,
-				'auto_hide'	=> false,
-				'current_page'   => array('source' => 'query_string', 'key' => 'customer_delivery_addresses_page'),
-			));
+			$fields = $_POST;
 		}
 		
+		$sales_order_total = 0;	
+		if (isset($fields['sales_order']['skus']))
+		{
+			foreach ($fields['sales_order']['skus'] as $sales_order_line)
+			{
+				$sales_order_total += ($sales_order_line['price'] * $sales_order_line['quantity']);
+			}
+		}
+		$fields['sales_order_total'] = $sales_order_total;
+		
+		$this->template->fields = $fields;
+		$this->template->errors = $errors;
+			
 		$this->template->countries = Model_Country::list_active();
+		$this->template->skus = Model_Sku::list_all();
+	}
+	
+	public function action_add_sales_order_line()
+	{	
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		$sku = Model_Sku::load($this->request->param('sku_id'));
+		
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer not found.');
+		}
+		
+		if (! $sku->loaded())
+		{
+			throw new Kohana_Exception('SKU not found.');
+		}
+		
+		$data = array();
+
+		$data['html'] = Twig::factory('admin/sales/orders/_add_sales_order_line.html', array(
+			'sku' => $sku,
+			'customer' => $customer,
+		))->render();
+		$data['sku'] = $sku->as_array();
+		
+		echo json_encode($data);
+	}
+	
+	public function action_new_sales_order_addresses()
+	{
+		$customer = Model_Customer::load($_GET['customer']);
+		
+		$items_per_page = 5;
+		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
+	
+		$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('addresses')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+			'view' => 'pagination/asynchronous',
+		));
+		
+		$this->template->customer = $customer;
+		
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
 	}
 }

@@ -44,6 +44,13 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		}
 		
 		$this->list_option = $this->session->get('admin_list_option', Kohana::config('ecommerce.default_admin_list_option'));
+		
+		// If the request is AJAX then we'll want to spit out a JSON encoded
+		// array rather than an HTML template.
+		if (Request::$is_ajax)
+		{
+			$this->auto_render = FALSE;
+		}
 	}
 	
 	public function after()

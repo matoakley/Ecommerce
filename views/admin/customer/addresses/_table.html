@@ -1,24 +1,32 @@
-<div id="customer-address-table-container">
-	<table>
-		<thead>
-			<th class="tc">Default Billing</th>
-			<th class="tc">Default Delivery</th>
-			<th class="tr">Address</th>
-			<th>Telephone</th>
-		</thead>
-		<tbody>	
-		{% for key, address in addresses %}
-			<tr class="{{['', 'alternate']|cycle(key)}}">
-				<td class="tc">
-					<input type="radio" name="customer[default_billing_address]" value="{{address.id}}" {% if address.id == fields.customer.default_billing_address %}checked="checked"{% endif %} />
-				</td>
-				<td class="tc">
-					<input type="radio" name="customer[default_shipping_address]" value="{{address.id}}" {% if address.id == fields.customer.default_shipping_address %}checked="checked"{% endif %} />
-				</td>
-				<td class="tr">{{address.human_string}}</td>
-				<td>{{address.telephone}}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-</div>
+<table id="customer-addresses">
+	<thead>
+		<th class="tc">Default Billing</th>
+		<th class="tc">Default Delivery</th>
+		<th class="tc">Name</th>
+		<th class="tr">Address</th>
+		<th>Telephone</th>
+		<th>&nbsp;</th>
+	</thead>
+	<tbody>	
+	{% for key, address in addresses %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td class="tc">
+				<input type="radio" name="customer[default_billing_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_billing_address %}checked="checked"{% endif %}{% else %}{% if customer.default_billing_address == address.id %}checked="checked"{% endif %}{% endif %} />
+			</td>
+			<td class="tc">
+				<input type="radio" name="customer[default_shipping_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_shipping_address %}checked="checked"{% endif %}{% else %}{% if customer.default_shipping_address == address.id %}checked="checked"{% endif %}{% endif %} />
+			</td>
+			<td class="tc">{{address.name}}</td>
+			<td class="tr">{{address.human_string}}</td>
+			<td>{{address.telephone}}</td>
+			<td width="1">
+				<a href="#" class="customer-address-delete" data-url="{% url "customer_address_delete", ["customer_id": customer.id, "address_id": address.id] %}" data-address-id="{{address.id}}">
+					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
+				</a>
+				<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden custom-address-delete-spinner" data-address-id="{{address.id}}" />
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{{addresses_pagination}}

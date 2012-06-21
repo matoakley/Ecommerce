@@ -54,6 +54,10 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
 		$fields['customer']['default_billing_address'] = $customer->default_billing_address->id;
 		$fields['customer']['default_shipping_address'] = $customer->default_shipping_address->id; 
+		if ($this->modules['tiered_pricing'])
+		{
+			$fields['customer']['price_tier'] = $customer->price_tier->id;
+		}
 		$errors = array();
 		
 		if ($_POST)
@@ -95,7 +99,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$items_per_page = 20;
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		
-		$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->addresses_pagination = Pagination::factory(array(
 			'total_items' => $customer->get('addresses')->count(),
 			'items_per_page' => $items_per_page,
@@ -134,6 +138,11 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->customer_types = Jelly::select('customer_type')->execute();
 		$this->template->customer_statuses = Model_Customer::$statuses;
 		$this->template->countries = Model_Country::list_active();
+		
+		if ($this->modules['tiered_pricing'])
+		{
+			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
 	}
 	
 	public function action_add_communication()
@@ -172,6 +181,12 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 		
 		$this->template->errors = $errors;
+		
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
 	}
 	
 	public function action_add_address()
@@ -193,10 +208,10 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$address = $customer->add_address($_POST['address']);
-			$items_per_page = 20;
+			$items_per_page = $_POST['template'] == 'customer' ? 20 : 5;
 			$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 			
-			$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+			$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 			$this->template->addresses_pagination = Pagination::factory(array(
 				'total_items' => $customer->get('addresses')->count(),
 				'items_per_page' => $items_per_page,
@@ -210,12 +225,56 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 		
 		$this->template->errors = $errors;
-		
 		$this->template->fields = array(
 			'customer' => array(
 				'default_billing_address' => $customer->default_billing_address->id,
 				'default_shipping_address' => $customer->default_shipping_address->id,
 			),
 		);
+		
+		$this->template->customer = $customer;
+		$this->template->template = $_POST['template'];
+		
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
+	}
+	
+	public function action_delete_address()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+		
+		// Load address through customer to avoid any mishaps
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		$address = $customer->get('addresses')->where('id', '=', $this->request->param('address_id'))->load();
+		
+		$address->archive();
+	
+		$items_per_page = 20;
+		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
+		
+		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('addresses')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+		));
+		$this->template->customer = $customer;
+	
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
 	}
 }

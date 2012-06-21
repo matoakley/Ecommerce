@@ -27,4 +27,22 @@ class Ecommerce_Model_Sku_Tiered_Price extends Model_Application
 			)),
 		));
 	}
+	
+	public function update($sku_id, $price_tier_id, $price)
+	{
+		$this->sku = $sku_id;
+		$this->price_tier = $price_tier_id;
+		$this->price = Currency::deduct_tax(str_replace(',', '', $price), Kohana::config('ecommerce.vat_rate'));
+		return $this->save();
+	}
+	
+	/**
+	 * Returns the Retail Price of a product after adding VAT.
+	 *
+	 * @return  float
+	 */
+	public function retail_price()
+	{
+		return Currency::add_tax($this->price, Kohana::config('ecommerce.vat_rate'));
+	}
 }

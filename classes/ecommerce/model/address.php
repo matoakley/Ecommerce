@@ -1,5 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Ecommerce Address Model
+ * @package Ecommerce
+ * @author	Matt Oakley
+ */
 class Ecommerce_Model_Address extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
@@ -23,6 +27,10 @@ class Ecommerce_Model_Address extends Model_Application
 				'longitude' => new Field_Float(array(
 					'places' => 6,
 				)),
+				'archived' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
+				'name' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -52,6 +60,35 @@ class Ecommerce_Model_Address extends Model_Application
 		}
 		
 		return TRUE;
+	}
+	
+	/**
+	 * Find addresses with specified postcode
+	 * @param string $postcode		Postcode string to search for
+	 * @return Jelly_Collection		Iterable collection of matching addresses
+	 */
+	public static function find_by_postcode($postcode)
+	{
+		return Jelly::select('address')->where(DB::expr('REPLACE(postcode, \' \', \'\')'), 'LIKE', '%'.$postcode.'%')->execute();
+	}
+	
+	/**
+	 * Find a geocoded address with specified postcode
+	 * @param string $postcode		Postcode string to search for
+	 * @return Ecommerce_Model_Address		Iterable collection of matching addresses
+	 */
+	public static function find_lat_lng_by_postcode($postcode)
+	{
+		$lat_lng = array();
+		$address = Jelly::select('address')->where(DB::expr('REPLACE(postcode, \' \', \'\')'), 'LIKE', str_replace(' ', '', $postcode))->where('latitude', '<>', '')->where('longitude', '<>', '')->load();
+		if ($address->loaded())
+		{
+			$lat_lng = array(
+				'lat' => $address->latitude,
+				'lng' => $address->longitude,
+			);
+		}
+		return $lat_lng;
 	}
 	
 	public function __toString()
@@ -102,7 +139,7 @@ class Ecommerce_Model_Address extends Model_Application
 		return implode(', ', $address_parts);
 	}
 
-	public static function create($data, $customer_id, $is_delivery = FALSE)
+	public static function create($data, $customer_id = NULL, $is_delivery = FALSE)
 	{
 		$address = Jelly::factory('address');
 		$address->customer = $customer_id;
@@ -113,6 +150,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$address->county = $data['county'];
 		$address->postcode = $data['postcode'];
 		$address->country = $data['country'];
+		$address->name = $data['name'];
 		
 		if (isset($data['telephone']))
 		{
@@ -138,37 +176,40 @@ class Ecommerce_Model_Address extends Model_Application
 	{
 		$has_changed = $this->changed();
 		
-		// Sometimes, lazy ass people like to shorten the county name and 
-		// this breaks the postcode lookup. This is where we try and put
-		// the correct county name back in.
-		switch (strtolower($this->county))
-		{
-			case 'bucks':
-				$this->county = 'Buckinghamshire';
-				break;
-		
-			case 'cambs':
-				$this->county = 'Cambridgeshire';
-				break;
-		
-			case 'herts':
-				$this->county = 'Hertfordshire';
-				break;
-				
-			case 'northants':
-				$this->county = 'Northamptonshire';
-				break;
+		if (get_class($this->meta()->fields('county')) == 'Field_String')
+		{		
+			// Sometimes, lazy ass people like to shorten the county name and 
+			// this breaks the postcode lookup. This is where we try and put
+			// the correct county name back in.
+			switch (strtolower($this->county))
+			{
+				case 'bucks':
+					$this->county = 'Buckinghamshire';
+					break;
 			
-			case 'staffs':
-				$this->county = 'Staffordshire';
-				break;
+				case 'cambs':
+					$this->county = 'Cambridgeshire';
+					break;
+			
+				case 'herts':
+					$this->county = 'Hertfordshire';
+					break;
+					
+				case 'northants':
+					$this->county = 'Northamptonshire';
+					break;
 				
-			case 'wilts':
-				$this->county = 'Wiltshire';
-				break;
-				
-			default:
-				break;
+				case 'staffs':
+					$this->county = 'Staffordshire';
+					break;
+					
+				case 'wilts':
+					$this->county = 'Wiltshire';
+					break;
+					
+				default:
+					break;
+			}
 		}
 		
 		parent::save($key);
@@ -215,5 +256,11 @@ class Ecommerce_Model_Address extends Model_Application
 		}
 	
 		return implode(', ', $address_parts);
+	}
+	
+	public function archive()
+	{
+		$this->archived = time();
+		return $this->save();
 	}
 }

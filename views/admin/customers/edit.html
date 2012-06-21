@@ -17,10 +17,10 @@
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
 		<div class="grid_10 omega tr">
-			{% if category.loaded %}
-				<a href="/admin/categories/delete/{{category.id}}" class="delete-button">
+			{% if customer.loaded %}
+				<a href="/admin/customers/delete/{{customer.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
-					Delete Category
+					Delete Customer
 				</a>
 			{% endif %}
 			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
@@ -87,13 +87,26 @@
 		<div class="grid_2 alpha">
 			<label form="customer-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="customer-status" name="customer[status]">
 			{% for status in customer_statuses %}
 				<option value="{{status}}" {% if customer.status == status %}selected="selected"{% endif %}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
+		{% if modules.tiered_pricing %}
+			<div class="grid_2">
+				<label for="customer-price-tier">Price Tier</label>
+			</div>
+			<div class="grid_8 omega">
+				<select name="customer[price_tier]" id="customer-price-tier">
+					<option value="">Default</option>
+					{% for tier in price_tiers %}
+						<option value="{{tier.id}}" {% if tier.id == fields.customer.price_tier %}selected="selected"{% endif %}>{{tier.name}}</option>
+					{% endfor %}
+				</select>
+			</div>
+		{% endif %}
 		<div class="clear"></div>
 	</div>
 	
@@ -107,12 +120,12 @@
 		<h2>Orders</h2>
 	</div>
 	<div class="grid_8 omega tr">
-		{% if modules.commercial_sales_orders and customer.is_commercial_customer %}
+		{% if modules.commercial_sales_orders %}
 			<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
 				<img src="/images/icons/add.png" alt="" />
 				<span>New Commercial Sales Order</span>
-				</a>
-			{% endif %}
+			</a>
+		{% endif %}
 	</div>
 	<div class="clear"></div>
 	<table>
@@ -153,8 +166,9 @@
 		<div id="new-address" class="hidden">
 			{% include "admin/customer/addresses/_form.html" %}
 		</div>
-		{% include "admin/customer/addresses/_table.html" %}
-		{{addresses_pagination}}
+		<div id="customer-address-table-container">
+			{% include "admin/customer/addresses/_table.html" %}
+		</div>
 	{% endif %}
 	
 	{% if modules.crm %}

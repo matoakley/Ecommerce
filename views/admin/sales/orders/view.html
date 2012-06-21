@@ -50,6 +50,19 @@
 	
 	<div class="grid_8 omega">
 		
+	{% if modules.commercial_sales_orders %}
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label>Type</label>
+			</div>
+			<div class="grid_6 omega">
+				{{sales_order.type|humanize|title}}
+				<a href="#" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Download Invoice</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endif %}
+		
 		<div class="field">
 			<div class="grid_2 alpha">
 				<label>Status</label>
@@ -63,9 +76,8 @@
 				{% endfor %}
 				</select>
 
-
-				{% if sales_order.status == 'payment_received' %}
-					<a href="#" id="complete-and-email">
+				{% if sales_order.status == 'payment_received' or sales_order.status == 'invoice_generated' %}
+					<a href="#" id="complete-and-email" data-url="/admin/sales_orders/complete_and_send_email/{{sales_order.id}}">
 						<img src="/images/icons/tick.png" alt="" class="inline-icon" />
 						<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
 						Complete &amp; Send Email
@@ -171,7 +183,7 @@
 <h2>Order Notes</h2>
 
 <textarea class="full-width" id="new-note"></textarea>
-<button id="add-note">Add Note</button>
+<button id="add-sales-order-note" data-sales-order-id="{{sales_order.id}}">Add Note</button>
 <img src="/media/images/admin/ajax-loader.gif" alt="" id="add-note-spinner" class="hidden" />
 
 <div id="sales-order-notes">
@@ -197,79 +209,5 @@
 
 {% endfor %}
 </div>
-
-<script type="text/javascript">
-
-$(function(){
-
-	$('#complete-and-email').click(function(e){
-	
-		e.preventDefault();
-		
-		if (confirm('Are you sure that you want to mark this order as complete and send confirmation email to customer?')) {
-		
-			$.ajax({
-				
-				url: '/admin/sales_orders/complete_and_send_email/{{sales_order.id}}',
-				type: 'GET',
-				beforeSend: function(){
-				
-					$('#complete-and-email img').hide();
-					$('#ajax-spinner').show();
-				},
-				success: function(response){
-					
-					if (response == 'ok')
-					{
-						$('#sales-order-status').val('complete');
-						$('#complete-and-email').hide();
-					}
-				}
-			});
-		}
-	});
-	
-	$('#add-note').click(function(){
-	
-		$.ajax({
-			
-			url: '/admin/sales_orders/add_note',
-			type: 'POST',
-			data: { sales_order:"{{sales_order.id}}", note: $('#new-note').val() },
-			dataType: 'json',
-			beforeSend: function(){
-				
-				$('#add-note-spinner').show();
-				$('#add-note').attr('disabled', 'disabled');
-			},
-			success: function(response){
-				
-				var rowClass;
-				
-				if ($('.sales_order_note').first().hasClass('alternate')){
-					 rowClass = '';
-				}
-				else {
-					rowClass = 'alternate';
-				}
-				
-				// Add note into list
-				var newRow = $('<div>').addClass('sales_order_note hidden ' + rowClass); // Hidden to start so we can slide in :)
-				var noteHeader = $('<p>').html('<img src="/images/icons/user_suit.png" alt="" class="inline-icon" /><strong>On ' + response.created + ' ' + response.user + ' said:</strong>').appendTo(newRow);
-				var noteBody = $('<div>').html(response.text).appendTo(newRow);
-				newRow.prependTo($('#sales-order-notes')).show('slide');
-				
-				$('#new-note').val('');
-			},
-			complete: function(){
-				
-				$('#add-note-spinner').hide();
-				$('#add-note').removeAttr('disabled');
-			}
-		});
-	});
-});
-
-</script>
 
 {% endblock %}

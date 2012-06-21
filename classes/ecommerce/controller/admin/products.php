@@ -47,11 +47,18 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
-			'skus' => $product->skus,
 		);
 		if ($this->modules['custom_fields'])
 		{
 			$fields['custom_fields'] = $product->custom_fields();
+		}
+		
+		
+		foreach ($product->skus as $sku)
+		{
+			$fields['skus'][$sku->id] = $sku->as_array();
+			$fields['skus'][$sku->id]['retail_price'] = $sku->retail_price();
+			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
 		}
 		
 		foreach ($product->images as $product_image)
@@ -209,6 +216,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
+		
+		if ($this->modules['tiered_pricing'])
+		{
+			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
 	}
 	
 	public function action_delete($id = NULL)

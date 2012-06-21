@@ -1,0 +1,3 @@
+[submodule "modules/html2pdf"]
+	path = modules/html2pdf
+	url = https://github.com/matoakley/Kohana-html2pdf.git

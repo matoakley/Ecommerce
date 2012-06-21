@@ -1,5 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Represents a Customer within the ecommerce system.
+ *
+ * @package    Ecommerce
+ * @author     Matt Oakley
+ */
 class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
@@ -41,6 +46,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					'foreign' => 'address.customer_id',
 				)),
 				'status' => new Field_String,
+				'price_tier' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -82,6 +88,9 @@ class Ecommerce_Model_Customer extends Model_Application
 			),
 			'status' => array(
 				'field' => 'status',
+			),
+			'price_tier' => array(
+				'field' => 'price_tier',
 			),
 		),
 		'search' => array(
@@ -237,6 +246,11 @@ class Ecommerce_Model_Customer extends Model_Application
 			$this->add('customer_types', $data['customer_types']);
 		}
 		
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['price_tier']))
+		{
+			$this->price_tier = $data['price_tier'];
+		}
+		
 		$this->status = $data['status'];
 	
 		return $this->save();
@@ -245,5 +259,23 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function is_commercial_customer()
 	{
 		return (bool) $this->get('customer_types')->where('id', '=', Kohana::config('ecommerce.default_commercial_customer_type'))->count();
+	}
+	
+	/**
+	 * Fetch the price that the Customer should pay for a SKU, taking tiered pricing into account when necessary.
+	 * @author  Matt Oakley
+	 * @param   Model_Sku   SKU to fetch price for
+	 * @return  float				price
+	 */
+	public function price_for_sku($sku)
+	{
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND $this->price_tier->loaded())
+		{
+			return $sku->price_for_tier($this->price_tier);
+		}
+		else
+		{
+			return $sku->retail_price();
+		}
 	}
 }

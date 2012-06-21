@@ -57,13 +57,19 @@
 	<div class="grid_4">
 		<input type="text" id="address-telephone" class="inputtext" />
 	</div>
+	<div class="grid_2">
+		<label for="address-county">Name</label>
+	</div>
+	<div class="grid_8 omega">
+		<input type="text" id="address-name" class="inputtext" />
+	</div>
 	<div class="clear"></div>
 </div>
 
 <div class="field">
 	<div class="grid_2 alpha">&nbsp;</div>
 	<div class="grid_3">
-		<input type="submit" value="Add Address" id="add-address" data-url="{% url "customer_address_add", ['customer_id': customer.id] %}" />
+		<input type="submit" value="Add Address" id="add-address" data-module="customer" data-url="{% url "customer_address_add", ['customer_id': customer.id] %}" />
 		<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="add-address-spinner" />
 	</div>
 	<div class="clear"></div>
