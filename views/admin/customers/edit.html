@@ -40,7 +40,7 @@
 		<h2>Customer Details</h2>
 	</div>
 	<div class="grid_12 omega tr">
-	{% if modules.sage_exports %}
+	{% if modules.sage_exports and customer.loaded %}
 		<a href="{% url "customer_export_to_sage", ["customer_id": customer.id] %}" class="img-button">
 			<img src="/media/images/icons/page_green.png" alt="" class="inline-icon" />
 			Export for Sage
@@ -75,7 +75,9 @@
 		<div class="grid_8">
 			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
 				class="inputtext long" />&nbsp;&nbsp;
-			<a href="mailto:{{customer.email}}">Send Email</a>
+			{% if customer.loaded %}
+				<a href="mailto:{{customer.email}}">Send Email</a>
+			{% endif %}
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -144,98 +146,106 @@
 	
 	<br/>
 	
-	<div class="grid_8 alpha">
-		<h2>Orders</h2>
-	</div>
-	<div class="grid_8 omega tr">
-		{% if modules.commercial_sales_orders %}
-			<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Commercial Sales Order</span>
-			</a>
+	{% if not customer.loaded %}
+	
+		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
+	
+	{% else %}
+	
+		<div class="grid_8 alpha">
+			<h2>Orders</h2>
+		</div>
+		<div class="grid_8 omega tr">
+			{% if modules.commercial_sales_orders %}
+				<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Commercial Sales Order</span>
+				</a>
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+		<table>
+			<thead>
+				<th class="tc">Order #</th>
+				<th class="tr">Delivery Address</th>
+				<th class="tc">Promo Code?</th>
+				<th class="tr">Total</th>
+				<th>&nbsp;</th>
+				<th class="tr">Placed on</th>
+			</thead>
+			<tbody>	
+			{% for key, order in orders %}
+				<tr class="{{['', 'alternate']|cycle(key)}}">
+					<td class="tc"><a href="/admin/sales_orders/view/{{order.id}}">{{order.id}}</a></td>
+					<td class="tr">{{order.delivery_address.line_1}}, {{order.delivery_address.town}}, {{order.delivery_address.postcode}}</td>
+					<td class="tc">{{order.promotion_code_code}}</td>
+					<td class="tr">&pound;{{order.order_total|num_format(2)}}</td>
+					<td class="tc"><span class="status_tag {{order.status}}">{{order.status|humanize|title}}</td>
+					<td class="tr">{{order.created|date('d/m/Y H:i')}}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		{{orders_pagination}}
+		
+		{% if modules.crm %}
+		
+			{# Contacts #}
+			<div class="grid_8 alpha">
+				<h2>Additional Contacts</h2>
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-contact">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Contact</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-contact" class="hidden">
+				{% include "admin/customer/contacts/_form.html" %}
+			</div>
+			<div id="customer-contact-table-container">
+				{% include "admin/customer/contacts/_table.html" %}
+			</div>
+			{# End Contacts #}
+		
+			{# Addresses #}
+			<div class="grid_8 alpha">
+				<h2>Addresses</h2>
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-address">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Address</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-address" class="hidden">
+				{% include "admin/customer/addresses/_form.html" %}
+			</div>
+			<div id="customer-address-table-container">
+				{% include "admin/customer/addresses/_table.html" %}
+			</div>
+			{# End Addresses #}
+		
+			{# Communications #}
+			<div class="grid_8 alpha">
+				<h2>Customer Communications</h2>	
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-communication">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Communication</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-communication" class="hidden">
+				{% include "admin/customer/communications/_form.html" %}
+			</div>
+			{% include "admin/customer/communications/_table.html" %}
+			{# End Communications #}
 		{% endif %}
-	</div>
-	<div class="clear"></div>
-	<table>
-		<thead>
-			<th class="tc">Order #</th>
-			<th class="tr">Delivery Address</th>
-			<th class="tc">Promo Code?</th>
-			<th class="tr">Total</th>
-			<th>&nbsp;</th>
-			<th class="tr">Placed on</th>
-		</thead>
-		<tbody>	
-		{% for key, order in orders %}
-			<tr class="{{['', 'alternate']|cycle(key)}}">
-				<td class="tc"><a href="/admin/sales_orders/view/{{order.id}}">{{order.id}}</a></td>
-				<td class="tr">{{order.delivery_address.line_1}}, {{order.delivery_address.town}}, {{order.delivery_address.postcode}}</td>
-				<td class="tc">{{order.promotion_code_code}}</td>
-				<td class="tr">&pound;{{order.order_total|num_format(2)}}</td>
-				<td class="tc"><span class="status_tag {{order.status}}">{{order.status|humanize|title}}</td>
-				<td class="tr">{{order.created|date('d/m/Y H:i')}}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-	{{orders_pagination}}
-	
-	{% if modules.crm %}
-	
-		{# Contacts #}
-		<div class="grid_8 alpha">
-			<h2>Additional Contacts</h2>
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="#" class="img-button" id="show-new-contact">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Contact</span>
-			</a>
-		</div>
-		<div class="clear"></div>
-		<div id="new-contact" class="hidden">
-			{% include "admin/customer/contacts/_form.html" %}
-		</div>
-		<div id="customer-contact-table-container">
-			{% include "admin/customer/contacts/_table.html" %}
-		</div>
-		{# End Contacts #}
-	
-		{# Addresses #}
-		<div class="grid_8 alpha">
-			<h2>Addresses</h2>
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="#" class="img-button" id="show-new-address">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Address</span>
-			</a>
-		</div>
-		<div class="clear"></div>
-		<div id="new-address" class="hidden">
-			{% include "admin/customer/addresses/_form.html" %}
-		</div>
-		<div id="customer-address-table-container">
-			{% include "admin/customer/addresses/_table.html" %}
-		</div>
-		{# End Addresses #}
-	
-		{# Communications #}
-		<div class="grid_8 alpha">
-			<h2>Customer Communications</h2>	
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="#" class="img-button" id="show-new-communication">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Communication</span>
-			</a>
-		</div>
-		<div class="clear"></div>
-		<div id="new-communication" class="hidden">
-			{% include "admin/customer/communications/_form.html" %}
-		</div>
-		{% include "admin/customer/communications/_table.html" %}
-		{# End Communications #}
+
 	{% endif %}
 		
 </form>
