@@ -144,14 +144,106 @@
 	{% set object = customer %}
 	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
-	<br/>
-	
 	{% if not customer.loaded %}
+	
+		<h2>Customer Address</h2>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-line-1">Line 1</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-line-1" name="address[line_1]" value="{{fields.address.line_1}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-line-2">Line 2</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-line-2" name="address[line_2]" value="{{fields.address.line_2}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-line-3">Line 3</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-line-3" name="address[line_3]" value="{{fields.address.line_3}}" class="inputtext" />
+			</div>	
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">	
+			<div class="grid_2 alpha">
+				<label for="customer-address-town">Town</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-town" name="address[town]" value="{{fields.address.town}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-county">County</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-county" name="address[county]" value="{{fields.address.county}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">	
+			<div class="grid_2 alpha">
+				<label for="customer-address-postcode">Postcode</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-postcode" name="address[postcode]" value="{{fields.address.postcode}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-country">Country</label>
+			</div>
+			<div class="grid_8 omega">
+				<select id="customer-address-country" name="address[country]">
+				{% for country in countries %}
+					<option value="{{country.id}}" {% if country.id == fields.address.country %}selected="selected"{% endif %}">{{country.name}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-telephone">Telephone</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-telephone" name="address[telephone]" value="{{fields.address.telephone}}" class="inputtext" />
+			</div>
+			<div class="grid_2">
+				<label for="customer-address-name">Name</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-name" name="address[name]" value="{{fields.address.name}}" class="inputtext" placeholder="Home, Work..." />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-notes">Notes</label>
+			</div>
+			<div class="grid_14 omega">
+				<input type="text" name="address[notes]" id="customer-address-notes" value="{{fields.address.notes}}" class="inputtext longest" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		<br/>
 	
 		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
 	
 	{% else %}
 	
+		<br/>
+		
 		<div class="grid_8 alpha">
 			<h2>Orders</h2>
 		</div>

@@ -93,6 +93,27 @@ class Ecommerce_Model_Address extends Model_Application
 		return $lat_lng;
 	}
 	
+	public function create_for_new_customer($customer, $data)
+	{
+		$this->customer = $customer;
+		$this->line_1 = $data['line_1'];
+		$this->line_2 = $data['line_2'];
+		$this->line_3 = $data['line_3'];
+		$this->town = $data['town'];
+		$this->county = $data['county'];
+		$this->postcode = $data['postcode'];
+		$this->country = $data['country'];
+		$this->telephone = $data['telephone'];
+		$this->name = $data['name'];
+		$this->notes = $data['notes'];
+		$this->save();
+	
+		$customer->set_default_billing_address($this);
+		$customer->set_default_shipping_address($this);
+		
+		return $this;
+	}
+	
 	public function __toString()
 	{
 		$address_parts = array(
