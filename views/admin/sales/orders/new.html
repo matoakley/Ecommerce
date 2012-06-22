@@ -72,6 +72,8 @@
 	
 	<h2>Sales Order Items</h2>
 	
+	<input type="hidden" id="default-vat" value="{{default_vat}}" />
+	
 	<table id="sales-order-items">
 		<thead>
 			<th>Item Name</th>
@@ -79,9 +81,10 @@
 			{% if modules.stock %}
 				<th>Stock</th>
 			{% endif %}
-			<th class="tc">Unit Price</th>
-			<th class="tr">Qty</th>
-			<th class="tr">Total</th>
+			<th class="tc">Net Unit Price</th>
+			<th class="tc">Qty</th>
+			<th class="tc">VAT Rate</th>
+			<th class="tr">Net Total</th>
 			<th width="1">&nbsp;</th>
 		</thead>
 		<tbody>
@@ -91,16 +94,30 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="3">
-					<label for="sales-order-delivery-charge">Delivery charge (&pound;)</label>
+				<td colspan="5">
+					<label for="sales-order-delivery-charge">Delivery Net (&pound;)</label>
 				</td>
 				<td class="tr">
 					<input type="text" name="sales_order[delivery_charge]" id="sales-order-delivery-charge" value="{{fields.sales_order.delivery_charge|num_format(2)}}" class="inputtext shortest tr" />
 				</td>
 				<td>&nbsp;</td>
 			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Subtotal</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-subtotal">{{fields.sales_order_sub_total|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Total VAT</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-vat">{{fields.sales_order_vat|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
 			<tr id="new-sales-order-item-container">
-				<td colspan="2">
+				<td colspan="4">
 					<select id="new-sales-order-item">
 						<option value="">Select sales order item to add new row...</option>
 						{% for sku in skus %}

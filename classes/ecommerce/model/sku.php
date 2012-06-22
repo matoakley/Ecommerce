@@ -104,7 +104,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	 * @author  Matt Oakley
 	 * @return  float
 	 */
-	private function vat_rate()
+	public function vat_rate()
 	{
 		// If we are using custom VAT codes module then calculate retail cost based upon this...else use default value from config.
 		return Caffeine::modules('vat_codes') ? $this->product->vat_code->value : Kohana::config('ecommerce.vat_rate');
@@ -182,6 +182,26 @@ class Ecommerce_Model_Sku extends Model_Application
 		else
 		{
 			return $this->retail_price();
+		}
+	}
+	
+	/**
+	 * Fetch the net price that the for this SKU and Price Tier combination.
+	 *
+	 * @author  Matt Oakley
+	 * @param   Model_Price_Tier   	Tier to fetch price for
+	 * @return  float								price
+	 */
+	public function net_price_for_tier($tier)
+	{
+		$tiered_price = $this->get('tiered_prices')->where('price_tier_id', '=', $tier->id)->load();
+		if ($tiered_price->loaded() AND $tiered_price->price > 0)
+		{
+			return $tiered_price->price;
+		}
+		else
+		{
+			return $this->price;
 		}
 	}
 }

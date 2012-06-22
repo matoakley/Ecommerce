@@ -368,7 +368,9 @@ $(function(){
 			success: function(response){
 				$('table#sales-order-items tbody').append(response.html);
 				restripeRows('sales-order-items');
+				$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 				$('span#sales-order-total').html(calculateSalesOrderTotal());
+				$('span#sales-order-vat').html(calculateSalesOrderVat());
 				// Disable the sku in the select to avoid duplicate rows
 				$('select#new-sales-order-item').find('option[data-sku-id="'+response.sku.id+'"]').attr('disabled', 'disabled');
 			},
@@ -386,28 +388,53 @@ $(function(){
 		var total = number_format(unitPrice*quantity, 2);
 		if (total !== NaN){
 			row.find('span.sales-order-item-total').html(total);
+			$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 			$('span#sales-order-total').html(calculateSalesOrderTotal());
+			$('span#sales-order-vat').html(calculateSalesOrderVat());
 		}
 	}).on('click', 'a.sales-order-line-delete', function(e){
 		var skuId = $(this).parents('tr').data('sku-id');
 		$('tr[data-sku-id="'+skuId+'"]').remove();
 		restripeRows('sales-order-items');
+		$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 		$('span#sales-order-total').html(calculateSalesOrderTotal());
+		$('span#sales-order-vat').html(calculateSalesOrderVat());
 		$('select#new-sales-order-item').find('option[data-sku-id="'+skuId+'"]').removeAttr('disabled');
 	});
 	$('input#sales-order-delivery-charge').keyup(function(){
+		$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 		$('span#sales-order-total').html(calculateSalesOrderTotal());
+		$('span#sales-order-vat').html(calculateSalesOrderVat());
 	});
 	function restripeRows(tableId){
 		$('table#'+tableId+' tbody tr:even').removeClass('alternate');
 		$('table#'+tableId+' tbody tr:odd').addClass('alternate');
 	}
-	function calculateSalesOrderTotal(){
+	function calculateSalesOrderSubtotal(){
 		var total = 0.00;
 		$('span.sales-order-item-total').each(function(){
 			total += parseFloat($(this).html().replace(',', ''));
 		});
-		total += parseFloat($('input#sales-order-delivery-charge').val());
+		if ($('input#sales-order-delivery-charge').val() != ''){
+			total += parseFloat($('input#sales-order-delivery-charge').val());	
+		}
+		return number_format(total, 2);
+	}
+	function calculateSalesOrderTotal(){
+		var total = 0.00;
+		$('span.sales-order-item-total').each(function(){
+			var netTotal = $(this).html();
+			var vatRate = $(this).parents('tr').find('span.sales-order-item-vat-rate').html(); 
+			var grossTotal = parseFloat(netTotal) * ((parseFloat(vatRate) + 100) / 100);
+			total += parseFloat(grossTotal.toString().replace(',', ''));
+		});
+		if ($('input#sales-order-delivery-charge').val() != ''){
+			total += parseFloat($('input#sales-order-delivery-charge').val()) * ((parseFloat($('input#default-vat').val()) + 100) / 100);
+		}
+		return number_format(total, 2);
+	}
+	function calculateSalesOrderVat(){
+		var total = parseFloat($('span#sales-order-total').html()) - parseFloat($('span#sales-order-subtotal').html());
 		return number_format(total, 2);
 	}
 	// Asynchronous pagination for sales order addresses

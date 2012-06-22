@@ -230,6 +230,8 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			
 		$this->template->countries = Model_Country::list_active();
 		$this->template->skus = Model_Sku::list_all();
+		
+		$this->template->default_vat = Kohana::config('ecommerce.vat_rate');
 	}
 	
 	public function action_add_sales_order_line()

@@ -7,11 +7,13 @@
 		<td>{{sku.stock}}</td>
 	{% endif %}
 	<td class="tc">
-		<input type="text" class="inputtext shortest tc sales-order-item-unit-price" name="sales_order[skus][{{sku.id}}][price]" value="{% if not sku.loaded %}{{sku.price}}{% else %}{{sku.price_for_tier(customer.price_tier)|num_format(2)}}{% endif %}" />
+		<input type="text" class="inputtext shortest tc sales-order-item-unit-price" name="sales_order[skus][{{sku.id}}][price]" value="{% if not sku.loaded %}{{sku.price}}{% else %}{{sku.net_price_for_tier(customer.price_tier)|num_format(2)}}{% endif %}" />
 	</td>
-	<td class="tr">
+	<td class="tc">
 		<input type="text" class="inputtext shortest tc sales-order-item-quantity" name="sales_order[skus][{{sku.id}}][quantity]" value="{% if not sku.loaded %}{{sku.quantity}}{% else %}1{% endif %}" />
 	</td>
-	<td class="tr">&pound;<span class="sales-order-item-total">{% if not sku.loaded %}{{(sku.price*sku.quantity)|num_format(2)}}{% else %}{{sku.price_for_tier(customer.price_tier)|num_format(2)}}{% endif %}</span></td>
+	<td class="tc"><span class="sales-order-item-vat-rate">{{sku.vat_rate|num_format(2)}}</span>%</td>
+	<td class="tr">&pound;<span class="sales-order-item-total">{% if not sku.loaded %}{{(sku.price*sku.quantity)|num_format(2)}}{% else %}{{sku.net_price_for_tier(customer.price_tier)|num_format(2)}}{% endif %}</span>
+	</td>
 	<td><a href="#" class="sales-order-line-delete"><img src="/media/images/icons/delete.png" class="inline-icon" alt="" /></a></td>
 </tr>
