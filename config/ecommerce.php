@@ -36,6 +36,7 @@ return array
 		'product_options' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
 		'stock_control' => FALSE,

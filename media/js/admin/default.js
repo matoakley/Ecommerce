@@ -96,6 +96,61 @@ $(function(){
 		$('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').slideToggle('slow');
 		$('td.communication-body-container[data-communication-id="'+$(this).attr('data-communication-id')+'"]').toggleClass('active-communication-body-container');
 	});
+	
+	$('a#show-new-contact').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		$('div#new-contact').slideToggle(600, function(){
+			if ($('div#new-contact').is(':visible')) {
+				button.children('span').html('Hide New Contact');
+			} else {
+				button.children('span').html('New Contact');
+			}
+		});
+	});
+	$('input#add-contact').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		var firstname = $('input#contact-firstname');
+		var lastname = $('input#contact-lastname');
+		var email = $('input#contact-email');
+		var telephone = $('input#contact-telephone');
+		var position = $('input#contact-position');
+		var data = {
+			contact: {
+				firstname: firstname.val(),
+				lastname: lastname.val(),
+				email: email.val(),
+				telephone: telephone.val(),
+				position: position.val()
+			}
+		};
+		$.ajax({
+			url: button.attr('data-url'),
+			type: 'POST',
+			dataType: 'json',
+			data: data,
+			beforeSend: function(){
+				button.attr('disabled', 'disabled');
+				$('#add-contact-spinner').show();
+			},
+			success: function(response){
+				$('div#customer-contact-table-container').html(response.html);
+				// Reset and hide form
+				firstname.val('');
+				lastname.val('');
+				email.val('');
+				telephone.val('');
+				position.val('');
+				$('div#new-contact').slideUp(600);
+				$('a#show-new-contact').children('span').html('New Contact');
+			},
+			complete: function(){
+				$('#add-contact-spinner').hide();
+				button.removeAttr('disabled');
+			}
+		});
+	});
 
 	// Show/hide notes of customer addresses	
 	$('img.show-address-notes').live('mouseenter', function(){
@@ -110,6 +165,27 @@ $(function(){
 		$('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').slideToggle('slow');
 		$('td.address-notes-container[data-address-id="'+$(this).attr('data-address-id')+'"]');
 	});
+	
+	$('div#customer-contact-table-container').on('click', 'a.customer-contact-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			dataType: 'json',
+			beforeSend: function(){
+				button.hide();
+				$('img.custom-contact-delete-spinner[data-contact-id="'+button.data('contact-id')+'"]').show();
+			},
+			success: function(response){
+				$('div#customer-contact-table-container').html(response.html);
+			},
+			complete: function(){
+				$('img.custom-contact-delete-spinner[data-contact-id="'+button.data('contact-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
+	
 	
 	$('div#communication-date').datetimepicker({
 		showButtonPanel: false

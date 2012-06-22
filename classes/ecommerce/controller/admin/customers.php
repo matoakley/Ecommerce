@@ -99,8 +99,8 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->errors = $errors;
 	
 		$items_per_page = 20;
-		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		
+		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->addresses_pagination = Pagination::factory(array(
 			'total_items' => $customer->get('addresses')->count(),
@@ -109,9 +109,16 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
 		));
 	
-		$items_per_page = 20;
+		$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
+		$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->contacts_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('contacts')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+		));
+	
 		$page = isset($_GET['orders_page']) ? $_GET['orders_page'] : 1;
-		
 		$this->template->orders = $customer->get('orders')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->orders_pagination = Pagination::factory(array(
 			'total_items' => $customer->get('orders')->count(),
@@ -122,9 +129,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	
 		if ($this->modules['crm'])
 		{
-			$items_per_page = 20;
 			$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
-			
 			$this->template->communications = $customer->get('communications')->order_by('date', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 			$this->template->communications_pagination = Pagination::factory(array(
 				'total_items' => $customer->get('communications')->count(),
@@ -280,6 +285,86 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		echo json_encode($data);
 	}
 	
+	public function action_add_contact()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+	
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		
+		$errors = array();
+		
+		try
+		{
+			$contact = $customer->add_contact($_POST['contact']);
+			$items_per_page = 20;
+			$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
+			
+			$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+			$this->template->contacts_pagination = Pagination::factory(array(
+				'total_items' => $customer->get('contacts')->count(),
+				'items_per_page' => $items_per_page,
+				'auto_hide'	=> false,
+				'current_page'   => array('source' => 'query_string', 'key' => 'contacts_page'),
+			));
+		}
+		catch (Validate_Exception $e)
+		{
+			$errors['contact'] = $e->array->errors();
+		}
+		
+		$this->template->customer = $customer;
+		
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
+	}
+
+	public function action_delete_contact()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+		
+		// Load address through customer to avoid any mishaps
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		$contact = $customer->get('contacts')->where('id', '=', $this->request->param('contact_id'))->load();
+		
+		$contact->delete();
+	
+		$items_per_page = 20;
+		$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
+		
+		$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->contacts_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('contacts')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'contacts_page'),
+		));
+		$this->template->customer = $customer;
+	
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
+	}
+	
 	public function action_delete()
 	{
 		$this->auto_render = FALSE;
@@ -298,5 +383,43 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$customer->archive();
 		
 		$this->request->redirect($this->session->get('admin.customers.index', 'admin/customers'));
+	}
+	
+	public function action_export_to_sage()
+	{
+		$this->auto_render = FALSE;
+		
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer not found.');
+		}
+		
+		$data = array(
+			$customer->account_ref,				// Account ref
+			$customer->company,																// Account name
+			$customer->default_billing_address->line_1,				// Address line 1
+			$customer->default_billing_address->line_2,				// Address line 2
+			$customer->default_billing_address->town,					// Address town
+			$customer->default_billing_address->county,				// Address county
+			$customer->default_billing_address->postcode,			// Address postcode
+			$customer->name(),																// Contact name
+			$customer->default_billing_address->telephone,		// Telephone
+			'',																								// Fax
+		);
+		
+		$dir_name = APPPATH.'tmp/customer_export/';
+		
+		if ( ! is_dir($dir_name))
+		{
+			mkdir($dir_name, 0777, TRUE);
+		}
+		
+		$file_path = $dir_name.$customer->id.'_'.Text::random().'_'.time().'.csv';
+		$handle = fopen($file_path, 'w+');
+		fputcsv($handle, $data);
+		$this->request->send_file($file_path, $customer->account_ref.'.csv', array('deledte' => TRUE));
+		exit();
 	}
 }

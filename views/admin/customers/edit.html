@@ -34,7 +34,20 @@
 		<div class="clear"></div>
 	</div>
 
-	<h2>Customer Details</h2>
+	<br/>
+
+	<div class="grid_4 alpha">
+		<h2>Customer Details</h2>
+	</div>
+	<div class="grid_12 omega tr">
+	{% if modules.sage_exports %}
+		<a href="{% url "customer_export_to_sage", ["customer_id": customer.id] %}" class="img-button">
+			<img src="/media/images/icons/page_green.png" alt="" class="inline-icon" />
+			Export for Sage
+		</a>
+	{% endif %}
+	</div>
+	<div class="clear"></div>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
@@ -54,7 +67,19 @@
 		</div>
 		<div class="clear"></div>
 	</div>	
-		
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-email" {% if errors.customer.email %}class="error"{% endif %}>Email *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
+				class="inputtext long" />&nbsp;&nbsp;
+			<a href="mailto:{{customer.email}}">Send Email</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
 	<div class="field">
 		<div class="grid_2 alpha">
 			<label for="customer-company">Company</label>
@@ -65,12 +90,11 @@
 		</div>
 		
 		<div class="grid_2">
-			<label for="customer-email" {% if errors.customer.email %}class="error"{% endif %}>Email *</label>
+			<label for="customer-account-ref">Account #</label>
 		</div>
 		<div class="grid_8 omega">
-			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
-				class="inputtext long" />&nbsp;&nbsp;
-			<a href="mailto:{{customer.email}}">Send Email</a>
+			<input type="text" id="customer-account-ref" name="customer[account_ref]" value="{{fields.customer.account_ref}}"
+				class="inputtext" />&nbsp;&nbsp;
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -157,6 +181,27 @@
 	{{orders_pagination}}
 	
 	{% if modules.crm %}
+	
+		{# Contacts #}
+		<div class="grid_8 alpha">
+			<h2>Additional Contacts</h2>
+		</div>
+		<div class="grid_8 omega tr">
+			<a href="#" class="img-button" id="show-new-contact">
+				<img src="/images/icons/add.png" alt="" />
+				<span>New Contact</span>
+			</a>
+		</div>
+		<div class="clear"></div>
+		<div id="new-contact" class="hidden">
+			{% include "admin/customer/contacts/_form.html" %}
+		</div>
+		<div id="customer-contact-table-container">
+			{% include "admin/customer/contacts/_table.html" %}
+		</div>
+		{# End Contacts #}
+	
+		{# Addresses #}
 		<div class="grid_8 alpha">
 			<h2>Addresses</h2>
 		</div>
@@ -173,9 +218,9 @@
 		<div id="customer-address-table-container">
 			{% include "admin/customer/addresses/_table.html" %}
 		</div>
-	{% endif %}
+		{# End Addresses #}
 	
-	{% if modules.crm %}
+		{# Communications #}
 		<div class="grid_8 alpha">
 			<h2>Customer Communications</h2>	
 		</div>
@@ -190,6 +235,7 @@
 			{% include "admin/customer/communications/_form.html" %}
 		</div>
 		{% include "admin/customer/communications/_table.html" %}
+		{# End Communications #}
 	{% endif %}
 		
 </form>

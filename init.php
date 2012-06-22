@@ -6,6 +6,24 @@ Kohana::modules(Kohana::modules()+array(
 
 // Admin routes
 
+Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'export_to_sage',
+));
+
+Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_contact',
+));
+
+Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'add_contact',
+));
+
 Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'sales_orders',

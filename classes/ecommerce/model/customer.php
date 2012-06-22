@@ -27,11 +27,12 @@ class Ecommerce_Model_Customer extends Model_Application
 					),
 				)),
 				'company' => new Field_String,
+				'account_ref' => new Field_String,
 				'customer_types' => new Field_ManyToMany,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
-					),					
+					),
 				)),
 				'referred_by' => new Field_String,
 				'default_billing_address' => new Field_BelongsTo(array(
@@ -47,6 +48,15 @@ class Ecommerce_Model_Customer extends Model_Application
 				)),
 				'status' => new Field_String,
 				'price_tier' => new Field_BelongsTo,
+				'parent' => new Field_BelongsTo(array(
+					'foreign' => 'customer.id',
+					'column' => 'customer_id',
+				)),
+				'contacts' => new Field_HasMany(array(
+					'foreign' => 'customer.customer_id',
+				)),
+				'telephone' => new Field_String,
+				'position' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -230,6 +240,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->firstname = $data['firstname'];
 		$this->lastname = $data['lastname'];
 		$this->company = $data['company'];
+		$this->account_ref = $data['account_ref'];
 		$this->email = $data['email'];
 		if (isset($data['default_billing_address']))
 		{
@@ -295,5 +306,24 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
 		$this->status = 'archived';
 		return $this->save();
+	}
+	
+	/**
+	 * Creates a new Customer as a Contact of the Customer.
+	 * @author  Matt Oakley
+	 * @param   array   Contact data
+	 * @return  Customer
+	 */
+	public function add_contact($data)
+	{
+		$contact = Jelly::factory('customer');
+		$contact->parent = $this;
+		$contact->firstname = $data['firstname'];
+		$contact->lastname = $data['lastname'];
+		$contact->email = $data['email'];
+		$contact->telephone = $data['telephone'];
+		$contact->position = $data['position'];
+		$contact->status = 'active';
+		return $contact->save();
 	}
 }
