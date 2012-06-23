@@ -252,6 +252,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$data = array();
 
 		$data['html'] = Twig::factory('admin/sales/orders/_add_sales_order_line.html', array(
+			'modules' => $this->modules,
 			'sku' => $sku,
 			'customer' => $customer,
 		))->render();

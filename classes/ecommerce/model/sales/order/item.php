@@ -22,13 +22,19 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 				'product_options' => new Field_Serialized,  // Legacy Field, should not be used after v1.1.3
 				'quantity' => new Field_Integer,
 				'unit_price' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 				)),
 				'total_price' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
+				)),
+				'net_unit_price' => new Field_Float(array(
+					'places' => 4,
+				)),
+				'net_total_price' => new Field_Float(array(
+					'places' => 4,
 				)),
 				'vat_rate' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -88,10 +94,11 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->sku = $sku_object;
 		$item->product_name = $sku_object->name();
 		$item->quantity = $sku['quantity'];
-		$item->unit_price = $sku['price'];
-		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
-		$item->total_price = $sku['price'] * $sku['quantity'];
-		
+		$item->net_unit_price = $sku['price'] ;
+		$item->net_total_price = $sku['price'] * $sku['quantity'];
+		$item->vat_rate = $sku_object->vat_rate();
+		$item->unit_price = $item->net_unit_price * (($item->vat_rate + 100) / 100);
+		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);;
 		return $item->save();
 	}
 	

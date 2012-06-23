@@ -424,7 +424,7 @@ $(function(){
 		var total = 0.00;
 		$('span.sales-order-item-total').each(function(){
 			var netTotal = $(this).html();
-			var vatRate = $(this).parents('tr').find('span.sales-order-item-vat-rate').html(); 
+			var vatRate = $(this).parents('tr').find('input.sales-order-item-vat-rate').val(); 
 			var grossTotal = parseFloat(netTotal) * ((parseFloat(vatRate) + 100) / 100);
 			total += parseFloat(grossTotal.toString().replace(',', ''));
 		});

@@ -117,68 +117,11 @@
 
 <h2>Order Details</h2>
 
-<table>
-	<thead>
-		<th>Item Name</th>
-		<th class="tc">Qty</th>
-		<th class="tr">Total</th>
-	</thead>
-	<tbody>
-	{% for key, item in sales_order.items %}
-		<tr class="{{['', 'alternate']|cycle(key)}}">		
-				<td>
-				{% if item.product.loaded %}
-					<a href="/admin/products/edit/{{item.product.id}}">{{item.product_name}}</a>
-				{% else %}
-					{{item.product_name}}
-				{% endif %}
-				</td>
-			<td class="tc">{{item.quantity}}</td>
-			<td class="tr">&pound;{{item.total_price|num_format(2)}}</td>
-		</tr>
-	{% endfor %}
-	{% if sales_order.promotion_code_code %}
-		<tr>
-			<td colspan="100">
-				Promotion Code:
-				{% if sales_order.promotion_code.loaded %}
-					<a href="/admin/promotion_codes/edit/{{sales_order.promotion_code.id}}">{{sales_order.promotion_code_code}}</a>
-				{% else %}
-					{{sales_order.promotion_code_code}}
-				{% endif%}
-			</td>
-		</tr>
-	{% endif %}
-	</tbody>
-	<tfoot>
-	{% if sales_order.discount_amount > 0 %}
-		<tr>
-			<td class="tr" colspan="2">Promotional Discount</td>
-			<td class="tr">- &pound;{{sales_order.discount_amount|num_format(2)}}</td>
-		</tr>
-	{% endif %}
-		<tr>
-			<td class="tr" colspan="2">
-			{% if sales_order.delivery_option_name %}
-				{{sales_order.delivery_option_name}}
-			{% else %}
-				{{sales_order.delivery_option.name}}
-			{% endif %}
-			</td>
-			<td class="tr">
-			{% if sales_order.delivery_option_price %}
-				&pound;{{sales_order.delivery_option_price|num_format(2)}}
-			{% else %}
-				&pound;{{sales_order.delivery_option.price|num_format(2)}}
-			{% endif %}
-			</td>
-		</tr>
-		<tr>
-			<td class="tr" colspan="2"><strong>Total</strong></td>
-			<td class="tr"><strong>&pound;{{sales_order.order_total|num_format(2)}}</strong></td>
-		</tr>
-	</tfoot>
-</table>
+{% if sales_order.type == "commercial" %}
+	{% include "admin/sales/orders/_view_commercial_order_details.html" %}
+{% else %}
+	{% include "admin/sales/orders/_view_retail_order_details.html" %}
+{% endif %}
 
 <h2>Order Notes</h2>
 

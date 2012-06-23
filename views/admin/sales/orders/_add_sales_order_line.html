@@ -1,4 +1,5 @@
 <tr class="sales-order-line" data-sku-id="{{sku.id}}">
+	<input type="hidden" class="sales-order-item-vat-rate" value="{{sku.vat_rate|num_format(2)}}" />
 	<input type="hidden" name="sales_order[skus][{{sku.id}}][id]" value="{{sku.id}}" />
 	<input type="hidden" name="sales_order[skus][{{sku.id}}][name]" value="{{sku.name}}" />
 	<td>{{sku.name}}</td>
@@ -12,7 +13,9 @@
 	<td class="tc">
 		<input type="text" class="inputtext shortest tc sales-order-item-quantity" name="sales_order[skus][{{sku.id}}][quantity]" value="{% if not sku.loaded %}{{sku.quantity}}{% else %}1{% endif %}" />
 	</td>
-	<td class="tc"><span class="sales-order-item-vat-rate">{{sku.vat_rate|num_format(2)}}</span>%</td>
+	{% if modules.vat_codes %}
+		<td class="tc">{{sku.vat_rate|num_format(2)}}%</td>
+	{% endif %}
 	<td class="tr">&pound;<span class="sales-order-item-total">{% if not sku.loaded %}{{(sku.price*sku.quantity)|num_format(2)}}{% else %}{{sku.net_price_for_tier(customer.price_tier)|num_format(2)}}{% endif %}</span>
 	</td>
 	<td><a href="#" class="sales-order-line-delete"><img src="/media/images/icons/delete.png" class="inline-icon" alt="" /></a></td>

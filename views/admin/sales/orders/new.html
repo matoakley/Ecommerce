@@ -70,6 +70,16 @@
 		Find customer.
 	{% endif %}
 	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sales-order-ref">Ref.</label>
+		</div>
+		<div class="grid_4 omega">
+			<input type="text" name="sales_order[ref]" value="{{fields.sales_order.ref}}" class="inputtext short" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
 	<h2>Sales Order Items</h2>
 	
 	<input type="hidden" id="default-vat" value="{{default_vat}}" />
@@ -83,7 +93,9 @@
 			{% endif %}
 			<th class="tc">Net Unit Price</th>
 			<th class="tc">Qty</th>
-			<th class="tc">VAT Rate</th>
+			{% if modules.vat_codes %}
+				<th class="tc">VAT Rate</th>
+			{% endif %}
 			<th class="tr">Net Total</th>
 			<th width="1">&nbsp;</th>
 		</thead>
