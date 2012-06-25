@@ -8,15 +8,17 @@
 
 {% block content %}
 
-<!-- <p>
-	<a href="/admin/products/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Product
-	</a>
-</p> -->
-
 <div class="search-bar">
-	<div class="grid_4 alpha">&nbsp;</div>
+	<div class="grid_4 alpha">
+	{% if modules.sage_exports %}
+		<a href="/admin/sales_orders/export_to_sage" class="img-button">
+			<img src="/media/images/icons/page_green.png" alt="" />
+			Export to Sage
+		</a>
+	{% else %}
+		&nbsp;
+	{% endif %}
+	</div>
 	<div class="grid_12 omega tr">
 		<form>
 			<select name="status">

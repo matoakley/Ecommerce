@@ -444,7 +444,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$file_path = $dir_name.$customer->id.'_'.Text::random().'_'.time().'.csv';
 		$handle = fopen($file_path, 'w+');
 		fputcsv($handle, $data);
-		$this->request->send_file($file_path, $customer->account_ref.'.csv', array('deledte' => TRUE));
+		$this->request->send_file($file_path, $customer->account_ref.'.csv', array('delete' => TRUE));
 		exit();
 	}
 }

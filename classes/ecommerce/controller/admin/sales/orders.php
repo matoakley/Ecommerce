@@ -345,4 +345,55 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
     $html2pdf->WriteHTML($this->template->render());
     $html2pdf->Output('Delivery Note '.$sales_order->id.'.pdf', 'D');
 	}
+	
+	public function action_export_to_sage()
+	{
+		$this->auto_render = FALSE;
+
+		$sales_orders = Jelly::select('sales_order')->where('status', '=', 'invoice_sent')->execute();
+		
+		$data = array();
+		
+		foreach ($sales_orders as $sales_order)
+		{
+			$company_name = $sales_order->customer->company != '' ? $sales_order->customer->company : $sales_order->customer->name();
+		
+			$sales_order_data = array(
+				'SI',
+				$sales_order->customer->account_ref,
+				$sales_order->customer->custom_field('nominal-code'),
+				0,
+				date('d/m/Y', $sales_order->created),
+				'INV-'.$sales_order->id,
+				$company_name,
+				number_format($sales_order->order_subtotal, 2),
+				'T1',
+				number_format($sales_order->order_vat, 2),
+			);
+		
+			$data[] = $sales_order_data;
+		}
+		
+		$dir_name = APPPATH.'tmp/sales_orders_export/';
+		
+		if ( ! is_dir($dir_name))
+		{
+			mkdir($dir_name, 0777, TRUE);
+		}
+		
+		$file_path = $dir_name.Text::random().'_'.time().'.csv';
+		$handle = fopen($file_path, 'w+');
+		foreach ($data as $line)
+		{
+			fputcsv($handle, $line);	
+		}
+		
+		foreach ($sales_orders as $sales_order)
+		{
+			$sales_order->update_status('complete');
+		}
+		
+		$this->request->send_file($file_path, 'Sales_Order_Export_'.date('Y-m-d').'.csv', array('delete' => TRUE));
+		exit();
+	}
 }
