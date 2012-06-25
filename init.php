@@ -1,10 +1,21 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-Kohana::modules(Kohana::modules()+array(
-	'html2pdf' => 'modules/html2pdf',
-));
+// Load the Twig class autoloader
+require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
 
 // Admin routes
+
+Route::set('sales_order_generate_delivery_note', 'admin/sales_orders/<sales_order_id>/generate_delivery_note')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_delivery_note',
+));
+
+Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/generate_invoice')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_invoice',
+));
 
 Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
 	'directory' => 'admin',

@@ -101,6 +101,18 @@
 		<div class="clear"></div>
 	</div>
 	
+	{% if modules.commercial_sales_orders %}
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-invoice-terms">Invoice Terms</label>
+			</div>
+			<div class="grid_14 omega">
+				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" value="{{fields.customer.invoice_terms}}" /> days
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endif %}
+	
 	<div class="field">
 		<div class="grid_2 alpha">
 			<label for="customer-type">Type</label>

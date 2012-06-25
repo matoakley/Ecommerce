@@ -60,6 +60,12 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		{
 			$fields['customer']['price_tier'] = $customer->price_tier->id;
 		}
+		
+		if ( ! $customer->loaded())
+		{
+			$fields['customer']['invoice_terms'] = Kohana::config('ecommerce.default_invoice_terms');
+		}
+		
 		$errors = array();
 		
 		if ($_POST)
@@ -94,7 +100,6 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			
 				if (isset($_POST['address']))
 				{
-					echo Kohana::debug($_POST['address']);
 					$address->create_for_new_customer($customer, $_POST['address']);
 				}
 			

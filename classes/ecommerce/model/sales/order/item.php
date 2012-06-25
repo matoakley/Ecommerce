@@ -117,4 +117,9 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		
 		return $item->save();
 	}
+	
+	public function vat()
+	{
+		return $this->total_price - $this->net_total_price;
+	}
 }

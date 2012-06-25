@@ -74,8 +74,14 @@
 		<div class="grid_2 alpha">
 			<label for="sales-order-ref">Ref.</label>
 		</div>
-		<div class="grid_4 omega">
+		<div class="grid_4">
 			<input type="text" name="sales_order[ref]" value="{{fields.sales_order.ref}}" class="inputtext short" />
+		</div>
+		<div class="grid_2">
+			<label for="sales-order-invoice-terms">Invoice Terms</label>
+		</div>
+		<div class="grid_8 omega">
+			<input type="text" name="sales_order[invoice_terms]" value="{{fields.sales_order.invoice_terms}}" class="inputtext shortest" /> days
 		</div>
 		<div class="clear"></div>
 	</div>

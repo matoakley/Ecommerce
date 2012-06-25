@@ -57,7 +57,18 @@
 			</div>
 			<div class="grid_6 omega">
 				{{sales_order.type|humanize|title}}
-				<a href="#" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Download Invoice</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="field">
+			<div class="grid_2 alpha tr">
+				<strong>Download</strong>
+			</div>
+			<div class="grid_2">
+				<a href="{% url "sales_order_generate_invoice", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Invoice</a>
+			</div>
+			<div class="grid_4 omega">
+				<a href="{% url "sales_order_generate_delivery_note", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Delivery Note</a>
 			</div>
 			<div class="clear"></div>
 		</div>

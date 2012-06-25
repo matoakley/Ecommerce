@@ -182,6 +182,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			'sales_order' => array(
 				'delivery_address' => $customer->default_shipping_address->id,
 				'delivery_charge' => 0,
+				'invoice_terms' => $customer->invoice_terms,
 			),
 		);
 		$errors = array();
@@ -284,5 +285,43 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		);
 		
 		echo json_encode($data);
+	}
+	
+	public function action_generate_invoice()
+	{
+		$this->auto_render = FALSE;
+	
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded())
+		{
+			throw new Kohana_Exception('Sales Order not found');
+		}
+		
+		$this->template->base_url = URL::site();
+		$this->template->sales_order = $sales_order;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($this->template->render());
+    $html2pdf->Output('Invoice '.$sales_order->id.'.pdf', 'D');
+	}
+	
+	public function action_generate_delivery_note()
+	{
+		$this->auto_render = FALSE;
+	
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded())
+		{
+			throw new Kohana_Exception('Sales Order not found');
+		}
+		
+		$this->template->base_url = URL::site();
+		$this->template->sales_order = $sales_order;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($this->template->render());
+    $html2pdf->Output('Delivery Note '.$sales_order->id.'.pdf', 'D');
 	}
 }

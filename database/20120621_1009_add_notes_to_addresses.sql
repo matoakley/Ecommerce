@@ -22,3 +22,7 @@ ALTER TABLE `sales_order_items` CHANGE COLUMN `unit_price` `unit_price` decimal(
 
 -- Record order subtotal and vat total. Also, store order total with 4 decimal places.
 ALTER TABLE `sales_orders` CHANGE COLUMN `order_total` `order_total` decimal(10,4) NOT NULL, ADD COLUMN `order_vat` decimal(10,4) AFTER `user_id`, ADD COLUMN `order_subtotal` decimal(10,4) AFTER `order_vat`;
+
+-- Record invoice terms against customers and sales orders
+ALTER TABLE `customers` ADD COLUMN `invoice_terms` int AFTER `account_ref`;
+ALTER TABLE `sales_orders` ADD COLUMN `invoice_terms` int AFTER `order_subtotal`;

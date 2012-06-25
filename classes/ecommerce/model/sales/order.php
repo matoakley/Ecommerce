@@ -59,6 +59,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				)),
 				'ref' => new Field_String,
 				'user' => new Field_BelongsTo,
+				'invoice_terms' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -258,6 +259,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = Request::$client_ip;
 		$sales_order->ref = $data['ref'];
 		$sales_order->user = Auth::instance()->get_user();
+		$sales_order->invoice_terms = $data['invoice_terms'];
 		$sales_order->save();
 		
 		foreach ($data['skus'] as $sku)

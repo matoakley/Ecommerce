@@ -14,6 +14,8 @@ return array
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
 	
+	'default_invoice_terms' => 30,
+	
 	'pagination' => array(
 		'products' => 10,
 		'blog_posts' => 10,
