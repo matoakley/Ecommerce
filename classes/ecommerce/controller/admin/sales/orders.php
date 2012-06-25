@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Application
+{
 	function before()
 	{
 		if ( ! Kohana::config('ecommerce.modules.sales_orders'))
@@ -12,14 +12,19 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		parent::before();
 	}
 	
-	function action_index()
+	function action_index($filters = NULL)
 	{				
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$filter_by_type = (isset($_GET['type']) AND $_GET['type'] != '') ? 'type:'.$_GET['type'] : '';
-		$filter_by_status = (isset($_GET['status']) AND $_GET['status'] != '') ? 'status:'.$_GET['status'] : '';
+		if ( ! isset($filters))
+		{
+			$filters = array();
+		}
 
-		$search = Model_Sales_Order::search(array($filter_by_type, $filter_by_status), $items, array('created' => 'DESC'));
+		$filters[] = (isset($_GET['type']) AND $_GET['type'] != '') ? 'type:'.$_GET['type'] : '';
+		$filters[] = (isset($_GET['status']) AND $_GET['status'] != '') ? 'status:'.$_GET['status'] : '';
+
+		$search = Model_Sales_Order::search($filters, $items, array('created' => 'DESC'));
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
@@ -207,6 +212,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			),
 		);
 		$errors = array();
+		
+		$redirect_to = $this->session->get('admin.sales_orders.index', 'admin/sales_orders');
+		$this->template->cancel_url = $redirect_to;
 		
 		if ($_POST)
 		{
