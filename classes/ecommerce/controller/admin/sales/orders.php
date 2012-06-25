@@ -38,7 +38,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$this->template->items = $items;
 		$this->template->types = Model_Sales_Order::$types;
 		$this->template->filtered_by_type = (isset($_GET['type']) AND $_GET['type'] != '') ? $_GET['type'] : FALSE;
-		$this->template->statuses = Model_Sales_Order::$statuses;
+		$statuses = Arr::merge(Model_Sales_Order::$statuses['retail'], Model_Sales_Order::$statuses['commercial']);
+		sort($statuses);
+		$this->template->statuses = $statuses;
 		$this->template->filtered_by_status = (isset($_GET['status']) AND $_GET['status'] != '') ? $_GET['status'] : FALSE;
 
 	}
