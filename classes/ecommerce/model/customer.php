@@ -223,7 +223,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	 */
 	public function name()
 	{
-		return $this->firstname.' '.$this->lastname;
+		if ($this->firstname != '')
+		{
+			return $this->firstname.' '.$this->lastname;
+		}
+		elseif ($this->company != '')
+		{
+			return $this->company; 
+		}
 	}
 	
 	public function add_communication($data)

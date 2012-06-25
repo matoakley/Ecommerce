@@ -75,18 +75,37 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		}
 		
 		$this->template->sales_order = $sales_order;
-		$this->template->order_statuses = Model_Sales_Order::$statuses;
+		$this->template->order_statuses = Model_Sales_Order::$statuses[$sales_order->type];
 	}
 	
-	public function action_complete_and_send_email($id = FALSE)
+	public function action_complete_and_send_email()
 	{
 		$this->auto_render = FALSE;
 	
-		$sales_order = Model_Sales_Order::load($id);
+		$sales_order = Model_Sales_Order::load($this->request->param('id'));
 	
-		if ($sales_order->loaded() AND in_array($sales_order->status, array('payment_received', 'invoice_generated')))
+		if ($sales_order->loaded() AND $sales_order->status = 'payment_received')
 		{
 			$sales_order->update_status('complete')->send_shipped_email();
+			echo 'ok';
+		}
+		else
+		{
+			echo 'error';
+		}
+		
+		exit;
+	}
+	
+	public function action_email_invoice()
+	{
+		$this->auto_render = FALSE;
+		
+		$sales_order = Model_Sales_Order::load($this->request->param('id'));
+	
+		if ($sales_order->loaded() AND $sales_order->status = 'invoice_generated')
+		{
+			$sales_order->update_status('invoice_sent')->send_invoice();
 			echo 'ok';
 		}
 		else

@@ -87,11 +87,17 @@
 				{% endfor %}
 				</select>
 
-				{% if sales_order.status == 'payment_received' or sales_order.status == 'invoice_generated' %}
+				{% if sales_order.status == 'payment_received' %}
 					<a href="#" id="complete-and-email" data-url="/admin/sales_orders/complete_and_send_email/{{sales_order.id}}">
 						<img src="/images/icons/tick.png" alt="" class="inline-icon" />
 						<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
 						Complete &amp; Send Email
+					</a>
+				{% elseif sales_order.status == 'invoice_generated' and sales_order.customer.email %}
+					<a href="#" id="email-invoice" data-url="/admin/sales_orders/email_invoice/{{sales_order.id}}">
+						<img src="/images/icons/email_go.png" alt="" class="inline-icon" />
+						<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden" id="ajax-spinner" />
+						Email Invoice
 					</a>
 				{% endif %}
 			</div>

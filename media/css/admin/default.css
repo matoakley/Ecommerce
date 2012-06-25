@@ -279,7 +279,7 @@ span.status_tag.awaiting_payment {
 	background-color:orange;
 }
 
-span.status_tag.payment_received {
+span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
 }
 

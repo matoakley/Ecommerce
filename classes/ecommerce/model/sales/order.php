@@ -75,15 +75,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	}
 
 	public static $statuses = array(
-		'awaiting_payment',
-		'fraud_shield_review', // HSBC specific
-		'payment_received',
-		'complete',
-		'order_cancelled',
-		'problem_occurred',
-		// Commercial specific
-		'open',
-		'invoice_generated',
+		'retail' => array(
+			'awaiting_payment',
+			'problem_occurred',
+			'payment_received',
+			'complete',
+		),
+		'commercial' => array(
+			'invoice_generated',
+			'invoice_sent',
+			'complete',
+		),	
 	);
 	
 	public static $searchable_fields = array(
@@ -325,7 +327,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function update_status($status)
 	{
-		if (in_array($status, self::$statuses))
+		if (in_array($status, self::$statuses[$this->type]))
 		{
 			$user = Auth::instance()->get_user();
 			if (is_object($user) AND $user->loaded())
@@ -368,5 +370,30 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function add_note($text = FALSE, $is_system = FALSE)
 	{
 		return Model_Sales_Order_Note::add_note($this, $text, $is_system);
+	}
+	
+	public function send_invoice()
+	{
+		$email = Email::connect();
+		
+		$content = Twig::factory('emails/invoice.html');
+		$content->sales_order = $this;
+		$content->site_name = Kohana::config('ecommerce.site_name');
+		
+		$pdf_template = Twig::factory('admin/sales/orders/generate_invoice');
+		$pdf_template->base_url = URL::site();
+		$pdf_template->sales_order = $this;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($pdf_template->render());
+
+		$message = Swift_Message::newInstance('Your invoice from '.Kohana::config('ecommerce.site_name'), $content, 'text/html', 'utf-8');
+		$message->setFrom(array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')))
+						->addTo($this->customer->email, $this->customer->firstname.' '.$this->customer->lastname)
+						->attach(Swift_Attachment::newInstance($html2pdf->Output('', TRUE), 'Invoice '.$this->id.'.pdf', 'application/pdf'));
+						
+		$email->send($message);
+		
+		return $this;
 	}
 }

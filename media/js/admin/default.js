@@ -473,6 +473,26 @@ $(function(){
 			});
 		}
 	});
+	$('#email-invoice').click(function(e){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to email the invoice to the customer?')) {
+			$.ajax({
+				url: $(this).data('url'),
+				type: 'GET',
+				beforeSend: function(){
+					$('#email-invoice img').hide();
+					$('#ajax-spinner').show();
+				},
+				success: function(response){
+					if (response == 'ok')
+					{
+						$('#sales-order-status').val('invoice_sent');
+						$('#email-invoice').hide();
+					}
+				}
+			});
+		}
+	});
 	$('#add-sales-order-note').click(function(){
 		var button = $(this);
 		$.ajax({
