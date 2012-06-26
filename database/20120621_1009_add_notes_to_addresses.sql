@@ -1,8 +1,8 @@
 -- Add notes field to addresses
-ALTER TABLE `addresses` DROP COLUMN `notes`, ADD COLUMN `notes` varchar(255) AFTER `deleted`;
+ALTER TABLE `addresses` ADD COLUMN `notes` varchar(255);
 
 -- Add line 3 to addresses
-ALTER TABLE `addresses` DROP COLUMN `line_3`, ADD COLUMN `line_3` varchar(255) AFTER `notes`;
+ALTER TABLE `addresses` ADD COLUMN `line_3` varchar(255);
 
 -- Add parent/child relationship to customers
 ALTER TABLE `customers` ADD COLUMN `customer_id` int AFTER `price_tier_id`;
