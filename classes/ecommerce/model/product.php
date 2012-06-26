@@ -15,7 +15,6 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'copy',
 				)),
 				'slug' => new Field_String(array(
-					'unique' => TRUE,
 					'on_copy' => 'clear',
 					'callbacks' => array(
 						'slug_valid' => array('Model_Product', '_is_slug_valid'),
