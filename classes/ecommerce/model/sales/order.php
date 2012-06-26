@@ -60,6 +60,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'ref' => new Field_String,
 				'user' => new Field_BelongsTo,
 				'invoice_terms' => new Field_Integer,
+				'exported_to_sage' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -395,5 +398,16 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$email->send($message);
 		
 		return $this;
+	}
+	
+	public function update($data)
+	{
+		// Only update the status if it has actually changed
+		if ($this->status != $data['status'])
+		{
+			$this->update_status($data['status']);
+		}
+	
+		return $this->save();
 	}
 }

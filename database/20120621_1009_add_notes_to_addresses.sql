@@ -28,4 +28,4 @@ ALTER TABLE `customers` ADD COLUMN `invoice_terms` int AFTER `account_ref`;
 ALTER TABLE `sales_orders` ADD COLUMN `invoice_terms` int AFTER `order_subtotal`;
 
 -- Track whether sales order has been exported to Sage
-ALTER TABLE `sales_orders` ADD COLUMN `exported_to_sage` tinyint(1) AFTER `invoice_terms`;
+ALTER TABLE `sales_orders` ADD COLUMN `exported_to_sage` datetime;

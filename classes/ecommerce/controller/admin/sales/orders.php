@@ -50,11 +50,11 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 
 	}
 	
-	function action_view($id = FALSE)
+	function action_view()
 	{
-		$sales_order = Model_Sales_Order::load($id);
+		$sales_order = Model_Sales_Order::load($this->request->param('id'));
 	
-		if ($id AND ! $sales_order->loaded())
+		if (! $sales_order->loaded())
 		{
 			throw new Kohana_Exception('Sales Order could not be found.');
 		}
@@ -64,11 +64,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		if ($_POST)
 		{
-			// Only update the status if it has actually changed
-			if ($sales_order->status != $_POST['sales_order']['status'])
-			{
-				$sales_order->update_status($_POST['sales_order']['status']);
-			}
+			$sales_order->update($_POST['sales_order']);
 			
 			// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 			if (isset($_POST['save_exit']))
@@ -358,7 +354,12 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	{
 		$this->auto_render = FALSE;
 
-		$sales_orders = Jelly::select('sales_order')->where('status', '=', 'invoice_sent')->execute();
+		if ( ! $this->modules['sage_exports'])
+		{
+			throw new Kohana_Exception('Module is not enabled.');
+		}
+
+		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent', 'complete'))->where('exported_to_sage', 'IS', NULL)->execute();
 		
 		$data = array();
 		
@@ -382,26 +383,31 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			$data[] = $sales_order_data;
 		}
 		
-		$dir_name = APPPATH.'tmp/sales_orders_export/';
+		$dir_name = APPPATH.'exports/sage/';
 		
 		if ( ! is_dir($dir_name))
 		{
 			mkdir($dir_name, 0777, TRUE);
 		}
 		
-		$file_path = $dir_name.Text::random().'_'.time().'.csv';
+		$filename = 'Sales_Order_Export_'.date('Y-m-d').'.csv';
+		$file_path = $dir_name.$filename;
 		$handle = fopen($file_path, 'w+');
 		foreach ($data as $line)
 		{
 			fputcsv($handle, $line);	
 		}
 		
+		$export_timestamp = time();
+		
 		foreach ($sales_orders as $sales_order)
 		{
 			$sales_order->update_status('complete');
+			$sales_order->exported_to_sage = $export_timestamp;
+			$sales_order->save();
 		}
 		
-		$this->request->send_file($file_path, 'Sales_Order_Export_'.date('Y-m-d').'.csv', array('delete' => TRUE));
+		$this->request->send_file($file_path, $filename, array('delete' => FALSE));
 		exit();
 	}
 }

@@ -1,7 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-// Load the Twig class autoloader
+// Load the HTML2PDF class autoloader
 require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
+// Load the PHPExcel class autoloader
+require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
 
 // Admin routes
 

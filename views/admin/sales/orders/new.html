@@ -139,7 +139,7 @@
 					<select id="new-sales-order-item">
 						<option value="">Select sales order item to add new row...</option>
 						{% for sku in skus %}
-							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{{sku.name}}</option>
+							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{% if sku.sku %}{{sku.sku}} - {% endif %}{{sku.name}}</option>
 						{% endfor %}
 					</select>
 					<img src="/media/images/admin/ajax-loader.gif" alt="Loading..." class="hidden" id="new-sales-order-item-spinner" />
