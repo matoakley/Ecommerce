@@ -153,6 +153,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
+		$sales_order->type = 'retail';
 		
 		$sales_order->save();
 		
