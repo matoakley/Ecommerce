@@ -175,7 +175,10 @@ class Ecommerce_Model_Address extends Model_Application
 		$address->county = $data['county'];
 		$address->postcode = $data['postcode'];
 		$address->country = $data['country'];
-		$address->name = $data['name'];
+		if (isset($data['name']))
+		{
+			$address->name = $data['name'];
+		}
 
 		if (isset($data['line_3']))
 		{
