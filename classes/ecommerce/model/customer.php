@@ -16,16 +16,8 @@ class Ecommerce_Model_Customer extends Model_Application
 				'orders' => new Field_HasMany(array(
 					'foreign' => 'sales_order.customer_id',
 				)),
-				'firstname' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
-				'lastname' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
+				'firstname' => new Field_String,
+				'lastname' => new Field_String,
 				'company' => new Field_String,
 				'account_ref' => new Field_String,
 				'customer_types' => new Field_ManyToMany,
