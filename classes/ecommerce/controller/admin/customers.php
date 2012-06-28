@@ -349,6 +349,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$data = array(
 			'html' => $this->template->render(),
+			'errors' => $errors,
 		);
 		
 		echo json_encode($data);
