@@ -108,7 +108,8 @@ class Ecommerce_Model_Customer extends Model_Application
 		'search' => array(
 			'firstname',
 			'lastname',
-			'account_ref'
+			'account_ref',
+			'company',
 		),
 	);
 
