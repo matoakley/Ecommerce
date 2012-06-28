@@ -47,7 +47,6 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		sort($statuses);
 		$this->template->statuses = $statuses;
 		$this->template->filtered_by_status = (isset($_GET['status']) AND $_GET['status'] != '') ? $_GET['status'] : FALSE;
-
 	}
 	
 	function action_view()
@@ -191,9 +190,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$items_per_page = 5;
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		
-		$this->template->addresses = $customer->get('addresses')->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->addresses_pagination = Pagination::factory(array(
-			'total_items' => $customer->get('addresses')->count(),
+			'total_items' => $customer->get('addresses')->where('archived', 'IS', NULL)->count(),
 			'items_per_page' => $items_per_page,
 			'auto_hide'	=> false,
 			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),

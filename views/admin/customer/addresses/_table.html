@@ -13,10 +13,10 @@
 		{% set row_class = ['', 'alternate']|cycle(key) %}
 		<tr class="{{row_class}}">
 			<td class="tc">
-				<input type="radio" name="customer[default_billing_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_billing_address %}checked="checked"{% endif %}{% else %}{% if customer.default_billing_address == address.id %}checked="checked"{% endif %}{% endif %} />
+				<input type="radio" name="customer[default_billing_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_billing_address %}checked="checked"{% endif %}{% else %}{% if customer.default_billing_address.id == address.id %}checked="checked"{% endif %}{% endif %} />
 			</td>
 			<td class="tc">
-				<input type="radio" name="customer[default_shipping_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_shipping_address %}checked="checked"{% endif %}{% else %}{% if customer.default_shipping_address == address.id %}checked="checked"{% endif %}{% endif %} />
+				<input type="radio" name="customer[default_shipping_address]" value="{{address.id}}" {% if fields %}{% if address.id == fields.customer.default_shipping_address %}checked="checked"{% endif %}{% else %}{% if customer.default_shipping_address.id == address.id %}checked="checked"{% endif %}{% endif %} />
 			</td>
 			<td class="tc">{{address.name}}</td>
 			<td class="tr">{{address.human_string}}</td>

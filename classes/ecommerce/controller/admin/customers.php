@@ -128,7 +128,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->addresses_pagination = Pagination::factory(array(
-			'total_items' => $customer->get('addresses')->count(),
+			'total_items' => $customer->get('addresses')->where('archived', 'IS', NULL)->count(),
 			'items_per_page' => $items_per_page,
 			'auto_hide'	=> false,
 			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
@@ -296,7 +296,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
 		$this->template->addresses_pagination = Pagination::factory(array(
-			'total_items' => $customer->get('addresses')->count(),
+			'total_items' => $customer->get('addresses')->where('archived', 'IS', NULL)->count(),
 			'items_per_page' => $items_per_page,
 			'auto_hide'	=> false,
 			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
