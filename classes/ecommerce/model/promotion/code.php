@@ -153,7 +153,7 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		$this->code = $data['code'];
 		$this->description = $data['description'];
 		$this->status = $data['status'];
-		$this->run_indefinitely = ! isset($data['run_indefinitely']);
+		$this->run_indefinitely = isset($data['run_indefinitely']);
 		if ( ! $this->run_indefinitely)
 		{
 			$this->start_date = $data['start_date'];
