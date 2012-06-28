@@ -29,11 +29,7 @@ class Ecommerce_Model_Customer extends Model_Application
 				'company' => new Field_String,
 				'account_ref' => new Field_String,
 				'customer_types' => new Field_ManyToMany,
-				'email' => new Field_Email(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
+				'email' => new Field_Email,
 				'referred_by' => new Field_String,
 				'default_billing_address' => new Field_BelongsTo(array(
 					'foreign' => 'address.id',
