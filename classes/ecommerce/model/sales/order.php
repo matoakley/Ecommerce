@@ -83,11 +83,13 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			'problem_occurred',
 			'payment_received',
 			'complete',
+			'order_cancelled',
 		),
 		'commercial' => array(
 			'invoice_generated',
 			'invoice_sent',
 			'complete',
+			'order_cancelled',
 		),	
 	);
 	
