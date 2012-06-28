@@ -279,8 +279,12 @@ span.status_tag.awaiting_payment {
 	background-color:orange;
 }
 
-span.status_tag.payment_received {
+span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
+}
+
+span.status_tag.invoice_sent {
+	background-color:#2713da;
 }
 
 span.status_tag.order_cancelled {
@@ -386,6 +390,15 @@ a.delete-button {
 
 a.delete-button:hover {
 	color:red;
+}
+
+a.archive-button {
+	color:#FF7C14;
+	margin-right:10px;
+}
+
+a.archive-button:hover {
+	color:#FF7C14;
 }
 
 a.clone-button {
@@ -512,4 +525,8 @@ table#sales-order-items tfoot {
 table#sales-order-items tfoot td {
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+div.search-bar {
+	margin-bottom: 10px;
 }

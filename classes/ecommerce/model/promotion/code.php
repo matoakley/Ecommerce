@@ -57,6 +57,21 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+			'type' => array(
+				'field' => 'type',
+			),
+		),
+		'search' => array(
+			'code',
+			'description',
+		),
+	);
+	
 	public static $statuses = array(
 		'active', 'disabled',
 	);

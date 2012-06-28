@@ -52,6 +52,18 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		'product',
 	);
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'object' => array(
+				'field' => 'object',
+			),
+		),
+		'search' => array(
+			'name',
+			'tag',
+		),
+	);
+	
 	public static function _check_valid_object(Validate $array, $field)
 	{	
 		if ( ! in_array($array[$field], self::$objects))

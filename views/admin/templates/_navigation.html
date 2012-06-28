@@ -87,12 +87,15 @@
 		
 		<li><a href="#">System</a>
 			<ul>
+			{% if modules.custom_fields %}
+				<li><a href="/admin/custom_fields">Custom Fields</a></li>
+			{% endif %}			
 			{% if modules.users %}
 				<li><a href="/admin/users">System Users</a></li>
 			{% endif %}
-			{% if modules.custom_fields %}
-				<li><a href="/admin/custom_fields">Custom Fields</a></li>
-			{% endif %}
+			{% if modules.vat_codes %}
+				<li><a href="/admin/vat_codes">VAT Codes</a></li>
+			{% endif %}			
 			</ul>
 		</li>
 	</ul>

@@ -47,7 +47,7 @@ class Ecommerce_Model_Application extends Jelly_Model
 		return $result;
 	}
 	
-	public static function search($conditions = array(), $items = FALSE, $order = FALSE)
+	public static function search($conditions = array(), $items = FALSE, $order = FALSE, $include_archived = FALSE)
 	{
 		$data = array();
 		
@@ -105,6 +105,13 @@ class Ecommerce_Model_Application extends Jelly_Model
 			}
 			
 			$results->where($class::$searchable_fields['filtered'][$field]['field'], '=' , $value);
+		}
+		
+		$model = new $class;
+		
+		if ( ! $include_archived AND $model->meta()->fields('status'))
+		{
+			$results->where('status', '<>', 'archived');
 		}
 		
 		$data['count_all'] = $results->count();

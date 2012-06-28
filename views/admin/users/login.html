@@ -5,8 +5,8 @@
 	<title>{{site_name}} Ecommerce Management System</title> 
 	<link rel="stylesheet" href="/media/css/admin/reset.css" type="text/css" /> 
 	<link rel="stylesheet" href="/media/css/admin/960.css" type="text/css" /> 
-	<link rel="stylesheet" href="/css/text.css" type="text/css" /> 
-	<link rel="stylesheet" href="/media/css/admin/login.css" type="text/css" /> 
+	<link rel="stylesheet" href="/css/text.css?v=1" type="text/css" /> 
+	<link rel="stylesheet" href="/media/css/admin/login.css?v=1" type="text/css" /> 
 </head> 
 <body> 
 	<div class="container_16"> 
@@ -25,6 +25,10 @@
 		
 					
 					<p class="tc"><em>Access to this area is restricted to {{site_name}} employees only.</em></p> 		
+		
+					{% if error %}
+						<p class="tc error"><em>Email/Password combination was incorrect.</em></p>
+					{% endif %}
 		
 					<form method="POST"> 
 						<div class="field"> 

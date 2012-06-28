@@ -16,6 +16,7 @@ class Ecommerce_Model_Address extends Model_Application
 				'house_name' => new Field_String,
 				'line_1' => new Field_String,
 				'line_2' => new Field_String,
+				'line_3' => new Field_String,
 				'town' => new Field_String,
 				'county' => new Field_String,
 				'postcode' => new Field_String,
@@ -31,6 +32,7 @@ class Ecommerce_Model_Address extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 				'name' => new Field_String,
+				'notes' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -91,11 +93,33 @@ class Ecommerce_Model_Address extends Model_Application
 		return $lat_lng;
 	}
 	
+	public function create_for_new_customer($customer, $data)
+	{
+		$this->customer = $customer;
+		$this->line_1 = $data['line_1'];
+		$this->line_2 = $data['line_2'];
+		$this->line_3 = $data['line_3'];
+		$this->town = $data['town'];
+		$this->county = $data['county'];
+		$this->postcode = $data['postcode'];
+		$this->country = $data['country'];
+		$this->telephone = $data['telephone'];
+		$this->name = $data['name'];
+		$this->notes = $data['notes'];
+		$this->save();
+	
+		$customer->set_default_billing_address($this);
+		$customer->set_default_shipping_address($this);
+		
+		return $this;
+	}
+	
 	public function __toString()
 	{
 		$address_parts = array(
 			$this->line_1,
 			$this->line_2,
+			$this->line_3,
 			$this->town,
 			$this->county,
 			// DON'T PUT POSTCODE HERE, IT BREAKS THE GEOCODE LOOKUP
@@ -123,6 +147,7 @@ class Ecommerce_Model_Address extends Model_Application
 		$address_parts = array(
 			$this->line_1,
 			$this->line_2,
+			$this->line_3,
 			$this->town,
 			$this->county,
 			$this->postcode,
@@ -150,11 +175,24 @@ class Ecommerce_Model_Address extends Model_Application
 		$address->county = $data['county'];
 		$address->postcode = $data['postcode'];
 		$address->country = $data['country'];
-		$address->name = $data['name'];
+		if (isset($data['name']))
+		{
+			$address->name = $data['name'];
+		}
+
+		if (isset($data['line_3']))
+		{
+			$address->line_3 = $data['line_3'];
+		}
 		
 		if (isset($data['telephone']))
 		{
 			$address->telephone = $data['telephone'];
+		}
+		
+		if (isset($data['notes']))
+		{
+			$address->notes = $data['notes'];
 		}
 	
 		return $address->save();
@@ -168,6 +206,16 @@ class Ecommerce_Model_Address extends Model_Application
 		$this->county = $data['county'];
 		$this->postcode = $data['postcode'];
 		$this->telephone = $data['telephone'];
+		
+		if (isset($data['line_3']))
+		{
+			$this->line_3 = $data['line_3'];
+		}
+		
+		if (isset($data['notes']))
+		{
+			$this->notes = $data['notes'];
+		}
 	
 		return $this->save();
 	}

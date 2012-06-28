@@ -55,7 +55,6 @@ class Ecommerce_Model_Sku extends Model_Application
 		$sku->stock = 0;
 		$sku->status = 'disabled';
 		$sku->commercial_only = FALSE;
-		
 		return $sku->save();
 	}
 	
@@ -99,18 +98,32 @@ class Ecommerce_Model_Sku extends Model_Application
 	}
 	
 	/**
+	 * Calculates the VAT rate for the product, taking into account whether VAT codes
+	 * module has been enabled
+	 *
+	 * @author  Matt Oakley
+	 * @return  float
+	 */
+	public function vat_rate()
+	{
+		// If we are using custom VAT codes module then calculate retail cost based upon this...else use default value from config.
+		return Caffeine::modules('vat_codes') ? $this->product->vat_code->value : Kohana::config('ecommerce.vat_rate');
+	}
+	
+	/**
 	 * Returns the Retail Price of a product after adding VAT.
 	 *
+	 * @author  Matt Oakley
 	 * @return  float
 	 */
 	public function retail_price()
 	{
-		return Currency::add_tax($this->price, Kohana::config('ecommerce.vat_rate'));
+		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
 	public function update($data)
 	{
-		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), Kohana::config('ecommerce.vat_rate'));
+		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -154,6 +167,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	
 	/**
 	 * Fetch the price that the for this SKU and Price Tier combination.
+	 *
 	 * @author  Matt Oakley
 	 * @param   Model_Price_Tier   	Tier to fetch price for
 	 * @return  float								price
@@ -168,6 +182,26 @@ class Ecommerce_Model_Sku extends Model_Application
 		else
 		{
 			return $this->retail_price();
+		}
+	}
+	
+	/**
+	 * Fetch the net price that the for this SKU and Price Tier combination.
+	 *
+	 * @author  Matt Oakley
+	 * @param   Model_Price_Tier   	Tier to fetch price for
+	 * @return  float								price
+	 */
+	public function net_price_for_tier($tier)
+	{
+		$tiered_price = $this->get('tiered_prices')->where('price_tier_id', '=', $tier->id)->load();
+		if ($tiered_price->loaded() AND $tiered_price->price > 0)
+		{
+			return $tiered_price->price;
+		}
+		else
+		{
+			return $this->price;
 		}
 	}
 }

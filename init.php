@@ -1,10 +1,41 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-Kohana::modules(Kohana::modules()+array(
-	'html2pdf' => 'modules/html2pdf',
-));
+// Load the HTML2PDF class autoloader
+require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
+// Load the PHPExcel class autoloader
+require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
 
 // Admin routes
+
+Route::set('sales_order_generate_delivery_note', 'admin/sales_orders/<sales_order_id>/generate_delivery_note')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_delivery_note',
+));
+
+Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/generate_invoice')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_invoice',
+));
+
+Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'export_to_sage',
+));
+
+Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_contact',
+));
+
+Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'add_contact',
+));
 
 Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
 	'directory' => 'admin',

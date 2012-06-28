@@ -13,14 +13,18 @@
 <form method="POST">
 
 	<div class="field">
-		<div class="grid_6 alpha">
+		<div class="grid_4 alpha">
 			<strong class="left-pad">Fields marked with * are required.</strong>
 		</div>
-		<div class="grid_10 omega tr">
+		<div class="grid_12 omega tr">
 			{% if customer.loaded %}
 				<a href="/admin/customers/delete/{{customer.id}}" class="delete-button">
 					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
 					Delete Customer
+				</a>
+				<a href="/admin/customers/archive/{{customer.id}}" class="archive-button">
+					<img src="/images/icons/door_out.png" alt="" class="inline-icon" />
+					Archive Customer
 				</a>
 			{% endif %}
 			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
@@ -30,7 +34,20 @@
 		<div class="clear"></div>
 	</div>
 
-	<h2>Customer Details</h2>
+	<br/>
+
+	<div class="grid_4 alpha">
+		<h2>Customer Details</h2>
+	</div>
+	<div class="grid_12 omega tr">
+	{% if modules.sage_exports and customer.loaded %}
+		<a href="{% url "customer_export_to_sage", ["customer_id": customer.id] %}" class="img-button">
+			<img src="/media/images/icons/page_green.png" alt="" class="inline-icon" />
+			Export for Sage
+		</a>
+	{% endif %}
+	</div>
+	<div class="clear"></div>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
@@ -50,7 +67,21 @@
 		</div>
 		<div class="clear"></div>
 	</div>	
-		
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="customer-email" {% if errors.customer.email %}class="error"{% endif %}>Email *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
+				class="inputtext long" />&nbsp;&nbsp;
+			{% if customer.loaded %}
+				<a href="mailto:{{customer.email}}">Send Email</a>
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+	</div>
+	
 	<div class="field">
 		<div class="grid_2 alpha">
 			<label for="customer-company">Company</label>
@@ -61,15 +92,26 @@
 		</div>
 		
 		<div class="grid_2">
-			<label for="customer-email" {% if errors.customer.email %}class="error"{% endif %}>Email *</label>
+			<label for="customer-account-ref">Account #</label>
 		</div>
 		<div class="grid_8 omega">
-			<input type="text" id="customer-email" name="customer[email]" value="{{fields.customer.email}}"
-				class="inputtext long" />&nbsp;&nbsp;
-			<a href="mailto:{{customer.email}}">Send Email</a>
+			<input type="text" id="customer-account-ref" name="customer[account_ref]" value="{{fields.customer.account_ref}}"
+				class="inputtext" />&nbsp;&nbsp;
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{% if modules.commercial_sales_orders %}
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-invoice-terms">Invoice Terms</label>
+			</div>
+			<div class="grid_14 omega">
+				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" value="{{fields.customer.invoice_terms}}" /> days
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endif %}
 	
 	<div class="field">
 		<div class="grid_2 alpha">
@@ -100,7 +142,7 @@
 			</div>
 			<div class="grid_8 omega">
 				<select name="customer[price_tier]" id="customer-price-tier">
-					<option value="">Default</option>
+					<option value="">Retail</option>
 					{% for tier in price_tiers %}
 						<option value="{{tier.id}}" {% if tier.id == fields.customer.price_tier %}selected="selected"{% endif %}>{{tier.name}}</option>
 					{% endfor %}
@@ -114,78 +156,200 @@
 	{% set object = customer %}
 	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
-	<br/>
+	{% if not customer.loaded %}
 	
-	<div class="grid_8 alpha">
-		<h2>Orders</h2>
-	</div>
-	<div class="grid_8 omega tr">
-		{% if modules.commercial_sales_orders %}
-			<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Commercial Sales Order</span>
-			</a>
+		<h2>Customer Address</h2>
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-line-1">Line 1</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-line-1" name="address[line_1]" value="{{fields.address.line_1}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-line-2">Line 2</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-line-2" name="address[line_2]" value="{{fields.address.line_2}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-line-3">Line 3</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-line-3" name="address[line_3]" value="{{fields.address.line_3}}" class="inputtext" />
+			</div>	
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">	
+			<div class="grid_2 alpha">
+				<label for="customer-address-town">Town</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-town" name="address[town]" value="{{fields.address.town}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-county">County</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-county" name="address[county]" value="{{fields.address.county}}" class="inputtext" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">	
+			<div class="grid_2 alpha">
+				<label for="customer-address-postcode">Postcode</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-postcode" name="address[postcode]" value="{{fields.address.postcode}}" class="inputtext" />
+			</div>	
+			<div class="grid_2">
+				<label for="customer-address-country">Country</label>
+			</div>
+			<div class="grid_8 omega">
+				<select id="customer-address-country" name="address[country]">
+				{% for country in countries %}
+					<option value="{{country.id}}" {% if country.id == fields.address.country %}selected="selected"{% endif %}">{{country.name}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-telephone">Telephone</label>
+			</div>
+			<div class="grid_4">
+				<input type="text" id="customer-address-telephone" name="address[telephone]" value="{{fields.address.telephone}}" class="inputtext" />
+			</div>
+			<div class="grid_2">
+				<label for="customer-address-name">Name</label>
+			</div>
+			<div class="grid_8 omega">
+				<input type="text" id="customer-address-name" name="address[name]" value="{{fields.address.name}}" class="inputtext" placeholder="Home, Work..." />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="customer-address-notes">Notes</label>
+			</div>
+			<div class="grid_14 omega">
+				<input type="text" name="address[notes]" id="customer-address-notes" value="{{fields.address.notes}}" class="inputtext longest" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+		<br/>
+	
+		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
+	
+	{% else %}
+	
+		<br/>
+		
+		<div class="grid_8 alpha">
+			<h2>Orders</h2>
+		</div>
+		<div class="grid_8 omega tr">
+			{% if modules.commercial_sales_orders %}
+				<a href="/admin/sales_orders/new?customer={{customer.id}}" class="img-button">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Commercial Sales Order</span>
+				</a>
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+		<table>
+			<thead>
+				<th class="tc">Order #</th>
+				<th class="tr">Delivery Address</th>
+				<th class="tc">Promo Code?</th>
+				<th class="tr">Total</th>
+				<th>&nbsp;</th>
+				<th class="tr">Placed on</th>
+			</thead>
+			<tbody>	
+			{% for key, order in orders %}
+				<tr class="{{['', 'alternate']|cycle(key)}}">
+					<td class="tc"><a href="/admin/sales_orders/view/{{order.id}}">{{order.id}}</a></td>
+					<td class="tr">{{order.delivery_address.line_1}}, {{order.delivery_address.town}}, {{order.delivery_address.postcode}}</td>
+					<td class="tc">{{order.promotion_code_code}}</td>
+					<td class="tr">&pound;{{order.order_total|num_format(2)}}</td>
+					<td class="tc"><span class="status_tag {{order.status}}">{{order.status|humanize|title}}</td>
+					<td class="tr">{{order.created|date('d/m/Y H:i')}}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		{{orders_pagination}}
+		
+		{% if modules.crm %}
+		
+			{# Contacts #}
+			<div class="grid_8 alpha">
+				<h2>Additional Contacts</h2>
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-contact">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Contact</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-contact" class="hidden">
+				{% include "admin/customer/contacts/_form.html" %}
+			</div>
+			<div id="customer-contact-table-container">
+				{% include "admin/customer/contacts/_table.html" %}
+			</div>
+			{# End Contacts #}
+		
+			{# Addresses #}
+			<div class="grid_8 alpha">
+				<h2>Addresses</h2>
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-address">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Address</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-address" class="hidden">
+				{% include "admin/customer/addresses/_form.html" %}
+			</div>
+			<div id="customer-address-table-container">
+				{% include "admin/customer/addresses/_table.html" %}
+			</div>
+			{# End Addresses #}
+		
+			{# Communications #}
+			<div class="grid_8 alpha">
+				<h2>Customer Communications</h2>	
+			</div>
+			<div class="grid_8 omega tr">
+				<a href="#" class="img-button" id="show-new-communication">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Communication</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-communication" class="hidden">
+				{% include "admin/customer/communications/_form.html" %}
+			</div>
+			{% include "admin/customer/communications/_table.html" %}
+			{# End Communications #}
 		{% endif %}
-	</div>
-	<div class="clear"></div>
-	<table>
-		<thead>
-			<th class="tc">Order #</th>
-			<th class="tr">Delivery Address</th>
-			<th class="tc">Promo Code?</th>
-			<th class="tr">Total</th>
-			<th>&nbsp;</th>
-			<th class="tr">Placed on</th>
-		</thead>
-		<tbody>	
-		{% for key, order in orders %}
-			<tr class="{{['', 'alternate']|cycle(key)}}">
-				<td class="tc"><a href="/admin/sales_orders/view/{{order.id}}">{{order.id}}</a></td>
-				<td class="tr">{{order.delivery_address.line_1}}, {{order.delivery_address.town}}, {{order.delivery_address.postcode}}</td>
-				<td class="tc">{{order.promotion_code_code}}</td>
-				<td class="tr">&pound;{{order.order_total|num_format(2)}}</td>
-				<td class="tc"><span class="status_tag {{order.status}}">{{order.status|humanize|title}}</td>
-				<td class="tr">{{order.created|date('d/m/Y H:i')}}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-	{{orders_pagination}}
-	
-	{% if modules.crm %}
-		<div class="grid_8 alpha">
-			<h2>Addresses</h2>
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="#" class="img-button" id="show-new-address">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Address</span>
-			</a>
-		</div>
-		<div class="clear"></div>
-		<div id="new-address" class="hidden">
-			{% include "admin/customer/addresses/_form.html" %}
-		</div>
-		<div id="customer-address-table-container">
-			{% include "admin/customer/addresses/_table.html" %}
-		</div>
-	{% endif %}
-	
-	{% if modules.crm %}
-		<div class="grid_8 alpha">
-			<h2>Customer Communications</h2>	
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="#" class="img-button" id="show-new-communication">
-				<img src="/images/icons/add.png" alt="" />
-				<span>New Communication</span>
-			</a>
-		</div>
-		<div class="clear"></div>
-		<div id="new-communication" class="hidden">
-			{% include "admin/customer/communications/_form.html" %}
-		</div>
-		{% include "admin/customer/communications/_table.html" %}
+
 	{% endif %}
 		
 </form>

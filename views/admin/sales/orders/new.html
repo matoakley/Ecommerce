@@ -70,7 +70,25 @@
 		Find customer.
 	{% endif %}
 	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sales-order-ref">Ref.</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" name="sales_order[ref]" value="{{fields.sales_order.ref}}" class="inputtext short" />
+		</div>
+		<div class="grid_2">
+			<label for="sales-order-invoice-terms">Invoice Terms</label>
+		</div>
+		<div class="grid_8 omega">
+			<input type="text" name="sales_order[invoice_terms]" value="{{fields.sales_order.invoice_terms}}" class="inputtext shortest" /> days
+		</div>
+		<div class="clear"></div>
+	</div>
+	
 	<h2>Sales Order Items</h2>
+	
+	<input type="hidden" id="default-vat" value="{{default_vat}}" />
 	
 	<table id="sales-order-items">
 		<thead>
@@ -79,9 +97,12 @@
 			{% if modules.stock %}
 				<th>Stock</th>
 			{% endif %}
-			<th class="tc">Unit Price</th>
-			<th class="tr">Qty</th>
-			<th class="tr">Total</th>
+			<th class="tc">Net Unit Price</th>
+			<th class="tc">Qty</th>
+			{% if modules.vat_codes %}
+				<th class="tc">VAT Rate</th>
+			{% endif %}
+			<th class="tr">Net Total</th>
 			<th width="1">&nbsp;</th>
 		</thead>
 		<tbody>
@@ -91,20 +112,34 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="3">
-					<label for="sales-order-delivery-charge">Delivery charge (&pound;)</label>
+				<td colspan="5">
+					<label for="sales-order-delivery-charge">Delivery Net (&pound;)</label>
 				</td>
 				<td class="tr">
 					<input type="text" name="sales_order[delivery_charge]" id="sales-order-delivery-charge" value="{{fields.sales_order.delivery_charge|num_format(2)}}" class="inputtext shortest tr" />
 				</td>
 				<td>&nbsp;</td>
 			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Subtotal</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-subtotal">{{fields.sales_order_sub_total|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Total VAT</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-vat">{{fields.sales_order_vat|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
 			<tr id="new-sales-order-item-container">
-				<td colspan="2">
+				<td colspan="4">
 					<select id="new-sales-order-item">
 						<option value="">Select sales order item to add new row...</option>
 						{% for sku in skus %}
-							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{{sku.name}}</option>
+							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{% if sku.sku %}{{sku.sku}} - {% endif %}{{sku.name}}</option>
 						{% endfor %}
 					</select>
 					<img src="/media/images/admin/ajax-loader.gif" alt="Loading..." class="hidden" id="new-sales-order-item-spinner" />

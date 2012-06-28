@@ -74,13 +74,13 @@
 	</div>
 
 	<div class="hidden sku-tiered-price-container" data-sku-id="{{sku.id}}">
-	{% for key, tier in price_tiers %}
+	{% for tier in price_tiers %}
 		<div class="field">
 			<div class="grid_4 alpha">
 				<label for="product-price-tier-{{tier.id}}">{{tier.name}} (&pound;)</label>
 			</div>
 			<div class="grid_12 omega">
-				<input type="text" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices[key].retail_price|num_format(2)}}" class="inputtext shortest" />
+				<input type="text" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices_array[tier.id]|num_format(2)}}" class="inputtext shortest" />
 			</div>
 			<div class="clear"></div>
 		</div>

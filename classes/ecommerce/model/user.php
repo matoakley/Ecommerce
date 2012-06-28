@@ -77,7 +77,11 @@ class Ecommerce_Model_User extends Model_Auth_User
 				'field' => 'role.id',
 			),
 		),
-		'search' => array(),
+		'search' => array(
+			'firstname',
+			'lastname',
+			'email',
+		),
 	);
 
 	public function __get($field)

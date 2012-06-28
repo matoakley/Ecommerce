@@ -40,8 +40,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				)),
 				'type' => new Field_String,
 				'status' => new Field_String,
+				'order_subtotal' => new Field_Float(array(
+					'places' => 4,
+				)),
+				'order_vat' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'order_total' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 				)),
 				'items' => new Field_HasMany(array(
 					'foreign' => 'sales_order_item.sales_order_id',
@@ -50,6 +56,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'basket' => new Field_HasOne,
 				'notes' => new Field_HasMany(array(
 					'foreign' => 'sales_order_note.sales_order_id',
+				)),
+				'ref' => new Field_String,
+				'user' => new Field_BelongsTo,
+				'invoice_terms' => new Field_Integer,
+				'exported_to_sage' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -66,21 +78,57 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	}
 
 	public static $statuses = array(
-		'awaiting_payment',
-		'fraud_shield_review', // HSBC specific
-		'payment_received',
-		'complete',
-		'order_cancelled',
-		'problem_occurred',
-		// Commercial specific
-		'open',
-		'invoice_generated',
+		'retail' => array(
+			'awaiting_payment',
+			'problem_occurred',
+			'payment_received',
+			'complete',
+			'order_cancelled',
+		),
+		'commercial' => array(
+			'invoice_generated',
+			'invoice_sent',
+			'complete',
+			'order_cancelled',
+		),	
+	);
+	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+			'type' => array(
+				'field' => 'type',
+			),
+		),
+		'search' => array(
+			'id',
+		),
 	);
 	
 	public static $types = array(
 		'commercial',
 		'retail',
 	);
+	
+	private function calculate_vat_and_subtotal()
+	{
+		$vat = 0;
+	
+		foreach ($this->items as $item)
+		{
+			$vat += $item->total_price - $item->net_total_price;
+		}
+	
+		// Delivery VAT
+		$vat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
+	
+		$this->order_vat = $vat;
+		$this->order_subtotal = $this->order_total - $vat;
+		
+		return $this->save();
+	}
 	
 	public static function recent_dashboard_orders()
 	{
@@ -107,6 +155,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
+		$sales_order->type = 'retail';
 		
 		$sales_order->save();
 		
@@ -216,6 +265,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->status = 'invoice_generated';
 		$sales_order->order_total = $data['delivery_charge'];
 		$sales_order->ip_address = Request::$client_ip;
+		$sales_order->ref = $data['ref'];
+		$sales_order->user = Auth::instance()->get_user();
+		$sales_order->invoice_terms = $data['invoice_terms'];
 		$sales_order->save();
 		
 		foreach ($data['skus'] as $sku)
@@ -224,7 +276,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$sales_order->order_total += $line->total_price;
 		}
 		
-		$sales_order->generate_invoice();
+		$sales_order->calculate_vat_and_subtotal()->generate_invoice();
 		
 		return $sales_order->save();
 	}
@@ -281,7 +333,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function update_status($status)
 	{
-		if (in_array($status, self::$statuses))
+		if (in_array($status, self::$statuses[$this->type]))
 		{
 			$user = Auth::instance()->get_user();
 			if (is_object($user) AND $user->loaded())
@@ -324,5 +376,41 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function add_note($text = FALSE, $is_system = FALSE)
 	{
 		return Model_Sales_Order_Note::add_note($this, $text, $is_system);
+	}
+	
+	public function send_invoice()
+	{
+		$email = Email::connect();
+		
+		$content = Twig::factory('emails/invoice.html');
+		$content->sales_order = $this;
+		$content->site_name = Kohana::config('ecommerce.site_name');
+		
+		$pdf_template = Twig::factory('admin/sales/orders/generate_invoice');
+		$pdf_template->base_url = URL::site();
+		$pdf_template->sales_order = $this;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($pdf_template->render());
+
+		$message = Swift_Message::newInstance('Your invoice from '.Kohana::config('ecommerce.site_name'), $content, 'text/html', 'utf-8');
+		$message->setFrom(array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')))
+						->addTo($this->customer->email, $this->customer->firstname.' '.$this->customer->lastname)
+						->attach(Swift_Attachment::newInstance($html2pdf->Output('', TRUE), 'Invoice '.$this->id.'.pdf', 'application/pdf'));
+						
+		$email->send($message);
+		
+		return $this;
+	}
+	
+	public function update($data)
+	{
+		// Only update the status if it has actually changed
+		if ($this->status != $data['status'])
+		{
+			$this->update_status($data['status']);
+		}
+	
+		return $this->save();
 	}
 }

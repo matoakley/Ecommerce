@@ -52,8 +52,14 @@ $(function(){
 	});
 	
 	$('a.delete-button').click(function(e){
-		
 		if ( ! confirm('Are you sure that you want to permanently delete this item?'))
+		{
+			e.preventDefault();
+		}
+	});
+	
+	$('a.archive-button').click(function(e){
+		if ( ! confirm('Are you sure that you want to archive this item?'))
 		{
 			e.preventDefault();
 		}
@@ -77,6 +83,7 @@ $(function(){
 		$.fancybox.close();
 	});
 	
+	// Show/hide body of customer communications
 	$('img.show-communication').live('mouseenter', function(){
 		if ($('div.communication-body[data-communication-id="'+$(this).attr('data-communication-id')+'"]').is(':visible')){
 			$(this).attr('src', '/media/images/icons/magifier_zoom_out.png');
@@ -90,16 +97,97 @@ $(function(){
 		$('td.communication-body-container[data-communication-id="'+$(this).attr('data-communication-id')+'"]').toggleClass('active-communication-body-container');
 	});
 	
-/*
-	var today = new Date();
-	$('.datetimepicker').datetimepicker({
-		hour: today.getHours(),
-		minute: today.getMinutes(),
-		showButtonPanel: false
+	$('a#show-new-contact').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		$('div#new-contact').slideToggle(600, function(){
+			if ($('div#new-contact').is(':visible')) {
+				button.children('span').html('Hide New Contact');
+			} else {
+				button.children('span').html('New Contact');
+			}
+		});
 	});
-*/
+	$('input#add-contact').click(function(e){
+		e.preventDefault();
+		var button = $(this);
+		var firstname = $('input#contact-firstname');
+		var lastname = $('input#contact-lastname');
+		var email = $('input#contact-email');
+		var telephone = $('input#contact-telephone');
+		var position = $('input#contact-position');
+		var data = {
+			contact: {
+				firstname: firstname.val(),
+				lastname: lastname.val(),
+				email: email.val(),
+				telephone: telephone.val(),
+				position: position.val()
+			}
+		};
+		$.ajax({
+			url: button.attr('data-url'),
+			type: 'POST',
+			dataType: 'json',
+			data: data,
+			beforeSend: function(){
+				button.attr('disabled', 'disabled');
+				$('#add-contact-spinner').show();
+			},
+			success: function(response){
+				$('div#customer-contact-table-container').html(response.html);
+				// Reset and hide form
+				firstname.val('');
+				lastname.val('');
+				email.val('');
+				telephone.val('');
+				position.val('');
+				$('div#new-contact').slideUp(600);
+				$('a#show-new-contact').children('span').html('New Contact');
+			},
+			complete: function(){
+				$('#add-contact-spinner').hide();
+				button.removeAttr('disabled');
+			}
+		});
+	});
+
+	// Show/hide notes of customer addresses	
+	$('img.show-address-notes').live('mouseenter', function(){
+		if ($('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').is(':visible')){
+			$(this).attr('src', '/media/images/icons/note_delete.png');
+		} else {
+			$(this).attr('src', '/media/images/icons/note_add.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).attr('src', '/media/images/icons/note.png');
+	}).live('click', function(){
+		$('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').slideToggle('slow');
+		$('td.address-notes-container[data-address-id="'+$(this).attr('data-address-id')+'"]');
+	});
+	
+	$('div#customer-contact-table-container').on('click', 'a.customer-contact-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			dataType: 'json',
+			beforeSend: function(){
+				button.hide();
+				$('img.custom-contact-delete-spinner[data-contact-id="'+button.data('contact-id')+'"]').show();
+			},
+			success: function(response){
+				$('div#customer-contact-table-container').html(response.html);
+			},
+			complete: function(){
+				$('img.custom-contact-delete-spinner[data-contact-id="'+button.data('contact-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
+	
+	
 	$('div#communication-date').datetimepicker({
-/* 		setDate: new Date(), */
 		showButtonPanel: false
 	}).datetimepicker('setDate', (new Date()));
 	
@@ -177,23 +265,27 @@ $(function(){
 		var button = $(this);
 		var line1 = $('input#address-line-1');
 		var line2 = $('input#address-line-2');
+		var line3 = $('input#address-line-3');
 		var town = $('input#address-town');
 		var county = $('input#address-county');
 		var postcode = $('input#address-postcode');
 		var country = $('select#address-country');
 		var telephone = $('input#address-telephone');
 		var name = $('input#address-name');
+		var notes = $('input#address-notes');
 		var module = button.attr('data-module');
 		var data = {
 			address: {
 				line_1: line1.val(),
 				line_2: line2.val(),
+				line_3: line3.val(),
 				town: town.val(),
 				county: county.val(),
 				postcode: postcode.val(),
 				country: country.val(),
 				telephone: telephone.val(),
 				name: name.val(),
+				notes: notes.val()
 			},
 			template: module,
 		};
@@ -213,12 +305,14 @@ $(function(){
 				// Reset and hide form
 				line1.val('');
 				line2.val('');
+				line3.val('');
 				town.val('');
 				county.val('');
 				postcode.val('');
 				country.val('');
 				telephone.val('');
 				name.val('');
+				notes.val('');
 				$('div#new-address').slideUp(600);
 				$('a#show-new-address').children('span').html('New Address');
 			},
@@ -274,7 +368,9 @@ $(function(){
 			success: function(response){
 				$('table#sales-order-items tbody').append(response.html);
 				restripeRows('sales-order-items');
+				$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 				$('span#sales-order-total').html(calculateSalesOrderTotal());
+				$('span#sales-order-vat').html(calculateSalesOrderVat());
 				// Disable the sku in the select to avoid duplicate rows
 				$('select#new-sales-order-item').find('option[data-sku-id="'+response.sku.id+'"]').attr('disabled', 'disabled');
 			},
@@ -292,28 +388,53 @@ $(function(){
 		var total = number_format(unitPrice*quantity, 2);
 		if (total !== NaN){
 			row.find('span.sales-order-item-total').html(total);
+			$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 			$('span#sales-order-total').html(calculateSalesOrderTotal());
+			$('span#sales-order-vat').html(calculateSalesOrderVat());
 		}
 	}).on('click', 'a.sales-order-line-delete', function(e){
 		var skuId = $(this).parents('tr').data('sku-id');
 		$('tr[data-sku-id="'+skuId+'"]').remove();
 		restripeRows('sales-order-items');
+		$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 		$('span#sales-order-total').html(calculateSalesOrderTotal());
+		$('span#sales-order-vat').html(calculateSalesOrderVat());
 		$('select#new-sales-order-item').find('option[data-sku-id="'+skuId+'"]').removeAttr('disabled');
 	});
 	$('input#sales-order-delivery-charge').keyup(function(){
+		$('span#sales-order-subtotal').html(calculateSalesOrderSubtotal());
 		$('span#sales-order-total').html(calculateSalesOrderTotal());
+		$('span#sales-order-vat').html(calculateSalesOrderVat());
 	});
 	function restripeRows(tableId){
 		$('table#'+tableId+' tbody tr:even').removeClass('alternate');
 		$('table#'+tableId+' tbody tr:odd').addClass('alternate');
 	}
-	function calculateSalesOrderTotal(){
+	function calculateSalesOrderSubtotal(){
 		var total = 0.00;
 		$('span.sales-order-item-total').each(function(){
 			total += parseFloat($(this).html().replace(',', ''));
 		});
-		total += parseFloat($('input#sales-order-delivery-charge').val());
+		if ($('input#sales-order-delivery-charge').val() != ''){
+			total += parseFloat($('input#sales-order-delivery-charge').val());	
+		}
+		return number_format(total, 2);
+	}
+	function calculateSalesOrderTotal(){
+		var total = 0.00;
+		$('span.sales-order-item-total').each(function(){
+			var netTotal = $(this).html();
+			var vatRate = $(this).parents('tr').find('input.sales-order-item-vat-rate').val(); 
+			var grossTotal = parseFloat(netTotal) * ((parseFloat(vatRate) + 100) / 100);
+			total += parseFloat(grossTotal.toString().replace(',', ''));
+		});
+		if ($('input#sales-order-delivery-charge').val() != ''){
+			total += parseFloat($('input#sales-order-delivery-charge').val()) * ((parseFloat($('input#default-vat').val()) + 100) / 100);
+		}
+		return number_format(total, 2);
+	}
+	function calculateSalesOrderVat(){
+		var total = parseFloat($('span#sales-order-total').html()) - parseFloat($('span#sales-order-subtotal').html());
 		return number_format(total, 2);
 	}
 	// Asynchronous pagination for sales order addresses
@@ -347,6 +468,26 @@ $(function(){
 					{
 						$('#sales-order-status').val('complete');
 						$('#complete-and-email').hide();
+					}
+				}
+			});
+		}
+	});
+	$('#email-invoice').click(function(e){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to email the invoice to the customer?')) {
+			$.ajax({
+				url: $(this).data('url'),
+				type: 'GET',
+				beforeSend: function(){
+					$('#email-invoice img').hide();
+					$('#ajax-spinner').show();
+				},
+				success: function(response){
+					if (response == 'ok')
+					{
+						$('#sales-order-status').val('invoice_sent');
+						$('#email-invoice').hide();
 					}
 				}
 			});

@@ -37,6 +37,18 @@ class Ecommerce_Model_Event extends Model_Application
 		));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
+	
 	public static function get_events_by_month($month, $limit = NULL, $offset = NULL, $bounding_box = NULL)
 	{	
 		$year = floor($month / 12);

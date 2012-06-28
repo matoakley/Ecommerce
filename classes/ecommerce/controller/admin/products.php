@@ -52,13 +52,17 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		{
 			$fields['custom_fields'] = $product->custom_fields();
 		}
-		
+		$fields['product']['vat_code'] = $product->vat_code->id;
 		
 		foreach ($product->skus as $sku)
 		{
 			$fields['skus'][$sku->id] = $sku->as_array();
 			$fields['skus'][$sku->id]['retail_price'] = $sku->retail_price();
 			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
+			foreach ($sku->tiered_prices as $tiered_price)
+			{
+				$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
+			}
 		}
 		
 		foreach ($product->images as $product_image)
@@ -198,6 +202,14 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
 				$fields['custom_fields'] = isset($_POST['custom_fields']) ? $_POST['custom_fields'] : array();
 				
+				foreach ($_POST['skus'] as $sku_id => $sku)
+				{
+					foreach($sku['tiered_prices'] as $tier_id => $price)
+					{
+						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
+					}
+				}
+				
 				if (isset($_POST['product_images']))
 				{
 					foreach ($_POST['product_images'] as $key => $values)
@@ -220,6 +232,11 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		if ($this->modules['tiered_pricing'])
 		{
 			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
+		
+		if ($this->modules['vat_codes'])
+		{
+			$this->template->vat_codes = Jelly::select('vat_code')->execute();
 		}
 	}
 	

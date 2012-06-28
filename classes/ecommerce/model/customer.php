@@ -27,11 +27,12 @@ class Ecommerce_Model_Customer extends Model_Application
 					),
 				)),
 				'company' => new Field_String,
+				'account_ref' => new Field_String,
 				'customer_types' => new Field_ManyToMany,
 				'email' => new Field_Email(array(
 					'rules' => array(
 						'not_empty' => NULL,
-					),					
+					),
 				)),
 				'referred_by' => new Field_String,
 				'default_billing_address' => new Field_BelongsTo(array(
@@ -47,6 +48,16 @@ class Ecommerce_Model_Customer extends Model_Application
 				)),
 				'status' => new Field_String,
 				'price_tier' => new Field_BelongsTo,
+				'parent' => new Field_BelongsTo(array(
+					'foreign' => 'customer.id',
+					'column' => 'customer_id',
+				)),
+				'contacts' => new Field_HasMany(array(
+					'foreign' => 'customer.customer_id',
+				)),
+				'telephone' => new Field_String,
+				'position' => new Field_String,
+				'invoice_terms' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -75,6 +86,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	public static $statuses = array(
 		'active',
 		'on_hold',
+		'archived',
 	);
 	
 	public static $searchable_fields = array(
@@ -96,6 +108,8 @@ class Ecommerce_Model_Customer extends Model_Application
 		'search' => array(
 			'firstname',
 			'lastname',
+			'account_ref',
+			'company',
 		),
 	);
 
@@ -211,7 +225,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	 */
 	public function name()
 	{
-		return $this->firstname.' '.$this->lastname;
+		if ($this->firstname != '')
+		{
+			return $this->firstname.' '.$this->lastname;
+		}
+		elseif ($this->company != '')
+		{
+			return $this->company; 
+		}
 	}
 	
 	public function add_communication($data)
@@ -229,6 +250,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->firstname = $data['firstname'];
 		$this->lastname = $data['lastname'];
 		$this->company = $data['company'];
+		$this->account_ref = $data['account_ref'];
 		$this->email = $data['email'];
 		if (isset($data['default_billing_address']))
 		{
@@ -252,6 +274,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		}
 		
 		$this->status = $data['status'];
+		$this->invoice_terms = $data['invoice_terms'];
 	
 		return $this->save();
 	}
@@ -277,5 +300,41 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			return $sku->retail_price();
 		}
+	}
+	
+	public function delete($key = NULL)
+	{
+		// Remove any communications held against the customer to keep the DB tidy
+		foreach ($this->communications as $communication)
+		{
+			$communication->delete();
+		} 
+	
+		return parent::delete($key);
+	}
+	
+	public function archive()
+	{
+		$this->status = 'archived';
+		return $this->save();
+	}
+	
+	/**
+	 * Creates a new Customer as a Contact of the Customer.
+	 * @author  Matt Oakley
+	 * @param   array   Contact data
+	 * @return  Customer
+	 */
+	public function add_contact($data)
+	{
+		$contact = Jelly::factory('customer');
+		$contact->parent = $this;
+		$contact->firstname = $data['firstname'];
+		$contact->lastname = $data['lastname'];
+		$contact->email = $data['email'];
+		$contact->telephone = $data['telephone'];
+		$contact->position = $data['position'];
+		$contact->status = 'active';
+		return $contact->save();
 	}
 }

@@ -81,13 +81,25 @@
 		<div class="grid_2 alpha">
 			<label for="product-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="product-status" name="product[status]">
 			{% for status in statuses %}
 				<option value="{{status}}" {{ status == fields.product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
+		{% if modules.vat_codes %}
+		<div class="grid_2">
+			<label for="product-vat-code">VAT Code</label>
+		</div>
+		<div class="grid_8 omega">
+			<select name="product[vat_code]">
+			{% for vat_code in vat_codes %}
+				<option value="{{vat_code.id}}" {% if vat_code.id == product.vat_code.id %}selected="selected"{% endif %}>{{vat_code.code}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		{% endif %}
 		<div class="clear"></div>
 	</div>
 	

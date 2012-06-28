@@ -1,0 +1,27 @@
+<table id="customer-contacts">
+	<thead>
+		<th>Name</th>
+		<th>Email</th>
+		<th>Telephone</th>
+		<th>Postition</th>
+		<th>&nbsp;</th>
+	</thead>
+	<tbody>	
+	{% for key, contact in contacts %}
+		{% set row_class = ['', 'alternate']|cycle(key) %}
+		<tr class="{{row_class}}">
+			<td>{{contact.name}}</td>
+			<td><a href="mailto:{{contact.email}}">{{contact.email}}</a></td>
+			<td>{{contact.telephone}}</td>
+			<td>{{contact.position}}</td>
+			<td width="1">
+				<a href="#" class="customer-contact-delete" data-url="{% url "customer_contact_delete", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">
+					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
+				</a>
+				<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden custom-contact-delete-spinner" data-contact-id="{{contact.id}}" />
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{{contacts_pagination}}
