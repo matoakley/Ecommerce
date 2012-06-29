@@ -1,9 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-// Load the HTML2PDF class autoloader
-require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
-// Load the PHPExcel class autoloader
-require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
+// Only include XLS and PDF libraries if not CLI as missing
+// $_SERVER['SERVER_NAME'] causes error.
+if ( ! Kohana::$is_cli)
+{
+	// Load the HTML2PDF class autoloader
+	require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
+	// Load the PHPExcel class autoloader
+	require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
+}
 
 // Admin routes
 
