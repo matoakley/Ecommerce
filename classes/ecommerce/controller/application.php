@@ -14,6 +14,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	
 	protected $auth;
 
+	protected $config;
+
 	/**
 	 * Setup view
 	 *
@@ -21,6 +23,11 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	 */
 	public function before()
 	{
+		$this->config = Kohana::config('ecommerce');
+		
+		Cookie::$salt = 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M'.$this->config['site_name'];
+		Cookie::$expiration = Date::YEAR;
+			
 		if ( ! IN_PRODUCTION)
 		{
 			$this->environment = 'development';
@@ -39,11 +46,13 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		$this->modules = Kohana::config('ecommerce.modules');
 		
-		parent::before();
+		parent::before();		
 	}
 	
 	public function after()
 	{	
+		$this->template->show_cookie_warning = ! Cookie::get('cookies_accepted');
+	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		$this->template->site_name = Kohana::config('ecommerce.site_name');
 		

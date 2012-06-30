@@ -116,6 +116,11 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	
 // Default Public Routes
 
+Route::set('accept_cookies', 'accept-cookies')->defaults(array(
+	'controller' => 'tools',
+	'action' => 'accept_cookies',
+));
+
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',
 	'action' => 'view',
