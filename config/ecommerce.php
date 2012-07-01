@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.2.0', 
+	'software_version' => '1.2.1', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -36,6 +36,7 @@ return array
 		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
 		'product_options' => FALSE,
+		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
 		'sage_exports' => FALSE,
