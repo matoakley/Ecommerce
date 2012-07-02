@@ -525,6 +525,10 @@ $(function(){
 			}
 		});
 	});
+	
+	$('input#sales-order-invoiced-on').datepicker({
+		dateFormat: 'dd/mm/yy'
+	});
 });
 
 function number_format (number, decimals, dec_point, thousands_sep) {

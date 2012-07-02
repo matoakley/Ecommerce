@@ -72,6 +72,15 @@
 			</div>
 			<div class="clear"></div>
 		</div>
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="sales-order-invoiced-on">Invoiced On</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" name="sales_order[invoiced_on]" id="sales-order-invoiced-on" class="inputtext shorter" value="{% if fields.sales_order.invoiced_on %}{{fields.sales_order.invoiced_on|date('d/m/Y')}}{% endif %}" />
+			</div>
+			<div class="clear"></div>
+		</div>
 	{% endif %}
 		
 		<div class="field">
