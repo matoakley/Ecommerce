@@ -3,12 +3,22 @@
 {% block page_title %}Viewing: <strong>Price Tiers</strong>{% endblock %}
 
 {% block content %}
-<p>
-	<a href="/admin/price_tiers/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Price Tier
-	</a>
-</p>
+
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/price_tiers/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Price Tier
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
@@ -30,6 +40,7 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th>Description</th>
+			<th>Customers</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -38,6 +49,7 @@
 			<td><input type="checkbox" class="row-selector" /></td>
 			<td><a href="/admin/price_tiers/edit/{{tier.id}}">{{tier.name}}</td>
 			<td>{{tier.description}}</td>
+			<td><a href="/admin/customers?q=price_tier:{{tier.id}}">{{tier.customers|length}}</a></td>
 		</tr>
 	{% endfor %}
 	</tbody>

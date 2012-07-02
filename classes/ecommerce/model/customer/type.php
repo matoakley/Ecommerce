@@ -29,6 +29,14 @@ class Ecommerce_Model_Customer_Type extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
+	
 	/*
 	 * Helper method to reduce workload of count in templates
 	 */

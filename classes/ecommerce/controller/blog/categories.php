@@ -15,7 +15,7 @@ class Ecommerce_Controller_Blog_Categories extends Controller_Application
 	function action_view()
 	{
 		$category = Model_Blog_Category::load($this->request->param('slug'));
-						
+		
 		$this->session->set('last_viewed_blog_category', $category);						
 								
 		$sidebar_categories = ($category->has_children() OR ! $category->parent->loaded()) ? 

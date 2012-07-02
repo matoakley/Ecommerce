@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.2.0', 
+	'software_version' => '1.2.1', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -13,6 +13,8 @@ return array
 	'email_from_address' => 'ecommerce@creativeintent.co.uk',
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
+	
+	'default_invoice_terms' => 30,
 	
 	'pagination' => array(
 		'products' => 10,
@@ -34,14 +36,17 @@ return array
 		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
 		'product_options' => FALSE,
+		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
 		'tiered_pricing' => FALSE,
 		'users' => FALSE,
+		'vat_codes' => FALSE,
 	),
 	
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),

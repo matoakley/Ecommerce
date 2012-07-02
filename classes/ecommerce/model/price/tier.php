@@ -13,6 +13,7 @@ class Ecommerce_Model_Price_Tier extends Model_Application
 					),
 				)),
 				'description' => new Field_String,
+				'customers' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -26,6 +27,14 @@ class Ecommerce_Model_Price_Tier extends Model_Application
 				)),
 			));
 	}
+	
+	public static $searchable_fields = array(
+		'filtered' => array(),
+		'search' => array(
+			'name',
+			'description',
+		),
+	);
 	
 	public function update($data)
 	{

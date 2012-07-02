@@ -44,6 +44,13 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		}
 		
 		$this->list_option = $this->session->get('admin_list_option', Kohana::config('ecommerce.default_admin_list_option'));
+		
+		// If the request is AJAX then we'll want to spit out a JSON encoded
+		// array rather than an HTML template.
+		if (Request::$is_ajax)
+		{
+			$this->auto_render = FALSE;
+		}
 	}
 	
 	public function after()
@@ -60,10 +67,18 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 		
 		$this->template->version_number = Kohana::config('ecommerce.software_version');
 		
+		$this->template->q = isset($_GET['q']) ? $_GET['q'] : '';
+		
 		// API key when using Leaflet.js for maps
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 
-		
 		parent::after();
+		
+/*
+		if ( ! IN_PRODUCTION)
+		{
+			$this->request->response .= View::factory('profiler/stats');
+		}
+*/
 	}
 }

@@ -45,38 +45,63 @@
 	
 <div class="field">
 	<div class="grid_2 alpha">
-		<label for="product-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
+		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
 	</div>
 	<div class="grid_6">
-		<input type="text" id="sku-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
+		<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
 		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
 	</div>
 	<div class="grid_2">
 		{% if modules.stock_control %}
-			<label for="product-stock">Stock</label>
+			<label for="sku-{{sku.id}}-stock">Stock</label>
 		{% endif %}
 	</div>
 	<div class="grid_2 omega">
 		{% if modules.stock_control %}
-			<input type="text" id="product-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
+			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
 		{% endif %}
 	</div>
 	<div class="clear"></div>
 </div>
 
+{% if modules.tiered_pricing and price_tiers|length > 0 %}
+	<div class="field">
+		<div class="grid_2 alpha">&nbsp;</div>
+		<div class="grid_4">
+			<a href="#" class="show-sku-tiered-prices" data-sku-id="{{sku.id}}"><img src="/media/images/icons/magnifier.png" class="inline-icon" alt="" /> Show Tiered Prices</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="hidden sku-tiered-price-container" data-sku-id="{{sku.id}}">
+	{% for tier in price_tiers %}
+		<div class="field">
+			<div class="grid_4 alpha">
+				<label for="sku-{{sku.id}}-price-tier-{{tier.id}}">{{tier.name}} (&pound;)</label>
+			</div>
+			<div class="grid_12 omega">
+				<input type="text" id="sku-{{sku.id}}-price-tier-{{tier.id}}" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices_array[tier.id]|num_format(2)}}" class="inputtext shortest" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endfor %}
+	</div>
+
+{% endif %}
+
 <div class="field">
 	<div class="grid_2 alpha">
-		<label for="sku-sku-id">SKU</label>
+		<label for="sku-{{sku.id}}-sku">SKU</label>
 	</div>
 	<div class="grid_6">
-		<input type="text" id="sku-sku-{{sku.id}}" name="skus[{{sku.id}}][sku]" value="{{sku.sku}}" class="inputtext" />
+		<input type="text" id="sku-{{sku.id}}-sku" name="skus[{{sku.id}}][sku]" value="{{sku.sku}}" class="inputtext" />
 	</div>
 	{% if multiple_skus %}
 		<div class="grid_2">
-			<label for="sku-status">Status</label>
+			<label for="sku-{{sku.id}}-status">Status</label>
 		</div>
 		<div class="grid_6 omega">
-			<select id="sku-status" name="skus[{{sku.id}}][status]">
+			<select id="sku-{{sku.id}}-status" name="skus[{{sku.id}}][status]">
 			{% for status in sku_statuses %}
 				<option value="{{status}}" {{ status == sku.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
@@ -86,13 +111,25 @@
 	<div class="clear"></div>
 </div>
 
+{% if modules.product_weights %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sku-{{sku.id}}-weight">Weight (kg)</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="sku-{{sku.id}}-weight" name="skus[{{sku.id}}][weight]" value="{{sku.weight}}" class="inputtext shortest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+{% endif %}
+
 {% if modules.commercial_sales_orders %}
 <div class="field">
 	<div class="grid_2 alpha">
-		<label for="sku-commercial-only">Commercial only?</label>
+		<label for="sku-{{sku.id}}-commercial-only">Commercial only?</label>
 	</div>
 	<div class="grid_14 omega">
-		<input type="checkbox" name="skus[{{sku.id}}][commercial_only]" {% if sku.commercial_only %}checked="checked"{% endif %} />
+		<input type="checkbox" id="sku-{{sku.id}}-commercial-only" name="skus[{{sku.id}}][commercial_only]" {% if sku.commercial_only %}checked="checked"{% endif %} />
 	</div>
 	<div class="clear"></div>
 </div>

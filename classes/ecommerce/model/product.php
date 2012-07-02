@@ -15,7 +15,6 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'copy',
 				)),
 				'slug' => new Field_String(array(
-					'unique' => TRUE,
 					'on_copy' => 'clear',
 					'callbacks' => array(
 						'slug_valid' => array('Model_Product', '_is_slug_valid'),
@@ -66,6 +65,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
+				'vat_code' => new Field_BelongsTo,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -100,6 +100,9 @@ class Ecommerce_Model_Product extends Model_Application
 			),
 			'brand' => array(
 				'field' => 'brand',
+			),
+			'vat_code' => array(
+				'field' => 'vat_code',
 			),
 			'status' => array(
 				'field' => 'status',
@@ -254,6 +257,11 @@ class Ecommerce_Model_Product extends Model_Application
 		if (isset($data['categories']))
 		{
 			$this->add('categories', $data['categories']);
+		}
+		
+		if (Kohana::config('ecommerce.modules.vat_codes'))
+		{
+			$this->vat_code = $data['vat_code'];
 		}
 		
 		// Ping sitemap to search engines to alert them of content change

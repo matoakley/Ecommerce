@@ -28,6 +28,15 @@ class Ecommerce_Model_Snippet extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(),
+		'search' => array(
+			'name',
+			'description',
+			'content',
+		),
+	);
+	
 	public static function show($name)
 	{
 		return Jelly::select('snippet')->where('name', '=', $name)->limit(1)->execute();

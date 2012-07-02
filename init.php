@@ -1,6 +1,58 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+// Only include XLS and PDF libraries if not CLI as missing
+// $_SERVER['SERVER_NAME'] causes error.
+if ( ! Kohana::$is_cli)
+{
+	// Load the HTML2PDF class autoloader
+	require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
+	// Load the PHPExcel class autoloader
+	require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
+}
+
 // Admin routes
+
+Route::set('sales_order_generate_delivery_note', 'admin/sales_orders/<sales_order_id>/generate_delivery_note')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_delivery_note',
+));
+
+Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/generate_invoice')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_invoice',
+));
+
+Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'export_to_sage',
+));
+
+Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_contact',
+));
+
+Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'add_contact',
+));
+
+Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'add_sales_order_line',
+));
+
+Route::set('customer_address_delete', 'admin/customers/<customer_id>/delete_address/<address_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_address',
+));
 
 Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')->defaults(array(
 	'directory' => 'admin',
@@ -63,6 +115,11 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 ));
 	
 // Default Public Routes
+
+Route::set('accept_cookies', 'accept-cookies')->defaults(array(
+	'controller' => 'tools',
+	'action' => 'accept_cookies',
+));
 
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',

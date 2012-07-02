@@ -22,13 +22,19 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 				'product_options' => new Field_Serialized,  // Legacy Field, should not be used after v1.1.3
 				'quantity' => new Field_Integer,
 				'unit_price' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 				)),
 				'total_price' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
+				)),
+				'net_unit_price' => new Field_Float(array(
+					'places' => 4,
+				)),
+				'net_total_price' => new Field_Float(array(
+					'places' => 4,
 				)),
 				'vat_rate' => new Field_Float(array(
-					'places' => 2,
+					'places' => 4,
 				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
@@ -78,6 +84,24 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		return $item->save();
 	}
 	
+	public static function create_commercial_sales_order_item($sales_order, $sku)
+	{
+		$item = Jelly::factory('sales_order_item');
+
+		$sku_object = Model_Sku::load($sku['id']);
+		
+		$item->sales_order = $sales_order;
+		$item->sku = $sku_object;
+		$item->product_name = $sku_object->name();
+		$item->quantity = $sku['quantity'];
+		$item->net_unit_price = $sku['price'] ;
+		$item->net_total_price = $sku['price'] * $sku['quantity'];
+		$item->vat_rate = $sku_object->vat_rate();
+		$item->unit_price = $item->net_unit_price * (($item->vat_rate + 100) / 100);
+		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);;
+		return $item->save();
+	}
+	
 	public static function create_from_promotion_code_reward($sales_order, $promotion_code_reward)
 	{
 		$item = Jelly::factory('sales_order_item');
@@ -92,5 +116,10 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->total_price = $promotion_code_reward->sku_reward_retail_price(); 
 		
 		return $item->save();
+	}
+	
+	public function vat()
+	{
+		return $this->total_price - $this->net_total_price;
 	}
 }
