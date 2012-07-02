@@ -131,6 +131,11 @@ Route::set('customer_logout', 'logout')->defaults(array(
 	'action' => 'logout',
 )); 
 
+Route::set('blog_rss_feed', 'blog/rss_feed')->defaults(array(
+	'controller' => 'blog',
+	'action' => 'rss_feed',
+)); 
+
 Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'view',
@@ -145,6 +150,11 @@ Route::set('blog', 'blog')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'index',
 )); 
+
+Route::set('blog_rss', 'blog/feed.xml')->defaults(array(
+		'controller' => 'blog',
+		'action' => 'rss_feed',
+	));
 
 Route::set('view_category', 'browse/<slug>')->defaults(array(
 	'controller' => 'categories',

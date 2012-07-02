@@ -47,5 +47,41 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		
 		$this->add_breadcrumb('/blog', 'Blog');
 		$this->add_breadcrumb('/blog/' . $blog_post->slug, $blog_post->name);
+		
+	}
+
+	// Generate an RSS feed containing all Blog posts	
+	public function action_rss_feed()
+	{
+		$this->auto_render = FALSE;
+
+		$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->execute();
+		
+		$this->request->headers['Content-type'] = 'text/xml';
+		
+		$site = Kohana::config('ecommerce.site_name');
+		
+		$info = array(
+			'title' => $site.' Blog',
+			'description' => 'News and articles from '.$site,
+			'link' => URL::site(Route::get('blog_rss_feed')->uri()),
+		);
+		
+		// Create array to contain posts
+		$items = array();
+		foreach ($blog_posts as $blog_post)
+		{
+			$date = date(DATE_RFC822, $blog_post->created);
+
+			$items[] = array(
+				"title" => $blog_post->name,
+				"guid" => URL::site(Route::get('blog_view')->uri(array('slug' => $blog_post->slug))),
+				"pubDate" => strip_tags($date),
+				"author" => strip_tags($blog_post->author->email). " (" . ($blog_post->author->firstname) . " " .($blog_post->author->lastname) . ")" ,
+				"description" => strip_tags(str_replace(array("&mdash;", "&rsquo;", "&ldquo;", "&lsquo;", "&rdquo;", "&hellip;", "&lt;", "&gt;", "&amp;"), array("-", "'", "'", "'", "'", "...", "<", ">", "+"), Text::limit_words($blog_post->body))),
+			);
+		}
+		
+		echo Feed::create($info, $items);
 	}
 }
