@@ -97,14 +97,15 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		$items = array();
 		foreach ($blog_posts as $blog_post)
 		{
-			$date = date(DATE_RFC822, $blog_post->created);
+ 			$date = date(DATE_RFC1123, $blog_post->created);
 
 			$items[] = array(
-				"title" => $blog_post->name,
-				"guid" => URL::site(Route::get('blog_view')->uri(array('slug' => $blog_post->slug))),
-				"pubDate" => strip_tags($date),
-				"author" => strip_tags($blog_post->author->email). " (" . ($blog_post->author->firstname) . " " .($blog_post->author->lastname) . ")" ,
-				"description" => strip_tags(str_replace(array("&mdash;", "&rsquo;", "&ldquo;", "&lsquo;", "&rdquo;", "&hellip;", "&lt;", "&gt;", "&amp;"), array("-", "'", "'", "'", "'", "...", "<", ">", "+"), Text::limit_words($blog_post->body))),
+				'title' => $blog_post->name,
+				'guid' => URL::site(Route::get('blog_view')->uri(array('slug' => $blog_post->slug))),
+				'pubDate' => strip_tags($date),
+				'author' => htmlentities(strip_tags($blog_post->author->email.' ('.$blog_post->author->firstname.' '.$blog_post->author->lastname.')')),
+				'description' => HTML::entities(strip_tags(Text::limit_words($blog_post->body, 100, ''))),
+/* 				"description" => strip_tags(str_replace(array("&mdash;", "&rsquo;", "&ldquo;", "&lsquo;", "&rdquo;", "&hellip;", "&lt;", "&gt;", "&amp;"), array("-", "'", "'", "'", "'", "...", "<", ">", "+"), Text::limit_words($blog_post->body))), */
 			);
 		}
 		
