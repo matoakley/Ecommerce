@@ -29,6 +29,9 @@ class Ecommerce_Model_Sku extends Model_Application
 				'tiered_prices' => new Field_HasMany(array(
 					'foreign' => 'sku_tiered_price.sku_id',
 				)),
+				'weight' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -124,16 +127,26 @@ class Ecommerce_Model_Sku extends Model_Application
 	public function update($data)
 	{
 		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
-		if (isset($data['stock']))
-		{
-			$this->stock = $data['stock'];
-		}
 		$this->sku = $data['sku'];
 		if (isset($data['status']))
 		{
 			$this->status = $data['status'];
 		}
-		$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
+		
+		if (Caffeine::modules('commercial_sales_orders'))
+		{
+			$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
+		}
+		
+		if (Caffeine::modules('stock_control') AND isset($data['stock']))
+		{
+			$this->stock = $data['stock'];
+		}
+		
+		if (Caffeine::modules('product_weights'))
+		{
+			$this->weight = $data['weight'];
+		}
 		
 		// Update SKUs tiered prices
 		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['tiered_prices']))

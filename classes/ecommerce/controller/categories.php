@@ -16,7 +16,7 @@ class Ecommerce_Controller_Categories extends Controller_Application
 	{
 		$category = Model_Category::load($slug);
 						
-		$this->session->set('last_viewed_category', $category);						
+		$this->session->set('last_viewed_category', $category);			
 								
 		$sidebar_categories = ($category->has_children() OR ! $category->parent->loaded()) ? 
 										Model_Category::build_category_tree($category->id, TRUE) : 

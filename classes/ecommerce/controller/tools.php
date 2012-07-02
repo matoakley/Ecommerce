@@ -403,4 +403,18 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		
 		echo '<p><strong>FIN</strong></p>';
 	}
+	
+	public function action_accept_cookies()
+	{
+		$this->auto_render = FALSE;
+		
+		// Dump a cookie on the user's machine so that we don't show them
+		// the EU Cookie Law disclaimer on future visits.
+		Cookie::set('cookies_accepted', time());
+		
+		if ( ! Request::$is_ajax)
+		{
+			$this->request->redirect(Request::$referrer);
+		}
+	}
 }

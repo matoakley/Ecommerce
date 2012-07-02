@@ -1,9 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-// Load the HTML2PDF class autoloader
-require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
-// Load the PHPExcel class autoloader
-require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
+// Only include XLS and PDF libraries if not CLI as missing
+// $_SERVER['SERVER_NAME'] causes error.
+if ( ! Kohana::$is_cli)
+{
+	// Load the HTML2PDF class autoloader
+	require Kohana::find_file('vendor', 'html2pdf/html2pdf.class');
+	// Load the PHPExcel class autoloader
+	require Kohana::find_file('vendor', 'phpexcel/PHPExcel');
+}
 
 // Admin routes
 
@@ -110,6 +115,11 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 ));
 	
 // Default Public Routes
+
+Route::set('accept_cookies', 'accept-cookies')->defaults(array(
+	'controller' => 'tools',
+	'action' => 'accept_cookies',
+));
 
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',

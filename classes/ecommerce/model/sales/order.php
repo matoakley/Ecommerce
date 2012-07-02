@@ -144,7 +144,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	}
 
 	public static function create_from_basket($basket, $customer, $billing_address, $delivery_address, $delivery_name)
-	{		
+	{
+		// Final check that basket shipping total is correct if using cusotm calculations
+		Model_Basket::instance()->calculate_shipping();
+	
 		$sales_order = Jelly::factory('sales_order');
 		$sales_order->customer = $customer;
 		$sales_order->billing_address = $billing_address;

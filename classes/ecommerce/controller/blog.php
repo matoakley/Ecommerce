@@ -46,6 +46,32 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		$this->template->blog_post = $blog_post;
 		
 		$this->add_breadcrumb('/blog', 'Blog');
+		
+		// load up the breadcrumb
+		$blog_category = $this->session->get('last_viewed_blog_category');
+		
+		// Check that the last viewed category (if set) contains this product
+		if ($blog_category AND ! array_key_exists($blog_category->id, $blog_post->categories->as_array('id')))
+		{
+			unset($blog_category);
+		}
+		
+		// If we haven't gotten the category from the session, grab the first category it appears in
+		if ( ! isset($blog_category) OR ! $blog_category)
+		{
+			$blog_category = $blog_post->categories->current();
+		}
+		
+		if ($blog_category->parent->loaded())
+		{
+			$this->add_breadcrumb(URL::site(Route::get('view_blog_category')->uri(array('slug' => $blog_category->parent->slug))), $blog_category->parent->name);
+		}
+		
+		if ($blog_category->loaded())
+		{
+			$this->add_breadcrumb(URL::site(Route::get('view_blog_category')->uri(array('slug' => $blog_category->slug))), $blog_category->name);
+		}
+		
 		$this->add_breadcrumb('/blog/' . $blog_post->slug, $blog_post->name);
 	}
 }

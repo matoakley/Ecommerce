@@ -52,6 +52,27 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->delivery_option = Kohana::config('ecommerce.default_delivery_option');
 	}
 	
+	protected function calculate_weight()
+	{
+		if ( ! Caffeine::modules('product_weights'))
+		{
+			throw new Kohana_Exception('Product weights module is not enabled.');
+		}
+	
+		$weight = 0;
+		foreach ($this->items as $item)
+		{
+			$weight += $item->sku->weight * $item->quantity;
+		}
+		
+		return $weight;
+	}
+	
+	public function calculate_shipping()
+	{
+		return $this; // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	}
+	
 	public function save($key = NULL)
 	{	
 		if ($this->promotion_code->loaded())
@@ -234,6 +255,4 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->promotion_code_reward = NULL;
 		return $this->save();
 	}
-	
-	public function calculate_shipping() {} // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
 }
