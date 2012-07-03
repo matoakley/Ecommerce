@@ -81,7 +81,16 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 	{
 		$this->auto_render = FALSE;
 
-		$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
+		$category = Model_Blog_Category::load($this->request->param('blog_category_slug'));
+		
+		if ($category->loaded())
+		{ 
+			$blog_posts = $category->get('posts')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
+		}
+		else
+		{
+			$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
+		}
 		
 		$this->request->headers['Content-type'] = 'text/xml';
 		
@@ -90,7 +99,7 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		$info = array(
 			'title' => $site.' Blog',
 			'description' => 'News and articles from '.$site,
-			'link' => URL::site(Route::get('blog_rss_feed')->uri()),
+			'link' => URL::site(Route::get('blog_rss')->uri()),
 		);
 		
 		// Create array to contain posts
