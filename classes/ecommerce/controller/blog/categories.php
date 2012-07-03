@@ -38,6 +38,11 @@ class Ecommerce_Controller_Blog_Categories extends Controller_Application
 			));
 		}
 		
+		if ($this->modules['blog_categories'])
+		{
+			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
+		}
+		
 		$this->template->blog_category = $category;
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;		

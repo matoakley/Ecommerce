@@ -32,6 +32,11 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		
 		$this->template->blog_posts = $blog_post_search['results'];
 		$this->add_breadcrumb('/blog', 'Blog');
+		
+		if ($this->modules['blog_categories'])
+		{
+			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
+		}
 	}
 	
 	public function action_view($slug = FALSE)
@@ -44,6 +49,11 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		}
 		
 		$this->template->blog_post = $blog_post;
+		
+		if ($this->modules['blog_categories'])
+		{
+			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
+		}
 		
 		$this->add_breadcrumb('/blog', 'Blog');
 		
