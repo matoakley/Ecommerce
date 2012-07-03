@@ -81,7 +81,7 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 	{
 		$this->auto_render = FALSE;
 
-		$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->execute();
+		$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
 		
 		$this->request->headers['Content-type'] = 'text/xml';
 		
