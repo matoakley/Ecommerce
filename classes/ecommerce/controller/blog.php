@@ -73,5 +73,50 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		}
 		
 		$this->add_breadcrumb('/blog/' . $blog_post->slug, $blog_post->name);
+		
+	}
+
+	// Generate an RSS feed containing all Blog posts	
+	public function action_rss_feed()
+	{
+		$this->auto_render = FALSE;
+
+		$category = Model_Blog_Category::load($this->request->param('blog_category_slug'));
+		
+		if ($category->loaded())
+		{ 
+			$blog_posts = $category->get('posts')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
+		}
+		else
+		{
+			$blog_posts = Jelly::select('blog_post')->where('status', '=', 'active')->order_by('created', 'DESC')->execute();
+		}
+		
+		$this->request->headers['Content-type'] = 'text/xml';
+		
+		$site = Kohana::config('ecommerce.site_name');
+		
+		$info = array(
+			'title' => $site.' Blog',
+			'description' => 'News and articles from '.$site,
+			'link' => URL::site(Route::get('blog_rss')->uri()),
+		);
+		
+		// Create array to contain posts
+		$items = array();
+		foreach ($blog_posts as $blog_post)
+		{
+ 			$date = date(DATE_RFC1123, $blog_post->created);
+
+			$items[] = array(
+				'title' => $blog_post->name,
+				'link' => URL::site(Route::get('blog_view')->uri(array('slug' => $blog_post->slug))),
+				'pubDate' => strip_tags($date),
+				'author' => htmlentities(strip_tags($blog_post->author->email.' ('.$blog_post->author->firstname.' '.$blog_post->author->lastname.')')),
+				'description' => HTML::entities(strip_tags(Text::limit_words($blog_post->body, 100, ''))),
+			);
+		}
+		
+		echo Feed::create($info, $items);
 	}
 }

@@ -188,6 +188,11 @@ Route::set('customer_logout', 'logout')->defaults(array(
 	'action' => 'logout',
 )); 
 
+Route::set('blog_rss', 'blog(/category/<blog_category_slug>)/feed.xml')->defaults(array(
+		'controller' => 'blog',
+		'action' => 'rss_feed',
+	));
+
 Route::set('blog_view', 'blog/<slug>')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'view',

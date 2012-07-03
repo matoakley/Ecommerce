@@ -63,6 +63,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'exported_to_sage' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'invoiced_on' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -418,6 +421,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		if ($this->status != $data['status'])
 		{
 			$this->update_status($data['status']);
+		}
+		
+		if (Caffeine::modules('commercial_sales_orders') AND isset($data['invoiced_on']))
+		{
+			$this->invoiced_on = $data['invoiced_on'] != '' ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
 		}
 	
 		return $this->save();

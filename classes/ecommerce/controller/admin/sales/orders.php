@@ -322,6 +322,14 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			throw new Kohana_Exception('Sales Order not found');
 		}
 		
+		// If this is the fist time that the invoice has been
+		// generated then set invoiced on as now.
+		if ( ! $sales_order->invoiced_on)
+		{
+			$sales_order->invoiced_on = time();
+			$sales_order->save();
+		}
+		
 		$this->template->base_url = URL::site();
 		$this->template->sales_order = $sales_order;
 		
