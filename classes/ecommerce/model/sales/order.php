@@ -112,7 +112,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		'retail',
 	);
 	
-	private function calculate_vat_and_subtotal()
+	protected function calculate_vat_and_subtotal()
 	{
 		$vat = 0;
 	
@@ -127,6 +127,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$this->order_vat = $vat;
 		$this->order_subtotal = $this->order_total - $vat;
 		
+		return $this->save();
+	}
+	
+	protected function calculate_total()
+	{
+		$total = 0;
+		foreach ($this->items as $item)
+		{
+			$total += $item->total_price;
+		}
+		$total += $this->delivery_option_price;
+		$this->order_total = $total;
 		return $this->save();
 	}
 	
@@ -283,13 +295,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		return $sales_order->save();
 	}
-	
-/*
-	public function update_commercial_sales_order($data)
-	{
-		
-	}
-*/
+
 	public function generate_invoice()
 	{
 		if ( ! $this->type == 'commercial')
@@ -415,5 +421,19 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 	
 		return $this->save();
+	}
+
+	public function update_delivery_option($option)
+	{
+		if (is_int($option))
+		{
+			$option = Model_Delivery_Option::load($option);
+		}
+		
+		$this->delivery_option = $option;
+		$this->delivery_option_name = $option->name;
+		$this->delivery_option_price = $option->retail_price();
+		
+		return $this->save()->calculate_total();
 	}
 }
