@@ -118,6 +118,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	protected function calculate_vat_and_subtotal()
 	{
 		$vat = 0;
+		$dvat = 0;
 	
 		foreach ($this->items as $item)
 		{
@@ -125,10 +126,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 	
 		// Delivery VAT
-		$vat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
+		$dvat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
 	
 		$this->order_vat = $vat;
 		$this->order_subtotal = $this->order_total - $vat;
+		$this->order_vat = $vat + $dvat;
+		$this->order_total = $this->order_total + $dvat;
 		
 		return $this->save();
 	}

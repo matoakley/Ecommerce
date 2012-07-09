@@ -382,9 +382,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 				date('d/m/Y', $sales_order->created),
 				'INV-'.$sales_order->id,
 				$company_name,
-				number_format($sales_order->order_subtotal, 2),
+				round($sales_order->order_subtotal, 2),
 				'T1',
-				number_format($sales_order->order_vat, 2),
+				round($sales_order->order_vat, 2),
 			);
 		
 			$data[] = $sales_order_data;
