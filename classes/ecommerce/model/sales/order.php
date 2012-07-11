@@ -415,7 +415,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 						
 		$email->send($message);
 		
-		return $this;
+		// If this is the fist time that the invoice has been
+		// generated then set invoiced on as now.
+		if ( ! $this->invoiced_on )
+		{
+			$this->invoiced_on = time();
+		}
+		
+		return $this->save();
 	}
 	
 	public function update($data)
