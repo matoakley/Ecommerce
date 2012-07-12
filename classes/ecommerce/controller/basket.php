@@ -49,6 +49,38 @@ class Ecommerce_Controller_Basket extends Controller_Application
 				}
 			}
 		}
+		elseif ($_POST['product'])
+		{
+    		$skus = Model_Product::load($_POST['product'])->skus;
+
+    		foreach ($skus as $sku)
+    		{
+        		$matches = TRUE;
+        		
+        		$sku_product_options = $sku->product_options->as_array('id', 'value');
+        		
+        		echo Kohana::debug($_POST);
+        		echo Kohana::debug($sku_product_options);exit;
+        		
+        		foreach ($_POST['options'] as $option_id)
+        		{
+        		  echo Kohana::debug($option_id);
+        		  
+        		  
+        		  
+            		if ( ! in_array($option_id, $sku_product_options))
+            		{
+                		$matches = FALSE;
+            		}
+        		}
+        		
+        		if ($matches AND $sku->status == 'active')
+        		{
+            		$item = $this->basket->add_item($sku->id, $_POST['quantity']);
+        		}
+    		}
+    		exit;
+		}
 		
 		if (Request::$is_ajax)
 		{
