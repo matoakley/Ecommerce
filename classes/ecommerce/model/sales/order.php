@@ -255,6 +255,67 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
 	}
 	
+	public static function monthly_sales_orders($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$sql = "SELECT COUNT(*) as orders
+						FROM sales_orders
+						WHERE status = 'complete'
+						AND EXTRACT(MONTH FROM created) = $month";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['orders'])) ? $result[0]['orders'] : 0;;
+	}
+	
+	public static function daily_sales_orders($day = FALSE)
+	{
+		if ( ! $day)
+		{
+			$day = date('d');
+		}
+		
+		$sql = "SELECT COUNT(*) as ordersd
+						FROM sales_orders
+						WHERE status = 'complete'
+						AND EXTRACT(DAY FROM created) = $day";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['ordersd'])) ? $result[0]['ordersd'] : 0;;
+	}
+	public static function please_work(){
+
+
+$query = "SELECT 
+                COUNT(*) AS number, 
+                DATE(created) AS order_day 
+            FROM 
+                sales_orders 
+            WHERE 
+                status = 'complete' 
+            GROUP BY 
+                order_day 
+            ORDER BY 
+                created 
+            DESC
+            LIMIT 31";
+
+    $result = Database::instance()->query(Database::SELECT, $query, FALSE)->as_array();
+    $array = array( 
+        'order_day' => 'number',);
+				
+                
+		
+		return ( ! is_null($result[0]['number'])) ? $result[0]['order_day'] : 0;;
+            
+}
+
+	
 	public static function overall_completed_total()
 	{
 		$sql = "SELECT SUM(order_total) as total

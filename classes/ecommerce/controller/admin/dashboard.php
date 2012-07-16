@@ -18,7 +18,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 			{
 				$monthly_totals[Date::month2string($month)] = array(
 					'visits' => $visits,
-					'total' => Model_Sales_Order::monthly_completed_total((int)$month)
+					'total' => Model_Sales_Order::monthly_completed_total((int)$month),
+					'orders' => Model_Sales_Order::monthly_sales_orders((int)$month),
 				);
 			}
 			$this->template->monthly_visits = $monthly_totals;
@@ -35,6 +36,11 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		
 		$this->template->monthly_total = Model_Sales_Order::monthly_completed_total();
 		$this->template->all_time_total = Model_Sales_Order::overall_completed_total();
+		$this->template->monthly_orders = Model_Sales_Order::monthly_sales_orders();
+		$this->template->order_day = Model_Sales_Order::please_work();
+		
+
+
 	}
 	
 }

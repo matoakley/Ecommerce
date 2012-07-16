@@ -38,6 +38,10 @@
 				series: [{
 					name: 'Daily Visitors',
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
+				},
+				{
+					name: 'No. Of Orders',
+					data: [{% for date, number in order_day %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				}],
 				title: {
 					text: null
@@ -96,9 +100,10 @@
 			
 				<table>
 					<tbody>
+					
 					{% for key, product in top_products %}
 						<tr class="{{['', 'alternate']|cycle(key)}}">
-							<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
+							<td><a href="/admin/products/edit/{{product.id}}">{{product.product_name}}</a></td>
 							<td class="tr">{{product.sold}}</td>
 						</tr>
 					{% endfor %}
@@ -152,8 +157,9 @@
 					{% for month, data in monthly_visits %}
 						<tr class="{{['', 'alternate']|cycle(i)}}">
 							<td><strong>{{month}}</strong></td>
-							<td class="tc">{{data.visits}} visits</td>
-							<td class="tr">&pound;{{data.total}}</td>
+							<td class="tc">{{data.visits}} /Visits</td>
+							<td class="tc">{{data.orders}} /Orders</td>
+							<td class="tr">&pound;{{data.total|num_format(2)}}</td>
 						</tr>
 						{% set i = i + 1 %}
 					{% endfor %}
