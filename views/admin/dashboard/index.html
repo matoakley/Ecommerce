@@ -22,7 +22,7 @@
 				},
 				tooltip: {
 	     		formatter: function() {
-	        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
+	        	return 'There were <b>' + this.y + '</b>' + this.series.name +' On <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
 	      	}
 	    	},
 				xAxis: {
@@ -36,12 +36,12 @@
 					}
 				},
 				series: [{
-					name: 'Daily Visitors',
+					name: ' Unique Visitors ',
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				},
 				{
-					name: 'No. Of Orders',
-					data: [{% for date, number in order_day %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
+					name: ' Orders Placed ',
+					data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				}],
 				title: {
 					text: null
@@ -157,8 +157,8 @@
 					{% for month, data in monthly_visits %}
 						<tr class="{{['', 'alternate']|cycle(i)}}">
 							<td><strong>{{month}}</strong></td>
-							<td class="tc">{{data.visits}} /Visits</td>
-							<td class="tc">{{data.orders}} /Orders</td>
+							<td class="tc">{{data.visits}} - Visits</td>
+							<td class="tc">{{data.orders}} - Orders</td>
 							<td class="tr">&pound;{{data.total|num_format(2)}}</td>
 						</tr>
 						{% set i = i + 1 %}

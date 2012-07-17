@@ -62,6 +62,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
+				
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -160,22 +161,6 @@ class Ecommerce_Model_Product extends Model_Application
 						GROUP BY sales_order_items.product_name
 						ORDER BY SUM(sales_order_items.quantity) DESC
 						LIMIT $num_products";
-						
-						
-						/*
-						
-						Kyles attempt at mysql not working....
-						
-SELECT sales_order_items.sales_order_id, sales_order_items.product_name, sales_orders.id AS sold
-						FROM sales_order_items
-						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
-						WHERE sales_orders.status = 'complete'
-						AND sales_orders.deleted IS NULL
-						AND sales_order_items.deleted IS NULL
-						GROUP BY sales_orders_items.product_name
-						ORDER BY SUM(sales_order_items.quantity) DESC
-						LIMIT $num_products";
-*/
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
