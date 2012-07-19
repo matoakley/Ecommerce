@@ -367,7 +367,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			throw new Kohana_Exception('Module is not enabled.');
 		}
 
-		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent', 'complete'))->where('exported_to_sage', 'IS', NULL)->execute();
+		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent'))->where('exported_to_sage', 'IS', NULL)->execute();
 		
 		$data = array();
 		
