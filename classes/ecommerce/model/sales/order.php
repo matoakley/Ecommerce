@@ -272,6 +272,34 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return ( ! is_null($result[0]['orders'])) ? $result[0]['orders'] : 0;
 	}
 	
+	public static function thismonths_orders($month = FALSE)
+	{
+	
+	   $month = date('m');
+		
+		
+		$sql = "SELECT COUNT(*) as thismonthsorders
+						FROM sales_orders
+						WHERE status = 'complete'
+						AND EXTRACT(MONTH FROM created) = $month";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['thismonthsorders'])) ? $result[0]['thismonthsorders'] : 0;
+	}
+	
+	public static function alltime_sales_orders($month = FALSE)
+	{
+				
+		$sql = "SELECT COUNT(*) as alltimeorders
+						FROM sales_orders
+						WHERE status = 'complete'";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['alltimeorders'])) ? $result[0]['alltimeorders'] : 0;
+	}
+	
 	public static function daily_order_count()
 	{
     	$query = "SELECT COUNT(created) AS order_no, 

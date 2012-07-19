@@ -24,30 +24,66 @@
 	     		formatter: function() {
 	        	return 'There were <b>' + this.y + '</b>' + this.series.name +' On <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
 	      	}
-	    	},
+	    	},    
+	    	      
+	    	
 				xAxis: {
 					categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
 					labels: {
 						formatter: function() {
 	          	return Highcharts.dateFormat('%a %d %b', Date.UTC(this.value.toString().substr(0,4), this.value.toString().substr(4,2) - 1, this.value.toString().substr(6,2)));
 	          },
-	          showFirstLabel: false,
+	          	          showFirstLabel: false,
 	          step: 7
 					}
 				},
+				yAxis: [{
+				
+				labels: {
+				formatter: function() {
+					return this.value;
+				},
+				style: {
+					color: ''
+				}
+			},
+			title: {
+				text: '',
+				style: {
+					color: ''
+				}
+			}},{
+			title: {
+				text: '',
+				style: {
+					color: ''
+				}
+			},
+			labels: {
+				formatter: function() {
+					return this.value ;
+				},
+				style: {
+					color: ''
+				}
+			},
+			opposite: true}],
+				
 				series: [{
 					name: ' Unique Visitors ',
+					yAxis: 0,
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				},
 				{
 					name: ' Orders Placed ',
+					yAxis: 1,
 					data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				}],
 				title: {
 					text: null
 				},
 				yAxis: {
-					title: null
+					title: 'Visitors'
 				}
 			});
 		});
@@ -135,9 +171,33 @@
 				<h2 style="margin:0;color:green;">&pound;{{all_time_total|num_format(2)}}</h2>
 			</div>
 			
+			
 			<div class="clear"></div>
 			
 		</div>
+		
+		<div class="dashboard-row">
+		
+		<div class="dashboard-element">
+			
+			<div class="grid_5 alpha">
+				<h2 style="margin:0;">{{"now"|date('F')}} Sales Orders To Date</h2>
+			</div>
+			<div class="grid_3 tr">
+				<h2 style="margin:0;color:green;">{{monthly_orders|num_format(0)}}</h2>
+			</div>
+			<div class="grid_5">
+				<h2 style="margin:0;">All Time Sales Orders</h2>
+			</div>
+			<div class="grid_3 omega tr">
+				<h2 style="margin:0;color:green;">{{alltime_orders|num_format(0)}}</h2>
+			</div>
+			
+			
+			<div class="clear"></div>
+			
+		</div>
+
 	
 	</div>
 	
