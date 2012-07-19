@@ -53,12 +53,13 @@
 	</div>
 	<div class="grid_2">
 		{% if modules.stock_control %}
-			<label for="sku-{{sku.id}}-stock">Stock</label>
+			<label for="sku-{{sku.id}}-stock">Out Of Stock?</label>
 		{% endif %}
 	</div>
 	<div class="grid_2 omega">
 		{% if modules.stock_control %}
-			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
+			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="hidden" />
+			<input type="checkbox" value="{{sku.nostock}}" />
 		{% endif %}
 	</div>
 	<div class="clear"></div>

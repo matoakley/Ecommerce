@@ -62,6 +62,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
+				
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -148,7 +149,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	public static function most_popular_products($num_products = 5)
 	{
-		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold
+		$sql = "SELECT sales_order_items.product_name, products.name, SUM(sales_order_items.quantity) AS sold
 						FROM products
 						JOIN skus ON products.id = skus.product_id
 						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
@@ -157,7 +158,7 @@ class Ecommerce_Model_Product extends Model_Application
 						AND products.deleted IS NULL
 						AND sales_orders.deleted IS NULL
 						AND sales_order_items.deleted IS NULL
-						GROUP BY products.name
+						GROUP BY sales_order_items.product_name
 						ORDER BY SUM(sales_order_items.quantity) DESC
 						LIMIT $num_products";
 						
