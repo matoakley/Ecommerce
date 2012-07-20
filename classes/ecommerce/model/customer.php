@@ -105,7 +105,9 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
 		$validator = Validate::factory($data)
 											->filter(TRUE, 'trim')
-											->rule('email', 'not_empty');
+											->rule('email', 'not_empty')
+											->rule('firstname', 'not_empty')
+											->rule('lastname', 'not_empty');
 		
 		if ( ! $validator->check())
 		{
