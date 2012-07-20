@@ -100,7 +100,19 @@ class Ecommerce_Model_Customer extends Model_Application
 			'company',
 		),
 	);
-
+public static function customer_email_validator($data) 
+	{
+		$validator = Validate::factory($data)
+											->filter(TRUE, 'trim')
+											->rule('email', 'not_empty');
+		
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
 	public static function create($data)
 	{
 		// Format email address to lowercase

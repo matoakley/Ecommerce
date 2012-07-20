@@ -56,6 +56,17 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			}
 			
 			$delivery_name = array();
+			if (isset($_POST['customer']))
+			{
+				try
+				{
+					Model_Customer::customer_email_validator($_POST['customer']);
+				}
+				catch (Validate_Exception $e)
+				{
+					$errors['customer'] = $e->array->errors();
+				}
+			}
 			if (isset($_POST['delivery_address']['same']))
 			{
 				try
@@ -135,6 +146,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
+		
 	}
 	
 	function action_confirm()
