@@ -22,14 +22,10 @@ class Ecommerce_Model_Sku extends Model_Application
 						'not_empty' => NULL,
 					),
 				)),
-				/*
-'nostock' => new Field_Integer(array(
-					'default' => NULL,
-				)),
-*/
 				'stock' => new Field_Integer(array(
 					'default' => 0,
 				)),				
+				'stock_status' => new Field_String,
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
@@ -147,6 +143,10 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
 			$this->stock = 0;
+		}
+		if (isset($data['stock_status']))
+		{
+  		$this->stock_status = $data['stock_status'];
 		}
 		
 		if (Caffeine::modules('product_weights'))

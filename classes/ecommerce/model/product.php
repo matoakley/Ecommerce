@@ -240,8 +240,7 @@ class Ecommerce_Model_Product extends Model_Application
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
-		}
-		
+		}	
 		$this->name = $data['name'];
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];

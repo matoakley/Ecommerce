@@ -264,7 +264,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sql = "SELECT COUNT(*) as orders
 						FROM sales_orders
-						WHERE status = 'complete'
+						WHERE status IN ('payment_received', 'complete')
 						AND EXTRACT(MONTH FROM created) = $month";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
@@ -280,7 +280,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sql = "SELECT COUNT(*) as thismonthsorders
 						FROM sales_orders
-						WHERE status = 'complete'
+						WHERE status IN ('payment_received', 'complete')
 						AND EXTRACT(MONTH FROM created) = $month";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
@@ -293,7 +293,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				
 		$sql = "SELECT COUNT(*) as alltimeorders
 						FROM sales_orders
-						WHERE status = 'complete'";
+						WHERE status IN ('payment_received', 'complete')";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -306,8 +306,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
             DATE(created) AS order_day 
             FROM 
                 sales_orders 
-            WHERE 
-                status = 'complete' 
+            WHERE status IN ('payment_received', 'complete') 
             GROUP BY 
                 order_day 
             ORDER BY 

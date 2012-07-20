@@ -52,14 +52,16 @@
 		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
 	</div>
 	<div class="grid_2">
-		{% if modules.stock_control %}
-			<label for="sku-{{sku.id}}-stock">Out Of Stock?</label>
-		{% endif %}
+			<label for="sku-{{sku.id}}-stock">Stock</label>
 	</div>
 	<div class="grid_2 omega">
 		{% if modules.stock_control %}
-			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="hidden" />
-			<input type="checkbox" value="{{sku.nostock}}" />
+			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" />
+		{% else %}
+		<select id="stock_status" name="skus[{{sku.id}}][stock_status]" value="{{sku.stock_status}}"/>
+			<option value="in_stock" {% if sku.stock_status == 'in_stock' %}selected="selected"{% endif %}>In Stock</option>
+			<option value="out_stock" {% if sku.stock_status == 'out_stock' %}selected="selected"{% endif %}>Out Of Stock</option>
+			</select>
 		{% endif %}
 	</div>
 	<div class="clear"></div>
