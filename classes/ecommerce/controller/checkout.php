@@ -56,7 +56,6 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			}
 			
 			$delivery_name = array();
-			$email = $_POST['customer'];
 			if (isset($_POST['customer']))
 			{
 				try
