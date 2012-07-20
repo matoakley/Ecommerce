@@ -22,28 +22,69 @@
 				},
 				tooltip: {
 	     		formatter: function() {
-	        	return 'There were <b>' + this.y + '</b> unique visitors on <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
+	        	return 'There were <b>' + this.y + '</b>' + this.series.name +' On <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
 	      	}
-	    	},
+	    	},    
+	    	      
+	    	
 				xAxis: {
 					categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
 					labels: {
 						formatter: function() {
 	          	return Highcharts.dateFormat('%a %d %b', Date.UTC(this.value.toString().substr(0,4), this.value.toString().substr(4,2) - 1, this.value.toString().substr(6,2)));
 	          },
-	          showFirstLabel: false,
+	          	          showFirstLabel: false,
 	          step: 7
 					}
 				},
+				yAxis: [{
+				
+				labels: {
+				formatter: function() {
+					return this.value;
+				},
+				style: {
+					color: ''
+				}
+			},
+			title: {
+				text: '',
+				style: {
+					color: ''
+				}
+			}},{
+			title: {
+				text: '',
+				style: {
+					color: ''
+				}
+			},
+			labels: {
+				formatter: function() {
+					return this.value ;
+				},
+				style: {
+					color: ''
+				}
+			},
+			opposite: true}],
+				
 				series: [{
-					name: 'Daily Visitors',
+					name: ' Unique Visitors ',
+					yAxis: 0,
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
-				}],
+				},
+				{% if modules.dashboard_enhanced_sales_orders %} {
+					name: ' Orders Placed ',
+					yAxis: 1,
+					data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
+				}
+				{% endif %}],
 				title: {
 					text: null
 				},
 				yAxis: {
-					title: null
+					title: 'Visitors'
 				}
 			});
 		});
@@ -96,9 +137,10 @@
 			
 				<table>
 					<tbody>
+					
 					{% for key, product in top_products %}
 						<tr class="{{['', 'alternate']|cycle(key)}}">
-							<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
+							<td><a href="/admin/products/edit/{{product.id}}">{{product.product_name}}</a></td>
 							<td class="tr">{{product.sold}}</td>
 						</tr>
 					{% endfor %}
@@ -130,9 +172,33 @@
 				<h2 style="margin:0;color:green;">&pound;{{all_time_total|num_format(2)}}</h2>
 			</div>
 			
+			
 			<div class="clear"></div>
 			
 		</div>
+		
+		{% if modules.dashboard_enhanced_sales_orders %}<div class="dashboard-row">
+		
+		<div class="dashboard-element">
+			
+			<div class="grid_5 alpha">
+				<h2 style="margin:0;">{{"now"|date('F')}} Sales Orders To Date</h2>
+			</div>
+			<div class="grid_3 tr">
+				<h2 style="margin:0;color:green;">{{monthly_orders|num_format(0)}}</h2>
+			</div>
+			<div class="grid_5">
+				<h2 style="margin:0;">All Time Sales Orders</h2>
+			</div>
+			<div class="grid_3 omega tr">
+				<h2 style="margin:0;color:green;">{{alltime_orders|num_format(0)}}</h2>
+			</div>
+			
+			
+			<div class="clear"></div>
+			
+		</div>
+		{% endif %}
 	
 	</div>
 	
@@ -152,8 +218,9 @@
 					{% for month, data in monthly_visits %}
 						<tr class="{{['', 'alternate']|cycle(i)}}">
 							<td><strong>{{month}}</strong></td>
-							<td class="tc">{{data.visits}} visits</td>
-							<td class="tr">&pound;{{data.total}}</td>
+							<td class="tc">{{data.visits}} - Visits</td>
+							{% if modules.dashboard_enhanced_sales_orders %}<td class="tc">{{data.orders}} - Orders</td>{% endif %}
+							<td class="tr">&pound;{{data.total|num_format(2)}}</td>
 						</tr>
 						{% set i = i + 1 %}
 					{% endfor %}

@@ -367,7 +367,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			throw new Kohana_Exception('Module is not enabled.');
 		}
 
-		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent', 'complete'))->where('exported_to_sage', 'IS', NULL)->execute();
+		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent'))->where('exported_to_sage', 'IS', NULL)->execute();
 		
 		$data = array();
 		
@@ -398,12 +398,15 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			mkdir($dir_name, 0777, TRUE);
 		}
 		
+		ini_set("auto_detect_line_endings", true);
+		
 		$filename = 'Sales_Order_Export_'.date('Y-m-d').'.csv';
 		$file_path = $dir_name.$filename;
 		$handle = fopen($file_path, 'w+');
 		foreach ($data as $line)
 		{
-			fputcsv($handle, $line);	
+			$formatted_line = CSV::get_csv_line($line);
+			fwrite($handle, $formatted_line);
 		}
 		
 		$export_timestamp = time();

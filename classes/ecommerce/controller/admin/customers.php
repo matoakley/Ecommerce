@@ -48,11 +48,15 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	
 		$redirect_to = $this->session->get('admin.customers.index', '/admin/customers');
 		$this->template->cancel_url = $redirect_to;
-	
-		$fields = array(
-			'customer' => $customer->as_array(),
-			'custom_fields' => $customer->custom_fields(),
+		
+		$fields = array( 
+		  'customer' => $customer->as_array(),
 		);
+		if ($this->modules['custom_fields'])
+		{
+		  $fields['custom_fields'] = $customer->custom_fields();
+		}
+			
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
 		$fields['customer']['default_billing_address'] = $customer->default_billing_address->id;
 		$fields['customer']['default_shipping_address'] = $customer->default_shipping_address->id; 

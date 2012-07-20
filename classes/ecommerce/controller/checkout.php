@@ -98,7 +98,6 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 					$errors['delivery_address'] = $e->array->errors();
 				}
 			}
-			
 			if (empty($errors))
 			{
 				if ($this->auth->logged_in('customer'))

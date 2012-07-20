@@ -30,6 +30,7 @@ return array
 		'crm' => FALSE,
 		'custom_fields' => FALSE,
 		'customer_accounts' => FALSE,
+		'dashboard_enhanced_sales_orders' => FALSE,
 		'delivery_options' => FALSE,
 		'events' => FALSE,
 		'forums' => FALSE,
@@ -47,6 +48,7 @@ return array
 		'tiered_pricing' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
+		
 	),
 	
 	'admin_list_options' => array(10, 25, 50, 100, 'all'),

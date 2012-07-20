@@ -10,6 +10,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('skus')
+		      ->sorting(array('price' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo,
@@ -21,6 +22,11 @@ class Ecommerce_Model_Sku extends Model_Application
 						'not_empty' => NULL,
 					),
 				)),
+				/*
+'nostock' => new Field_Integer(array(
+					'default' => NULL,
+				)),
+*/
 				'stock' => new Field_Integer(array(
 					'default' => 0,
 				)),				
@@ -140,7 +146,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
-			$this->stock = $data['stock'];
+			$this->stock = 0;
 		}
 		
 		if (Caffeine::modules('product_weights'))

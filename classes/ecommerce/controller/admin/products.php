@@ -354,6 +354,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$product_options = $product->get('product_options')
 																->where('key', '=', $_POST['key'])
 																->where('value', '=', $_POST['value'])
+																->order_by(`value`, `DESC`)
 																->execute();
 		
 		$data = array();
