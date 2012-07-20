@@ -145,6 +145,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
+		
 	}
 	
 	function action_confirm()
