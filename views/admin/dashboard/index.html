@@ -74,11 +74,12 @@
 					yAxis: 0,
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				},
-				{
+				{% if modules.dashboard_enhanced_sales_orders %} {
 					name: ' Orders Placed ',
 					yAxis: 1,
 					data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
-				}],
+				}
+				{% endif %}],
 				title: {
 					text: null
 				},
@@ -176,7 +177,7 @@
 			
 		</div>
 		
-		<div class="dashboard-row">
+		{% if modules.dashboard_enhanced_sales_orders %}<div class="dashboard-row">
 		
 		<div class="dashboard-element">
 			
@@ -197,7 +198,7 @@
 			<div class="clear"></div>
 			
 		</div>
-
+		{% endif %}
 	
 	</div>
 	
@@ -218,7 +219,7 @@
 						<tr class="{{['', 'alternate']|cycle(i)}}">
 							<td><strong>{{month}}</strong></td>
 							<td class="tc">{{data.visits}} - Visits</td>
-							<td class="tc">{{data.orders}} - Orders</td>
+							{% if modules.dashboard_enhanced_sales_orders %}<td class="tc">{{data.orders}} - Orders</td>{% endif %}
 							<td class="tr">&pound;{{data.total|num_format(2)}}</td>
 						</tr>
 						{% set i = i + 1 %}
