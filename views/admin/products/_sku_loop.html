@@ -56,7 +56,7 @@
 	</div>
 	<div class="grid_2 omega">
 		{% if modules.stock_control %}
-			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" />
+			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
 		{% else %}
 		<select id="stock_status" name="skus[{{sku.id}}][stock_status]" value="{{sku.stock_status}}"/>
 			<option value="in_stock" {% if sku.stock_status == 'in_stock' %}selected="selected"{% endif %}>In Stock</option>
