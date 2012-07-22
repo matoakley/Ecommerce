@@ -142,7 +142,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
-			$this->stock = 0;
+			$this->stock = $data['stock'];
 		}
 		if (isset($data['stock_status']))
 		{
