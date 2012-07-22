@@ -302,55 +302,55 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public static function daily_order_count()
 	{
-    	$query = "SELECT COUNT(created) AS order_no, 
-            DATE(created) AS order_day 
-            FROM 
-                sales_orders 
-            WHERE status IN ('payment_received', 'complete') 
-            GROUP BY 
-                order_day 
-            ORDER BY 
-                created 
-            DESC
-            LIMIT 31";
+  	$query = "SELECT COUNT(created) AS order_no, 
+          DATE(created) AS order_day 
+          FROM 
+              sales_orders 
+          WHERE status IN ('payment_received', 'complete') 
+          GROUP BY 
+              order_day 
+          ORDER BY 
+              created 
+          DESC
+          LIMIT 31";
             
-        $results = Database::instance()->query(Database::SELECT, $query, FALSE);
+    $results = Database::instance()->query(Database::SELECT, $query, FALSE);
     
         
-        $orders = array();
+    $orders = array();
 		foreach ($results as $result)
 		{
-		      $value = $result['order_no'];
-		      $key = $result['order_day'];
-		      $keystripped = str_replace("-","", $key);
-		      $orders[intval($keystripped)] = intval($value); 
+      $value = $result['order_no'];
+      $key = $result['order_day'];
+      $keystripped = str_replace("-","", $key);
+      $orders[intval($keystripped)] = intval($value); 
 		}
 
-        return $orders;
-    }		
+    return $orders;
+  }		
     
-    public static function thirtydays()
-    {
-       //CLEAR OUTPUT FOR USE
-       $output = array();
- 
-        //SET CURRENT DATE
-       $month = date("m");
-       $day = date("d");
-       $year = date("Y");
- 
-        //LOOP THROUGH DAYS
-       for($i=1; $i<=30; $i++){
-            $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
-       }
-       
-       foreach ($results as $result)
-       {
-           $output[$result] = 0;
-       }
-       //RETURN DATE ARRAY
-       return $output;
-    }
+  public static function thirtydays()
+  {
+     //CLEAR OUTPUT FOR USE
+     $output = array();
+
+      //SET CURRENT DATE
+     $month = date("m");
+     $day = date("d");
+     $year = date("Y");
+
+      //LOOP THROUGH DAYS
+     for($i=1; $i<=30; $i++){
+          $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
+     }
+     
+     foreach ($results as $result)
+     {
+         $output[$result] = 0;
+     }
+     //RETURN DATE ARRAY
+     return $output;
+  }
     
 	public static function overall_completed_total()
 	{

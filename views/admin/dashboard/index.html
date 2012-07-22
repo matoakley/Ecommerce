@@ -73,13 +73,16 @@
 					name: ' Unique Visitors ',
 					yAxis: 0,
 					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
-				},
-				{% if modules.dashboard_enhanced_sales_orders %} {
-					name: ' Orders Placed ',
-					yAxis: 1,
-					data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
 				}
-				{% endif %}],
+				{% if modules.dashboard_enhanced_sales_orders %}
+					,
+					{
+						name: ' Orders Placed ',
+						yAxis: 1,
+						data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
+					}
+				{% endif %}
+				],
 				title: {
 					text: null
 				},
