@@ -114,6 +114,22 @@
 	<div class="clear"></div>
 </div>
 
+<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sku-{{sku.id}}-thumbnail_id">Image ID: </label>
+		</div>
+		<div class="grid_6 omega">
+			<select id="sku-{{sku.id}}-thumbnail_id" name="skus[{{sku.id}}][thumbnail_id]" value="{{sku.thumbnail_id}}">
+			<option value="NULL"></option>
+			{% for key, image in fields.product_images %}
+			<option{% if image.id == sku.thumbnail_id %} selected="selected" {% endif %}>{{image.id}}</option>
+      {% endfor %}
+				</select>
+		</div>
+		
+	<div class="clear"></div>
+</div>
+
 {% if modules.product_weights %}
 	<div class="field">
 		<div class="grid_2 alpha">

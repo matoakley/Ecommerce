@@ -26,6 +26,12 @@ class Ecommerce_Model_Sku extends Model_Application
 					'default' => 0,
 				)),				
 				'stock_status' => new Field_String,
+				'thumbnail' => new Field_BelongsTo(array(
+					'foreign' => 'product_image.id',
+					'column' => 'thumbnail_id',
+					'on_copy' => 'copy',
+				)),
+				'thumbnail_id' => new Field_String,
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
@@ -147,6 +153,10 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (isset($data['stock_status']))
 		{
   		$this->stock_status = $data['stock_status'];
+		}
+		if (isset($data['thumbnail_id']))
+		{
+  		$this->thumbnail_id = $data['thumbnail_id'];
 		}
 		
 		if (Caffeine::modules('product_weights'))
