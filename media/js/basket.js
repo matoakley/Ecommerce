@@ -188,8 +188,8 @@ function update_basket_total(){
 		dataType: 'json',
 		success: function(response){
 			$('#discount').html(response.discount.toString());
-			if (response.discount > 0){
-				$('#basket_discount').show();
+			if (response.discount){
+				$('#basket_discount').removeClass('hidden').show('slow');
 			} else {
 				$('#basket_discount').hide();
 			}
