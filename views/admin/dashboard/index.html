@@ -10,24 +10,16 @@
 					renderTo: 'chart-container-1',
 					defaultSeriesType: 'line'
 				},
-				credits: {
+		title: {
+			text: ''
+		},
+			credits: {
 					enabled: false
 				},
-				legend: {
-					align: 'right',
-					floating: true,
-					x: -10,
-	        y: 10,
-					verticalAlign: 'top'
-				},
-				tooltip: {
-	     		formatter: function() {
-	        	return 'There were <b>' + this.y + '</b>' + this.series.name +' On <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
-	      	}
-	    	},    
-	    	      
-	    	
-				xAxis: {
+		subtitle: {
+			text: ''
+		},
+		xAxis: {
 					categories: [{% for date, number in visits %}{{date}}{% if not loop.last %}, {% endif %}{% endfor %}],
 					labels: {
 						formatter: function() {
@@ -37,9 +29,8 @@
 	          step: 7
 					}
 				},
-				yAxis: [{
-				
-				labels: {
+		yAxis: [{ // Primary yAxis
+			labels: {
 				formatter: function() {
 					return this.value;
 				},
@@ -52,7 +43,8 @@
 				style: {
 					color: ''
 				}
-			}},{
+			}
+		}, { // Secondary yAxis
 			title: {
 				text: '',
 				style: {
@@ -61,36 +53,43 @@
 			},
 			labels: {
 				formatter: function() {
-					return this.value ;
+					return this.value;
 				},
 				style: {
 					color: ''
 				}
 			},
-			opposite: true}],
-				
-				series: [{
-					name: ' Unique Visitors ',
-					yAxis: 0,
-					data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
-				}
-				{% if modules.dashboard_enhanced_sales_orders %}
-					,
-					{
-						name: ' Orders Placed ',
-						yAxis: 1,
-						data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
-					}
-				{% endif %}
-				],
-				title: {
-					text: null
-				},
-				yAxis: {
-					title: 'Visitors'
-				}
-			});
-		});
+			opposite: true
+		}],
+		tooltip: {
+	     		formatter: function() {
+	        	return 'There were <b>' + this.y + '</b>' + this.series.name +' On <b>'+ Highcharts.dateFormat('%a %d %b', Date.UTC(this.x.toString().substr(0,4), this.x.toString().substr(4,2) - 1, this.x.toString().substr(6,2))) +'</b>';
+			}
+		},
+		legend: {
+					align: 'right',
+					floating: true,
+					x: -10,
+	        y: 10,
+					verticalAlign: 'top'
+		},
+		series: [{
+			name: ' Unique Visitors',
+			color: '',
+			type: 'line',
+			yAxis: 0,
+			data: [{% for date, number in visits %}{{number}}{% if not loop.last %}, {% endif %}{% endfor %}]
+{% if modules.dashboard_enhanced_sales_orders %}
+		}, {
+			name: ' Orders Placed',
+			color: '',
+			yAxis:1,
+			type: 'line',
+			data: [{% for merged, order_no in merged %}{{order_no}}{% if not loop.last %}, {% endif %}{% endfor %}]
+			{% endif %}
+		}]
+	});
+});
 	</script>
 {% endblock %}
 
