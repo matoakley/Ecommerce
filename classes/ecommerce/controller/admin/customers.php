@@ -127,7 +127,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->fields = $fields;
 		$this->template->errors = $errors;
 	
-		$items_per_page = 20;
+		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 		
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -200,7 +200,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$customer->add_communication($_POST['communication']);
-			$items_per_page = 20;
+			$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 			$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
 			
 			$this->template->communications = $customer->get('communications')->order_by('date', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -244,7 +244,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$address = $customer->add_address($_POST['address']);
-			$items_per_page = $_POST['template'] == 'customer' ? 20 : 5;
+			$items_per_page = $_POST['template'] == 'customer' ?  Kohana::config('ecommerce.pagination.crm_customer_items') : 5;
 			$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 			
 			$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -295,7 +295,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$address->archive();
 	
-		$items_per_page = 20;
+		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -333,7 +333,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$contact = $customer->add_contact($_POST['contact']);
-			$items_per_page = 20;
+			$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 			$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
 			
 			$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -376,7 +376,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$contact->delete();
 	
-		$items_per_page = 20;
+		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 		$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
 		
 		$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
