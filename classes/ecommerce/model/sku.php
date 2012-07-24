@@ -31,7 +31,6 @@ class Ecommerce_Model_Sku extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
-				'thumbnail_id' => new Field_String,
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(

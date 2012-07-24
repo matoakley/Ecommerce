@@ -148,7 +148,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			{
 				foreach ($_POST['sales_orders'] as $sales_order_id)
 				{
-					$sales_order = Model_Sales_Order::load($sales_order_id);
+					$sales_order = Model_Sales_Order::load($sales_order->id);
 					
 					if ($sales_order->status == 'payment_received')
 					{
