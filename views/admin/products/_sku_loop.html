@@ -116,13 +116,13 @@
 
 <div class="field">
 		<div class="grid_2 alpha">
-			<label for="sku-{{sku.id}}-thumbnail_id">Image ID: </label>
+			<label for="sku-{{sku.id}}-thumbnail-id">Image ID: </label>
 		</div>
 		<div class="grid_6 omega">
-			<select id="sku-{{sku.id}}-thumbnail_id" name="skus[{{sku.id}}][thumbnail_id]" value="{{sku.thumbnail_id}}">
+			<select id="sku-{{sku.id}}-thumbnail-id" name="skus[{{sku.id}}][thumbnail][id]" value="{{sku.thumbnail.id}}">
 			<option value="NULL"></option>
 			{% for key, image in fields.product_images %}
-			<option{% if image.id == sku.thumbnail_id %} selected="selected" {% endif %}>{{image.id}}</option>
+			<option{% if image.id == sku.thumbnail.id %} selected="selected" {% endif %}>{{image.id}}</option>
       {% endfor %}
 				</select>
 		</div>

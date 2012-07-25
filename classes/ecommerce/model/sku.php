@@ -67,7 +67,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		$sku->commercial_only = FALSE;
 		return $sku->save();
 	}
-	
+
 	public static function create_with_options($product, $options)
 	{
 		$sku_exists = FALSE;
@@ -153,9 +153,9 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
   		$this->stock_status = $data['stock_status'];
 		}
-		if (isset($data['thumbnail_id']))
+		if (isset($data['thumbnail']['id']))
 		{
-  		$this->thumbnail_id = $data['thumbnail_id'];
+  		$this->thumbnail = $data['thumbnail']['id'];
 		}
 		
 		if (Caffeine::modules('product_weights'))
