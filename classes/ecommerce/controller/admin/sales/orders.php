@@ -148,11 +148,12 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			{
 				foreach ($_POST['sales_orders'] as $sales_order_id)
 				{
-					$sales_order = Model_Sales_Order::load($sales_order->id);
+					$sales_order = Model_Sales_Order::load($sales_order_id);
 					
-					if ($sales_order->status == 'payment_received')
-					{
-						$sales_order->update_status('complete')->send_shipped_email();
+					if ($sales_order->status === 'payment_received')
+		{
+			$sales_order->update_status('complete')->send_shipped_email();
+			echo 'ok';
 					}
 				}
 			}

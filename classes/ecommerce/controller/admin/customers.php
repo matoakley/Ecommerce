@@ -100,8 +100,12 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			if (empty($errors))
 			{
 				$customer->admin_update($_POST['customer']);
-				$customer->update_custom_field_values($_POST['custom_fields']);
-			
+				
+				if (isset($_POST['custom_fields']))
+				{
+					$customer->update_custom_field_values($_POST['custom_fields']);
+				}
+				
 				if (isset($_POST['address']))
 				{
 					$address->create_for_new_customer($customer, $_POST['address']);

@@ -1,3 +1,4 @@
+/* original FANCYBOX
 $(function(){
 
 	$('#bulk-actions').change(function(){
@@ -46,3 +47,45 @@ $(function(){
 	});
 	
 });
+*/
+
+$(function(){
+
+	$('#bulk-actions').change(function(e){
+		
+		if ($(this).val() == 'ship_and_email'){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to mark these orders as complete and send confirmation emails to the customer(s)?')) {
+		
+		var salesOrders = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						salesOrders[i] = $(this).val();console.log(salesOrders);
+  						//i++;
+  				
+	
+  				var data = {
+    				sales_orders: salesOrders,
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/sales_orders/bulk_ship_and_email',
+			type: 'POST',
+			data: data,
+			success: function(){
+    				 window.location.reload();
+    				 }
+    				 });
+    				});
+    		   };
+    		  }
+    		})
+	     });
+
+	
+
+
