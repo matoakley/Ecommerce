@@ -10,6 +10,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('skus')
+		      ->sorting(array('price' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo,
@@ -24,6 +25,12 @@ class Ecommerce_Model_Sku extends Model_Application
 				'stock' => new Field_Integer(array(
 					'default' => 0,
 				)),				
+				'stock_status' => new Field_String,
+				'thumbnail' => new Field_BelongsTo(array(
+					'foreign' => 'product_image.id',
+					'column' => 'thumbnail_id',
+					'on_copy' => 'copy',
+				)),
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
@@ -60,7 +67,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		$sku->commercial_only = FALSE;
 		return $sku->save();
 	}
-	
+
 	public static function create_with_options($product, $options)
 	{
 		$sku_exists = FALSE;
@@ -141,6 +148,14 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
+		}
+		if (isset($data['stock_status']))
+		{
+  		$this->stock_status = $data['stock_status'];
+		}
+		if (isset($data['thumbnail']['id']))
+		{
+  		$this->thumbnail = $data['thumbnail']['id'];
 		}
 		
 		if (Caffeine::modules('product_weights'))

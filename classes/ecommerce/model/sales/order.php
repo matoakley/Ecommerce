@@ -252,9 +252,106 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
 	}
 	
+	public static function monthly_sales_orders($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$sql = "SELECT COUNT(*) as orders
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete')
+						AND EXTRACT(MONTH FROM created) = $month";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['orders'])) ? $result[0]['orders'] : 0;
+	}
+	
+	public static function thismonths_orders($month = FALSE)
+	{
+	
+	   $month = date('m');
+		
+		
+		$sql = "SELECT COUNT(*) as thismonthsorders
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete')
+						AND EXTRACT(MONTH FROM created) = $month";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['thismonthsorders'])) ? $result[0]['thismonthsorders'] : 0;
+	}
+	
+	public static function alltime_sales_orders($month = FALSE)
+	{
+				
+		$sql = "SELECT COUNT(*) as alltimeorders
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete')";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['alltimeorders'])) ? $result[0]['alltimeorders'] : 0;
+	}
+	
+	public static function daily_order_count()
+	{
+  	$query = "SELECT COUNT(created) AS order_no, 
+          DATE(created) AS order_day 
+          FROM 
+              sales_orders 
+          WHERE status IN ('payment_received', 'complete') 
+          GROUP BY 
+              order_day 
+          ORDER BY 
+              created 
+          DESC
+          LIMIT 31";
+            
+    $results = Database::instance()->query(Database::SELECT, $query, FALSE);
+    
+        
+    $orders = array();
+		foreach ($results as $result)
+		{
+      $value = $result['order_no'];
+      $key = $result['order_day'];
+      $keystripped = str_replace("-","", $key);
+      $orders[intval($keystripped)] = intval($value); 
+		}
+
+    return $orders;
+  }		
+    
+  public static function thirtydays()
+  {
+     //CLEAR OUTPUT FOR USE
+     $output = array();
+
+      //SET CURRENT DATE
+     $month = date("m");
+     $day = date("d");
+     $year = date("Y");
+
+      //LOOP THROUGH DAYS
+     for($i=1; $i<=30; $i++){
+          $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
+     }
+     
+     foreach ($results as $result)
+     {
+         $output[$result] = 0;
+     }
+     //RETURN DATE ARRAY
+     return $output;
+  }
+    
 	public static function overall_completed_total()
 	{
 		$sql = "SELECT SUM(order_total) as total
@@ -263,7 +360,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;;
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
 	}
 	
 	public static function create_commercial_sales_order($data)
@@ -415,7 +512,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 						
 		$email->send($message);
 		
-		return $this;
+		// If this is the fist time that the invoice has been
+		// generated then set invoiced on as now.
+		if ( ! $this->invoiced_on )
+		{
+			$this->invoiced_on = time();
+		}
+		
+		return $this->save();
 	}
 	
 	public function update($data)

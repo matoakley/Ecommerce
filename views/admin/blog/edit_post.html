@@ -205,6 +205,14 @@
 		count: 'up',
 		goal: 255
 	});
+$(function() {
+    $('.description').ckeditor({
+        toolbar: 'Full',
+        enterMode : CKEDITOR.ENTER_BR,
+        shiftEnterMode: CKEDITOR.ENTER_BR
+    });
+});
+
 </script>
 
 {% endblock %}

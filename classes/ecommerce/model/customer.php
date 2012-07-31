@@ -100,7 +100,22 @@ class Ecommerce_Model_Customer extends Model_Application
 			'company',
 		),
 	);
-
+	
+	public static function customer_email_validator($data)
+	{
+		$validator = Validate::factory($data)
+											->filter(TRUE, 'trim')
+											->rule('email', 'not_empty')
+											->rule('firstname', 'not_empty')
+											->rule('lastname', 'not_empty');
+		
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
 	public static function create($data)
 	{
 		// Format email address to lowercase
@@ -260,9 +275,13 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->price_tier = $data['price_tier'];
 		}
-		
+		if (isset($data['invoice_terms']))
+		{
+			$this->invoice_terms = $data['invoice_terms'];
+		}
+
 		$this->status = $data['status'];
-		$this->invoice_terms = $data['invoice_terms'];
+		
 	
 		return $this->save();
 	}

@@ -5,7 +5,7 @@ class Ecommerce_Model_Product_Option extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('product_options')
-			->sorting(array('key' => 'ASC', 'value' => 'ASC'))
+			->sorting(array('key' => 'ASC', 'value' => 'DESC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo(array(
