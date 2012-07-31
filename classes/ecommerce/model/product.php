@@ -327,7 +327,11 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
+<<<<<<< HEAD
+							->where('key', '=', $option_name)
+=======
 							->order_by('value', 'ASC')
+>>>>>>> b112d3032e4b07a3ef067726ddf2f4386a583c11
 							->execute();
 	}
 	
