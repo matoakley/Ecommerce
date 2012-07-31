@@ -121,12 +121,22 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('event', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
+Route::set('events', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',
 	'action' => 'view',
 ));
 
-Route::set('events_index', 'events')->defaults(array(
+Route::set('events_index', 'events(/month/<month>)')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',
 ));
