@@ -202,13 +202,16 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
 				$fields['custom_fields'] = isset($_POST['custom_fields']) ? $_POST['custom_fields'] : array();
 				
-				foreach ($_POST['skus'] as $sku_id => $sku)
+				if (isset($_POST['skus']))
 				{
-					foreach($sku['tiered_prices'] as $tier_id => $price)
-					{
-						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
-					}
-				}
+  				foreach ($_POST['skus'] as $sku_id => $sku)
+  				{
+  					foreach($sku['tiered_prices'] as $tier_id => $price)
+  					{
+  						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
+  					}
+  				}
+  		  }
 				
 				if (isset($_POST['product_images']))
 				{
@@ -349,14 +352,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			throw new Kohana_Exception('Page not found', array(), 404);
 		}
 		
-		// Check if option value already exists
+	// Check if option value already exists
 		$product = Model_Product::load($_POST['product_id']);
 		$product_options = $product->get('product_options')
 																->where('key', '=', $_POST['key'])
 																->where('value', '=', $_POST['value'])
-																->order_by(`value`, `DESC`)
+																->order_by('value', 'DESC')
 																->execute();
-		
 		$data = array();
 		if (count($product_options) == 0)
 		{

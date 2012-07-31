@@ -2,8 +2,8 @@
 
 {% block custom_scripts %}
 	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?3"></script>
-	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=5"></script>{% endif %}
+	<script type="text/javascript" src="/media/js/admin/products.js?v=1"></script>
+	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=1"></script>{% endif %}
 {% endblock %}
 
 {% block page_title %}
@@ -242,7 +242,7 @@
 					<div class="grid_3 alpha tc">
 						
 						<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
-						
+						<p>Image ID : {{image.id}}</p>
 					</div>
 					
 					<div class="grid_2 tc" style="line-height:120px;">

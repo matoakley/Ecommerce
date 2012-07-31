@@ -275,9 +275,13 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->price_tier = $data['price_tier'];
 		}
-		
+		if (isset($data['invoice_terms']))
+		{
+			$this->invoice_terms = $data['invoice_terms'];
+		}
+
 		$this->status = $data['status'];
-		$this->invoice_terms = $data['invoice_terms'];
+		
 	
 		return $this->save();
 	}

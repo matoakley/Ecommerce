@@ -5,12 +5,13 @@
 {% block content %}
 
 <p>
-	<a href="/admin/pages/add" class="img-button">
+	<a href="/admin/events/add" class="img-button">
 		<img src="/images/icons/add.png" alt="" />
-		New Page
+		New Event
 	</a>
 </p>
 
+<!--
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
@@ -20,8 +21,9 @@
 </div>
 
 <div class="grid_8 omega tr">
-	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_pages %}{{page * items}}{% else %}{{total_pages}}{% endif %}</strong> of <strong>{{total_pages}}</strong> items
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_events %}{{page * items}}{% else %}{{total_events}}{% endif %}</strong> of <strong>{{total_events}}</strong> items
 </div>
+-->
 
 <div class="clear"></div>
 
@@ -30,19 +32,22 @@
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
-			<th>Template</th>
+			<th>Date</th>
+			<th>Address</th>
 			<th>Status</th>
 		</tr>
 	</thead>
 	<tbody>
-	{% for key, page in pages %}
+	{% for key, event in events %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td width="1"><input type="checkbox" class="row-selector" /></td>
-			<td><a href="/admin/pages/edit/{{page.id}}">{{page.name}}</a></td>
-			<td>{{page.template}}</td>
-			<td>{{page.status|title}}</td>
+			<td><a href="/admin/events/edit/{{event.id}}">{{event.name}}</a></td>
+			<td>{{event.start_date|date("jS")}}{% if not(event.end_date) or (event.start_date == event.end_date) %}{{event.start_date|date(" F Y")}}{% endif %}{% if (event.end_date)                and (event.start_date != event.end_date) %} - {{event.end_date|date("jS F Y")}}{% endif %}</td>
+			<td>{{event.address}}</td>
+			<td>{{event.status|title}}</td>
 		</tr>
 	{% endfor %}
+
 	</tbody>
 </table>
 
