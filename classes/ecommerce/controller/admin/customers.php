@@ -140,7 +140,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			'total_items' => $customer->get('contacts')->count(),
 			'items_per_page' => $items_per_page,
 			'auto_hide'	=> false,
-			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+			'current_page'   => array('source' => 'query_string', 'key' => 'contacts_page'),
 		));
 	
 		$page = isset($_GET['orders_page']) ? $_GET['orders_page'] : 1;
