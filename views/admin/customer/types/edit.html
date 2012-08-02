@@ -1,7 +1,7 @@
 {% extends "admin/templates/default.html" %}
 
 {% block page_title %}
-	{% if customer.loaded %}
+	{% if customer_type.loaded %}
 		Edit Customer Type: <strong>{{customer_type.name}}</strong>
 	{% else %}
 		Adding: <strong>New Customer Type</strong>

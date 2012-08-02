@@ -108,11 +108,13 @@ Route::set('admin_add', 'admin/<controller>/add')->defaults(array(
 	'action' => 'edit',
 ));
 
+/* MOVED TO BOOTSTAP.PHP IN v1.2.2
 Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'dashboard',
 	'action'		=> 'index',
 ));
+*/
 	
 // Default Public Routes
 

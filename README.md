@@ -1,3 +1,7 @@
+# Upgrading to v1.2.2
+
+- It is important that you move the Admin catchall route from /modules/ecommerce/init.php into application/bootstrap.php, above the master catchall route. You'll find the admin catchall route commented out in the init.php file, please don't delete it. For an example of where to put it, see the /application/bootstrap.php file of Paddy & Scott's.
+
 # Upgrading to v1.1.7
 
 - Stockists

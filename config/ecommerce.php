@@ -2,7 +2,7 @@
 
 return array
 (
-	'software_version' => '1.2.1', 
+	'software_version' => '1.2.2', 
 
 	'vat_rate' => 20,
 	'default_delivery_option' => 5,
@@ -19,6 +19,7 @@ return array
 	'pagination' => array(
 		'products' => 10,
 		'blog_posts' => 10,
+		'crm_customer_items' => 20,
 	),
 	
 	'modules' => array(
