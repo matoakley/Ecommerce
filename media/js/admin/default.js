@@ -10,6 +10,14 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	$('.datepicker_one_month').datepicker({
+		constrainInput: true,
+		dateFormat: 'yy/mm/dd',
+		firstDay: 1,
+		numberOfMonths: 1,
+		selectOtherMonths: true
+	});
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		

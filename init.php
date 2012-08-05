@@ -108,11 +108,13 @@ Route::set('admin_add', 'admin/<controller>/add')->defaults(array(
 	'action' => 'edit',
 ));
 
+/* MOVED TO BOOTSTAP.PHP IN v1.2.2
 Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'dashboard',
 	'action'		=> 'index',
 ));
+*/
 	
 // Default Public Routes
 
@@ -121,12 +123,22 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('event', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
+Route::set('events', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',
 	'action' => 'view',
 ));
 
-Route::set('events_index', 'events')->defaults(array(
+Route::set('events_index', 'events(/month/<month>)')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',
 ));
