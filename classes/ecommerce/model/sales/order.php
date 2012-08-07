@@ -338,9 +338,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
      $month = date("m");
      $day = date("d");
      $year = date("Y");
-
+     $num = date("t");
       //LOOP THROUGH DAYS
-     for($i=1; $i<=30; $i++){
+     for($i=1; $i<=$num; $i++){
           $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
      }
      
