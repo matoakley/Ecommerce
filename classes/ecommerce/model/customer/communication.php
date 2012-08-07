@@ -54,7 +54,7 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 		
 		if ( ! in_array($data['type'], self::$types))
 		{
-			throw new Kohana_Exception('Unkown Customer Communicaition type');
+			throw new Kohana_Exception('Unknown Customer Communication type');
 		}
 		$communication->type = $data['type'];
 		
@@ -64,4 +64,35 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 		
 		return $communication->save();
 	}
+	
+	public function update()
+	{
+	if (isset($_POST['text']))
+	{
+    $this->text = $_POST['text'];
+  }
+  if (isset($_POST['title']))
+  {	
+  	$this->title = $_POST['title'];
+  }
+  	return $this->save();
+	}
+	
+/*
+	public static function edit_communication_for_customer($customer, $data)
+	{
+		
+		$communication = Jelly::select('customer_communication')->where('id', '=', $data->id)->execute;
+		if (isset($data['text']))	
+		{
+  		$communication->text = $data['text'];
+		}	
+		if (isset($data['title']))	
+		{
+  		$communication->title = $data['title'];
+		}	
+		
+				return $communication->save();
+	}
+*/
 }

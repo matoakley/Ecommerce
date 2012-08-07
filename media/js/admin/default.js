@@ -255,7 +255,25 @@ $(function(){
 			}
 		});
 	});
-	
+	$('div#customer-communications-table-container').on('click', 'a.customer-communication-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			dataType: 'json',
+			beforeSend: function(){
+				button.hide();
+				$('img.custom-address-delete-spinner[data-address-id="'+button.data('communication-id')+'"]').show();
+			},
+			success: function(response){
+				$('div#customer-address-table-container').html(response.html);
+			},
+			complete: function(){
+				$('img.custom-address-delete-spinner[data-address-id="'+button.data('communication-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
 		e.preventDefault();
@@ -495,6 +513,7 @@ $(function(){
 					if (response == 'ok')
 					{
 						$('#sales-order-status').val('invoice_sent');
+						$('#sales-order-invoiced-on').val('Date Added...');//.load($('#sales-order-invoiced-on').data('url'));
 						$('#email-invoice').hide();
 					}
 				}

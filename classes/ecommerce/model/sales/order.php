@@ -443,6 +443,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
 	}
 	
+	
+	public function set_invoiced_on_date()
+	{
+  	if ( ! $this->invoiced_on)
+  	{
+    	$this->invoiced_on = date('d/m/Y');
+    	$this->save();
+  	}
+	}
+	
+	
 	public function update_status($status)
 	{
 		if (in_array($status, self::$statuses[$this->type]))
@@ -460,6 +471,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$this->status = $status;
 			
 			$this->add_note($note_text, TRUE);
+			
 			
 			// If we are controlling stock and setting an order to payment received then we should decrement the stock count of each item
 			$is_controlling_stock = Kohana::config('ecommerce.modules.stock_control');
