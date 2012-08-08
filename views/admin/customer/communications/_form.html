@@ -44,7 +44,7 @@
 	<div class="field">
 		<div class="grid_2 alpha">&nbsp;</div>
 		<div class="grid_3">
-			<input type="submit" value="Add Communication" id="add-communication" data-url="{% url "customer_communication_add", ["customer_id": customer.id] %}" />
+			<input type="submit" value="Add Communication" id="add-communication" data-add-url="{% url "customer_communication_add", ["customer_id": customer.id] %}" />
 			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="add-communication-spinner" />
 		</div>
 		<div class="grid_6">

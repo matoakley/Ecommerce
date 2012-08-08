@@ -109,7 +109,7 @@ input.inputtext.price {
 /******************* INLINE EDITOR CSS STYLES ***************/
 /* TEXT BOX */
 
-.inplace_form input
+input.inplace_form
 {
 border:1px dashed #ccc;
 padding:4px;

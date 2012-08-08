@@ -47,7 +47,8 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 	
 	public static function create_communication_for_customer($customer, $data)
 	{
-		$communication = Jelly::factory('customer_communication');
+		
+$communication = Jelly::factory('customer_communication');
 		
 		$communication->customer = $customer;
 		$communication->user = Auth::instance()->get_user();
@@ -63,6 +64,8 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 		$communication->date = $data['date'];
 		
 		return $communication->save();
+		echo $communication;
+  
 	}
 	
 	public function update()

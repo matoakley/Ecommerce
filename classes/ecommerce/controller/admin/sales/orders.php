@@ -108,7 +108,9 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		if ($sales_order->loaded() AND $sales_order->status = 'invoice_generated')
 		{
 		  $sales_order->set_invoiced_on_date();
+		  
 			$sales_order->update_status('invoice_sent')->send_invoice();
+			
 			echo 'ok';
 		}
 		else
@@ -372,6 +374,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		{
 			$company_name = $sales_order->customer->company != '' ? $sales_order->customer->company : $sales_order->customer->name();
 			$sales_order->set_invoiced_on_date();
+			
 			$sales_order_data = array(
 				'SI',
 				$sales_order->customer->account_ref,

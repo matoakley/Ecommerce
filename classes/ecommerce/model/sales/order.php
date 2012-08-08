@@ -446,7 +446,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function set_invoiced_on_date()
 	{
-  	if ( ! $this->invoiced_on)
+  	if ( ! $this->invoiced_on OR $this->invoiced_on === "0000-00-00 00:00:00")
   	{
     	$this->invoiced_on = date('d/m/Y');
     	$this->save();
