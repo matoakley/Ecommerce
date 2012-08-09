@@ -184,14 +184,6 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
-	
-	
-	///////////////////////////////
-	
-	
-	
-	
-	
 	public function action_edit_communication()
 	{
 	
@@ -208,13 +200,6 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	}
 	
 		}
-		
-		
-		
-		
-		
-		///////////////////////////////
-		
 		
 	public function action_add_communication()
 	{

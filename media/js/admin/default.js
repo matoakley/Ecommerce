@@ -513,8 +513,12 @@ $(function(){
 				success: function(response){
 					if (response == 'ok')
 					{
+					   var invoicedOn = ($('#sales-order-invoiced-on').val() + "empty");
+					   console.log(invoicedOn);
 						$('#sales-order-status').val('invoice_sent');
-						//$('#sales-order-invoiced-on').val(now);
+						if (invoicedOn === "empty"){
+						$('#sales-order-invoiced-on').val(now);
+						}
 						$('#email-invoice').hide();
 					}
 				}
@@ -558,18 +562,26 @@ $(function(){
 		dateFormat: 'dd/mm/yy'
 	});
 	
-	/* Editinplace for customer comments */
-	
+	/*
+
+	$('.inline_editor_textarea').live('mouseover', function(){
+	var area = $(this);
+	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').show();
+		$('.inline_editor_textarea').live('mouseout', function(){
+	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').hide();
+	})
+	})
+
 	$('.inline_editor_textarea').live('click', function(){
 	 var original = $(this);
 	 var container = $(this).parent();
 	 
-	 /* Build the input field */
+	 
 	 var field = $('<textarea class="inplace_field">');
 	 field.val($(this).html()); 
 	 $(this).replaceWith(field).text();
 	 
-	 /* Build save button */
+	 
 	 var saveButton = $('<button>');
 	 saveButton.html('Save');
 	 container.append(saveButton);
@@ -600,7 +612,7 @@ $(function(){
 			}
 		});
 	 });         	 
-	 /* Build cancel button */
+	
 	 var cancelButton =  $('<button>');
 	 cancelButton.html('Cancel');
 	 container.append(cancelButton);
@@ -612,21 +624,27 @@ $(function(){
    });
   });
 
-	
+	$('.inline_editor_input').live('mouseover', function(){
+	var area = $(this);
+	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').show();
+		$('.inline_editor_input').live('mouseout', function(){
+	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').hide();
+	})
+	})
 	$('.inline_editor_input').live('click', function(){
 	 var original = $(this);
 	 var container = $(this).parent();
 	 
-	 /* Build the input field */
+	 
 	 var field = $('<input class="inplace_form">');
 	 field.val($(this).html()); 
 	 $(this).replaceWith(field).text(); 
 	 
-	 /* Build save button */
+	 
 	 var saveButton = $('<button>');
 	 saveButton.html('Save');
 	 container.append(saveButton);
-	 //Perform Ajax on click
+	
 	 saveButton.click(function(e){
 	 e.preventDefault();
 	 var new_value = $('.inplace_form').val();
@@ -654,7 +672,7 @@ $(function(){
 	 });
 	 
             	 
-	 /* Build cancel button */
+	
 	 var cancelButton =  $('<button>');
 	 cancelButton.html('Cancel');
 	 container.append(cancelButton);
@@ -665,8 +683,9 @@ $(function(){
     cancelButton.remove();
    });
   });
-	
+	*/
 });
+
 
 function number_format (number, decimals, dec_point, thousands_sep) {
     // Formats a number with grouped thousands  

@@ -81,21 +81,4 @@ $communication = Jelly::factory('customer_communication');
   	return $this->save();
 	}
 	
-/*
-	public static function edit_communication_for_customer($customer, $data)
-	{
-		
-		$communication = Jelly::select('customer_communication')->where('id', '=', $data->id)->execute;
-		if (isset($data['text']))	
-		{
-  		$communication->text = $data['text'];
-		}	
-		if (isset($data['title']))	
-		{
-  		$communication->title = $data['title'];
-		}	
-		
-				return $communication->save();
-	}
-*/
 }
