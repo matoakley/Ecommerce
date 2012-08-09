@@ -66,6 +66,18 @@ Route::set('customer_communication_add', 'admin/customers/<customer_id>/add_comm
 	'action' => 'add_communication',
 ));
 
+Route::set('customer_communication_edit', 'admin/customers/<customer_id>/edit_communication/<communication_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'edit_communication',
+));
+
+Route::set('customer_communication_delete', 'admin/customers/<customer_id>/delete_communication/<communication_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_communication',
+));
+
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',
@@ -108,11 +120,13 @@ Route::set('admin_add', 'admin/<controller>/add')->defaults(array(
 	'action' => 'edit',
 ));
 
+/* MOVED TO BOOTSTAP.PHP IN v1.2.2
 Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'dashboard',
 	'action'		=> 'index',
 ));
+*/
 	
 // Default Public Routes
 
@@ -121,12 +135,22 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('event', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
+Route::set('events', 'events')->defaults(array(
+	'controller' => 'events',
+	'action' => 'index',
+));
+
 Route::set('event_view', 'events/<event_slug>')->defaults(array(
 	'controller' => 'events',
 	'action' => 'view',
 ));
 
-Route::set('events_index', 'events')->defaults(array(
+Route::set('events_index', 'events(/month/<month>)')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',
 ));

@@ -6,6 +6,7 @@
 			<th>User</th>
 			<th width="50%">Title</th>
 			<th class="tr">Date</th>
+			<th width="1">&nbsp;</th>
 		</thead>
 		<tbody>
 			{% for key, communication in communications %}
@@ -30,14 +31,20 @@
 						{% endif %}
 					</td>
 					<td>{{communication.user.name}}</td>
-					<td>{{communication.title}}</td>
+					<td><div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.title}}</div><img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/></td>
 					<td class="tr">{{communication.date|date('d/m/Y H:i')}}</td>
+					<td><a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
+					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
+				</a>
+				<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
+				</td>
 				</tr>
 				{% if communication.text %}
 					<tr class="{{row_class}}">
 						<td></td>
 						<td colspan="999" class="communication-body-container" data-communication-id="{{communication.id}}">
-							<div class="hidden communication-body" data-communication-id="{{communication.id}}">{{communication.text|auto_p}}</div>
+							<div class="hidden communication-body inline_editor_textarea" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.text}}</div>
+							<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-spinner" data-communication-id="{{communication.id}}"/>
 						</td>
 					</tr>
 				{% endif %}

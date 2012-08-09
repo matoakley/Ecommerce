@@ -56,7 +56,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		{
 		  $fields['custom_fields'] = $customer->custom_fields();
 		}
-			
+		
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
 		$fields['customer']['default_billing_address'] = $customer->default_billing_address->id;
 		$fields['customer']['default_shipping_address'] = $customer->default_shipping_address->id; 
@@ -96,7 +96,6 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 					$errors['address'] = $e->array->errors();
 				}
 			}
-			
 			if (empty($errors))
 			{
 				$customer->admin_update($_POST['customer']);
@@ -148,7 +147,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			'total_items' => $customer->get('contacts')->count(),
 			'items_per_page' => $items_per_page,
 			'auto_hide'	=> false,
-			'current_page'   => array('source' => 'query_string', 'key' => 'addresses_page'),
+			'current_page'   => array('source' => 'query_string', 'key' => 'contacts_page'),
 		));
 	
 		$page = isset($_GET['orders_page']) ? $_GET['orders_page'] : 1;
@@ -185,6 +184,38 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
+	
+	
+	///////////////////////////////
+	
+	
+	
+	
+	
+	public function action_edit_communication()
+	{
+	
+	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+	
+	$communication->update($_POST);
+	if (isset($_POST['text']))
+	{
+	echo $_POST['text'];
+	}
+	if (isset($_POST['title']))
+	{
+	echo $_POST['title'];
+	}
+	
+		}
+		
+		
+		
+		
+		
+		///////////////////////////////
+		
+		
 	public function action_add_communication()
 	{
 		if ( ! Request::$is_ajax)
@@ -203,8 +234,8 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		try
 		{
-			$customer->add_communication($_POST['communication']);
-			$items_per_page = 20;
+			$communication = $customer->add_communication($_POST['communication']);
+			$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 			$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
 			
 			$this->template->communications = $customer->get('communications')->order_by('date', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -221,13 +252,16 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 		
 		$this->template->errors = $errors;
+		$this->template->customer = $customer;
 		
+				
 		$data = array(
 			'html' => $this->template->render(),
 		);
 		
 		echo json_encode($data);
 	}
+
 	
 	public function action_add_address()
 	{
@@ -317,6 +351,43 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		echo json_encode($data);
 	}
+	
+	public function action_delete_communication()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+		
+		// Load address through customer to avoid any mishaps
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		$communication = $customer->get('communications')->where('id', '=', $this->request->param('communication_id'))->load();
+		
+		$communication->delete();
+	
+		$items_per_page = 20;
+		$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
+		
+		$this->template->communications = $customer->get('communications')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->communications_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('communications')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'communications_page'),
+		));
+		$this->template->customer = $customer;
+	
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
+	}
+	
 	
 	public function action_add_contact()
 	{

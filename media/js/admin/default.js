@@ -10,6 +10,14 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	$('.datepicker_one_month').datepicker({
+		constrainInput: true,
+		dateFormat: 'yy/mm/dd',
+		firstDay: 1,
+		numberOfMonths: 1,
+		selectOtherMonths: true
+	});
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		
@@ -222,7 +230,7 @@ $(function(){
 			}
 		};
 		$.ajax({
-			url: button.attr('data-url'),
+			url: button.data('add-url'),
 			type: 'POST',
 			data: data,
 			dataType: 'json',
@@ -247,7 +255,25 @@ $(function(){
 			}
 		});
 	});
-	
+	$('div#customer-communications-table-container').on('click', 'a.customer-communication-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			dataType: 'json',
+			beforeSend: function(){
+				button.hide();
+				$('img#delete-communication-spinner[data-communication-id="'+button.data('communication-id')+'"]').show();
+			},
+			success: function(response){
+				$('div#customer-communications-table-container').html(response.html);
+			},
+			complete: function(){
+				$('img#delete-communication-spinner[data-communication-id="'+button.data('communication-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
 		e.preventDefault();
@@ -473,6 +499,7 @@ $(function(){
 			});
 		}
 	});
+	now = $.datepicker.formatDate('dd/mm/yy', new Date());
 	$('#email-invoice').click(function(e){
 		e.preventDefault();
 		if (confirm('Are you sure that you want to email the invoice to the customer?')) {
@@ -487,6 +514,7 @@ $(function(){
 					if (response == 'ok')
 					{
 						$('#sales-order-status').val('invoice_sent');
+						//$('#sales-order-invoiced-on').val(now);
 						$('#email-invoice').hide();
 					}
 				}
@@ -529,6 +557,115 @@ $(function(){
 	$('input#sales-order-invoiced-on').datepicker({
 		dateFormat: 'dd/mm/yy'
 	});
+	
+	/* Editinplace for customer comments */
+	
+	$('.inline_editor_textarea').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 /* Build the input field */
+	 var field = $('<textarea class="inplace_field">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text();
+	 
+	 /* Build save button */
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	 //Perform Ajax on click
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	  var new_value = $('.inplace_field').val();
+	 var updatedValues = { text: new_value }
+	 $.ajax({
+			url: original.data('communication-url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-communication-spinner[data-communication-id="'+original.data('communication-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-communication-spinner[data-communication-id="'+original.data('communication-id')+'"]').hide();
+  		  original.show();
+			}
+		});
+	 });         	 
+	 /* Build cancel button */
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+	
+	$('.inline_editor_input').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 /* Build the input field */
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 /* Build save button */
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	 //Perform Ajax on click
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { title: new_value }
+	 $.ajax({
+			url: original.data('communication-url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-communication-title-spinner[data-communication-id="'+original.data('communication-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-communication-title-spinner[data-communication-id="'+original.data('communication-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	 /* Build cancel button */
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+	
 });
 
 function number_format (number, decimals, dec_point, thousands_sep) {

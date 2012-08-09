@@ -106,6 +106,28 @@ input.inputtext.price {
 	margin-right:10px;
 }
 
+/******************* INLINE EDITOR CSS STYLES ***************/
+/* TEXT BOX */
+
+input.inplace_form
+{
+border:1px dashed #ccc;
+padding:4px;
+width:98%;
+}
+
+/* TEXT AREA */
+
+textarea.inplace_field { 
+  border:1px dashed #ccc;
+  width:870px;
+  margin-top:10px;
+  padding:5px;
+  height:auto;
+}
+
+/**************** END INLINE EDITOR STYLES ******************/
+
 textarea {
 	border:1px solid #666;
 	width:200px;
@@ -529,4 +551,14 @@ table#sales-order-items tfoot td {
 
 div.search-bar {
 	margin-bottom: 10px;
+}
+
+/* inline_editor textarea */
+
+textarea.inplace_value{
+	border: 3px solid #cccccc;
+	padding: 5px;
+	font-family: Tahoma, sans-serif;
+	background-position: bottom right;
+	background-repeat: no-repeat;
 }

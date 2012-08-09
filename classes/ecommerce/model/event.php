@@ -4,7 +4,8 @@ class Ecommerce_Model_Event extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->fields(array(
+	   $meta->table('events')
+	       ->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
 					'rules' => array(
@@ -17,6 +18,9 @@ class Ecommerce_Model_Event extends Model_Application
 					'rules' => array(
 						'not_empty' => NULL,
 					),
+				)),
+				'end_date' => new Field_Timestamp(array(
+					'format' => 'Y-m-d H:i:s',
 				)),
 				'start_date' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
@@ -36,7 +40,10 @@ class Ecommerce_Model_Event extends Model_Application
 				)),
 		));
 	}
-	
+	public static $statuses = array(
+		'active', 'disabled'
+	);
+
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'status' => array(
@@ -49,23 +56,29 @@ class Ecommerce_Model_Event extends Model_Application
 		),
 	);
 	
-	public static function get_events_by_month($month, $limit = NULL, $offset = NULL, $bounding_box = NULL)
+	public static function event_validator($data)
+	{
+		$validator = Validate::factory($data)
+											->filter(TRUE, 'trim')
+											->rule('start_date', 'not_empty')
+											->rule('end_date', 'not_empty');
+		
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
+	
+	public static function get_events_by_month($month, $limit = NULL, $offset = NULL)
 	{	
 		$year = floor($month / 12);
-		$month = ($month % 12 != 0) ? $month % 12 : 12;
+		$month = ($month % 12 != -1) ? $month % 12 : 12;
 	
 		$date = mktime(12, 0, 0, $month, 1, date('Y') + $year);
 	
 		$query = Jelly::select('event')->where(DB::expr('MONTH(start_date)'), '=', date('m', $date))->where(DB::expr('YEAR(start_date)'), '=', date('Y', $date))->where('status', '=', 'active')->order_by('start_date', 'ASC');
-		
-		if ($bounding_box)
-		{
-			$query->join('addresses')->on('events.address_id', '=', 'addresses.id')
-						->where('latitude', '>',  $bounding_box[0])
-						->where('latitude', '<',  $bounding_box[1])
-						->where('longitude', '>',  $bounding_box[2])
-						->where('longitude', '<',  $bounding_box[3]);
-		}
 		
 		if ($limit)
 		{
@@ -79,4 +92,31 @@ class Ecommerce_Model_Event extends Model_Application
 	
 		return $query->execute();
 	}
+	
+	public function update($data)
+	{	
+		$this->name = $data['name'];
+		if (isset($data['slug']))
+		{
+			$this->slug = $data['slug'];
+		}
+		if (isset($data['status']))
+		{
+		$this->status = $data['status'];
+		}
+		$this->address = $data['address'];
+		$this->start_date = $data['start_date'];
+		$this->end_date = $data['end_date'];
+		$this->description = $data['description'];
+		$this->save();
+		
+		// Ping sitemap to search engines to alert them of content change
+		if (IN_PRODUCTION AND $this->status == 'active')
+		{
+			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+		}
+		
+		return $this;
+	}
+	
 }
