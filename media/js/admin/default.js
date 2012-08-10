@@ -124,13 +124,15 @@ $(function(){
 		var email = $('input#contact-email');
 		var telephone = $('input#contact-telephone');
 		var position = $('input#contact-position');
+		var notes = $('input#contact-notes');
 		var data = {
 			contact: {
 				firstname: firstname.val(),
 				lastname: lastname.val(),
 				email: email.val(),
 				telephone: telephone.val(),
-				position: position.val()
+				position: position.val(),
+				notes: notes.val()
 			}
 		};
 		$.ajax({
@@ -159,6 +161,20 @@ $(function(){
 			}
 		});
 	});
+	//show/hide notes of customer contact
+	$('img.show-contact-notes').live('mouseenter', function(){
+		if ($('div.contact-notes[data-contact-id="'+$(this).attr('data-contact-id')+'"]').is(':visible')){
+			$(this).attr('src', '/media/images/icons/note_delete.png');
+		} else {
+			$(this).attr('src', '/media/images/icons/note_add.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).attr('src', '/media/images/icons/note.png');
+	}).live('click', function(){
+		$('div.contact-notes[data-contact-id="'+$(this).attr('data-contact-id')+'"]').slideToggle('slow');
+		$('td.contact-notes-container[data-contact-id="'+$(this).attr('data-contact-id')+'"]');
+	});
+
 
 	// Show/hide notes of customer addresses	
 	$('img.show-address-notes').live('mouseenter', function(){

@@ -5,6 +5,7 @@
 		<th>Telephone</th>
 		<th>Postition</th>
 		<th>&nbsp;</th>
+		<th>&nbsp;</th>
 	</thead>
 	<tbody>	
 	{% for key, contact in contacts %}
@@ -15,11 +16,22 @@
 			<td>{{contact.telephone}}</td>
 			<td>{{contact.position}}</td>
 			<td width="1">
+			{% if contact.notes %}
+				<img src="/media/images/icons/note.png" alt="" class="inline-icon show-contact-notes" data-contact-id="{{contact.id}}" title="Show notes" />
+			{% endif %}
+			<td width="1">
 				<a href="#" class="customer-contact-delete" data-url="{% url "customer_contact_delete", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">
 					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
 				</a>
 				<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden custom-contact-delete-spinner" data-contact-id="{{contact.id}}" />
 			</td>
+			{% if contact.notes %}
+			<tr class="{{row_class}}">
+				<td colspan="999" class="contact-notes-container" data-contact-id="{{contact.id}}">
+					<div class="hidden contact-notes" data-contact-id="{{contact.id}}"><strong>Notes:</strong> {{contact.notes}}</div>
+				</td>
+			</tr>
+		{% endif %}
 		</tr>
 	{% endfor %}
 	</tbody>

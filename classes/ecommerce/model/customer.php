@@ -40,6 +40,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					'foreign' => 'customer.id',
 					'column' => 'customer_id',
 				)),
+				'notes' => new Field_String,
 				'contacts' => new Field_HasMany(array(
 					'foreign' => 'customer.customer_id',
 				)),
@@ -126,6 +127,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		$customer->firstname = $data['firstname'];
 		$customer->lastname = $data['lastname'];
 		$customer->email = $data['email'];
+		
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
 		
 		if (isset($data['referred_by']))
 		{
@@ -247,7 +253,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
 		return Model_Address::create($data, $this->id);
 	}
-	
+		
 	public function admin_update($data)
 	{
 		$this->firstname = $data['firstname'];
@@ -263,7 +269,12 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->default_shipping_address = $data['default_shipping_address'];
 		}
-		
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
+
+	
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
 		if (isset($data['customer_types']))
@@ -342,10 +353,12 @@ class Ecommerce_Model_Customer extends Model_Application
 		$contact->telephone = $data['telephone'];
 		$contact->position = $data['position'];
 		$contact->status = 'active';
-		if (isset($data['contact_notes']))
+		if (isset($data['notes']))
 		{
-  		$contact->contact_notes = $data['contact_notes'];
+  		$contact->notes = $data['notes'];
 		}
+		
+
 
 		return $contact->save();
 	}
