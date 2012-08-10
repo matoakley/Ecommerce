@@ -113,19 +113,51 @@ input.inplace_form
 {
 border:1px dashed #ccc;
 padding:4px;
-width:98%;
+width:92%;
 }
 
 /* TEXT AREA */
 
 textarea.inplace_field { 
   border:1px dashed #ccc;
-  width:870px;
+  width:840px;
   margin-top:10px;
   padding:5px;
   height:auto;
 }
 
+.inline_editor_input {
+  width:96%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_textarea {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+.inline_editor_textarea_machines {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+#spinner {
+  padding-top:6px;
+}
+
+.edit-pencil {
+  padding-top: 6px;
+  float:right;
+  vertical-align: none;
+}
 /**************** END INLINE EDITOR STYLES ******************/
 
 textarea {

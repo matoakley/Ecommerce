@@ -562,15 +562,15 @@ $(function(){
 		dateFormat: 'dd/mm/yy'
 	});
 	
-	/*
+	
 
-	$('.inline_editor_textarea').live('mouseover', function(){
+	$('.inline_editor_textarea').live('mouseenter', function(){
 	var area = $(this);
-	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').show();
-		$('.inline_editor_textarea').live('mouseout', function(){
-	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').hide();
-	})
-	})
+	$('#edit-pencil-text[data-communication-id="'+area.data('communication-id')+'"]').removeClass('hidden');
+		$('.inline_editor_textarea').live('mouseleave', function(){
+	$('#edit-pencil-text[data-communication-id="'+area.data('communication-id')+'"]').addClass('hidden');
+	});
+	});
 
 	$('.inline_editor_textarea').live('click', function(){
 	 var original = $(this);
@@ -623,14 +623,14 @@ $(function(){
     cancelButton.remove();
    });
   });
-
-	$('.inline_editor_input').live('mouseover', function(){
+  
+	$('.inline_editor_input').live('mouseenter', function(){
 	var area = $(this);
-	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').show();
-		$('.inline_editor_input').live('mouseout', function(){
-	$('#edit-pencil[data-communication-id="'+area.data('communication-id')+'"]').hide();
-	})
-	})
+	$('#edit-pencil-title[data-communication-id="'+area.data('communication-id')+'"]').show();
+		$('.inline_editor_input').live('mouseleave', function(){
+	$('#edit-pencil-title[data-communication-id="'+area.data('communication-id')+'"]').hide();
+	});
+	});
 	$('.inline_editor_input').live('click', function(){
 	 var original = $(this);
 	 var container = $(this).parent();
@@ -683,7 +683,7 @@ $(function(){
     cancelButton.remove();
    });
   });
-	*/
+
 });
 
 
