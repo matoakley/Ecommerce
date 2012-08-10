@@ -315,13 +315,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		foreach ($this->communications as $communication)
 		{
 			$communication->delete();
-		} 
-		
-		foreach ($this->machines as $machine)
-		{
-			$machine->delete();
-		} 
-
+		}  
 	
 		return parent::delete($key);
 	}
