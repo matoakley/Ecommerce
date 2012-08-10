@@ -263,7 +263,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->default_shipping_address = $data['default_shipping_address'];
 		}
-	
+		
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
 		if (isset($data['customer_types']))
@@ -342,6 +342,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		$contact->telephone = $data['telephone'];
 		$contact->position = $data['position'];
 		$contact->status = 'active';
+		if (isset($data['contact_notes']))
+		{
+  		$contact->contact_notes = $data['contact_notes'];
+		}
+
 		return $contact->save();
 	}
 }
