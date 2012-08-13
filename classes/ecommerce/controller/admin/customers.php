@@ -184,50 +184,41 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
-	public function action_edit_communication()
-	{
-	
-	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
-	
-	$communication->update($_POST);
-	if (isset($_POST['text']))
-	{
-	echo $_POST['text'];
-	}
-	if (isset($_POST['title']))
-	{
-	echo $_POST['title'];
-	}
-	}
-	
-	public function action_edit_contact()
-	{
-	
-	$contact = Model_Customer::load($this->request->param('customer_id'));
-	
-	$contact->update($_POST);
-	if (isset($_POST['notes']))
-	{
-	echo $_POST['notes'];
-	}
-	if (isset($_POST['name']))
-	{
-	echo $_POST['name'];
-	}
-	if (isset($_POST['email']))
-	{
-	echo $_POST['email'];
-	}
-	if (isset($_POST['telephone']))
-	{
-	echo $_POST['telephone'];
-	}
-	if (isset($_POST['position']))
-	{
-	echo $_POST['position'];
-	}
-		}
+	  public function action_edit_communication()
+  	{
+  	
+  	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+  	
+  	$communication->update($_POST);
+  	
+  	if (isset($_POST['text']))
+  	{
+  	echo $_POST['text'];
+  	}
+  	if (isset($_POST['title']))
+  	{
+  	echo $_POST['title'];
+  	 }
+  	}
+  	
+  	public function action_edit_contact()
+  	{
+  	
+  	$contact = Model_Customer::load($this->request->param('contact_id'));
+  	
+  	$contact->update($_POST);
+  	
+  	}
 		
+		public function action_edit_address()
+  	{
+  	
+  	$address = Model_Address::load($this->request->param('address_id'));
+  	
+  	$address->update($_POST);
+  	
+  	}
+			
 	public function action_add_communication()
 	{
 		if ( ! Request::$is_ajax)

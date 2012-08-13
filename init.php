@@ -66,6 +66,12 @@ Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')-
 	'action' => 'add_address',
 ));
 
+Route::set('customer_address_edit', 'admin/customers/<customer_id>/edit_address/<address_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'edit_address',
+));
+
 Route::set('customer_communication_add', 'admin/customers/<customer_id>/add_communication')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',

@@ -353,6 +353,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$contact->telephone = $data['telephone'];
 		$contact->position = $data['position'];
 		$contact->status = 'active';
+		$contact->id = 'id';
 		if (isset($data['notes']))
 		{
   		$contact->notes = $data['notes'];
@@ -362,4 +363,33 @@ class Ecommerce_Model_Customer extends Model_Application
 
 		return $contact->save();
 	}
+	
+		public function update()
+	{
+	if (isset($_POST['email']))
+	{
+    $this->email = $_POST['email'];
+  }
+	if (isset($_POST['notes']))
+	{
+    $this->notes = $_POST['notes'];
+  }
+  if (isset($_POST['telephone']))
+	{
+    $this->telephone = $_POST['telephone'];
+  }
+   if (isset($_POST['position']))
+	{
+    $this->position = $_POST['position'];
+  }
+  if (isset($_POST['firstname']))
+  {
+    explode(" ", $_POST['firstname']);
+    $first = explode(" ", $_POST['firstname']);
+    $this->firstname = $first[0];
+    $this->lastname = $first[1];
+  }
+ 
+  	return $this->save();
+	}	
 }

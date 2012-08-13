@@ -11,10 +11,26 @@
 	{% for key, contact in contacts %}
 		{% set row_class = ['', 'alternate']|cycle(key) %}
 		<tr class="{{row_class}}">
-			<td>{{contact.name}}</td>
-			<td><a href="mailto:{{contact.email}}">{{contact.email}}</a></td>
-			<td>{{contact.telephone}}</td>
-			<td>{{contact.position}}</td>
+			<td><div class="inline_editor_input_contacts_name inline_editor_input_contacts_name2" data-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.name}}
+			</div>
+			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-name-spinner" data-contact-id="{{contact.id}}"/>
+			<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-name" data-contact-id="{{contact.id}}" />
+			</td>
+			<td><div class="inline_editor_input_contacts_email" data-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.email}}
+			</div>
+			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-email-spinner" data-contact-id="{{contact.id}}"/>
+			<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-email" data-contact-id="{{contact.id}}" />
+			</td>
+			<td><div class="inline_editor_input_contacts_tel" data-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.telephone}}
+			</div>
+			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-tel-spinner" data-contact-id="{{contact.id}}"/>
+			<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-tel" data-contact-id="{{contact.id}}" />
+			</td>
+			<td><div class="inline_editor_input_contacts_position" data-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.position}}
+			</div>
+			<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-position-spinner" data-contact-id="{{contact.id}}"/>
+			<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-position" data-contact-id="{{contact.id}}" />
+			</td>
 			<td width="1">
 			{% if contact.notes %}
 				<img src="/media/images/icons/note.png" alt="" class="inline-icon show-contact-notes" data-contact-id="{{contact.id}}" title="Show notes" />
@@ -27,8 +43,9 @@
 			</td>
 			{% if contact.notes %}
 			<tr class="{{row_class}}">
-				<td colspan="999" class="contact-notes-container .inline_editor_textarea_contacts" data-contact-id="{{contact.id}}">
-					<div class="hidden contact-notes" data-contact-id="{{contact.id}}"data-contact-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.notes}}</div>
+			<td></td>
+				<td colspan="999" class="contact-notes-container" data-contact-id="{{contact.id}}">
+					<div class="hidden contact-notes inline_editor_textarea_contacts" data-contact-id="{{contact.id}}"data-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.notes}}</div>
 							<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-spinner" data-contact-id="{{contact.id}}"/>
 							<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-text" data-contact-id="{{contact.id}}" />
 						</td>			
