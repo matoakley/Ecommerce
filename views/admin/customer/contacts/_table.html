@@ -27,10 +27,12 @@
 			</td>
 			{% if contact.notes %}
 			<tr class="{{row_class}}">
-				<td colspan="999" class="contact-notes-container" data-contact-id="{{contact.id}}">
-					<div class="hidden contact-notes" data-contact-id="{{contact.id}}"><strong>Notes:</strong> {{contact.notes}}</div>
-				</td>
-			</tr>
+				<td colspan="999" class="contact-notes-container .inline_editor_textarea_contacts" data-contact-id="{{contact.id}}">
+					<div class="hidden contact-notes" data-contact-id="{{contact.id}}"data-contact-url="{% url "customer_contact_edit", ["customer_id": customer.id, "contact_id": contact.id] %}" data-contact-id="{{contact.id}}">{{contact.notes}}</div>
+							<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-contact-spinner" data-contact-id="{{contact.id}}"/>
+							<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-text" data-contact-id="{{contact.id}}" />
+						</td>			
+				</tr>
 		{% endif %}
 		</tr>
 	{% endfor %}

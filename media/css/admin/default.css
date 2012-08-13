@@ -149,6 +149,14 @@ textarea.inplace_field {
   
 }
 
+.inline_editor_textarea_contacts {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
 #spinner {
   padding-top:6px;
 }

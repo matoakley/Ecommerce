@@ -198,7 +198,34 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	{
 	echo $_POST['title'];
 	}
+	}
 	
+	public function action_edit_contact()
+	{
+	
+	$contact = Model_Customer::load($this->request->param('customer_id'));
+	
+	$contact->update($_POST);
+	if (isset($_POST['notes']))
+	{
+	echo $_POST['notes'];
+	}
+	if (isset($_POST['name']))
+	{
+	echo $_POST['name'];
+	}
+	if (isset($_POST['email']))
+	{
+	echo $_POST['email'];
+	}
+	if (isset($_POST['telephone']))
+	{
+	echo $_POST['telephone'];
+	}
+	if (isset($_POST['position']))
+	{
+	echo $_POST['position'];
+	}
 		}
 		
 	public function action_add_communication()

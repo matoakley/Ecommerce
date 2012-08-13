@@ -42,6 +42,12 @@ Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')-
 	'action' => 'add_contact',
 ));
 
+Route::set('customer_contact_edit', 'admin/customers/<customer_id>/edit_contact/<contact_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'edit_contact',
+));
+
 Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'sales_orders',
