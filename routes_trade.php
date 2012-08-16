@@ -24,13 +24,13 @@ Route::set('sign_up_received', 'sign-up-requested')->defaults(array(
 	'action' => 'sign_up_requested',
 ));
 
-Route::set('view_category', 'trade/browse/<slug>')->defaults(array(
+Route::set('view_category', 'browse/<slug>')->defaults(array(
 	'directory' => 'trade',
 	'controller' => 'categories',
 	'action' => 'view',
 ));
 
-Route::set('view_product', 'trade/view/<slug>')->defaults(array(
+Route::set('view_product', 'view/<slug>')->defaults(array(
 	'directory' => 'trade',
 	'controller' => 'products',
 	'action' => 'view',
@@ -58,4 +58,22 @@ Route::set('order_history', 'account/orders')->defaults(array(
 	'directory' => 'trade',
 	'controller' => 'users',
 	'action' => 'order_history',	
+));
+
+Route::set('blog_view', 'blog/<slug>')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'blog',
+	'action' => 'view',
+)); 
+
+Route::set('view_blog_category', 'blog/category/<slug>')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'blog_categories',
+	'action' => 'view',
+));
+
+Route::set('blog', 'blog')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'blog',
+	'action' => 'index',
 ));

@@ -206,6 +206,6 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 	
 	public function action_order_history()
 	{
-		
+		$this->template->sales_orders = array();
 	}
 }
