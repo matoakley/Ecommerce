@@ -53,3 +53,9 @@ Route::set('change_password', 'account/change-password')->defaults(array(
 	'controller' => 'users',
 	'action' => 'change_password',
 ));
+
+Route::set('order_history', 'account/orders')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'users',
+	'action' => 'order_history',	
+));

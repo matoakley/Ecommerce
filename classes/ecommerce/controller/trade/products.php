@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Trade_Products extends Controller_Application
+class Ecommerce_Controller_Trade_Products extends Controller_Trade_Application
 {
 	public function before()
 	{
