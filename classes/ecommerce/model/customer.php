@@ -116,6 +116,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		
 		return TRUE;
 	}
+	
 	public static function create($data)
 	{
 		// Format email address to lowercase
@@ -132,9 +133,14 @@ class Ecommerce_Model_Customer extends Model_Application
 			$customer->referred_by = $data['referred_by'];
 		}
 		
-		if (Kohana::config('ecommerce.modules.crm'))
+		if (Caffeine::modules('crm'))
 		{
 			$customer->add('customer_types', Kohana::config('ecommerce.default_web_customer_type'));
+		}
+		
+		if (isset($data['company']))
+		{
+			$customer->company = $data['company'];
 		}
 		
 		$customer->status = 'active';
@@ -271,13 +277,22 @@ class Ecommerce_Model_Customer extends Model_Application
 			$this->add('customer_types', $data['customer_types']);
 		}
 		
-		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['price_tier']))
+		if (Caffeine::modules('tiered_pricing') AND isset($data['price_tier']))
 		{
 			$this->price_tier = $data['price_tier'];
 		}
 		if (isset($data['invoice_terms']))
 		{
 			$this->invoice_terms = $data['invoice_terms'];
+		}
+		
+		if (Caffeine::modules('trade_area') AND isset($data['trade_area']))
+		{
+			$this->user->add('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+		}
+		else
+		{
+			$this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
 		}
 
 		$this->status = $data['status'];
@@ -343,5 +358,25 @@ class Ecommerce_Model_Customer extends Model_Application
 		$contact->position = $data['position'];
 		$contact->status = 'active';
 		return $contact->save();
+	}
+	
+	/**
+	 * Email a new trade customer to confirm receipt.
+	 * @author  Matt Oakley
+	 * @return  boolean
+	 */
+	public function email_trade_sign_up_confirmation()
+	{
+		Email::connect();
+		
+		$message = Twig::factory('emails/trade_sign_up_received.html');
+		$message->customer = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
+
+		$to = array(
+			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Trade account sign up for '.Kohana::config('ecommerce.site_name').' received', $message, true);
 	}
 }

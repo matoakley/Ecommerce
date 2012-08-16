@@ -1,12 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-abstract class Ecommerce_Controller_Application extends Controller_Template_Twig {
+abstract class Ecommerce_Controller_Trade_Application extends Controller_Template_Twig {
 
 	public $environment = 'production';
 
 	private $breadcrumbs = array();
-	
-	private $recent_products;
 	
 	protected $basket;
 	
@@ -40,11 +38,14 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		$this->basket = Model_Basket::instance();
 		
-		// Assigning this before the controller is called will prevent the CURRENT product
-		// displaying in the Recently Viewed Products list.
-		$this->recent_products = $this->session->get('recent_products', array());
-		
 		$this->modules = Kohana::config('ecommerce.modules');
+		
+		// Users must be logged in to trade area
+		if ( ! $this->auth->logged_in('trade_area') AND ! in_array(Route::name($this->request->route), array('sign_in', 'sign_up', 'sign_up_received')))
+		{
+			$this->session->set('redirected_from', $this->request->uri());
+			$this->request->redirect(Route::get('sign_in')->uri());
+		}
 		
 		parent::before();		
 	}
@@ -62,12 +63,6 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
-		
-		$brands = Model_Brand::search(array('status:active'));
-		$this->template->all_brands = $brands['results'];
-		
-		// Set recently viewed products
-		$this->template->recent_products = array_reverse($this->recent_products);
 	
 		// Count number of items in session basket
 		$this->template->number_of_basket_items = $this->basket->count_items();
@@ -77,10 +72,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	
 		// Snippet Manager for templates
 		$this->template->snippet = Snippet::instance();
-		
-		// API key when using Leaflet.js for maps
-		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
-	
+			
 		parent::after();
 	}
 	
@@ -93,13 +85,4 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	{		
 		return array_merge(array('/' => 'Home'), $this->breadcrumbs);
 	}
-	
-	public function requires_login()
-	{
-		if ( ! $this->auth->logged_in('login'))
-		{
-			$this->request->redirect(Route::get('login')->uri(array('get' => '?return_url='.$this->request->uri)));
-		}
-	}
-	
 }

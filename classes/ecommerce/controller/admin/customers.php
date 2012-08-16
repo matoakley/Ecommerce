@@ -51,10 +51,15 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$fields = array( 
 		  'customer' => $customer->as_array(),
+		  'user' => $customer->user->as_array(),
 		);
-		if ($this->modules['custom_fields'])
+		if (Caffeine::modules('custom_fields'))
 		{
 		  $fields['custom_fields'] = $customer->custom_fields();
+		}
+		if (Caffeine::modules('trade_area'))
+		{
+			$fields['user']['trade_area'] = $customer->user->has('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load());
 		}
 			
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');

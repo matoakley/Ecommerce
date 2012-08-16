@@ -1,0 +1,1 @@
+INSERT INTO `roles` (`name`, `description`) VALUES ('trade_area', 'Users that have access to the trade only area of the site.');
