@@ -164,6 +164,11 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
+	
+	public static function newest_products($num_products = 5)
+	{
+		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
+	}
 
 	public function display_meta_description()
 	{

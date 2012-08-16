@@ -40,6 +40,7 @@ class Ecommerce_Model_Customer extends Model_Application
 					'foreign' => 'customer.id',
 					'column' => 'customer_id',
 				)),
+				'notes' => new Field_String,
 				'contacts' => new Field_HasMany(array(
 					'foreign' => 'customer.customer_id',
 				)),
@@ -127,6 +128,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		$customer->firstname = $data['firstname'];
 		$customer->lastname = $data['lastname'];
 		$customer->email = $data['email'];
+		
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
 		
 		if (isset($data['referred_by']))
 		{
@@ -253,7 +259,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
 		return Model_Address::create($data, $this->id);
 	}
-	
+		
 	public function admin_update($data)
 	{
 		$this->firstname = $data['firstname'];
@@ -269,6 +275,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->default_shipping_address = $data['default_shipping_address'];
 		}
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
+
 	
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
@@ -330,7 +341,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		foreach ($this->communications as $communication)
 		{
 			$communication->delete();
-		} 
+		}  
 	
 		return parent::delete($key);
 	}
@@ -357,9 +368,18 @@ class Ecommerce_Model_Customer extends Model_Application
 		$contact->telephone = $data['telephone'];
 		$contact->position = $data['position'];
 		$contact->status = 'active';
+		$contact->id = 'id';
+		if (isset($data['notes']))
+		{
+  		$contact->notes = $data['notes'];
+		}
+		
+
+
 		return $contact->save();
 	}
 	
+
 	/**
 	 * Email a new trade customer to confirm receipt.
 	 * @author  Matt Oakley
@@ -379,4 +399,37 @@ class Ecommerce_Model_Customer extends Model_Application
 
 		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Trade account sign up for '.Kohana::config('ecommerce.site_name').' received', $message, true);
 	}
+	
+	public function update()
+	{
+		if (isset($_POST['email']))
+		{
+	    $this->email = $_POST['email'];
+	  }
+	  
+		if (isset($_POST['notes']))
+		{
+	    $this->notes = $_POST['notes'];
+	  }
+	  
+	  if (isset($_POST['telephone']))
+		{
+	    $this->telephone = $_POST['telephone'];
+	  }
+	  
+	  if (isset($_POST['position']))
+		{
+	    $this->position = $_POST['position'];
+	  }
+	  
+	  if (isset($_POST['firstname']))
+	  {
+	    explode(" ", $_POST['firstname']);
+	    $first = explode(" ", $_POST['firstname']);
+	    $this->firstname = $first[0];
+	    $this->lastname = $first[1];
+	  }
+ 
+  	return $this->save();
+	}	
 }
