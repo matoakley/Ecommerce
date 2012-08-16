@@ -85,7 +85,9 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 			if (empty($errors))
 			{
 				$customer = Model_Customer::create($_POST['customer']);
-				$customer->create_account($_POST['user']['password'])->add_address($_POST['address']);
+				$customer->create_account($_POST['user']['password']);
+				$address = $customer->add_address($_POST['address']);
+				$customer->set_default_billing_address($address)->set_default_shipping_address($address);
 				
 				// Send an email to customer and administrator to confirm receipt
 				$customer->email_trade_sign_up_confirmation();
@@ -119,5 +121,86 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 	public function action_sign_up_requested()
 	{
 		
+	}
+	
+	public function action_edit_account()
+	{
+		$user = $this->auth->get_user();
+		$customer = $user->customer;
+		$address = $customer->default_billing_address;
+		
+		$fields = array(
+			'address' => $address->as_array(),
+			'customer' => $customer->as_array(),
+			'user' => $user->as_array(),
+		);
+		$fields['address']['country'] = $address->country->id;
+		$errors = array();
+		
+		if ($_POST)
+		{
+			try
+			{
+				$customer->trade_update_validator($_POST['customer']);
+			}
+			catch (Validate_Exception $e)
+			{
+				$errors['customer'] = $e->array->errors();
+			}
+			
+			try
+			{
+				Model_Address::customer_address_validator($_POST['address']);
+			}
+			catch (Validate_Exception $e)
+			{
+				$errors['address'] = $e->array->errors();
+			}
+			
+			if (empty($errors))
+			{
+				$customer->customer_update($_POST['customer']);
+				$address->update($_POST['address']);
+				
+				$this->request->redirect(Route::get('default')->uri());
+			}
+			else
+			{
+				$fields = $_POST;
+			}
+		}
+		
+		$this->template->fields = $fields;
+		$this->template->errors = $errors;
+		
+		$countries = Model_Country::search();
+		$this->template->countries = $countries['results'];
+	}
+	
+	public function action_change_password()
+	{
+		$errors = array();
+		
+		if ($_POST)
+		{
+			if ($this->auth->check_password($_POST['current_password']))
+			{
+				try
+				{
+					$this->auth->get_user()->change_password($_POST['new_password']);
+					$this->request->redirect(Route::get('edit_account')->uri());
+				}
+				catch (Validate_Exception $e)
+				{
+					$errors['new_password'] = TRUE;
+				}
+			}
+			else
+			{
+				$errors['current_password'] = TRUE;
+			}
+		}
+		
+		$this->template->errors = $errors;
 	}
 }

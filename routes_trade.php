@@ -35,3 +35,21 @@ Route::set('view_product', 'trade/view/<slug>')->defaults(array(
 	'controller' => 'products',
 	'action' => 'view',
 ));
+
+Route::set('search', 'search')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'products',
+	'action' => 'search',
+));
+
+Route::set('edit_account', 'account/edit')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'users',
+	'action' => 'edit_account',
+));
+
+Route::set('change_password', 'account/change-password')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'users',
+	'action' => 'change_password',
+));

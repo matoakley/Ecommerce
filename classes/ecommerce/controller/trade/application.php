@@ -21,6 +21,11 @@ abstract class Ecommerce_Controller_Trade_Application extends Controller_Templat
 	 */
 	public function before()
 	{
+		if ( ! Caffeine::modules('trade_area'))
+		{
+			throw new Kohana_Exception('The "trade_area" module is not enabled.');
+		}
+	
 		$this->config = Kohana::config('ecommerce');
 		
 		Cookie::$salt = $this->config['cookie_salt'].$this->config['site_name'];

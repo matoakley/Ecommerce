@@ -431,5 +431,34 @@ class Ecommerce_Model_Customer extends Model_Application
 	  }
  
   	return $this->save();
-	}	
+	}
+	
+	public function trade_update_validator($data)
+	{
+		$validator = Validate::factory($data)
+			->filters('firstname', array('trim' => NULL))->rules('firstname', array('not_empty' => NULL)) // Firstname
+			->filters('lastname', array('trim' => NULL))->rules('lastname', array('not_empty' => NULL)) // Lastname
+			->filters('email', array('trim' => NULL))->rules('email', array('not_empty' => NULL, 'email' => NULL))->callback('email', 'Model_User::_email_is_unique', array('id' => $this->user->id)); // Email
+			
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
+	
+	// This is where the customer updates their own account
+	public function customer_update($data)
+	{
+		$this->firstname = $data['firstname'];
+		$this->lastname = $data['lastname'];
+		if (isset($data['company']))
+		{
+			$this->company = $data['company'];
+		}
+		$this->email = $data['email'];
+		$this->user->update_email($data['email']);
+		return $this->save();
+	}
 }
