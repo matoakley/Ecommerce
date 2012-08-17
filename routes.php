@@ -2,12 +2,6 @@
 
 // Admin routes
 
-Route::set('customer_address_edit', 'admin/customers/<customer_id>/edit_address/<address_id>')->defaults(array(
-  'directory' => 'admin',
-  'controller' => 'customers',
-  'action' => 'edit_address',
-));
-
 Route::set('sales_order_generate_delivery_note', 'admin/sales_orders/<sales_order_id>/generate_delivery_note')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'sales_orders',
@@ -26,10 +20,10 @@ Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_s
 	'action' => 'export_to_sage',
 ));
 
-Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
+Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
 	'directory' => 'admin',
-	'controller' => 'customers',
-	'action' => 'delete_contact',
+	'controller' => 'sales_orders',
+	'action' => 'add_sales_order_line',
 ));
 
 Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')->defaults(array(
@@ -38,16 +32,16 @@ Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')-
 	'action' => 'add_contact',
 ));
 
-Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_line/<customer_id>(/<sku_id>)')->defaults(array(
-	'directory' => 'admin',
-	'controller' => 'sales_orders',
-	'action' => 'add_sales_order_line',
-));
-
-Route::set('customer_address_delete', 'admin/customers/<customer_id>/delete_address/<address_id>')->defaults(array(
+Route::set('customer_contact_edit', 'admin/customers/<customer_id>/edit_contact/<contact_id>')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
-	'action' => 'delete_address',
+	'action' => 'edit_contact',
+));
+
+Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_contact',
 ));
 
 Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')->defaults(array(
@@ -56,10 +50,34 @@ Route::set('customer_address_add', 'admin/customers/<customer_id>/add_address')-
 	'action' => 'add_address',
 ));
 
+Route::set('customer_address_edit', 'admin/customers/<customer_id>/edit_address/<address_id>')->defaults(array(
+  'directory' => 'admin',
+  'controller' => 'customers',
+  'action' => 'edit_address',
+));
+
+Route::set('customer_address_delete', 'admin/customers/<customer_id>/delete_address/<address_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_address',
+));
+
 Route::set('customer_communication_add', 'admin/customers/<customer_id>/add_communication')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
 	'action' => 'add_communication',
+));
+
+Route::set('customer_communication_edit', 'admin/customers/<customer_id>/edit_communication/<communication_id>')->defaults(array(
+  'directory' => 'admin',
+  'controller' => 'customers',
+  'action' => 'edit_communication',
+));
+
+Route::set('customer_communication_delete', 'admin/customers/<customer_id>/delete_communication/<communication_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'delete_communication',
 ));
 
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
