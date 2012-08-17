@@ -87,7 +87,8 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 				$customer = Model_Customer::create($_POST['customer']);
 				$customer->create_account($_POST['user']['password']);
 				$address = $customer->add_address($_POST['address']);
-				$customer->set_default_billing_address($address)->set_default_shipping_address($address);
+				$customer->set_default_billing_address($address);
+				$customer->set_default_shipping_address($address);
 				
 				// Send an email to customer and administrator to confirm receipt
 				$customer->email_trade_sign_up_confirmation();
