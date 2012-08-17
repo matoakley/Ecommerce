@@ -9,10 +9,14 @@ class Ecommerce_Controller_Trade_Pages extends Controller_Trade_Application
 			throw new Kohana_Exception('The "pages" module is not enabled');
 		}
 		
+		if($this->request->action == 'static')
+		{
+			$this->template = 'pages/static/'.$this->request->param('slug', $this->request->param('id', FALSE));
+		}
+		
 		parent::before();
 	}
 	
-/*
 	function action_view($slug = FALSE)
 	{		
 		$page = Model_Page::get_by_slug($slug);
@@ -30,7 +34,6 @@ class Ecommerce_Controller_Trade_Pages extends Controller_Trade_Application
 		}	
 		$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug))), $page->name);
 	}
-*/
 	
 	function action_static()
 	{	
