@@ -104,11 +104,19 @@ Route::set('media', 'media(/<file>)', array('file' => '.+'))->defaults(array(
 ));
 
 Route::set('view_page', 'pages/<slug>')->defaults(array(
+	'directory' => 'trade',
 	'controller' => 'pages',
 	'action' => 'view',
 ));
 
 Route::set('view_static_page', 'pages/static/<slug>')->defaults(array(
+	'directory' => 'trade',
 	'controller' => 'pages',
 	'action' => 'static',
+));
+
+Route::set('basket_from_sales_order', 'basket/create-from-sales-order/<sales_order_id>')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'basket',
+	'action' => 'create_from_sales_order',
 ));

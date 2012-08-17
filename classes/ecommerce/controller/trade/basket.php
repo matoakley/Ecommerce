@@ -197,4 +197,17 @@ class Ecommerce_Controller_Trade_Basket extends Controller_Trade_Application
 		echo 'OK';
 	}
 	
+	public function action_create_from_sales_order()
+	{
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded() OR ! $this->auth->logged_in() OR $this->auth->get_user()->customer->id != $sales_order->customer->id)
+		{
+			throw new Kohana_Exception('Unable to load Sales Order');
+		}
+		
+		$this->basket->create_from_sales_order($sales_order);
+		
+		$this->request->redirect(Route::get('basket')->uri());
+	}
 }

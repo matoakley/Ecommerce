@@ -254,6 +254,11 @@ Route::set('brands', 'brands')->defaults(array(
 	'action' => 'index',
 ));
 
+Route::set('basket_from_sales_order', 'basket/create-from-sales-order/<sales_order_id>')->defaults(array(
+	'controller' => 'basket',
+	'action' => 'create_from_sales_order',
+));
+
 Route::set('add_basket_item', 'basket/add_item(/<product_id>/<quantity>)')->defaults(array(
 	'controller' => 'basket',
 	'action' => 'add_item',
