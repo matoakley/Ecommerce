@@ -77,6 +77,8 @@ abstract class Ecommerce_Controller_Trade_Application extends Controller_Templat
 	
 		// Snippet Manager for templates
 		$this->template->snippet = Snippet::instance();
+		
+		$this->template->basket = $this->basket;
 			
 		parent::after();
 	}
