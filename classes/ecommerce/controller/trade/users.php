@@ -206,6 +206,6 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 	
 	public function action_order_history()
 	{
-		$this->template->sales_orders = array();
+		$this->template->sales_orders = $this->auth->get_user()->customer->get('orders')->where('status', 'IN', array('invoice_generated', 'invoice_sent', 'complete'))->order_by('created', 'DESC')->execute();
 	}
 }

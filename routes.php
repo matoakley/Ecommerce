@@ -2,6 +2,12 @@
 
 // Admin routes
 
+Route::set('customer_address_edit', 'admin/customers/<customer_id>/edit_address/<address_id>')->defaults(array(
+  'directory' => 'admin',
+  'controller' => 'customers',
+  'action' => 'edit_address',
+));
+
 Route::set('sales_order_generate_delivery_note', 'admin/sales_orders/<sales_order_id>/generate_delivery_note')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'sales_orders',

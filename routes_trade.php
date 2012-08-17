@@ -77,3 +77,38 @@ Route::set('blog', 'blog')->defaults(array(
 	'controller' => 'blog',
 	'action' => 'index',
 ));
+
+Route::set('basket_add_items', 'basket/add-items')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'basket',
+	'action' => 'add_items',
+));
+
+Route::set('basket', 'basket')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'basket',
+	'action' => 'view',
+));
+
+Route::set('checkout', 'checkout')->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'checkout',
+	'action' => 'index',
+));
+
+Route::set('media', 'media(/<file>)', array('file' => '.+'))->defaults(array(
+	'directory' => 'trade',
+	'controller' => 'media',
+	'action'     => 'serve',
+	'file'       => NULL,
+));
+
+Route::set('view_page', 'pages/<slug>')->defaults(array(
+	'controller' => 'pages',
+	'action' => 'view',
+));
+
+Route::set('view_static_page', 'pages/static/<slug>')->defaults(array(
+	'controller' => 'pages',
+	'action' => 'static',
+));
