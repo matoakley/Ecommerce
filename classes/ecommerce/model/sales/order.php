@@ -544,7 +544,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		if (Caffeine::modules('commercial_sales_orders') AND isset($data['invoiced_on']))
 		{
-			$this->invoiced_on = $data['invoiced_on'] != '' ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
+			$this->invoiced_on = ($data['invoiced_on'] != '') ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
 		}
 	
 		return $this->save();
