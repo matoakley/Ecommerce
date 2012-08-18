@@ -55,7 +55,7 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 			}
 			catch (Validate_Exception $e)
 			{
-				$errors['customer'] = $e->array->errors();
+				$errors['customer'] = $e->array->errors('model/customer');
 			}
 			
 			$address = Model_Address::load();
@@ -66,7 +66,7 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 			}
 			catch (Validate_Exception $e)
 			{
-				$errors['address'] = $e->array->errors();
+				$errors['address'] = $e->array->errors('model/address');
 			}
 			
 			$user = Model_User::load();
@@ -79,7 +79,7 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 			}
 			catch (Validate_Exception $e)
 			{
-				$errors['user'] = $e->array->errors();
+				$errors['user'] = $e->array->errors('model/user');
 			}
 			
 			if (empty($errors))
