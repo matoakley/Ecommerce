@@ -563,4 +563,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		return $this->save()->calculate_total();
 	}
+	
+	public function invoice_due_date()
+	{
+		return $this->invoiced_on + (86400 * $this->invoice_terms);
+	}
 }
