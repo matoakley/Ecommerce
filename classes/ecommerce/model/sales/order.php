@@ -544,7 +544,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		if (Caffeine::modules('commercial_sales_orders') AND isset($data['invoiced_on']))
 		{
-			$this->invoiced_on = $data['invoiced_on'] != '' ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
+			$this->invoiced_on = ($data['invoiced_on'] != '') ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
 		}
 	
 		return $this->save();
@@ -562,5 +562,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$this->delivery_option_price = $option->retail_price();
 		
 		return $this->save()->calculate_total();
+	}
+	
+	public function invoice_due_date()
+	{
+		return $this->invoiced_on + (86400 * $this->invoice_terms);
 	}
 }

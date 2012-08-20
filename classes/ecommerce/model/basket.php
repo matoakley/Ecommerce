@@ -255,4 +255,16 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->promotion_code_reward = NULL;
 		return $this->save();
 	}
+	
+	public function create_from_sales_order($sales_order)
+	{
+		foreach ($sales_order->items as $item)
+		{
+			if ($item->sku->loaded())
+			{
+				$this->add_item($item->sku->id, $item->quantity);
+			}
+		}
+		return $this;
+	}
 }

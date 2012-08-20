@@ -1,0 +1,11 @@
+{% extends "templates/email_default.html" %}
+
+{% block content %}
+
+	Dear {{customer.firstname|title}} {{customer.lastname|title}},
+
+	<p>Thank you for your request to access the trade area of the {{site_name}} website. We have received you request and will contact you shortly.</p>
+
+	<p>If you have any questions in the meantime then please contact us using the details above.</p>
+	
+{% endblock %}

@@ -126,8 +126,13 @@ class Ecommerce_Model_Sku extends Model_Application
 	 * @author  Matt Oakley
 	 * @return  float
 	 */
-	public function retail_price()
+	public function retail_price($ignore_tiered_pricing = FALSE)
 	{
+		if ( ! $ignore_tiered_pricing AND Auth::instance()->logged_in('trade_area'))
+		{
+			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
+		}
+	
 		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
@@ -209,7 +214,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		}
 		else
 		{
-			return $this->retail_price();
+			return $this->retail_price(TRUE);
 		}
 	}
 	

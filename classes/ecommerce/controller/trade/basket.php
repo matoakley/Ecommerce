@@ -1,12 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Basket extends Controller_Application
+class Ecommerce_Controller_Trade_Basket extends Controller_Trade_Application
 {
 	public function before()
 	{
-		if ( ! Kohana::config('ecommerce.modules.sales_orders'))
+		if ( ! Caffeine::modules('sales_orders'))
 		{
-			throw new Kohana_Exception('This module is not enabled');
+			throw new Kohana_Exception('The "sales_orders" module is not enabled');
 		}
 		
 		parent::before();
