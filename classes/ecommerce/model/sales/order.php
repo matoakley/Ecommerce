@@ -443,6 +443,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
 	}
 	
+	
+	public function set_invoiced_on_date()
+	{
+  	if ( ! $this->invoiced_on OR $this->invoiced_on === "0000-00-00 00:00:00")
+  	{
+    	$this->invoiced_on = date('m/d/Y');
+    	$this->save();
+  	}
+	}
+	
+	
 	public function update_status($status)
 	{
 		if (in_array($status, self::$statuses[$this->type]))
@@ -460,6 +471,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$this->status = $status;
 			
 			$this->add_note($note_text, TRUE);
+			
 			
 			// If we are controlling stock and setting an order to payment received then we should decrement the stock count of each item
 			$is_controlling_stock = Kohana::config('ecommerce.modules.stock_control');
@@ -532,7 +544,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		if (Caffeine::modules('commercial_sales_orders') AND isset($data['invoiced_on']))
 		{
-			$this->invoiced_on = $data['invoiced_on'] != '' ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
+			$this->invoiced_on = ($data['invoiced_on'] != '') ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
 		}
 	
 		return $this->save();
@@ -550,5 +562,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$this->delivery_option_price = $option->retail_price();
 		
 		return $this->save()->calculate_total();
+	}
+	
+	public function invoice_due_date()
+	{
+		return $this->invoiced_on + (86400 * $this->invoice_terms);
 	}
 }

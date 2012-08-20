@@ -142,7 +142,7 @@
 					
 					{% for key, product in top_products %}
 						<tr class="{{['', 'alternate']|cycle(key)}}">
-							<td><a href="/admin/products/edit/{{product.id}}">{{product.product_name}}</a></td>
+							<td><a href="/admin/products/edit/{{product.product_id}}">{{product.product_name}}</a></td>
 							<td class="tr">{{product.sold}}</td>
 						</tr>
 					{% endfor %}

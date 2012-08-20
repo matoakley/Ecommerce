@@ -53,25 +53,32 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		{
   		$skus = Model_Product::load($_POST['product'])->skus;
 
-  		foreach ($skus as $sku)
+  		if (isset($_POST['options']))
   		{
-    		$matches = TRUE;
-    		
-    		$sku_product_options = $sku->product_options->as_array('id', 'value');
-    		
-    		foreach ($_POST['options'] as $option_id)
-    		{ 
-      		if ( ! isset($sku_product_options[$option_id]))
-      		{
-          		$matches = FALSE;
-      		}
-    		}
-    		
-    		if ($matches AND $sku->status == 'active')
-    		{
-        		$item = $this->basket->add_item($sku->id, $_POST['quantity']);
-    		}
-  		}
+	  		foreach ($skus as $sku)
+	  		{
+	    		$matches = TRUE;
+	    		
+	    		$sku_product_options = $sku->product_options->as_array('id', 'value');
+	    		
+	    		foreach ($_POST['options'] as $option_id)
+	    		{ 
+	      		if ( ! isset($sku_product_options[$option_id]))
+	      		{
+	          		$matches = FALSE;
+	      		}
+	    		}
+	    		
+	    		if ($matches AND $sku->status == 'active')
+	    		{
+	        		$item = $this->basket->add_item($sku->id, $_POST['quantity']);
+	    		}
+	  		}
+	  	}
+	  	else
+	  	{
+		  	$item = $this->basket->add_item($skus[0]->id, $_POST['quantity']);
+	  	}
 		}
 		
 		if (Request::$is_ajax)
@@ -190,4 +197,17 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		echo 'OK';
 	}
 	
+	public function action_create_from_sales_order()
+	{
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded() OR ! $this->auth->logged_in() OR $this->auth->get_user()->customer->id != $sales_order->customer->id)
+		{
+			throw new Kohana_Exception('Unable to load Sales Order');
+		}
+		
+		$this->basket->create_from_sales_order($sales_order);
+		
+		$this->request->redirect(Route::get('basket')->uri());
+	}
 }

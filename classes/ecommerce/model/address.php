@@ -197,31 +197,56 @@ class Ecommerce_Model_Address extends Model_Application
 	
 		return $address->save();
 	}
-	
-	public function update($data)
-	{
-		$this->line_1 = $data['line_1'];
-		$this->line_2 = $data['line_2'];
-		$this->town = $data['town'];
-		$this->county = $data['county'];
-		$this->postcode = $data['postcode'];
 		
+	public function update($data)
+	{ 
+	 if (isset($data['line_1']))
+		{
+		$this->line_1 = $data['line_1'];
+		}
+		if (isset($data['line_2']))
+		{
+		$this->line_2 = $data['line_2'];
+		}
+		if (isset($data['town']))
+		{
+		$this->town = $data['town'];
+		}
+		if (isset($data['county']))
+		{
+		$this->county = $data['county'];
+		}
+		if (isset($data['postcode']))
+		{
+		$this->postcode = $data['postcode'];
+		}
 		if (isset($data['telephone']))
 		{
 			$this->telephone = $data['telephone'];
 		}
-
-		
 		if (isset($data['line_3']))
 		{
 			$this->line_3 = $data['line_3'];
 		}
-		
 		if (isset($data['notes']))
 		{
 			$this->notes = $data['notes'];
 		}
-	
+		if (isset($data['name']))
+		{
+		  $this->name = $data['name'];
+		}
+		if (isset($data['address']))
+		{
+    $address = explode(", ", $_POST['address']);
+    $this->line_1 = $address[0];
+    $this->line_2 = $address[1];
+    $this->line_3 = $address[2];
+    $this->town = $address[3];
+    $this->county = $address[4];
+    $this->postcode = $address[5];
+    
+		}
 		return $this->save();
 	}
 	

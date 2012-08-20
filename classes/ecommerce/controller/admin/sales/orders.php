@@ -107,7 +107,10 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	
 		if ($sales_order->loaded() AND $sales_order->status = 'invoice_generated')
 		{
+		  $sales_order->set_invoiced_on_date();
+		  
 			$sales_order->update_status('invoice_sent')->send_invoice();
+			
 			echo 'ok';
 		}
 		else
@@ -325,12 +328,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		// If this is the fist time that the invoice has been
 		// generated then set invoiced on as now.
-		if ( ! $sales_order->invoiced_on )
-		{
-			$sales_order->invoiced_on = time();
-			
-		}
-		$sales_order->save();
+		$sales_order->set_invoiced_on_date();
 		
 		$this->template->base_url = URL::site();
 		$this->template->sales_order = $sales_order;
@@ -375,7 +373,8 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		foreach ($sales_orders as $sales_order)
 		{
 			$company_name = $sales_order->customer->company != '' ? $sales_order->customer->company : $sales_order->customer->name();
-		
+			$sales_order->set_invoiced_on_date();
+			
 			$sales_order_data = array(
 				'SI',
 				$sales_order->customer->account_ref,
@@ -391,7 +390,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 			$data[] = $sales_order_data;
 		}
-		
+
 		$dir_name = APPPATH.'exports/sage/';
 		
 		if ( ! is_dir($dir_name))

@@ -14,7 +14,7 @@
 
 	<div class="field">
 		<div class="grid_4 alpha">
-			<strong class="left-pad">Fields marked with * are required.</strong>
+					<div class="editme1"><strong class="left-pad editme1">Fields marked with * are required.</strong></div>
 		</div>
 		<div class="grid_12 omega tr">
 			{% if customer.loaded %}
@@ -124,6 +124,21 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{% if modules.trade_area %}
+		<div class="field">
+			<div class="grid_3 alpha">
+				<label for="customer-trade-area">Can access Trade Area?</label>
+			</div>
+			<div class="grid_13 omega">
+				<input type="checkbox" id="customer-trade-area" name="customer[trade_area]" value="1" {% if fields.user.trade_area %}checked="checked"{% endif %} {% if not customer.user.loaded() %}disabled="disabled"{% endif %} />
+				{% if not customer.user.loaded() %}
+					Customer does not have a user account.
+				{% endif %}
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endif %}
 	
 	<div class="field">
 		<div class="grid_2 alpha">

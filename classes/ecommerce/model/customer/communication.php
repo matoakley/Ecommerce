@@ -47,14 +47,15 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 	
 	public static function create_communication_for_customer($customer, $data)
 	{
-		$communication = Jelly::factory('customer_communication');
+		
+$communication = Jelly::factory('customer_communication');
 		
 		$communication->customer = $customer;
 		$communication->user = Auth::instance()->get_user();
 		
 		if ( ! in_array($data['type'], self::$types))
 		{
-			throw new Kohana_Exception('Unkown Customer Communicaition type');
+			throw new Kohana_Exception('Unknown Customer Communication type');
 		}
 		$communication->type = $data['type'];
 		
@@ -63,5 +64,21 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 		$communication->date = $data['date'];
 		
 		return $communication->save();
+		echo $communication;
+  
 	}
+	
+	public function update()
+	{
+	if (isset($_POST['text']))
+	{
+    $this->text = $_POST['text'];
+  }
+  if (isset($_POST['title']))
+  {	
+  	$this->title = $_POST['title'];
+  }
+  	return $this->save();
+	}
+	
 }

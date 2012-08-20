@@ -178,23 +178,23 @@ $(function(){
 		
 	});
 	
-});
-
-function update_basket_total(){
-	$.ajax({
-		type: 'GET',
-		cache: false,
-		url: '/basket/update_total',
-		dataType: 'json',
-		success: function(response){
-			$('#discount').html(response.discount.toString());
-			if (response.discount){
-				$('#basket_discount').removeClass('hidden').show('slow');
-			} else {
-				$('#basket_discount').hide();
+	function update_basket_total(){
+		$.ajax({
+			type: 'GET',
+			cache: false,
+			url: '/basket/update_total',
+			dataType: 'json',
+			success: function(response){
+				$('#discount').html(response.discount.toString());
+				if (response.discount){
+					$('#basket_discount').removeClass('hidden').show('slow');
+				} else {
+					$('#basket_discount').hide();
+				}
+				$('#basket_total').html(response.basket_total);
+				$('#subtotal').html(response.basket_subtotal);
 			}
-			$('#basket_total').html(response.basket_total);
-			$('#subtotal').html(response.basket_subtotal);
-		}
-	});
-}
+		});
+	}
+	
+});

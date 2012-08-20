@@ -47,6 +47,7 @@ return array
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
 		'tiered_pricing' => FALSE,
+		'trade_area' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
 		
@@ -80,4 +81,6 @@ return array
 	'cloudmade_api_key' => 'af4f31e0445f463ebe783a749812d374', // Generic API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
 	
 	'forum_post_name_max_length' => 245,
+	
+	'cookie_salt' => 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M',
 );
