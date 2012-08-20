@@ -63,7 +63,7 @@ $(function(){
 						$(".row-selector").filter(':checked').each(function(){
 				
   						salesOrders[i] = $(this).val();console.log(salesOrders);
-  						//i++;
+  						i++;
   				
 	
   				var data = {
