@@ -44,7 +44,6 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	public static $statuses = array(
 		'active', 'disabled'
 	);
-	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'status' => array(
