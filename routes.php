@@ -137,11 +137,6 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
-Route::set('event_redirect', 'pages/upcoming-events')->defaults(array(
-	'controller' => 'events',
-	'action' => 'index',
-));
-
 Route::set('event', 'events')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',
