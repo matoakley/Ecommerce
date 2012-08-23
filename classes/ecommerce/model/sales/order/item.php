@@ -78,9 +78,12 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->product_name = $product_name;
 		
 		$item->quantity = $basket_item->quantity;
+		$item->net_unit_price = $basket_item->sku->price;
 		$item->unit_price = $basket_item->sku->retail_price();
-		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
+		$item->vat_rate = $basket_item->sku->vat_rate();
+		$item->net_total_price = $basket_item->sku->price * $basket_item->quantity;
 		$item->total_price = $basket_item->sku->retail_price() * $basket_item->quantity;
+		
 		$basket = $sales_order->basket;
 
 		if ($sales_order->basket->promotion_code_reward->loaded() AND $sales_order->basket->promotion_code_reward->reward_type == 'discount')
@@ -88,34 +91,36 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		  $reward = $sales_order->basket->promotion_code_reward;
 		  
 		  // Does the promotion code affect this item
-		
 		  if ($reward->promotion_code->discount_on == 'sales_order')
   	  {
-  		  $full = $basket->calculate_discount(); // full discount amount
-  		  $num = count($basket->items); //lines
-  		  $quantity = NULL;
-  		  foreach ($basket->items as $basket_item)
-  		    {
-    		    $quantity += $basket_item->quantity;
-    		  }
-  		  
-  		  $result = $full / $quantity;
-  		  $item->discount_amount = $result * $item->quantity;
-  		 /*
- echo $quantity. " ";
-  		  echo $item->quantity. " ";
-  		  echo "basketID " . $basket_item->id. "  ";
-  		  echo round($result) . " ";
-  		  echo round($item->discount_amount). " ";
-*/
-  		  
+  	  	if ($reward->discount_unit == 'pounds')
+  	  	{
+  	  		$qty = 0;
+  	  		foreach ($basket->items as $all_item)
+  	  		{
+	  	  		$qty += $all_item->quantity;
+  	  		}
+  	  	
+  	  		$item->discount_amount = ($sales_order->discount_amount / $qty) * $item->quantity;
+  	  	}
+  	  	else
+  	  	{
+	  	  	$item->discount_amount = $item->total_price / $reward->discount_amount;
+  	  	}
   	  }
   	  else
   	  {
+  	  	// If the sales order item discount relates to this line...
   		  if ($sales_order->basket->promotion_code->get('products')->where('id', '=', $basket_item->sku->product->id)->count())
-  		  {	 
-    		  $item->discount_amount = $basket->calculate_discount();
-    		
+  		  {
+  		  	if ($reward->discount_unit == 'pounds')
+  		  	{
+	  		  	$item->discount_amount = $sales_order->discount_amount;
+  		  	}
+    		  else
+    		  {
+	    		  $item->discount_amount = $item->total_price / $reward->discount_amount;
+    		  }
   		  }
   		}
     }

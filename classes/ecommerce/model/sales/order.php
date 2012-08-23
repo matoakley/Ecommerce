@@ -180,11 +180,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sales_order->save();
 		
-		foreach ($basket->items as $basket_item)
-		{
-			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
-		}
-		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -207,6 +202,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			}
 			
 			$sales_order->save();
+		}
+		
+		foreach ($basket->items as $basket_item)
+		{
+			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
 		}
 		
 		$session = Session::instance();
