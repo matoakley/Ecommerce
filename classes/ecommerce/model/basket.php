@@ -109,7 +109,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->sku->retail_price() * $item->quantity;
+			$subtotal += round($item->sku->retail_price(), 2) * $item->quantity;
 		}
 		
 		// Are there any special priced items to add due to promotion codes?
@@ -192,7 +192,7 @@ class Ecommerce_Model_Basket extends Model_Application
 					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount;
 							break;
 						case 'percent':
 							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
