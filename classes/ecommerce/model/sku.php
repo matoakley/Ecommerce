@@ -128,7 +128,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	 */
 	public function retail_price($ignore_tiered_pricing = FALSE)
 	{
-		if ( ! $ignore_tiered_pricing AND Auth::instance()->logged_in('trade_area'))
+		if (Caffeine::modules('tiered_pricing') AND ! $ignore_tiered_pricing AND Auth::instance()->logged_in('trade_area'))
 		{
 			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
 		}

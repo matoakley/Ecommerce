@@ -139,25 +139,6 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->unit_price = $item->net_unit_price * (($item->vat_rate + 100) / 100);
 		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);
 		
-			$item->promotion_code = $basket->promotion_code;
-			$item->promotion_code_code = $basket->promotion_code->code;
-			$basket->promotion_code->redeem();
-			
-			switch ($basket->promotion_code_reward->reward_type)
-			{
-				case 'discount':
-					$item->discount_amount = $basket->calculate_discount();
-					break;
-					
-				case 'item':
-					Model_Sales_Order_Item::create_from_promotion_code_reward($sales_order, $basket->promotion_code_reward);
-					break;
-					
-				default:
-					break;
-			}
-
-		
 		return $item->save();
 		
 	}
