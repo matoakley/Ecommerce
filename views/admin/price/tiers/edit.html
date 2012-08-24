@@ -1,0 +1,54 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if tier.loaded %}
+		Edit Price Tier: <strong>{{tier.name}}</strong>
+	{% else %}
+		Adding: <strong>New Price Tier</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if tier.loaded %}
+				<a href="/admin/price_tiers/delete/{{tier.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Price Tier
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Price Tier Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="tier-name" {{ errors.tier.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="tier-name" name="tier[name]" value="{{fields.tier.name}}" class="inputtext" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="tier-description">Description</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="tier-description" name="tier[description]" value="{{fields.tier.description}}" class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+{% endblock %}

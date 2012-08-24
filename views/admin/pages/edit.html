@@ -5,7 +5,6 @@
 	{% parent %}
 	
 	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/js/admin/pages.js"></script>
 
 {% endblock %}
 
@@ -92,7 +91,7 @@
 	</div>
 	
 	<div class="field">
-		<textarea name="page[body]" id="cms_body">{{page.body|e}}</textarea>
+		<textarea name="page[body]" class="description">{{page.body|e}}</textarea>
 	</div>
 	
 	<div class="field">

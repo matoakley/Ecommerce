@@ -56,6 +56,7 @@ class Kohana_Twig_Extensions extends Twig_Extension
 			// Numbers
 			'ordinal' => new Twig_Filter_Function('Kohana_Twig_Filters::ordinal'),
 			'num_format' => new Twig_Filter_Function('num::format'),
+			'round' => new Twig_Filter_Function('round'),
 			
 			// Text
 			'limit_words' => new Twig_Filter_Function('text::limit_words'),

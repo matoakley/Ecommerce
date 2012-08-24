@@ -38,6 +38,18 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 		'disabled',
 	);
 
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+		),
+		'search' => array(
+			'name',
+			'price',
+		),
+	);
+
 	public static function available_options()
 	{
 		return Jelly::select('delivery_option')->where('status', '=', 'active')->execute();

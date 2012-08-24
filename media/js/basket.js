@@ -1,5 +1,5 @@
 $(function(){
-	
+	$('a.quantity-adjuster').removeClass('hidden');
 	$('#delivery_option').change(function(){
 		$.ajax({
 			type: 'POST',
@@ -32,6 +32,8 @@ $(function(){
 		else {
 			quantity = ($(this).hasClass('increment')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1; 
 		}
+	
+		
 	
 		var basketItem = {
 			item_id: basketItemId,
@@ -79,7 +81,7 @@ $(function(){
 					complete: function(){
 						update_basket_total();
 					}
-				});				
+				});
 			}
 		});
 	});
@@ -176,23 +178,23 @@ $(function(){
 		
 	});
 	
-});
-
-function update_basket_total(){
-	$.ajax({
-		type: 'GET',
-		cache: false,
-		url: '/basket/update_total',
-		dataType: 'json',
-		success: function(response){
-			$('#discount').html(response.discount.toString());
-			if (response.discount > 0){
-				$('#basket_discount').show();
-			} else {
-				$('#basket_discount').hide();
+	function update_basket_total(){
+		$.ajax({
+			type: 'GET',
+			cache: false,
+			url: '/basket/update_total',
+			dataType: 'json',
+			success: function(response){
+				$('#discount').html(response.discount.toString());
+				if (response.discount){
+					$('#basket_discount').removeClass('hidden').show('slow');
+				} else {
+					$('#basket_discount').hide();
+				}
+				$('#basket_total').html(response.basket_total);
+				$('#subtotal').html(response.basket_subtotal);
 			}
-			$('#basket_total').html(response.basket_total);
-			$('#subtotal').html(response.basket_subtotal);
-		}
-	});
-}
+		});
+	}
+	
+});

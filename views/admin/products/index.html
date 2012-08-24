@@ -12,12 +12,21 @@
 
 {% block content %}
 
-<p>
-	<a href="/admin/products/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Product
-	</a>
-</p>
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/products/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Product
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
@@ -50,7 +59,7 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
 			<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
-			<td class="tc">{{product.summarise_sku_price}}</td>
+			<td class="tc">{{product.summarise_sku_price(true)}}</td>
 			{% if modules.stock_control %}
 				<td class="tc">{{product.total_stock}}</td>
 			{% endif %}

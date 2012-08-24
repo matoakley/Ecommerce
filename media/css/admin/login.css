@@ -100,3 +100,8 @@ textarea.notes {
 	color:#666;
 	text-shadow: 0 1px 0 #FFF;
 	border-bottom:1px dotted #666;
+}
+
+.error {
+	color: red;
+}

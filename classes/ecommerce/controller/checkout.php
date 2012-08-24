@@ -25,6 +25,13 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			$this->request->redirect('/basket');
 		}
 		
+		// If customer accounts module is enabled, we should check if they are logged in
+		// or set as a new customer in session and if not, offer them the chance to log in.
+		if ($this->modules['customer_accounts'] AND ! $this->session->get('new_customer') AND ! $this->auth->logged_in())
+		{
+			$this->request->redirect(Route::get('checkout_login')->uri());
+		}
+		
 		// If the customer is logged in we should attempt to 
 		// auto fill some of the fields
 		if ($this->auth->logged_in('customer'))
@@ -49,6 +56,17 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			}
 			
 			$delivery_name = array();
+			if (isset($_POST['customer']))
+			{
+				try
+				{
+					Model_Customer::customer_email_validator($_POST['customer']);
+				}
+				catch (Validate_Exception $e)
+				{
+					$errors['customer'] = $e->array->errors();
+				}
+			}
 			if (isset($_POST['delivery_address']['same']))
 			{
 				try
@@ -80,7 +98,6 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 					$errors['delivery_address'] = $e->array->errors();
 				}
 			}
-			
 			if (empty($errors))
 			{
 				if ($this->auth->logged_in('customer'))
@@ -105,6 +122,9 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 					$delivery_address = Model_Address::create($_POST['delivery_address'], $customer->id, TRUE);
 					$delivery_name = $_POST['sales_order'];
 				}
+				
+				$customer->set_default_billing_address($billing_address);
+				$customer->set_default_shipping_address($delivery_address);
 			
 				$sales_order = Model_Sales_Order::create_from_basket($this->basket, $customer, $billing_address, $delivery_address, $delivery_name);
 				$this->request->redirect('/checkout/confirm');
@@ -125,6 +145,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
+		
 	}
 	
 	function action_confirm()
@@ -147,5 +168,36 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			$this->request->redirect('checkout');
 		}
 	}
-
+	
+	public function action_login()
+	{
+		if ( ! $this->basket->loaded() OR count($this->basket->items) == 0)
+		{
+			$this->request->redirect('/basket');
+		}
+	
+		if ($_POST)
+		{
+			if (isset($_POST['existing_x']))
+			{
+				// Log in
+				if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in())
+				{
+					$this->request->redirect(Route::get('checkout')->uri());
+				}
+				else
+				{
+					// Force a log out in case the user has authenticated as an admin rather than customer
+					$this->auth->logout();
+					$this->template->fields = $_POST;
+					$this->template->login_failed = TRUE;
+				}
+			}
+			else
+			{
+				$this->session->set('new_customer', TRUE);
+				$this->request->redirect(Route::get('checkout')->uri());
+			}
+		}
+	}
 }

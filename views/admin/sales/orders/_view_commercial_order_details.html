@@ -1,0 +1,73 @@
+<table>
+	<thead>
+		<th>Item Name</th>
+		<th class="tc">Net Unit Price</th>
+		<th class="tc">Qty</th>
+		{% if modules.vat_codes %}
+			<th class="tc">VAT Rate</th>
+		{% endif %}
+		<th class="tr">Net Total</th>
+	</thead>
+	<tbody>
+	{% for key, item in sales_order.items %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">		
+			<td>
+				{% if item.product.loaded %}
+					<a href="/admin/products/edit/{{item.product.id}}">{{item.product_name}}</a>
+				{% else %}
+					{{item.product_name}}
+				{% endif %}
+			</td>
+			<td class="tc">&pound;{{item.net_unit_price|num_format(2)}}</td>
+			<td class="tc">{{item.quantity}}</td>
+			{% if modules.vat_codes %}
+				<td class="tc">{{item.vat_rate|num_format(2)}}%</td>
+			{% endif %}
+			<td class="tr">&pound;{{item.net_total_price|num_format(2)}}</td>
+		</tr>
+	{% endfor %}
+	{% if sales_order.promotion_code_code %}
+		<tr>
+			<td colspan="100">
+				Promotion Code:
+				{% if sales_order.promotion_code.loaded %}
+					<a href="/admin/promotion_codes/edit/{{sales_order.promotion_code.id}}">{{sales_order.promotion_code_code}}</a>
+				{% else %}
+					{{sales_order.promotion_code_code}}
+				{% endif%}
+			</td>
+		</tr>
+	{% endif %}
+	</tbody>
+	<tfoot>
+	{% set colspan = (modules.vat_codes) ? "4" : "3" %}
+		<tr>
+			<td class="tr" colspan="{{colspan}}">
+			{% if sales_order.delivery_option_name %}
+				{{sales_order.delivery_option_name}}
+			{% else %}
+				{{sales_order.delivery_option.name}}
+			{% endif %}
+			</td>
+			<td class="tr">
+			{% if sales_order.delivery_option_price %}
+				&pound;{{sales_order.delivery_option_price|num_format(2)}}
+			{% else %}
+				&pound;{{sales_order.delivery_option.price|num_format(2)}}
+			{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="{{colspan}}" class="tr"><strong>Subtotal</strong></td>
+			<td class="tr">&pound;{{sales_order.order_subtotal|num_format(2)}}</td>
+		</tr>
+		<tr>
+			<td colspan="{{colspan}}" class="tr"><strong>VAT Total</strong></td>
+			<td class="tr">&pound;{{sales_order.order_vat|num_format(2)}}</td>
+		</r>
+		<tr>
+			<td class="tr" colspan="{{colspan}}"><strong>Total</strong></td>
+			<td class="tr"><strong>&pound;{{sales_order.order_total|num_format(2)}}</strong></td>
+		</tr>
+	</tfoot>
+</table>

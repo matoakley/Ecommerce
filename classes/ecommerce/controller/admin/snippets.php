@@ -76,8 +76,8 @@ class Ecommerce_Controller_Admin_Snippets extends Controller_Admin_Application {
 	{
 		$this->auto_render = FALSE;
 		
-		$pages = Model_Page::load($id);
-		$pages->delete();
+		$snippet = Model_Snippet::load($id);
+		$snippet->delete();
 		
 		$this->request->redirect($this->session->get('admin.snippets.index', 'admin/snippets'));
 	}

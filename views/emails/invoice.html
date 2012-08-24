@@ -1,0 +1,13 @@
+{% extends "templates/email_default.html" %}
+
+{% block content %}
+
+	Dear {{sales_order.customer.name}},
+
+	<p>Please find attached your invoice from {{site_name}} for your recent order.</p>
+
+	<p>Thank you for ordering with us and we hope to see you again soon.</p>
+	
+	<p>If you need to contact us about your order then please quote your order number which can be found in your invoice.</p>
+	
+{% endblock %}

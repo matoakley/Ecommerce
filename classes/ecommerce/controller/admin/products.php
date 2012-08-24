@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
-
+class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
+{
 	function before()
 	{
 		if ( ! Kohana::config('ecommerce.modules.products'))
@@ -47,8 +47,23 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
-			'skus' => $product->skus,
 		);
+		if ($this->modules['custom_fields'])
+		{
+			$fields['custom_fields'] = $product->custom_fields();
+		}
+		$fields['product']['vat_code'] = $product->vat_code->id;
+		
+		foreach ($product->skus as $sku)
+		{
+			$fields['skus'][$sku->id] = $sku->as_array();
+			$fields['skus'][$sku->id]['retail_price'] = $sku->retail_price();
+			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
+			foreach ($sku->tiered_prices as $tiered_price)
+			{
+				$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
+			}
+		}
 		
 		foreach ($product->images as $product_image)
 		{
@@ -130,12 +145,21 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			{
 				// Save the product
 				$product->update($_POST['product']);
+				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
+				{
+					$product->update_custom_field_values($_POST['custom_fields']);
+				}
 
 				// Loop through and save each of the SKUs
 				if (isset($_POST['skus']))
 				{
 					foreach ($_POST['skus'] as $sku_id => $sku_data)
 					{
+						if (count($_POST['skus']) == 1)
+						{
+							$sku_data['status'] = 'active';
+						}
+						
 						$sku = Model_Sku::load($sku_id);
 						$sku->update($sku_data);
 					}
@@ -160,7 +184,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 						$image->update($values);
 					}
 				}
-				
+								
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
@@ -176,6 +200,18 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 				// Otherwise display errors and populate fields with new data
 				$fields['product'] = $_POST['product'];
 				$fields['skus'] = isset($_POST['skus']) ? $_POST['skus'] : array();
+				$fields['custom_fields'] = isset($_POST['custom_fields']) ? $_POST['custom_fields'] : array();
+				
+				if (isset($_POST['skus']))
+				{
+  				foreach ($_POST['skus'] as $sku_id => $sku)
+  				{
+  					foreach($sku['tiered_prices'] as $tier_id => $price)
+  					{
+  						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
+  					}
+  				}
+  		  }
 				
 				if (isset($_POST['product_images']))
 				{
@@ -190,14 +226,21 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
-		// Loads the script that counts chars on the fly for Meta fields.
-		$this->scripts[] = 'jquery.counter-1.0.min';
-		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
+		
+		if ($this->modules['tiered_pricing'])
+		{
+			$this->template->price_tiers = Jelly::select('price_tier')->execute();
+		}
+		
+		if ($this->modules['vat_codes'])
+		{
+			$this->template->vat_codes = Jelly::select('vat_code')->execute();
+		}
 	}
 	
 	public function action_delete($id = NULL)
@@ -309,13 +352,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application {
 			throw new Kohana_Exception('Page not found', array(), 404);
 		}
 		
-		// Check if option value already exists
+	// Check if option value already exists
 		$product = Model_Product::load($_POST['product_id']);
 		$product_options = $product->get('product_options')
 																->where('key', '=', $_POST['key'])
 																->where('value', '=', $_POST['value'])
+																->order_by('value', 'DESC')
 																->execute();
-		
 		$data = array();
 		if (count($product_options) == 0)
 		{

@@ -1,0 +1,48 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if banned_word.loaded %}
+		Edit Forum Banned Word: <strong>{{banned_word.word}}</strong>
+	{% else %}
+		Adding: <strong>New Forum Banned Word</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if banned_word.loaded %}
+				<a href="/admin/forum_banned_words/delete/{{banned_word.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Forum Banned Word
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Banned Word Details</h2>
+	
+	<p><strong>Note:</strong> Banned words are NOT case sensitive.</p>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="banned-word" {{ errors.name ? "class='error'" : "" }}>Word *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="banned-word" name="banned_word[word]" value="{{banned_word.word}}"
+				class="inputtext" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+{% endblock %}

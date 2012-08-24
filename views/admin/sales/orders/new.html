@@ -1,0 +1,156 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	New Commercial Sales Order: <strong>{{customer.name}}</strong>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if sales_order.loaded %}
+				<a href="/admin/sales_orders/delete/{{sales_order.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Sales Order
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<br />
+
+	{% if customer %}
+		<input type="hidden" name="sales_order[customer]" id="sales-order-customer-id" value="{{customer.id}}" />
+		<div class="grid_6 alpha">
+			<h2>Billing Address</h2>
+			<p>
+				{{customer.name}}<br/>
+				{{customer.default_billing_address.line_1}}<br/>
+				{% if customer.default_billing_address.line_2 %}{{customer.default_billing_address.line_2}}<br/>{% endif %}
+				{{customer.default_billing_address.town}}<br/>
+				{{customer.default_billing_address.county}}<br/>
+				{% if customer.default_billing_address.postcode %}{{customer.default_billing_address.postcode}}<br/>{% endif %}
+				{{customer.default_billing_address.country.name}}<br/>
+			</p>
+			<p>
+				{% if customer.default_billing_address.telephone %}Tel: {{customer.default_billing_address.telephone}}<br/>{% endif %}
+				<a href="mailto:{{customer.email}}">{{customer.email}}</a>
+			</p>
+			<p><strong>Price Tier:</strong> {{customer.price_tier.name}}</p>
+		</div>
+		<div class="grid_10 omega">
+			<div class="grid_6 alpha">
+				<h2>Delivery Address</h2>
+			</div>
+			<div class="grid_4 omega tr">
+				<a href="#" class="img-button" id="show-new-address">
+					<img src="/images/icons/add.png" alt="" />
+					<span>New Address</span>
+				</a>
+			</div>
+			<div class="clear"></div>
+			<div id="new-address" class="hidden">
+				{% include "admin/customer/addresses/_form_small.html" %}
+			</div>
+			<div id="sales-order-address-table-container">
+				{% include "admin/customer/addresses/_table_small.html" %}
+			</div>
+		</div>
+		<div class="clear"></div>
+	{% else %}
+		Find customer.
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sales-order-ref">Ref.</label>
+		</div>
+		<div class="grid_4">
+			<input type="text" name="sales_order[ref]" value="{{fields.sales_order.ref}}" class="inputtext short" />
+		</div>
+		<div class="grid_2">
+			<label for="sales-order-invoice-terms">Invoice Terms</label>
+		</div>
+		<div class="grid_8 omega">
+			<input type="text" name="sales_order[invoice_terms]" value="{{fields.sales_order.invoice_terms}}" class="inputtext shortest" /> days
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<h2>Sales Order Items</h2>
+	
+	<input type="hidden" id="default-vat" value="{{default_vat}}" />
+	
+	<table id="sales-order-items">
+		<thead>
+			<th>Item Name</th>
+			<th>SKU</th>
+			{% if modules.stock %}
+				<th>Stock</th>
+			{% endif %}
+			<th class="tc">Net Unit Price</th>
+			<th class="tc">Qty</th>
+			{% if modules.vat_codes %}
+				<th class="tc">VAT Rate</th>
+			{% endif %}
+			<th class="tr">Net Total</th>
+			<th width="1">&nbsp;</th>
+		</thead>
+		<tbody>
+		{% for sku in fields.sales_order.skus %}
+			{% include "admin/sales/orders/_add_sales_order_line.html" %}
+		{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="5">
+					<label for="sales-order-delivery-charge">Delivery Net (&pound;)</label>
+				</td>
+				<td class="tr">
+					<input type="text" name="sales_order[delivery_charge]" id="sales-order-delivery-charge" value="{{fields.sales_order.delivery_charge|num_format(2)}}" class="inputtext shortest tr" />
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Subtotal</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-subtotal">{{fields.sales_order_sub_total|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="5" class="tr">
+					<strong>Total VAT</strong>
+				</td>
+				<td class="tr"><strong>&pound;<span id="sales-order-vat">{{fields.sales_order_vat|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr id="new-sales-order-item-container">
+				<td colspan="4">
+					<select id="new-sales-order-item">
+						<option value="">Select sales order item to add new row...</option>
+						{% for sku in skus %}
+							<option value="{% url "admin_add_sales_order_item", ["customer_id": customer.id, "sku_id": sku.id] %}" data-sku-id="{{sku.id}}">{% if sku.sku %}{{sku.sku}} - {% endif %}{{sku.name}}</option>
+						{% endfor %}
+					</select>
+					<img src="/media/images/admin/ajax-loader.gif" alt="Loading..." class="hidden" id="new-sales-order-item-spinner" />
+				</td>
+				<td class="tr"><strong>Total</strong></td>
+				<td class="tr"><strong>&pound;<span id="sales-order-total">{{fields.sales_order_total|num_format(2)}}</span></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+		</tfoot>
+	</table>
+
+</form>
+	
+{% endblock %}

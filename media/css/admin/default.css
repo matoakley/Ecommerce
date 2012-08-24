@@ -11,7 +11,7 @@ table {
 }
 
 td.active { color:green; }
-td.disabled { color:red; }
+td.disabled, td.on_hold { color:red; }
 
 .alternate {
 	background:#EEE;
@@ -105,6 +105,133 @@ input.inputtext.price {
 	text-align:right;
 	margin-right:10px;
 }
+
+/******************* INLINE EDITOR CSS STYLES ***************/
+/* TEXT BOX */
+
+input.inplace_form
+{
+border:1px dashed #ccc;
+padding:4px;
+width:92%;
+}
+
+/* TEXT AREA */
+
+/* AREAS */
+
+textarea.inplace_field { 
+  border:1px dashed #ccc;
+  width:95%;
+  margin-top:10px;
+  padding:5px;
+  height:auto;
+}
+
+.inline_editor_input {
+  width:96%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+/* BOX STYLES */
+/*contacts*/
+.inline_editor_textarea_contacts {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+.inline_editor_input_contacts_name{
+  width:88%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_input_contacts_email{
+  width:88%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_input_contacts_tel{
+  width:88%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_input_contacts_position{
+  width:82%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+/*addresses*/
+.inline_editor_textarea_address {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+.inline_editor_input_address_name{
+  width:85%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_input_address_address{
+  width:92%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+.inline_editor_input_address_tel{
+  width:75%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+/* end address*/
+
+.inline_editor_textarea {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+.inline_editor_textarea_machines {
+  width:97.5%;
+  margin: 0px !important;
+  padding: 0px !important;
+  float:left;
+  
+}
+
+#spinner {
+  padding-top:6px;
+}
+
+.edit-pencil {
+  padding-top: 6px;
+  float:right;
+  vertical-align: none;
+}
+/**************** END INLINE EDITOR STYLES ******************/
 
 textarea {
 	border:1px solid #666;
@@ -279,8 +406,12 @@ span.status_tag.awaiting_payment {
 	background-color:orange;
 }
 
-span.status_tag.payment_received {
+span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
+}
+
+span.status_tag.invoice_sent {
+	background-color:#2713da;
 }
 
 span.status_tag.order_cancelled {
@@ -388,6 +519,15 @@ a.delete-button:hover {
 	color:red;
 }
 
+a.archive-button {
+	color:#FF7C14;
+	margin-right:10px;
+}
+
+a.archive-button:hover {
+	color:#FF7C14;
+}
+
 a.clone-button {
 	color:green;
 	margin-right:10px;
@@ -481,3 +621,49 @@ table.ui-datepicker-calendar td a {
 
 /** Promotion Code Styling **/
 .remove-promotion-code-product { color:red; }
+
+/** Customer Communications **/
+img.show-communication {
+	cursor: pointer;
+}
+
+td.active-communication-body-container {
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+}
+
+textarea#communication-text {
+	width: 96%;
+	height: 162px;
+}
+
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+/** Commercial Sales Orders **/
+table#sales-order-items tfoot {
+	border-top: 2px solid #333;
+}
+table#sales-order-items tfoot td {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+div.search-bar {
+	margin-bottom: 10px;
+}
+
+/* inline_editor textarea */
+
+textarea.inplace_value{
+	border: 3px solid #cccccc;
+	padding: 5px;
+	font-family: Tahoma, sans-serif;
+	background-position: bottom right;
+	background-repeat: no-repeat;
+}

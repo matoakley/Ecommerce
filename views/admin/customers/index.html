@@ -4,12 +4,24 @@
 
 {% block content %}
 
-<!-- <p>
-	<a href="/admin/products/add" class="img-button">
+<p>
+	<a href="/admin/customers/add" class="img-button">
 		<img src="/images/icons/add.png" alt="" />
-		New Product
+		New Customer
 	</a>
-</p> -->
+</p>
+
+<div class="search-bar">
+	<div class="grid_8 alpha">&nbsp;</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<span class="right-pad"><input type="checkbox" name="include_archived" value="true" {% if showing_archived %}checked="checked"{% endif %} /> Show Archived?</span>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
@@ -30,22 +42,31 @@
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
+			<th>Company</th>
+			<th>Account #</th>
 			<th>Email</th>
-			<th>Orders</th>
-			<th>Last Login</th>
-			<th>Customer Since</th>
+			<th class="tc">Orders</th>
+			<th>Status</th>
+			<th class="tr">Customer Since</th>
 		</tr>
 	</thead>
 	<tbody>
-	{% for key, user in customers %}
-		{% set customer = user.customer %}
+	{% for key, customer in customers %}
+		{% if not customer.parent.loaded %}
+			{% set edit_link = customer.id %}
+		{% else %}
+			{% set edit_link = customer.parent.id %}
+		{% endif %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" /></td>
-			<td>{{customer.lastname}}, {{customer.firstname}}</td>
+			<td><a href="/admin/customers/edit/{{edit_link}}">{{customer.lastname}}, {{customer.firstname}}</td>
+			<td>{{customer.company}}</td>
+			<td>{{customer.account_ref}}</td>
 			<td><a href="mailto:{{customer.email}}">{{customer.email}}</a></td>
-			<td>{{customer.completed_orders()|length}} <em>({{customer.orders|length}})</em></td>
-			<td>{{user.last_login|date('d/m/Y')}}</td>
-			<td>{{customer.created|date('d/m/Y')}}</td>
+			<td class="tc">{{customer.completed_orders()|length}}</td>
+			<td class="{{customer.status}}">{{customer.status|humanize|title}}</td>
+<!-- 			<td class="tr">{{user.last_login|date('d/m/Y')}}</td> -->
+			<td class="tr">{{customer.created|date('d/m/Y')}}</td>
 		</tr>
 	{% endfor %}
 	</tbody>

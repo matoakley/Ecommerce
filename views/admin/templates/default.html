@@ -2,41 +2,20 @@
 
 <html>
 <head>
-{% block head %}
-	<title>{{site_name}}</title>
+	{% block head %}
+		<title>{{site_name}}</title>
+		
+		<link rel="stylesheet" type="text/css" href="/media/css/admin/reset.css" />
+		<link rel="stylesheet" type="text/css" href="/media/css/admin/960.css" />
+		<link rel="stylesheet" type="text/css" href="/media/css/admin/text.css" />
+		<link rel="stylesheet" type="text/css" href="/media/css/admin/default.css?v=11" />
+		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/smoothness/jquery-ui.css" />
+		<link rel="stylesheet" href="/media/css/admin/superfish.css" type="text/css" />
+		<link rel="stylesheet" href="/media/js/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen" />
+	{% endblock %}
+	<script src="/media/js/libs/modernizr-2.5.3.min.js"></script>
 	
-	<link rel="stylesheet" type="text/css" href="/media/css/admin/reset.css" />
-	<link rel="stylesheet" type="text/css" href="/media/css/admin/960.css" />
-	<link rel="stylesheet" type="text/css" href="/media/css/admin/text.css" />
-	<link rel="stylesheet" type="text/css" href="/media/css/admin/default.css?v=7" />
 
-	<!--
-		jQuery Scripts
-	-->
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/smoothness/jquery-ui.css" />
-	<!--
-		Superfish Dropdown Scriptizzle
-	-->
-	<script type="text/javascript" src="/media/js/admin/superfish.js"></script>
-	<link rel="stylesheet" href="/media/css/admin/superfish.css" type="text/css" />
-	<!--
-		CKEditor scripts
-	-->
-	<script type="text/javascript" src="/media/js/admin/ckeditor/ckeditor.js"></script> 
-	<script type="text/javascript" src="/media/js/admin/ckeditor/adapters/jquery.js"></script>
-	<!--
-		Fancybox scripts
-	-->
-	<script type="text/javascript" src="/media/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script> 
-	<link rel="stylesheet" href="/media/js/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen" />
-	<!--
-		Custom scripts
-	-->
-	<script type="text/javascript" src="/media/js/admin/default.js"></script>
-	{% block custom_scripts %}{% endblock %}
-{% endblock %}
 </head>
 <body>
 	
@@ -57,7 +36,7 @@
 				<div class="grid_8">
 					<img src="/media/images/admin/logo.png" alt="Southwold Pharmacy Logo" class="logo" />
 				</div>
-				<div class="grid_8 tr">
+				<div class="grid_8 tr inline_editor">
 					<span id="app_title">Ecommerce Management System</span>
 				</div>
 				<div class="clear"></div>
@@ -79,21 +58,21 @@
 		<div class="clear"></div>
 	</div>
 	
-	<div class="container_16" id="admin_footer">
-		<div class="grid_8 alpha">
-			&nbsp;&nbsp; CaffeineCommerce v{{version_number}}
-			&nbsp;&nbsp;|&nbsp;&nbsp;
-			<a href="mailto:support@creativeintent.co.uk">Support</a>
-		</div>
-		<div class="grid_8 omega tr">
-			<a href="http://www.creativeintent.co.uk/ecommerce-development" target="_blank">CaffeineCommerce</a>
-			is developed by the friendly geeks @
-			<a href="http://www.creativeintent.co.uk" target="_blank">Creative Intent</a>
-		</div>
-		<div class="clear"></div>
-	</div>
-	
-	{{kohana_profiler}}
+	{% include "admin/templates/_footer.html" %}
+		
+	<!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/media/js/admin/ckeditor/ckeditor.js"></script> 
+	<script type="text/javascript" src="/media/js/admin/ckeditor/adapters/jquery.js"></script>
+  <script type="text/javascript" src="/media/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+  <script type="text/javascript" src="/media/js/admin/superfish.js"></script> 
+  <script type="text/javascript" src="/media/js/admin/plugins.js?v=5"></script>
+  <script type="text/javascript" src="/media/js/admin/default.js?v=8"></script>
+  <script type="text/javascript" src="/media/js/admin/sales_orders.js?v=6"></script>
+
+  {% block custom_scripts %}{% endblock %}
 	
 </body>
 </html>

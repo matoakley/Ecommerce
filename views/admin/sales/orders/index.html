@@ -8,12 +8,38 @@
 
 {% block content %}
 
-<!-- <p>
-	<a href="/admin/products/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Product
-	</a>
-</p> -->
+<div class="search-bar">
+	<div class="grid_4 alpha">
+	{% if modules.sage_exports %}
+		<a href="/admin/sales_orders/export_to_sage" class="img-button">
+			<img src="/media/images/icons/page_green.png" alt="" />
+			Export to Sage
+		</a>
+	{% else %}
+		&nbsp;
+	{% endif %}
+	</div>
+	<div class="grid_12 omega tr">
+		<form>
+			<select name="status">
+				<option value="">-- Filter by status: --</option>
+				{% for status in statuses %}
+					<option value="{{status}}" {% if filtered_by_status == status %}selected="selected"{% endif %}>{{status|humanize|title}}</option>
+				{% endfor %}
+			</select>
+			<select name="type">
+				<option value="">-- Filter by type: --</option>
+				{% for type in types %}
+					<option value="{{type}}" {% if filtered_by_type == type %}selected="selected"{% endif %}>{{type|humanize|title}}</option>
+				{% endfor %}
+			</select>
+			<input type="text" name="q" value="{{q}}" class="inputtext shorter" placeholder="Search by order #" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
@@ -36,11 +62,17 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Order No.</th>
 			<th>Customer</th>
-			<th>Location</th>
+<!-- 			<th>Location</th> -->
 			<th class="tc">Promo Code?</th>
 			<th class="tr">Total</th>
+			{% if modules.commercial_sales_orders %}
+				<th>Type</th>
+			{% endif %}
 			<th>&nbsp;</th>
 			<th class="tr">Placed On</th>
+			{% if modules.commercial_sales_orders %}
+				<th class="tr">Invoice Due</th>
+			{% endif %}
 		</tr>
 	</thead>
 	<tbody>
@@ -49,11 +81,17 @@
 			<td><input type="checkbox" class="row-selector" value="{{sales_order.id}}" /></td>
 			<td><a href="/admin/sales_orders/view/{{sales_order.id}}">{{sales_order.id}}</a></td>
 			<td>{{sales_order.customer.lastname}}, {{sales_order.customer.firstname}}</td>
-			<td>{{sales_order.delivery_address.town}}, {{sales_order.delivery_address.postcode}}</td>
+<!-- 			<td>{{sales_order.delivery_address.town}}, {{sales_order.delivery_address.postcode}}</td> -->
 			<td class="tc">{{sales_order.promotion_code_code}}</td>
 			<td class="tr">&pound;{{sales_order.order_total|num_format(2)}}</td>
+			{% if modules.commercial_sales_orders %}
+				<td>{{sales_order.type|humanize|title}}</td>
+			{% endif %}
 			<td class="tc"><span class="status_tag {{sales_order.status}}">{{sales_order.status|humanize|title}}</td>
 			<td class="tr">{{sales_order.created|date('d/m/Y H:i')}}</td>
+			{% if modules.commercial_sales_orders %}
+				<td class="tr">{% if sales_order.invoice_terms %}{{sales_order.invoice_due_date|date('d/m/Y')}}{% endif %}</td>
+			{% endif %}
 		</tr>
 	{% endfor %}
 	</tbody>

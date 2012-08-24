@@ -47,12 +47,29 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		$redirect_to = $this->session->get('admin.blog.index', '/admin/blog');
 		$this->template->cancel_url = $redirect_to;
 		
+		$fields = array(
+			'blog_post' => $blog_post->as_array(),
+			'blog_categories' => $blog_post->categories->as_array('id', 'id'),
+		);
+		if ($this->modules['custom_fields'])
+		{
+			$fields['custom_fields'] = $blog_post->custom_fields();
+		}
+		$errors = array();
+		
 		if ($_POST)
 		{
 			try
 			{
 				$blog_post->update($_POST['blog_post']);
-				
+				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
+				{
+					$blog_post->update_custom_field_values($_POST['custom_fields']);
+				}
+				if (isset($_POST['author']))
+				{
+  				$this->author = $_POST['author'];
+				}
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
@@ -65,15 +82,20 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 			}
 			catch (Validate_Exception $e)
 			{
-				$this->template->errors = $e->array->errors();
+				$errors['blog_post'] = $e->array->errors();
+				$fields = $_POST;
 			}
 		}
+		
+		$this->template->fields = $fields;
+		$this->template->errors = $errors;
 		
 		// Loads the script that counts chars on the fly for Meta fields.
 		$this->scripts[] = 'jquery.counter-1.0.min';
 		
 		$this->template->blog_post = $blog_post;
 		$this->template->statuses = Model_Blog_Post::$statuses;
+		$this->template->categories = Model_Blog_Category::get_admin_categories(FALSE, FALSE);
 	}
 	
 	public function action_delete_post($id = NULL)

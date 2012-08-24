@@ -1,0 +1,69 @@
+<div id="customer-communications-table-container">
+	<table>
+		<thead>
+			<th width="1">&nbsp;</th>
+			<th width="1">&nbsp;</th>
+			<th>User</th>
+			<th width="50%">Title</th>
+			<th class="tr">Date</th>
+			<th width="1">&nbsp;</th>
+		</thead>
+		<tbody>
+			{% for key, communication in communications %}
+				{% set row_class = ['', 'alternate']|cycle(key) %}
+				<tr class="{{row_class}}">
+					<td>
+						{% if communication.text %}
+							<img src="/media/images/icons/magnifier.png" class="inline_icon show-communication" alt=""  data-communication-id="{{communication.id}}" title="More info" />
+						{% endif %}	
+					</td>
+					<td>
+						{% if communication.type == 'email' %}
+							<img src="/media/images/icons/email.png" class="inline-icon" alt="Email icon" title="Email" />
+						{% elseif communication.type == 'mail' %}
+							<img src="/media/images/icons/page_white_text.png" class="inline-icon" alt="Mail icon" title="Mail" />
+						{% elseif communication.type == 'telephone' %}
+							<img src="/media/images/icons/phone.png" class="inline-icon" alt="Telephone icon" title="Telephone" />
+						{% elseif communication.type == 'note' %}
+							<img src="/media/images/icons/note.png" class="inline-icon" alt="Note icon" title="Note" />
+						{% else %}
+							{{communication.type|title}}
+						{% endif %}
+					</td>
+					<td>{{communication.user.name}}</td>
+					<td><div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.title}}</div><img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/>
+					<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-title" data-communication-id="{{communication.id}}" />
+</td>
+					<td class="tr">{{communication.date|date('d/m/Y H:i')}}</td>
+					
+<td><a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
+					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
+				</a>
+				<img src="/media/images/admin/ajax-loader.gif" alt="" class="hidden inline-icon delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
+				</td>
+
+				</tr>
+				{% if communication.text %}
+					<tr class="{{row_class}}">
+						<td></td>
+						<td colspan="999" class="communication-body-container" data-communication-id="{{communication.id}}">
+							<div class="hidden communication-body inline_editor_textarea" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.text}}</div>
+							<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-spinner" data-communication-id="{{communication.id}}"/>
+							<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-text" data-communication-id="{{communication.id}}" />
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="grid_8 alpha">
+		{{communications_pagination}}
+	</div>
+	<div class="grid_8 omega tr">
+		<img src="/media/images/icons/email.png" class="inline-icon" alt="Email icon" title="Email" /> Email
+		<img src="/media/images/icons/page_white_text.png" class="inline-icon" alt="Mail icon" title="Mail" /> Mail
+		<img src="/media/images/icons/phone.png" class="inline-icon" alt="Telephone icon" title="Telephone" /> Phone
+		<img src="/media/images/icons/note.png" class="inline-icon" alt="Note icon" title="Note" /> Note
+	</div>
+	<div class="clear"></div>
+</div>

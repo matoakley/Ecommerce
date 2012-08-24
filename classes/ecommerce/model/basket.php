@@ -52,6 +52,27 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->delivery_option = Kohana::config('ecommerce.default_delivery_option');
 	}
 	
+	protected function calculate_weight()
+	{
+		if ( ! Caffeine::modules('product_weights'))
+		{
+			throw new Kohana_Exception('Product weights module is not enabled.');
+		}
+	
+		$weight = 0;
+		foreach ($this->items as $item)
+		{
+			$weight += $item->sku->weight * $item->quantity;
+		}
+		
+		return $weight;
+	}
+	
+	public function calculate_shipping()
+	{
+		return $this; // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	}
+	
 	public function save($key = NULL)
 	{	
 		if ($this->promotion_code->loaded())
@@ -88,7 +109,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->sku->retail_price() * $item->quantity;
+			$subtotal += round($item->sku->retail_price(), 2) * $item->quantity;
 		}
 		
 		// Are there any special priced items to add due to promotion codes?
@@ -171,7 +192,7 @@ class Ecommerce_Model_Basket extends Model_Application
 					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount;
 							break;
 						case 'percent':
 							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
@@ -235,5 +256,15 @@ class Ecommerce_Model_Basket extends Model_Application
 		return $this->save();
 	}
 	
-	public function calculate_shipping() {} // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	public function create_from_sales_order($sales_order)
+	{
+		foreach ($sales_order->items as $item)
+		{
+			if ($item->sku->loaded())
+			{
+				$this->add_item($item->sku->id, $item->quantity);
+			}
+		}
+		return $this;
+	}
 }
