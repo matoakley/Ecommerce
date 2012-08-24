@@ -160,7 +160,7 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
-
+	
 	public function display_meta_description()
 	{
 		// If a meta description has not been set then we'll build one from the description.

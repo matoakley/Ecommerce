@@ -69,7 +69,7 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		
 		// Then Thumbnail
 		$thumbnail_size = Kohana::config('ecommerce.image_sizing.thumbnail');
-		$image->resize($thumbnail_size['width'], $thumbnail_size['height'], Image::INVERSE);
+		$image->resize($thumbnail_size['width'], $thumbnail_size['height'], Image::NONE);
 		
 		// Loop through each step of the dir path and check the dir exists or create it
 		$directory_parts = array(
