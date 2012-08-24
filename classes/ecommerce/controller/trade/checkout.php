@@ -42,7 +42,9 @@ class Ecommerce_Controller_Trade_Checkout extends Controller_Trade_Application
 		{	
 			$customer = $this->auth->get_user()->customer;
 		
-			if (isset($_POST['delivery_address']) AND $_POST['delivery_address'])
+			$delivery_address = NULL;
+		
+			if (isset($_POST['delivery_address']) AND $_POST['delivery_address'] != '')
 			{
 				$delivery_address = $_POST['delivery_address'];
 			}

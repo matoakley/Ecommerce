@@ -233,6 +233,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
+		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
 		
 		$sales_order->save();
 		
@@ -261,9 +262,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				default:
 					break;
 			}
-			
-			$sales_order->save();
 		}
+		
+		$sales_order->calculate_vat_and_subtotal()->save();
 		
 		$session = Session::instance();
 		$session->delete('basket_id');
@@ -450,7 +451,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$sales_order->order_total += $line->total_price;
 		}
 		
-		$sales_order->calculate_vat_and_subtotal()->generate_invoice();
+		$sales_order->calculate_vat_and_subtotal();
 		
 		return $sales_order->save();
 	}
