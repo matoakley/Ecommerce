@@ -103,7 +103,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 				}
 			}
 			if (empty($errors))
-			{
+			{  
 				$customer->admin_update($_POST['customer']);
 				
 				if (isset($_POST['custom_fields']))

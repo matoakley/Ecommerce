@@ -19,6 +19,7 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 					'column' => 'product_id',
 				)),
 				'product_name' => new Field_String,
+				'discount_amount' => new Field_String,
 				'product_options' => new Field_Serialized,  // Legacy Field, should not be used after v1.1.3
 				'quantity' => new Field_Integer,
 				'unit_price' => new Field_Float(array(
@@ -77,9 +78,52 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->product_name = $product_name;
 		
 		$item->quantity = $basket_item->quantity;
+		$item->net_unit_price = $basket_item->sku->price;
 		$item->unit_price = $basket_item->sku->retail_price();
-		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
+		$item->vat_rate = $basket_item->sku->vat_rate();
+		$item->net_total_price = $basket_item->sku->price * $basket_item->quantity;
 		$item->total_price = $basket_item->sku->retail_price() * $basket_item->quantity;
+		
+		$basket = $sales_order->basket;
+
+		if ($sales_order->basket->promotion_code_reward->loaded() AND $sales_order->basket->promotion_code_reward->reward_type == 'discount')
+		{
+		  $reward = $sales_order->basket->promotion_code_reward;
+		  
+		  // Does the promotion code affect this item
+		  if ($reward->promotion_code->discount_on == 'sales_order')
+  	  {
+  	  	if ($reward->discount_unit == 'pounds')
+  	  	{
+  	  		$qty = 0;
+  	  		foreach ($basket->items as $all_item)
+  	  		{
+	  	  		$qty += $all_item->quantity;
+  	  		}
+  	  	
+  	  		$item->discount_amount = ($sales_order->discount_amount / $qty) * $item->quantity;
+  	  	}
+  	  	else
+  	  	{
+	  	  	$item->discount_amount = $item->total_price / $reward->discount_amount;
+  	  	}
+  	  }
+  	  else
+  	  {
+  	  	// If the sales order item discount relates to this line...
+  		  if ($sales_order->basket->promotion_code->get('products')->where('id', '=', $basket_item->sku->product->id)->count())
+  		  {
+  		  	if ($reward->discount_unit == 'pounds')
+  		  	{
+	  		  	$item->discount_amount = $sales_order->discount_amount;
+  		  	}
+    		  else
+    		  {
+	    		  $item->discount_amount = $item->total_price / $reward->discount_amount;
+    		  }
+  		  }
+  		}
+    }
 		
 		return $item->save();
 	}
@@ -98,9 +142,12 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->net_total_price = $sku['price'] * $sku['quantity'];
 		$item->vat_rate = $sku_object->vat_rate();
 		$item->unit_price = $item->net_unit_price * (($item->vat_rate + 100) / 100);
-		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);;
+		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);
+		
 		return $item->save();
+		
 	}
+	
 	
 	public static function create_from_promotion_code_reward($sales_order, $promotion_code_reward)
 	{
@@ -114,6 +161,7 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->unit_price = $promotion_code_reward->sku_reward_retail_price();
 		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
 		$item->total_price = $promotion_code_reward->sku_reward_retail_price(); 
+		
 		
 		return $item->save();
 	}

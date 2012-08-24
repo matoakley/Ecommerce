@@ -301,7 +301,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$this->user->add('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
 		}
-		else
+		elseif (Caffeine::modules('trade_area') AND ! isset($data['trade_area']))
 		{
 			$this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
 		}
