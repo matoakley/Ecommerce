@@ -78,7 +78,14 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->product_name = $product_name;
 		
 		$item->quantity = $basket_item->quantity;
-		$item->net_unit_price = $basket_item->sku->price;
+		if (Caffeine::modules('tiered_pricing'))
+		{
+			$item->net_unit_price = $basket_item->sku->net_price_for_tier($sales_order->customer->price_tier);
+		}
+		else
+		{
+			$item->net_unit_price = $basket_item->sku->price;
+		}
 		$item->unit_price = $basket_item->sku->retail_price();
 		$item->vat_rate = $basket_item->sku->vat_rate();
 		$item->net_total_price = round($basket_item->sku->price, 2) * $basket_item->quantity; // Round here first to avoid anomalies of 1p on exports

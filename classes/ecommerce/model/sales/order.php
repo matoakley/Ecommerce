@@ -216,6 +216,63 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return $sales_order;
 	}
 	
+	public static function create_trade_from_basket($basket, $customer, $delivery_address)
+	{
+		// Final check that basket shipping total is correct if using cusotm calculations
+		Model_Basket::instance()->calculate_shipping();
+	
+		$sales_order = Jelly::factory('sales_order');
+		$sales_order->customer = $customer;
+		$sales_order->billing_address = $customer->default_billing_address;
+		$sales_order->delivery_address = $delivery_address;
+		$sales_order->delivery_option = $basket->delivery_option;
+		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
+		$sales_order->status = 'invoice_generated';
+		$sales_order->order_total = $basket->calculate_total();
+		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
+		$sales_order->basket = $basket;
+		$sales_order->type = 'commercial';
+		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		
+		$sales_order->save();
+		
+		foreach ($basket->items as $basket_item)
+		{
+			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		// Handle any promotional codes that are added to the basket.
+		if ($basket->promotion_code_reward->loaded())
+		{
+			$sales_order->promotion_code = $basket->promotion_code;
+			$sales_order->promotion_code_code = $basket->promotion_code->code;
+			$basket->promotion_code->redeem();
+			
+			switch ($basket->promotion_code_reward->reward_type)
+			{
+				case 'discount':
+					$sales_order->discount_amount = $basket->calculate_discount();
+					break;
+					
+				case 'item':
+					Model_Sales_Order_Item::create_from_promotion_code_reward($sales_order, $basket->promotion_code_reward);
+					break;
+					
+				default:
+					break;
+			}
+		}
+		
+		$sales_order->calculate_vat_and_subtotal()->save();
+		
+		$session = Session::instance();
+		$session->delete('basket_id');
+		$session->set('sales_order_id', $sales_order->id);
+		
+		return $sales_order;
+	}
+	
 	public static function load($id = FALSE)
 	{
 		if ($id)
@@ -394,7 +451,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$sales_order->order_total += $line->total_price;
 		}
 		
-		$sales_order->calculate_vat_and_subtotal()->generate_invoice();
+		$sales_order->calculate_vat_and_subtotal();
 		
 		return $sales_order->save();
 	}
@@ -502,13 +559,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return Model_Sales_Order_Note::add_note($this, $text, $is_system);
 	}
 	
-	public function send_invoice()
+	public function send_invoice($copy_to_administrator = FALSE)
 	{
 		$email = Email::connect();
 		
+		$site_name = Kohana::config('ecommerce.trade_site_name') != '' ? Kohana::config('ecommerce.trade_site_name') : Kohana::config('ecommerce.site_name');
+		$from_address = Kohana::config('ecommerce.commercial_email_from_address') != '' ? Kohana::config('ecommerce.commercial_email_from_address') : Kohana::config('ecommerce.email_from_address');
+		$from_name = Kohana::config('ecommerce.commercial_email_from_name') != '' ? Kohana::config('ecommerce.commercial_email_from_name') : Kohana::config('ecommerce.email_from_name');
+		
 		$content = Twig::factory('emails/invoice.html');
 		$content->sales_order = $this;
-		$content->site_name = Kohana::config('ecommerce.site_name');
+		$content->site_name = $site_name;
 		
 		$pdf_template = Twig::factory('admin/sales/orders/generate_invoice');
 		$pdf_template->base_url = URL::site();
@@ -517,10 +578,16 @@ class Ecommerce_Model_Sales_Order extends Model_Application
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($pdf_template->render());
 
-		$message = Swift_Message::newInstance('Your invoice from '.Kohana::config('ecommerce.site_name'), $content, 'text/html', 'utf-8');
-		$message->setFrom(array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')))
+		$message = Swift_Message::newInstance('Your invoice from '.$site_name, $content, 'text/html', 'utf-8');
+		$message->setFrom(array($from_address => $from_name))
 						->addTo($this->customer->email, $this->customer->firstname.' '.$this->customer->lastname)
 						->attach(Swift_Attachment::newInstance($html2pdf->Output('', TRUE), 'Invoice '.$this->id.'.pdf', 'application/pdf'));
+						
+		if ($copy_to_administrator)
+		{
+			$copy_to = Kohana::config('ecommerce.copy_trade_area_order_confirmations_to') != '' ? Kohana::config('ecommerce.copy_trade_area_order_confirmations_to') : Kohana::config('ecommerce.copy_order_confirmations_to');
+			$message->addTo($copy_to);
+		}
 						
 		$email->send($message);
 		
@@ -528,6 +595,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		// generated then set invoiced on as now.
 		if ( ! $this->invoiced_on )
 		{
+			$this->update_status('invoice_sent');
 			$this->invoiced_on = time();
 		}
 		
