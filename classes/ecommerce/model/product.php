@@ -319,6 +319,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
+		echo Kohana::debug($options);exit;
 									
 		return array_values(array_unique($options));
 	}
@@ -328,7 +329,7 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->order_by('value', 'ASC')
+							->order_by('value', 'DESC')
 							->execute();
 	}
 	

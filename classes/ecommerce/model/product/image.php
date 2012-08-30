@@ -11,7 +11,7 @@ class Ecommerce_Model_Product_Image extends Model_Application
 					'foreign' => 'product.id',
 				)),
 				'alt_text' => new Field_String,
-					'full_size_path' => new Field_String(array(
+				'full_size_path' => new Field_String(array(
 					'in_db' => FALSE,
 				)),
 				'thumb_path' => new Field_String(array(

@@ -434,4 +434,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		Model_Sku::load($_POST['sku_id'])->delete();
 	}
+	
 }
+
