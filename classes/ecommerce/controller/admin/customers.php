@@ -51,12 +51,18 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$fields = array( 
 		  'customer' => $customer->as_array(),
+		  'user' => $customer->user->as_array(),
 		);
-		if ($this->modules['custom_fields'])
+		if (Caffeine::modules('custom_fields'))
 		{
 		  $fields['custom_fields'] = $customer->custom_fields();
 		}
-		
+
+		if (Caffeine::modules('trade_area'))
+		{
+			$fields['user']['trade_area'] = $customer->user->has('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load());
+		}
+			
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
 		$fields['customer']['default_billing_address'] = $customer->default_billing_address->id;
 		$fields['customer']['default_shipping_address'] = $customer->default_shipping_address->id; 
@@ -97,7 +103,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 				}
 			}
 			if (empty($errors))
-			{
+			{  
 				$customer->admin_update($_POST['customer']);
 				
 				if (isset($_POST['custom_fields']))
@@ -184,38 +190,41 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
-	
-	
-	///////////////////////////////
-	
-	
-	
-	
-	
-	public function action_edit_communication()
-	{
-	
-	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
-	
-	$communication->update($_POST);
-	if (isset($_POST['text']))
-	{
-	echo $_POST['text'];
-	}
-	if (isset($_POST['title']))
-	{
-	echo $_POST['title'];
-	}
-	
-		}
+	  public function action_edit_communication()
+  	{
+  	
+  	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+  	
+  	$communication->update($_POST);
+  	
+  	if (isset($_POST['text']))
+  	{
+  	echo $_POST['text'];
+  	}
+  	if (isset($_POST['title']))
+  	{
+  	echo $_POST['title'];
+  	 }
+  	}
+  	
+  	public function action_edit_contact()
+  	{
+  	
+  	$contact = Model_Customer::load($this->request->param('contact_id'));
+  	
+  	$contact->update($_POST);
+  	
+  	}
 		
-		
-		
-		
-		
-		///////////////////////////////
-		
-		
+		public function action_edit_address()
+  	{
+  	
+  	$address = Model_Address::load($this->request->param('address_id'));
+  	
+  	$address->update($_POST);
+  	
+  	}
+			
 	public function action_add_communication()
 	{
 		if ( ! Request::$is_ajax)

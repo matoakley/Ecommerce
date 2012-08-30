@@ -8,6 +8,9 @@
  */
 abstract class Caffeine_Core
 {
+	// Property to denote if request is via domain for ecommerce trade area
+	public static $is_trade = FALSE;
+
 	/**
 	 * Provides either a boolean response to whether or not the given module
 	 * is enabled or if no module is specifed, it will return a list of all 

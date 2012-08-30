@@ -31,13 +31,17 @@
 						{% endif %}
 					</td>
 					<td>{{communication.user.name}}</td>
-					<td><div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.title}}</div><img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/></td>
+					<td><div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.title}}</div><img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/>
+					<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-title" data-communication-id="{{communication.id}}" />
+</td>
 					<td class="tr">{{communication.date|date('d/m/Y H:i')}}</td>
-					<td><a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
+					
+<td><a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
 					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
 				</a>
-				<img src="/media/images/admin/ajax-loader.gif" alt="" class="inline-icon hidden delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
+				<img src="/media/images/admin/ajax-loader.gif" alt="" class="hidden inline-icon delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
 				</td>
+
 				</tr>
 				{% if communication.text %}
 					<tr class="{{row_class}}">
@@ -45,6 +49,7 @@
 						<td colspan="999" class="communication-body-container" data-communication-id="{{communication.id}}">
 							<div class="hidden communication-body inline_editor_textarea" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.text}}</div>
 							<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-spinner" data-communication-id="{{communication.id}}"/>
+							<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-text" data-communication-id="{{communication.id}}" />
 						</td>
 					</tr>
 				{% endif %}

@@ -84,6 +84,23 @@ class Ecommerce_Model_User extends Model_Auth_User
 		),
 	);
 
+	public static function _email_is_unique(Validate $array, $field, $params = NULL)
+	{
+		$is_duplicate = Jelly::select('user')->where('email', '=', $array['email'])->where('deleted', 'IS', NULL);
+		
+		if (isset($params['id']))
+		{
+			$is_duplicate->where('id', '<>', $params['id']);
+		}
+		
+		$is_duplicate = (bool) $is_duplicate->count();
+		
+		if ($is_duplicate)
+		{
+			$array->error('email', 'unique');
+		}
+	}
+
 	public function __get($field)
 	{
 		if ($field == 'avatar')
@@ -274,5 +291,12 @@ class Ecommerce_Model_User extends Model_Auth_User
 	public function name()
 	{
 		return $this->firstname.' '.$this->lastname;
+	}
+	
+	public function update_email($email)
+	{
+		$this->email = $email;
+		$this->username = $email;
+		return $this->save();
 	}
 }
