@@ -7,8 +7,18 @@
 			<div class="grid_14 omega">
 			{% if custom_field.show_editor %}
 				<textarea id="custom-field-{{custom_field.id}}" name="custom_fields[{{custom_field.id}}]" class="description">{{custom_field.value_for_object_id(object.id)}}</textarea>
-			{% else %}
+				{% endif %}
+			{% if custom_field.show_textbox %}
 				<input type="text" id="custom-field-{{custom_field.id}}" name="custom_fields[{{custom_field.id}}]" class="inputtext long" value="{{custom_field.value_for_object_id(object.id)}}" />
+				{% endif %}
+				{% if custom_field.show_upload %}
+			</form>
+				<form enctype="multipart/form-data" action="/admin/products/upload_document" method="post" id="custom-field-{{custom_field.id}}" target="upload-document">
+          <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+          <input type="hidden" name="product_id" value="{{product.id}}" />
+              Choose a file to upload: <input name="document" type="file" /><br />
+            <input type="submit" value="Upload File" />
+         </form>{% if product.document %}<div><p>{{product.document}}</p></div>{% endif %}
 			{% endif %}
 			</div>
 			<div class="clear"></div>

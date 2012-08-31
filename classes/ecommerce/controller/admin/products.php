@@ -280,6 +280,34 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		}
 	}
 	
+	public function action_upload_document()
+	{	
+      $this->auto_render = FALSE;
+      
+      if ($_FILES)
+		  {
+			   $product = Model_Product::load($_POST['product_id']);
+			
+			if ($product->loaded())
+			{
+         $target_path = DOCROOT.'documents/';
+      
+			if ( ! is_dir($target_path))
+			{
+				 mkdir($target_path);
+			}
+		      
+      $target_path = $target_path . ($_FILES['document']['name']); 
+      
+      if (move_uploaded_file($_FILES['document']['tmp_name'], $target_path))
+				{
+					$this->request->redirect('/admin/products/edit/' . $product->id);
+				
+				}
+		  }
+    }
+  }
+  
 	public function action_delete_image($image_id = FALSE)
 	{
 		$image = Model_Product_Image::load($image_id);

@@ -93,7 +93,7 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		
 		return $i;
 	}
-
+	
 	public function __get($name)
 	{
 		if ($name == 'full_size_path')

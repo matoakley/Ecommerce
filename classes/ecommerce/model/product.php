@@ -255,7 +255,6 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
-		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		

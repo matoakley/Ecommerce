@@ -28,6 +28,8 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 				),
 			)),
 			'show_editor' => new Field_Boolean,
+			'show_textbox' => new Field_Boolean,
+			'show_upload' => new Field_Boolean,
 			'values' => new Field_HasMany(array(
 				'foreign' => 'custom_field_value.custom_field_id',
 			)),
@@ -93,6 +95,8 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 
 		$this->object = $data['object'];
 		$this->show_editor = isset($data['show_editor']);
+		$this->show_textbox = isset($data['show_textbox']);
+		$this->show_upload = isset($data['show_upload']);
 		return $this->save();
 	}
 	
