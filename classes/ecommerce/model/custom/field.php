@@ -87,7 +87,7 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	public function update($data)
 	{
 		$this->name = $data['name'];
-
+		
 		if (isset($data['tag']))
 		{
 			$this->tag = $data['tag'];

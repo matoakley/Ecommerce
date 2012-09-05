@@ -75,9 +75,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$redirect_to = $this->session->get('admin.products.index', '/admin/products');
 		$this->template->cancel_url = $redirect_to;
 		
+		  
 		if ($_POST)
 		{	
-			// Try validating the posted data
+				// Try validating the posted data
 			try
 			{
 				$product->validate($_POST['product']);
@@ -222,12 +223,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				}
 			}
 		}
-			
+		$this->template->VAT = Kohana::config('ecommerce.VAT_inc');
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		$this->template->inputs = Model_Product::$inputs;
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
@@ -279,34 +281,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			}
 		}
 	}
-	
-	public function action_upload_document()
-	{	
-      $this->auto_render = FALSE;
-      
-      if ($_FILES)
-		  {
-			   $product = Model_Product::load($_POST['product_id']);
-			
-			if ($product->loaded())
-			{
-         $target_path = DOCROOT.'documents/';
-      
-			if ( ! is_dir($target_path))
-			{
-				 mkdir($target_path);
-			}
-		      
-      $target_path = $target_path . ($_FILES['document']['name']); 
-      
-      if (move_uploaded_file($_FILES['document']['tmp_name'], $target_path))
-				{
-					$this->request->redirect('/admin/products/edit/' . $product->id);
-				
-				}
-		  }
-    }
-  }
   
 	public function action_delete_image($image_id = FALSE)
 	{

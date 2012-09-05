@@ -90,6 +90,10 @@ class Ecommerce_Model_Product extends Model_Application
 		'active', 'disabled',
 	);
 	
+	public static $inputs = array(
+		'.pdf', '.doc', '.xls', '.csv', 'image/*',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'category' => array(
@@ -242,6 +246,7 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{	
+	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
