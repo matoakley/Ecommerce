@@ -32,111 +32,56 @@ class Ecommerce_Controller_Trade_Checkout extends Controller_Trade_Application
 			$this->request->redirect(Route::get('checkout_login')->uri());
 		}
 		
-		// If the customer is logged in we should attempt to 
-		// auto fill some of the fields
-		if ($this->auth->logged_in('customer'))
-		{
-			$this->template->customer = $this->auth->get_user()->customer;
-			$this->template->billing_address = $this->auth->get_user()->customer->get('addresses')->order_by('id', 'DESC')->limit(1)->execute();
-		}
+		$this->template->addresses = $this->auth->get_user()->customer->get('addresses')->execute();
+		$this->template->default_delivery_address = $this->auth->get_user()->customer->default_shipping_address;
 		
+		$fields = array();
 		$errors = array();
 		
 		if ($_POST)
-		{
-			$customer = $this->auth->logged_in('customer') ? $this->auth->get_user()->customer : Model_Customer::load(NULL);
-			try
+		{	
+			$customer = $this->auth->get_user()->customer;
+		
+			$delivery_address = NULL;
+		
+			if (isset($_POST['delivery_address']) AND $_POST['delivery_address'] != '')
 			{
-				// If customer is already logged in then update their account with details provided, else create a new customer
-				$customer->validate($_POST['customer']);
-			}
-			catch (Validate_Exception $e)
-			{
-				$errors['customer'] = $e->array->errors();
-			}
-			
-			$delivery_name = array();
-			if (isset($_POST['customer']))
-			{
-				try
-				{
-					Model_Customer::customer_email_validator($_POST['customer']);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['customer'] = $e->array->errors();
-				}
-			}
-			if (isset($_POST['delivery_address']['same']))
-			{
-				try
-				{
-					Model_Address::customer_address_validator($_POST['billing_address']);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['billing_address'] = $e->array->errors();
-				}
+				$delivery_address = $_POST['delivery_address'];
 			}
 			else
 			{
+				$_POST['new_delivery_address']['country'] = 1;
 				try
 				{
-					Model_Address::customer_address_validator($_POST['billing_address']);
+					Model_Address::customer_address_validator($_POST['new_delivery_address']);
 				}
 				catch (Validate_Exception $e)
 				{
-					$errors['billing_address'] = $e->array->errors();
-				}
-				
-				try
-				{
-					Model_Address::customer_address_validator($_POST['delivery_address']);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['delivery_address'] = $e->array->errors();
+					$errors['new_delivery_address'] = $e->array->errors();
+					$fields['new_delivery_address'] = $_POST['new_delivery_address'];
+					$fields['show_new_delivery_address'] = TRUE;
 				}
 			}
+			
 			if (empty($errors))
 			{
-				if ($this->auth->logged_in('customer'))
+				if ( ! $delivery_address)
 				{
-					$customer->update_at_checkout($_POST['customer']);
+					$delivery_address = Model_Address::create($_POST['new_delivery_address'], $customer->id, TRUE);
 				}
-				else
-				{
-					$customer = Model_Customer::create($_POST['customer']);
-				}
-				
-				if (isset($_POST['delivery_address']['same']))
-				{
-					$billing_address = Model_Address::create($_POST['billing_address'], $customer->id, TRUE);
-					$delivery_address = $billing_address;
-					$delivery_name['delivery_firstname'] = $customer->firstname;
-					$delivery_name['delivery_lastname'] = $customer->lastname;
-				}
-				else
-				{
-					$billing_address = Model_Address::create($_POST['billing_address'], $customer->id);
-					$delivery_address = Model_Address::create($_POST['delivery_address'], $customer->id, TRUE);
-					$delivery_name = $_POST['sales_order'];
-				}
-				
-				$customer->set_default_billing_address($billing_address);
 				$customer->set_default_shipping_address($delivery_address);
-			
-				$sales_order = Model_Sales_Order::create_from_basket($this->basket, $customer, $billing_address, $delivery_address, $delivery_name);
+				$sales_order = Model_Sales_Order::create_trade_from_basket($this->basket, $customer, $delivery_address);
+				
+				if (Kohana::config('ecommerce.invoice_trade_area_orders_at_checkout'))
+				{
+					$sales_order->send_invoice(TRUE);
+				}
+				
 				$this->request->redirect('/checkout/confirm');
-			}
-			else
-			{
-				$this->template->customer = $_POST['customer'];
-				$this->template->billing_address = $_POST['billing_address'];
-				$this->template->delivery_address = $_POST['delivery_address'];
 			}
 		}
 		
+		$this->template->fields = $fields;
 		$this->template->errors = $errors;
 		
 		$countries = Model_Country::search();

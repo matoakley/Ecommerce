@@ -14,7 +14,13 @@ return array
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
 	
+	'trade_site_name' => '',
+	'commercial_email_from_address' => '',
+	'commercial_email_from_name' => '',
+	'commercial_copy_order_confirmations_to' => '',
+	
 	'default_invoice_terms' => 30,
+	'invoice_trade_area_orders_at_checkout' => FALSE, // If TRUE then an invoice is emailed to the customer immediately after checkout in trade area
 	
 	'pagination' => array(
 		'products' => 10,
