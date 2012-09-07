@@ -91,7 +91,7 @@ class Ecommerce_Model_Product extends Model_Application
 	);
 	
 	public static $inputs = array(
-		'.pdf', '.doc', '.xls', '.csv', 'image/*',
+		'application/pdf', '.doc', '.xls', '.csv', 'image/*',
 	);
 	
 	public static $searchable_fields = array(

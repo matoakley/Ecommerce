@@ -20,9 +20,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'delivery_address' => new Field_BelongsTo(array(
 					'foreign' => 'address.id',
 					'column' => 'delivery_address_id',
-					'rules' => array(
-						'not_empty' => NULL,
-					),
 				)),
 				'delivery_option' => new Field_BelongsTo(array(
 					'foreign' => 'delivery_option.id',
