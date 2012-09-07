@@ -15,7 +15,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	public function action_view()
 	{
 		$this->basket->calculate_shipping();
-	
+		
 		if ($_POST)
 		{
 			if (isset($_POST['checkout_x']) OR isset($_POST['checkout']))
@@ -38,6 +38,8 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	{
 		// This function should be called over AJAX, else just process and redirect to action_view.
 		$this->auto_render = FALSE;
+		
+		echo Kohana::debug($_POST);
 		
 		if (isset($_POST['skus']))
 		{	
