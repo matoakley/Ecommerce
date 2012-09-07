@@ -101,4 +101,27 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 		
 		$this->request->redirect($this->session->get('admin.custom_fields.index', 'admin/custom_fields'));
 	}
+	
+	public function action_delete_document()
+	{
+	 $custom_field_id = $this->request->param('field_id');
+	 $object_id = $this->request->param('object_id');
+	 $document = Jelly::select('custom_field_value')->where('custom_field_id', '=', $custom_field_id)->where('object_id', '=', $object_id)->load();
+	 
+	 $object = array( 'id' => $object_id);
+	 $custom_field = array( 'id' => $custom_field_id);
+	 
+	 $data = array();
+	 
+		$data['html'] = Twig::factory('/admin/snippets/_upload.html', array(
+			'object' => $object,
+			'custom_field' => $custom_field,
+			'inputs' => Model_Product::$inputs,
+		))->render();
+		
+	 $document->delete();
+		
+		echo json_encode($data);
+		
+	}
 }

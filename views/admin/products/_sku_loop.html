@@ -49,7 +49,7 @@
 	</div>
 	<div class="grid_6">
 		<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
-		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
+		<span class="left-pad"><input type="checkbox" id="sku-{{sku.id}}-VAT" name="skus[{{sku.id}}][VAT]" value="yes" {% if VAT %}checked{% endif %}/> Does this include VAT?</span>
 	</div>
 	<div class="grid_2">
 			<label for="sku-{{sku.id}}-stock">Stock</label>
