@@ -138,15 +138,13 @@ class Ecommerce_Model_Sku extends Model_Application
 	public function update($data)
 	{ 
 	  if (isset($data['VAT']))
-	    {
-  	    $this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
-  	  }
+	  {
+  		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+  	}
 	  else 
-	   {
-  	    $this->price = $data['price'];
-  	    echo Kohana::debug($this->price);
-  	   
-		 }  
+	  {
+  		$this->price = $data['price'];
+		}  
 		 
 		$this->sku = $data['sku'];
 		if (isset($data['status']))
