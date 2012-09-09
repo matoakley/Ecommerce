@@ -5,6 +5,7 @@ return array
 	'software_version' => '1.2.2', 
 
 	'vat_rate' => 20,
+	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
 	'default_web_customer_type' => 1, // When using CRM customer types
 	'default_commercial_customer_type' => 2,

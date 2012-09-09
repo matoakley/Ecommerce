@@ -223,7 +223,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				}
 			}
 		}
-		$this->template->VAT = Kohana::config('ecommerce.VAT_inc');
+		$this->template->default_price_includes_vat = Kohana::config('ecommerce.default_price_includes_vat');
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		

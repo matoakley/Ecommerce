@@ -137,7 +137,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	
 	public function update($data)
 	{ 
-	  if (isset($data['VAT']))
+	  if (isset($data['price_includes_vat']))
 	  {
   		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
   	}

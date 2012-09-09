@@ -48,8 +48,9 @@
 		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
 	</div>
 	<div class="grid_6">
-		<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
-		<span class="left-pad"><input type="checkbox" id="sku-{{sku.id}}-VAT" name="skus[{{sku.id}}][VAT]" value="yes" {% if VAT %}checked{% endif %}/> Does this include VAT?</span>
+  	<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{% if default_price_includes_vat %}{{sku.retail_price|num_format(2)}}{% else %}{{sku.price|num_format(2)}}{% endif %}" class="inputtext shortest" />
+		<span class="left-pad"><input type="checkbox" id="sku-{{sku.id}}-price-includes-vat" name="skus[{{sku.id}}][price_includes_vat]" value="1" {% if default_price_includes_vat %}checked{% endif %} />
+		  Price entered includes VAT (if applicable)</span>
 	</div>
 	<div class="grid_2">
 			<label for="sku-{{sku.id}}-stock">Stock</label>
