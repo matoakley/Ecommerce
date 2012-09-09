@@ -132,7 +132,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
 		}
-  		return $this->price = Currency::add_tax($this->price, $this->vat_rate());
+  		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
 	public function update($data)
