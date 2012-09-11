@@ -339,12 +339,15 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function delete($key = NULL)
 	{
 		// Remove any communications held against the customer to keep the DB tidy
-		foreach ($this->communications as $communication)
+		if ($this->communications)
 		{
-			$communication->delete();
-		}  
-	
-		return parent::delete($key);
+  		foreach ($this->communications as $communication)
+  		{
+  			$communication->delete();
+  		}  
+  	
+  		return parent::delete($key);
+    }
 	}
 	
 	public function archive()
