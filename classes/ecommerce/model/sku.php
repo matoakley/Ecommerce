@@ -132,13 +132,20 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
 		}
-	
-		return Currency::add_tax($this->price, $this->vat_rate());
+  		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
 	public function update($data)
-	{
-		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+	{ 
+	  if (isset($data['price_includes_vat']))
+	  {
+  		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+  	}
+	  else 
+	  {
+  		$this->price = $data['price'];
+		}  
+		 
 		$this->sku = $data['sku'];
 		if (isset($data['status']))
 		{

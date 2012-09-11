@@ -581,6 +581,11 @@ $(function(){
 		dateFormat: 'dd/mm/yy'
 	});
 	
+	$('#document').change(function(){
+  	var filePath = $(this).val();
+  	console.log(filePath);
+	})
+	
 	//inline editor for communications
 
 	$('.inline_editor_textarea').live('mouseenter', function(){

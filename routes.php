@@ -38,6 +38,12 @@ Route::set('customer_contact_edit', 'admin/customers/<customer_id>/edit_contact/
 	'action' => 'edit_contact',
 ));
 
+Route::set('delete_custom_fields_document', 'admin/custom_fields/<field_id>/delete_document/<object_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'custom_fields',
+	'action' => 'delete_document',
+));
+
 Route::set('customer_contact_delete', 'admin/customers/<customer_id>/delete_contact/<contact_id>')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',

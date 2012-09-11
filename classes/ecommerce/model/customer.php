@@ -47,6 +47,7 @@ class Ecommerce_Model_Customer extends Model_Application
 				'telephone' => new Field_String,
 				'position' => new Field_String,
 				'invoice_terms' => new Field_Integer,
+				'reward_points' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

@@ -17,6 +17,9 @@ class Ecommerce_Model_Product_Option extends Model_Application
 				'value' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
+				'list_order' => new Field_Integer(array(
+					'on_copy' => 'copy',
+				)),
 				'status' => new Field_String(array(  // Legacy Field, should not be used after v1.1.3
 					'on_copy' => 'copy',
 				)),
@@ -52,6 +55,11 @@ class Ecommerce_Model_Product_Option extends Model_Application
 	{	
 		$this->value = $data['value'];
 		
+		//if (isset($data['order'])) {
+  		$this->list_order = $data['order'];
+		//}
+		
 		return $this->save();
 	}
+	
 }

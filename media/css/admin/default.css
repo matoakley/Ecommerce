@@ -29,7 +29,9 @@ th, td {
 }
 
 /** Form Styling **/
-
+#upload {
+  height:20px;
+}
 div.field {
 	margin-bottom:10px;
 	background:#F0F0F0;

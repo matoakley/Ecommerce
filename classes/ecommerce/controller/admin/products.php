@@ -75,9 +75,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$redirect_to = $this->session->get('admin.products.index', '/admin/products');
 		$this->template->cancel_url = $redirect_to;
 		
+		  
 		if ($_POST)
 		{	
-			// Try validating the posted data
+				// Try validating the posted data
 			try
 			{
 				$product->validate($_POST['product']);
@@ -222,12 +223,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				}
 			}
 		}
-			
+		$this->template->default_price_includes_vat = Kohana::config('ecommerce.default_price_includes_vat');
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		$this->template->inputs = Model_Product::$inputs;
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
 		$this->template->categories = Model_Category::get_admin_categories(FALSE, FALSE);
@@ -279,7 +281,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			}
 		}
 	}
-	
+  
 	public function action_delete_image($image_id = FALSE)
 	{
 		$image = Model_Product_Image::load($image_id);
@@ -434,4 +436,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		Model_Sku::load($_POST['sku_id'])->delete();
 	}
+	
 }
+

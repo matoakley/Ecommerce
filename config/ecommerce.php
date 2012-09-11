@@ -5,6 +5,7 @@ return array
 	'software_version' => '1.2.2', 
 
 	'vat_rate' => 20,
+	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
 	'default_web_customer_type' => 1, // When using CRM customer types
 	'default_commercial_customer_type' => 2,
@@ -14,7 +15,13 @@ return array
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
 	
+	'trade_site_name' => '',
+	'commercial_email_from_address' => '',
+	'commercial_email_from_name' => '',
+	'commercial_copy_order_confirmations_to' => '',
+	
 	'default_invoice_terms' => 30,
+	'invoice_trade_area_orders_at_checkout' => FALSE, // If TRUE then an invoice is emailed to the customer immediately after checkout in trade area
 	
 	'pagination' => array(
 		'products' => 10,

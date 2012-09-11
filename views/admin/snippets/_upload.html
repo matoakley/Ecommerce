@@ -1,0 +1,5 @@
+{% if not custom_field.value_for_object_id(object.id) %}
+          <input type="hidden" name="uploadobject" id="uploadobject" value="{{object.id}}"/>
+          <input type="hidden" name="uploadfield" id="uploadfield" value="{{custom_field.id}}"/>
+          <input name="document" id="document" type="file" accept="{% for input in inputs %}{{input}}, {% endfor %}"/><br />
+        {% endif %}

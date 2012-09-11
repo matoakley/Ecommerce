@@ -1,0 +1,2 @@
+-- CREATE REWARDS POINTS IN CUSTOMERS
+ALTER TABLE `customers` ADD COLUMN `reward_points` int(11);
