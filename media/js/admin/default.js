@@ -26,6 +26,26 @@ $(function(){
     filebrowserUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
     filebrowserImageUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
 	});
+	
+	$('.delete-custom-field-document').live('click', function(e){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to permanently delete this file?'))
+		{
+			$.ajax({   
+				url: $(this).attr('href'),
+				type: 'GET',
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeOut(200, function(){
+  			    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').html(response.html);
+  		    })
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeIn(200);
+				}
+		  })
+		}
+  });
 
 	$('.slugify').keyup(function(){
 		$(this).slugify($('.slug'));
@@ -580,11 +600,6 @@ $(function(){
 	$('input#sales-order-invoiced-on').datepicker({
 		dateFormat: 'dd/mm/yy'
 	});
-	
-	$('#document').change(function(){
-  	var filePath = $(this).val();
-  	console.log(filePath);
-	})
 	
 	//inline editor for communications
 
