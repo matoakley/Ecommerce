@@ -14,9 +14,9 @@
 <div class="search-bar">
 	<div class="grid_2 alpha">&nbsp;</div>
 	<div class="grid_14 omega tr">
-		<form>
+		<form>{% if modules.trade_area %}
 		  <span><a href="/admin/customers">Show All Customers</a> /&nbsp; </span>
-		  <span><a href="/admin/customers?q=customer_type:1">Show Only Trade Customers</a> &nbsp; </span>
+		  <span><a href="/admin/customers?q=customer_type:1">Show Only Trade Customers</a> &nbsp; </span>{% endif %}
 			<span class="right-pad"><input type="checkbox" name="include_archived" value="true" {% if showing_archived %}checked="checked"{% endif %} /> Show Archived?</span>
 			<input type="text" name="q" value="{{q}}" class="inputtext" />
 			<input type="submit" value="Search" />
