@@ -47,6 +47,7 @@ class Ecommerce_Model_Customer extends Model_Application
 				'telephone' => new Field_String,
 				'position' => new Field_String,
 				'invoice_terms' => new Field_Integer,
+				'reward_points' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -338,12 +339,15 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function delete($key = NULL)
 	{
 		// Remove any communications held against the customer to keep the DB tidy
-		foreach ($this->communications as $communication)
+		if ($this->communications)
 		{
-			$communication->delete();
-		}  
-	
-		return parent::delete($key);
+  		foreach ($this->communications as $communication)
+  		{
+  			$communication->delete();
+  		}  
+  	
+  		return parent::delete($key);
+    }
 	}
 	
 	public function archive()

@@ -91,7 +91,7 @@ class Ecommerce_Model_Product extends Model_Application
 	);
 	
 	public static $inputs = array(
-		'.pdf', '.doc', '.xls', '.csv', 'image/*',
+		'application/pdf', '.doc', '.xls', '.csv', 'image/*',
 	);
 	
 	public static $searchable_fields = array(
@@ -328,7 +328,6 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
-		echo Kohana::debug($options);exit;
 									
 		return array_values(array_unique($options));
 	}

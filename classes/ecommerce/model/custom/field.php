@@ -27,9 +27,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 					'valid' => array('Model_Custom_Field', '_check_valid_object')
 				),
 			)),
-			'show_editor' => new Field_Boolean,
-			'show_textbox' => new Field_Boolean,
-			'show_upload' => new Field_Boolean,
+			'type' => new Field_String(array(
+				'rules' => array(
+					'not_empty' => NULL,
+				),
+				'callbacks' => array(
+					'valid' => array('Model_Custom_Field', '_check_valid_type')
+				),
+			)),
 			'values' => new Field_HasMany(array(
 				'foreign' => 'custom_field_value.custom_field_id',
 			)),
@@ -54,6 +59,12 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		'product',
 	);
 	
+	public static $types = array(
+	 'Text' => 'text',
+	 'WYSIWYG' => 'wysiwyg',
+	 'Upload' => 'upload',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'object' => array(
@@ -69,6 +80,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	public static function _check_valid_object(Validate $array, $field)
 	{	
 		if ( ! in_array($array[$field], self::$objects))
+		{
+			$array->error($field, 'valid');
+		}
+	}
+	
+	public static function _check_valid_type(Validate $array, $field)
+	{	
+		if ( ! in_array($array[$field], self::$types))
 		{
 			$array->error($field, 'valid');
 		}
@@ -94,9 +113,7 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		}
 
 		$this->object = $data['object'];
-		$this->show_editor = isset($data['show_editor']);
-		$this->show_textbox = isset($data['show_textbox']);
-		$this->show_upload = isset($data['show_upload']);
+		$this->type = $data['type'];
 		return $this->save();
 	}
 	
