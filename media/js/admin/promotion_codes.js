@@ -106,10 +106,8 @@ $(function(){
 		
 	});
 	
-	$('a.edit_reward').fancybox({
-		modal: true
-	});
-	
+	$('a.edit_reward').fancybox({modal:true});
+		
 	$('a.delete-reward').live('click', function(e){
 		
 		e.preventDefault();

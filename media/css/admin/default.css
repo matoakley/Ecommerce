@@ -412,6 +412,10 @@ span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
 }
 
+span.status_tag.dispatched {
+	background-color:cadetblue;
+}
+
 span.status_tag.invoice_sent {
 	background-color:#2713da;
 }

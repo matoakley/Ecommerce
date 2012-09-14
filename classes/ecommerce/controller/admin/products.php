@@ -61,10 +61,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
 			foreach ($sku->tiered_prices as $tiered_price)
 			{
-				$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
+  			$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
 			}
 		}
-		
+  		
 		foreach ($product->images as $product_image)
 		{
 			$fields['product_images'][] = $product_image->as_array();
