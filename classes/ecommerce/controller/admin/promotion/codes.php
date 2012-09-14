@@ -150,6 +150,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		$errors = array();
 		
 		$all_skus = Model_Sku::search();
+		$all_rewards = array();
 		
 		if ($_POST)
 		{	
@@ -166,13 +167,19 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 			{
 				$promotion_code_reward->update($promotion_code, $_POST['reward']);
 				
-				$all_rewards = array();
-				
 				foreach ($promotion_code->rewards as $reward)
 				{
 					$all_rewards[] = Arr::merge($reward->as_array(), array('sku_reward_retail_price' => $reward->sku_reward_retail_price()));
 				}
-				
+				echo json_encode($data);
+				exit;
+		  }
+		  else
+			{
+				echo json_encode($errors);
+				exit;
+			}
+		}
 				$template_data = array(
 					'promotion_code' => $promotion_code,
 					'fields' => array(
@@ -187,20 +194,9 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 					'data' => $promotion_code_reward->as_array(),
 					'view' => $view,
 				);
-				
-				echo json_encode($data);
-				exit;
-			}
-			else
-			{
-				echo json_encode($errors);
-				exit;
-			}
-		}
 		
 		$this->template->fields = $fields;
 		$this->template->errors = $errors;
-		
 		$this->template->promotion_code = $promotion_code;
 		$this->template->promotion_code_reward = $promotion_code_reward;
 		$this->template->all_skus = $all_skus['results'];
