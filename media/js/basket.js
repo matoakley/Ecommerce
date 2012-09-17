@@ -63,6 +63,8 @@ $(function(){
 				}
 				
 				$('span#subtotal').html(response.basket_subtotal);
+				console.log(response);
+				$('span#vat').html(response.basket_vat);
 				
 				// Shrinks the number in the basket widget, updates it and expands it back.
 				$('div#basket_left').hide('clip', function(){
