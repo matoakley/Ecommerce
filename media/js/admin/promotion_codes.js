@@ -106,8 +106,10 @@ $(function(){
 		
 	});
 	
-	//$('a.edit_reward').fancybox({modal:true});
-		$('a.edit_reward').attr('href', '#');
+	$('a.edit_reward').fancybox({modal:true});
+	
+		//turn off edit reward button
+		//$('a.edit_reward').attr('href', '#');
 		
 	$('a.delete-reward').live('click', function(e){
 		

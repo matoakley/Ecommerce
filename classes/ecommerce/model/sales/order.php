@@ -197,7 +197,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				default:
 					break;
 			}
-			
+
 			$sales_order->save();
 		}
 		
