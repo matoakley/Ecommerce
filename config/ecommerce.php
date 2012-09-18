@@ -7,7 +7,7 @@ return array
 	'vat_rate' => 20,
 	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
-	'default_web_customer_type' => 1, // When using CRM customer types
+	'default_web_customer_type' => NULL, // When using CRM customer types
 	'default_commercial_customer_type' => 2,
 	
 	'site_name' => 'Creative Intent Ecommerce Software',
