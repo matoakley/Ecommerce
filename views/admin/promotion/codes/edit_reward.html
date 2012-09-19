@@ -83,10 +83,10 @@
 
 			<div class="clear"></div>		
 		</div>
-
+{% if promotion_code_reward.loaded %}sdvsfbvsfv{% endif %}
 		<div class="buttons tr">
 			<input type="submit" value="Add Reward" id="add-promotion-code-reward"
-				data-submit-url="{% if promotion_code_reward.loaded %}{% url "edit_promotion_code_reward", ["promotion_code_id": promotion_code.id, "promotion_code_reward_id": promotion_code_reward.id] %}{% else %}{% url "add_promotion_code_reward", ["promotion_code_id": promotion_code.id] %}{% endif %}" />
+				data-submit-url="{% if fields.reward.loaded %}{% url "edit_promotion_code_reward", ["promotion_code_id": promotion_code.id, "promotion_code_reward_id": fields.reward.id] %}{% else %}{% url "add_promotion_code_reward", ["promotion_code_id": promotion_code.id] %}{% endif %}" />
 			<a href="#" class="close-modal">cancel</a>
 		</div>
 		
