@@ -209,7 +209,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 				);
 				$view = Twig::factory('admin/promotion/codes/edit_reward.html', $template_data, $this->environment)->render();
 				
-				echo Kohana::debug($template_data);
+				echo $view;
 				
 		$this->template->fields = $fields;
 		$this->template->errors = $errors;
