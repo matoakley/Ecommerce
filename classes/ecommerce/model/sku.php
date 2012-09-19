@@ -137,7 +137,8 @@ class Ecommerce_Model_Sku extends Model_Application
 	
 	public function update($data)
 	{ 
-	  if (isset($data['price_includes_vat']))
+	//echo Kohana::debug($data);exit;
+		  if (isset($data['price_includes_vat']))
 	  {
   		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
   	}
@@ -179,11 +180,12 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['tiered_prices']))
 		{
 			foreach ($data['tiered_prices'] as $price_tier_id => $price)
-			{
-				Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);
+			{   
+      		Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);  
+         
 			}
 		}
-		
+
 		return $this->save();
 	}
 

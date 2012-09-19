@@ -63,6 +63,8 @@ $(function(){
 				}
 				
 				$('span#subtotal').html(response.basket_subtotal);
+			
+				$('span#vat').html(response.basket_vat);
 				
 				// Shrinks the number in the basket widget, updates it and expands it back.
 				$('div#basket_left').hide('clip', function(){
@@ -124,7 +126,6 @@ $(function(){
 				},
 				success: function(response){
 					
-					console.log(response);
 					
 					$('#promotion-code').val('');
 					$('#promotion-code-form').hide('slow', function(){
@@ -186,7 +187,7 @@ $(function(){
 			dataType: 'json',
 			success: function(response){
 				$('#discount').html(response.discount.toString());
-				if (response.discount){
+				if (response.discount > 0){
 					$('#basket_discount').removeClass('hidden').show('slow');
 				} else {
 					$('#basket_discount').hide();

@@ -84,7 +84,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		if (Request::$is_ajax)
 		{
 			$data = array(
-				'basket_items' => $this->basket->count_items(),
+				'basket_itemsd' => $this->basket->count_items(),
 				'basket_subtotal' => $this->basket->calculate_subtotal(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
