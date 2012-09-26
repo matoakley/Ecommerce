@@ -18,6 +18,25 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	// Manage datepicker for customer callbacks and show/hide "assigned to" selector as required 
+	$('input#communication-callback-on').datepicker({
+		constrainInput: true,
+		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
+		numberOfMonths: 2,
+		selectOtherMonths: true,
+		onSelect: function(dateText, inst){
+  		$('select#communication-callback-assigned-to').removeAttr('disabled');
+		}
+   });
+   $('input#communication-callback-on').change(function(){
+     if ($(this).val() != ""){
+      $('select#communication-callback-assigned-to').removeAttr('disabled');
+     } else {
+      $('select#communication-callback-assigned-to').attr('disabled', 'disabled');
+     }
+   });
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		
@@ -258,14 +277,16 @@ $(function(){
 		var title = $('input#communication-title');
 		var text = $('textarea#communication-text');
 		var date = $('div#communication-date');
-		/* var sendToCustomer = $('input#communication-send-to-customer'); */
+		var callbackOn = $('input#communication-callback-on');
+		var callbackAssignedTo = $('select#communication-callback-assigned-to');
 		var data = {
 			communication: {
 				type: type.val(),
 				title: title.val(),
 				text: text.val(),
 				date: Math.round(date.datetimepicker('getDate').getTime() /1000),
-/* 				send_to_customer: sendToCustomer.is(':checked') */
+				callback_on: Math.round(callbackOn.datepicker('getDate').getTime() /1000),
+				callback_assigned_to: callbackAssignedTo.val()
 			}
 		};
 		$.ajax({
@@ -287,6 +308,8 @@ $(function(){
 				date.datetimepicker('setDate', (new Date()));
 				$('div#new-communication').slideUp(600);
 				$('a#show-new-communication').children('span').html('New Communication');
+				callbackOn.val('');
+				callbackAssignedTo.val($('input#default-callback-user').val());
 			},
 			complete: function(){
 				$('#add-communication-spinner').hide();
@@ -312,6 +335,32 @@ $(function(){
 				button.show();
 			}
 		});
+	});
+	$('a.callback-complete').live('click', function(e){
+  	e.preventDefault();
+  	if (confirm('Are you sure you wich to mark this callback as completed?')){
+    	var link = $(this);
+    	var communicationId = $(this).data('communication-id');
+    	var spinner = $('img.callback_completed_spinner[data-communication-id="'+communicationId+'"]');
+    	var icon = $('img.callback_completed_icon[data-communication-id="'+communicationId+'"]');
+    	var details = $('span.callback_details[data-communication-id="'+communicationId+'"]');
+    	$.ajax({
+      	url: link.attr('href'),
+      	type: 'get',
+      	beforeSend: function(){
+        	icon.hide();
+        	spinner.show();
+      	},
+      	error: function(){
+        	spinner.hide();
+        	icon.show();
+      	},
+      	success: function(){
+        	spinner.hide();
+        	details.css('text-decoration', 'line-through');
+      	}
+    	});
+    }
 	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
@@ -1275,7 +1324,7 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
     saveButton.remove();
     cancelButton.remove();
    });
-  });
+});
 
 
 function number_format (number, decimals, dec_point, thousands_sep) {

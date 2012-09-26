@@ -86,6 +86,12 @@ Route::set('customer_communication_delete', 'admin/customers/<customer_id>/delet
 	'action' => 'delete_communication',
 ));
 
+Route::set('mark_callback_complete', 'admin/customers/<customer_id>/mark_callback_complete/<communication_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'mark_callback_complete',
+));
+
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',
