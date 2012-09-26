@@ -10,6 +10,9 @@ class Ecommerce_Model_Basket extends Model_Application
 				'items' => new Field_HasMany(array(
 					'foreign' => 'basket_item.basket_id',
 				)),
+				'customer_referral_code' => new Field_String,
+				'referral_code' => new Field_Integer,
+				'using_reward_points' => new Field_Float,
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
@@ -140,6 +143,12 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		$discount = 0;
 		
+		//if the customer is using their reward points then apply the discount
+		if ($this->using_reward_points > 0)
+		{
+  		$discount = number_format($this->using_reward_points , 2);
+		}
+		
 		if ($this->promotion_code->loaded())
 		{
 			// We should chack the promotion code conditions are still met as
@@ -266,5 +275,31 @@ class Ecommerce_Model_Basket extends Model_Application
 			}
 		}
 		return $this;
+	}
+	
+	public function save_reward_points_discount($reward_points_discount)
+	{
+	 $this->using_reward_points = $reward_points_discount;
+   $this->save();
+  }
+  
+  public function generate_unique_code($customer = NULL)
+	{
+	   //if the customer already has a referral code show it
+	  if (! empty($customer->customer_referral_code))
+  	 {
+    	 $code = $customer->customer_referral_code;
+     }
+    //else generate a new one
+	  else
+	  {
+  		$length = Kohana::config('ecommerce.default_customer_referral_code_length');
+  		$code = Text::random('distinct', $length);
+		}
+		
+		$this->customer_referral_code = $code;
+		$this->save();
+		
+		return $code;
 	}
 }

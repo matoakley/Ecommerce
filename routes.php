@@ -105,6 +105,12 @@ Route::set('delete_promotion_code_reward', 'admin/promotion_codes/<promotion_cod
 	'action' => 'delete_reward',
 ));
 
+Route::set('edit_reward_points_profiles', 'admin/reward_points_profiles/edit/<profile_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'reward_points_profiles',
+	'action' => 'edit',
+));
+
 Route::set('add_blog_post', 'admin/blog/add_post')->defaults(array(
 	'directory'		=> 'admin',
 	'controller'	=> 'blog',
