@@ -35,6 +35,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'places' => 4,
 					'default' => 0,
 				)),
+				'reward_points' => new Field_Integer,
 				'type' => new Field_String,
 				'status' => new Field_String,
 				'order_subtotal' => new Field_Float(array(
@@ -177,6 +178,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sales_order->save();
 		
+		//save the baskets referral code against the customer
+		$customer->customer_referral_code = $basket->customer_referral_code;
+		$customer->save();
+		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -197,9 +202,16 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				default:
 					break;
 			}
-			
+
 			$sales_order->save();
 		}
+		
+			if ($basket->using_reward_points > 0)
+		{
+		  $sales_order->discount_amount += $basket->using_reward_points;
+		  $sales_order->save();
+    }
+    
 		
 		foreach ($basket->items as $basket_item)
 		{
@@ -239,6 +251,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
 		}
 		
+		//save the baskets referral code against the customer
+		$customer->customer_referral_code = $basket->customer_referral_code;
+		$customer->save();
+		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -260,6 +276,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					break;
 			}
 		}
+		
+			if ($basket->using_reward_points > 0)
+		{
+		  $sales_order->discount_amount += $basket->using_reward_points;
+		  $sales_order->save();
+    }
+    
+		
 		
 		$sales_order->calculate_vat_and_subtotal()->save();
 		
@@ -488,6 +512,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$message = Twig::factory('emails/order_shipped.html');
 		$message->sales_order = $this;
+		$message->modules = Kohana::config('ecommerce.modules');
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
@@ -541,6 +566,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 						}
 					}
 				}
+			}
+			if (Kohana::config('ecommerce.modules.reward_points'))
+			{
+  			if ( ! empty($this->basket->referral_code) AND $status == 'payment_received')
+  			 {
+  			   $reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+  			   $existing_customer = Model_Customer::load($this->basket->referral_code);
+  			   
+    			 $this->customer->add_new_customer_referral_points();
+    			 $existing_customer->reward_points += $reward_points_profile->customer_referral;
+    			 $existing_customer->save();
+  			 }
 			}
 			
 			return $this->save();
@@ -633,4 +670,64 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		return $this->invoiced_on + (86400 * $this->invoice_terms);
 	}
+	
+	//Reward Points
+	
+	public function calculate_reward_points($sales_order)
+	{
+	  // REWARD POINTS CALCULATION
+	
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+  	$per_pound = $profile->points_per_pound; 
+ 
+	  $pounds = $sales_order->order_total;
+ 
+	  $reward_points = floor($pounds) * $per_pound;
+  	
+  	$sales_order->reward_points = $reward_points;
+  	
+  	//SEND TO CUSTOMER TO ADD TO TOTAL
+  	
+  	$sales_order->customer->add_reward_points($reward_points);
+  	
+  	//CALCULATE VALUE TEST
+  	
+  	$this->calculate_reward_points_redemption($reward_points);
+  	
+	}
+	
+	public static function calculate_remaining_reward_points($reward_points_value)
+	{
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+  	$per_pound = $profile->points_per_pound; 
+ 
+	  $reward_points = floor($reward_points_value) * $per_pound;
+  	
+  	return $reward_points;
+	}
+	
+	public static function calculate_reward_points_redemption($reward_points)
+	{
+  	$profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+	  $point_value = $profile->redeem_value;
+  	
+  	$reward_points_value = $reward_points * $point_value;
+  	
+  	return round($reward_points_value, 1, PHP_ROUND_HALF_DOWN);
+  	
+	}
+	
+	public static function calculate_points_from_remaining_value($reward_value)
+	{
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+	  $point_value = $profile->redeem_value;
+	  
+  	$remaining_points = $reward_value / $point_value;
+  	return floor($remaining_points);
+	}
+	
 }

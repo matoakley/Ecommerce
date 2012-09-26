@@ -18,6 +18,25 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	// Manage datepicker for customer callbacks and show/hide "assigned to" selector as required 
+	$('input#communication-callback-on').datepicker({
+		constrainInput: true,
+		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
+		numberOfMonths: 2,
+		selectOtherMonths: true,
+		onSelect: function(dateText, inst){
+  		$('select#communication-callback-assigned-to').removeAttr('disabled');
+		}
+   });
+   $('input#communication-callback-on').change(function(){
+     if ($(this).val() != ""){
+      $('select#communication-callback-assigned-to').removeAttr('disabled');
+     } else {
+      $('select#communication-callback-assigned-to').attr('disabled', 'disabled');
+     }
+   });
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		
@@ -26,6 +45,26 @@ $(function(){
     filebrowserUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
     filebrowserImageUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
 	});
+	
+	$('.delete-custom-field-document').live('click', function(e){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to permanently delete this file?'))
+		{
+			$.ajax({   
+				url: $(this).attr('href'),
+				type: 'GET',
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeOut(200, function(){
+  			    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').html(response.html);
+  		    })
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeIn(200);
+				}
+		  })
+		}
+  });
 
 	$('.slugify').keyup(function(){
 		$(this).slugify($('.slug'));
@@ -238,14 +277,16 @@ $(function(){
 		var title = $('input#communication-title');
 		var text = $('textarea#communication-text');
 		var date = $('div#communication-date');
-		/* var sendToCustomer = $('input#communication-send-to-customer'); */
+		var callbackOn = $('input#communication-callback-on');
+		var callbackAssignedTo = $('select#communication-callback-assigned-to');
 		var data = {
 			communication: {
 				type: type.val(),
 				title: title.val(),
 				text: text.val(),
 				date: Math.round(date.datetimepicker('getDate').getTime() /1000),
-/* 				send_to_customer: sendToCustomer.is(':checked') */
+				callback_on: Math.round(callbackOn.datepicker('getDate').getTime() /1000),
+				callback_assigned_to: callbackAssignedTo.val()
 			}
 		};
 		$.ajax({
@@ -267,6 +308,8 @@ $(function(){
 				date.datetimepicker('setDate', (new Date()));
 				$('div#new-communication').slideUp(600);
 				$('a#show-new-communication').children('span').html('New Communication');
+				callbackOn.val('');
+				callbackAssignedTo.val($('input#default-callback-user').val());
 			},
 			complete: function(){
 				$('#add-communication-spinner').hide();
@@ -292,6 +335,32 @@ $(function(){
 				button.show();
 			}
 		});
+	});
+	$('a.callback-complete').live('click', function(e){
+  	e.preventDefault();
+  	if (confirm('Are you sure you wich to mark this callback as completed?')){
+    	var link = $(this);
+    	var communicationId = $(this).data('communication-id');
+    	var spinner = $('img.callback_completed_spinner[data-communication-id="'+communicationId+'"]');
+    	var icon = $('img.callback_completed_icon[data-communication-id="'+communicationId+'"]');
+    	var details = $('span.callback_details[data-communication-id="'+communicationId+'"]');
+    	$.ajax({
+      	url: link.attr('href'),
+      	type: 'get',
+      	beforeSend: function(){
+        	icon.hide();
+        	spinner.show();
+      	},
+      	error: function(){
+        	spinner.hide();
+        	icon.show();
+      	},
+      	success: function(){
+        	spinner.hide();
+        	details.css('text-decoration', 'line-through');
+      	}
+    	});
+    }
 	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
@@ -580,11 +649,6 @@ $(function(){
 	$('input#sales-order-invoiced-on').datepicker({
 		dateFormat: 'dd/mm/yy'
 	});
-	
-	$('#document').change(function(){
-  	var filePath = $(this).val();
-  	console.log(filePath);
-	})
 	
 	//inline editor for communications
 
@@ -1260,7 +1324,7 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
     saveButton.remove();
     cancelButton.remove();
    });
-  });
+});
 
 
 function number_format (number, decimals, dec_point, thousands_sep) {

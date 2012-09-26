@@ -5,8 +5,9 @@ return array
 	'software_version' => '1.2.2', 
 
 	'vat_rate' => 20,
+	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
-	'default_web_customer_type' => 1, // When using CRM customer types
+	'default_web_customer_type' => NULL, // When using CRM customer types
 	'default_commercial_customer_type' => 2,
 	
 	'site_name' => 'Creative Intent Ecommerce Software',
@@ -47,6 +48,7 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
@@ -63,6 +65,7 @@ return array
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
 	'default_promotion_code_length' => 6,
+	'default_customer_referral_code_length' => 16,
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	

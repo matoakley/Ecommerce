@@ -63,6 +63,8 @@ $(function(){
 				}
 				
 				$('span#subtotal').html(response.basket_subtotal);
+			
+				$('span#vat').html(response.basket_vat);
 				
 				// Shrinks the number in the basket widget, updates it and expands it back.
 				$('div#basket_left').hide('clip', function(){
@@ -124,7 +126,6 @@ $(function(){
 				},
 				success: function(response){
 					
-					console.log(response);
 					
 					$('#promotion-code').val('');
 					$('#promotion-code-form').hide('slow', function(){
@@ -180,13 +181,13 @@ $(function(){
 	
 	function update_basket_total(){
 		$.ajax({
-			type: 'GET',
+			type: 'POST',
 			cache: false,
 			url: '/basket/update_total',
 			dataType: 'json',
 			success: function(response){
 				$('#discount').html(response.discount.toString());
-				if (response.discount){
+				if (response.discount > 0){
 					$('#basket_discount').removeClass('hidden').show('slow');
 				} else {
 					$('#basket_discount').hide();
@@ -196,5 +197,67 @@ $(function(){
 			}
 		});
 	}
+	
+	$('#use_points').live('click', function(e){
+  	e.preventDefault();
+  	confirm("Are you sure you want to use your reward points?");
+  	var orderTotal = $('#basket_total').html();
+  	
+  	$.ajax({
+			
+				url: '/basket/use_reward_points',
+				type: 'POST',
+				data: { data:orderTotal },
+				dataType: 'json',
+				beforeSend: function(){
+				},
+				error: function(){
+					// Handle error message for failure, probably an invlaid code
+					$('#promotion-code-error').html('You have no remaining points.').fadeIn();
+				},
+				success: function(response){
+				console.log(response);
+				//maybe some discount stuff in here.
+				$('#points-value').html('&pound;' + response.value);
+				$('#points').html(response.points);
+					update_basket_total();
+				},
+				complete: function(){
+							
+				}
+			
+			});
+	})
+	
+	$('button#add-referral-code').live('click', function(e){
+  	e.preventDefault();
+  	var code = $('#box-add-referral-code').val();
+  	var href = $(this).data('url');
+  	var basket = $('#box-add-referral-code').data('id');
+  	
+  	$.ajax({
+			
+				url: href,
+				type: 'POST',
+				data: { code:code,
+				        basket:basket },
+				dataType: 'html',
+				beforeSend: function(){
+				},
+				success: function(response){
+				console.log(response);
+				if (response){
+				  alert('The code you entered is incorrect, please try again.');
+				 }
+				else {
+  				$('#referral-code-enter').slideUp().delay(100);
+				  $('#referral-code-thank-you').removeClass('hidden').slideDown();
+				 }
+				},
+				complete: function(){
+				}
+			
+			});
+	})
 	
 });

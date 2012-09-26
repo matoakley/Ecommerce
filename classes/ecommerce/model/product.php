@@ -328,8 +328,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
-		
-									
+
 		return array_values(array_unique($options));
 	}
 	

@@ -15,9 +15,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	public function action_index()
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
-
+		
 		$search = Model_Customer::search(array(), $items, FALSE, isset($_GET['include_archived']));
-
+			
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'  => $search['count_all'],
@@ -33,10 +33,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->total_customers = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
-		
 		$this->template->showing_archived = isset($_GET['include_archived']);
 	}
-	
+		
 	public function action_edit()
 	{
 		$customer = Model_Customer::load($this->request->param('id'));
@@ -177,6 +176,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			));
 			
 			$this->template->communication_types = Model_Customer_Communication::$types;
+			
+			$users_search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'admin')->limit(1)->execute()->id), NULL);
+			$this->template->callback_users = $users_search['results'];
 		}
 	
 		$this->template->customer = $customer;
@@ -190,40 +192,47 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
-	  public function action_edit_communication()
-  	{
-  	
+  public function action_edit_communication()
+	{
   	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
-  	
+	
   	$communication->update($_POST);
-  	
+	
   	if (isset($_POST['text']))
   	{
-  	echo $_POST['text'];
+  	  echo $_POST['text'];
   	}
   	if (isset($_POST['title']))
   	{
-  	echo $_POST['title'];
-  	 }
+  	  echo $_POST['title'];
+    }
+	}
+	
+	public function action_mark_callback_complete()
+	{
+  	$this->auto_render = FALSE;
+  	
+  	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+  	
+  	if ( ! $communication->loaded())
+  	{
+    	throw new Kohana_Exception('Callback not found.');
   	}
   	
-  	public function action_edit_contact()
-  	{
-  	
+  	$communication->mark_callback_complete();
+	}
+	
+	public function action_edit_contact()
+	{
   	$contact = Model_Customer::load($this->request->param('contact_id'));
-  	
   	$contact->update($_POST);
-  	
-  	}
-		
-		public function action_edit_address()
-  	{
-  	
-  	$address = Model_Address::load($this->request->param('address_id'));
-  	
+	}
+	
+	public function action_edit_address()
+	{
+  	$address = Model_Address::load($this->request->param('address_id'));	
   	$address->update($_POST);
-  	
-  	}
+	}
 			
 	public function action_add_communication()
 	{
