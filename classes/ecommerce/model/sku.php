@@ -103,6 +103,7 @@ class Ecommerce_Model_Sku extends Model_Application
 							->join('products')->on('products.id', '=', 'skus.product_id')
 							->where('products.status', '=', 'active')
 							->where('skus.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
 							->order_by('products.name', 'ASC')
 							->execute();
 	}
