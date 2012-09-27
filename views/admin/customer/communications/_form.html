@@ -42,6 +42,28 @@
 	</div>
 	
 	<div class="field">
+		<div class="grid_2 alpha">
+  		<label for="communication-callback-on">Callback on</label>
+		</div>
+		<div class="grid_3">
+  		<input type="text" class="inputtext shorter" id="communication-callback-on" />
+		</div>
+		<div class="grid_2">
+		  <label for="communication-callback-assigned-to">Assigned to</label>
+		</div>
+		<div class="grid_3 omega">
+		  <input type="hidden" id="default-callback-user" value="{{auth.get_user().id}}" />
+		  <select disabled="disabled" id="communication-callback-assigned-to">
+		    <option>Anyone</option>
+		    {% for user in callback_users %}
+		      <option value="{{user.id}}" {% if user.id == auth.get_user().id %}selected="selected"{% endif %}>{{user.name}}</option>
+		    {% endfor %}
+		  </select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
 		<div class="grid_2 alpha">&nbsp;</div>
 		<div class="grid_3">
 			<input type="submit" value="Add Communication" id="add-communication" data-add-url="{% url "customer_communication_add", ["customer_id": customer.id] %}" />
