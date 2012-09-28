@@ -82,6 +82,29 @@
 			<div class="clear"></div>
 		</div>
 	{% endif %}
+	{% if sales_order.status == 'payment_received' or sales_order.status == "complete" and sales_order.type == 'retail' %}
+		<div class="field">
+			<div class="grid_2 alpha tr">
+				<strong>Download</strong>
+			</div>
+			<div class="grid_2">
+				<a href="{% url "sales_order_generate_receipt", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Receipt</a>
+			</div>
+			<div class="grid_4 omega">
+				<a href="{% url "sales_order_generate_delivery_note", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Delivery Note</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="sales-order-invoiced-on">Invoiced On</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" name="sales_order[invoiced_on]" id="sales-order-invoiced-on" class="inputtext shorter" value="{{sales_order.invoiced_on|date('d/m/Y')}}" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	{% endif %}
 		
 		<div class="field">
 			<div class="grid_2 alpha">
