@@ -14,6 +14,12 @@ Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/
 	'action' => 'generate_invoice',
 ));
 
+Route::set('sales_order_generate_receipt', 'admin/sales_orders/<sales_order_id>/generate_receipt')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_receipt',
+));
+
 Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
