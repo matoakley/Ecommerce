@@ -15,9 +15,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	public function action_index()
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
-
+		
 		$search = Model_Customer::search(array(), $items, FALSE, isset($_GET['include_archived']));
-
+			
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'  => $search['count_all'],
@@ -33,10 +33,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->total_customers = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
-		
 		$this->template->showing_archived = isset($_GET['include_archived']);
 	}
-	
+		
 	public function action_edit()
 	{
 		$customer = Model_Customer::load($this->request->param('id'));
@@ -51,10 +50,16 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$fields = array( 
 		  'customer' => $customer->as_array(),
+		  'user' => $customer->user->as_array(),
 		);
-		if ($this->modules['custom_fields'])
+		if (Caffeine::modules('custom_fields'))
 		{
 		  $fields['custom_fields'] = $customer->custom_fields();
+		}
+
+		if (Caffeine::modules('trade_area'))
+		{
+			$fields['user']['trade_area'] = $customer->user->has('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load());
 		}
 			
 		$fields['customer']['customer_types'] = $customer->customer_types->as_array('id', 'id');
@@ -96,9 +101,8 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 					$errors['address'] = $e->array->errors();
 				}
 			}
-			
 			if (empty($errors))
-			{
+			{  
 				$customer->admin_update($_POST['customer']);
 				
 				if (isset($_POST['custom_fields']))
@@ -131,7 +135,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->template->fields = $fields;
 		$this->template->errors = $errors;
 	
-		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
+		$items_per_page = 20;
 		
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -172,6 +176,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 			));
 			
 			$this->template->communication_types = Model_Customer_Communication::$types;
+			
+			$users_search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'admin')->limit(1)->execute()->id), NULL);
+			$this->template->callback_users = $users_search['results'];
 		}
 	
 		$this->template->customer = $customer;
@@ -185,6 +192,48 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 	}
 	
+  public function action_edit_communication()
+	{
+  	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+	
+  	$communication->update($_POST);
+	
+  	if (isset($_POST['text']))
+  	{
+  	  echo $_POST['text'];
+  	}
+  	if (isset($_POST['title']))
+  	{
+  	  echo $_POST['title'];
+    }
+	}
+	
+	public function action_mark_callback_complete()
+	{
+  	$this->auto_render = FALSE;
+  	
+  	$communication = Model_Customer_Communication::load($this->request->param('communication_id'));
+  	
+  	if ( ! $communication->loaded())
+  	{
+    	throw new Kohana_Exception('Callback not found.');
+  	}
+  	
+  	$communication->mark_callback_complete();
+	}
+	
+	public function action_edit_contact()
+	{
+  	$contact = Model_Customer::load($this->request->param('contact_id'));
+  	$contact->update($_POST);
+	}
+	
+	public function action_edit_address()
+	{
+  	$address = Model_Address::load($this->request->param('address_id'));	
+  	$address->update($_POST);
+	}
+			
 	public function action_add_communication()
 	{
 		if ( ! Request::$is_ajax)
@@ -203,7 +252,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		try
 		{
-			$customer->add_communication($_POST['communication']);
+			$communication = $customer->add_communication($_POST['communication']);
 			$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
 			$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
 			
@@ -221,13 +270,16 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		}
 		
 		$this->template->errors = $errors;
+		$this->template->customer = $customer;
 		
+				
 		$data = array(
 			'html' => $this->template->render(),
 		);
 		
 		echo json_encode($data);
 	}
+
 	
 	public function action_add_address()
 	{
@@ -248,7 +300,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$address = $customer->add_address($_POST['address']);
-			$items_per_page = $_POST['template'] == 'customer' ?  Kohana::config('ecommerce.pagination.crm_customer_items') : 5;
+			$items_per_page = $_POST['template'] == 'customer' ? 20 : 5;
 			$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 			
 			$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -299,7 +351,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$address->archive();
 	
-		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
+		$items_per_page = 20;
 		$page = isset($_GET['addresses_page']) ? $_GET['addresses_page'] : 1;
 		
 		$this->template->addresses = $customer->get('addresses')->where('archived', 'IS', NULL)->order_by('created', 'DESC')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -317,6 +369,43 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		echo json_encode($data);
 	}
+	
+	public function action_delete_communication()
+	{
+		if ( ! Request::$is_ajax)
+		{
+			throw new Kohana_Exception('Action only available over AJAX.');
+		}
+		
+		// Load address through customer to avoid any mishaps
+		$customer = Model_Customer::load($this->request->param('customer_id'));
+		if ( ! $customer->loaded())
+		{
+			throw new Kohana_Exception('Customer could not be found.');
+		}
+		$communication = $customer->get('communications')->where('id', '=', $this->request->param('communication_id'))->load();
+		
+		$communication->delete();
+	
+		$items_per_page = 20;
+		$page = isset($_GET['communications_page']) ? $_GET['communications_page'] : 1;
+		
+		$this->template->communications = $customer->get('communications')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
+		$this->template->communications_pagination = Pagination::factory(array(
+			'total_items' => $customer->get('communications')->count(),
+			'items_per_page' => $items_per_page,
+			'auto_hide'	=> false,
+			'current_page'   => array('source' => 'query_string', 'key' => 'communications_page'),
+		));
+		$this->template->customer = $customer;
+	
+		$data = array(
+			'html' => $this->template->render(),
+		);
+		
+		echo json_encode($data);
+	}
+	
 	
 	public function action_add_contact()
 	{
@@ -337,7 +426,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		try
 		{
 			$contact = $customer->add_contact($_POST['contact']);
-			$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
+			$items_per_page = 20;
 			$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
 			
 			$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();
@@ -380,7 +469,7 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		
 		$contact->delete();
 	
-		$items_per_page = Kohana::config('ecommerce.pagination.crm_customer_items');
+		$items_per_page = 20;
 		$page = isset($_GET['contacts_page']) ? $_GET['contacts_page'] : 1;
 		
 		$this->template->contacts = $customer->get('contacts')->limit($items_per_page)->offset(($page - 1) * $items_per_page)->execute();

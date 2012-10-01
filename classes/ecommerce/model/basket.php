@@ -10,6 +10,9 @@ class Ecommerce_Model_Basket extends Model_Application
 				'items' => new Field_HasMany(array(
 					'foreign' => 'basket_item.basket_id',
 				)),
+				'customer_referral_code' => new Field_String,
+				'referral_code' => new Field_Integer,
+				'using_reward_points' => new Field_Float,
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
@@ -109,7 +112,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->sku->retail_price() * $item->quantity;
+			$subtotal += round($item->sku->retail_price(), 2) * $item->quantity;
 		}
 		
 		// Are there any special priced items to add due to promotion codes?
@@ -139,6 +142,12 @@ class Ecommerce_Model_Basket extends Model_Application
 		$subtotal = $this->calculate_subtotal();
 		
 		$discount = 0;
+		
+		//if the customer is using their reward points then apply the discount
+		if ($this->using_reward_points > 0)
+		{
+  		$discount = number_format($this->using_reward_points , 2);
+		}
 		
 		if ($this->promotion_code->loaded())
 		{
@@ -192,7 +201,7 @@ class Ecommerce_Model_Basket extends Model_Application
 					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount;
 							break;
 						case 'percent':
 							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
@@ -254,5 +263,43 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->promotion_code = NULL;
 		$this->promotion_code_reward = NULL;
 		return $this->save();
+	}
+	
+	public function create_from_sales_order($sales_order)
+	{
+		foreach ($sales_order->items as $item)
+		{
+			if ($item->sku->loaded())
+			{
+				$this->add_item($item->sku->id, $item->quantity);
+			}
+		}
+		return $this;
+	}
+	
+	public function save_reward_points_discount($reward_points_discount)
+	{
+	 $this->using_reward_points = $reward_points_discount;
+   $this->save();
+  }
+  
+  public function generate_unique_code($customer = NULL)
+	{
+	   //if the customer already has a referral code show it
+	  if (! empty($customer->customer_referral_code))
+  	 {
+    	 $code = $customer->customer_referral_code;
+     }
+    //else generate a new one
+	  else
+	  {
+  		$length = Kohana::config('ecommerce.default_customer_referral_code_length');
+  		$code = Text::random('distinct', $length);
+		}
+		
+		$this->customer_referral_code = $code;
+		$this->save();
+		
+		return $code;
 	}
 }

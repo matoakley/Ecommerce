@@ -60,6 +60,8 @@ class Ecommerce_Model_Event extends Model_Application
 	{
 		$validator = Validate::factory($data)
 											->filter(TRUE, 'trim')
+											->rule('name', 'not_empty')
+											->rule('description', 'not_empty')
 											->rule('start_date', 'not_empty')
 											->rule('end_date', 'not_empty');
 		
@@ -95,6 +97,19 @@ class Ecommerce_Model_Event extends Model_Application
 	
 	public function update($data)
 	{	
+  	   $errors = array();
+			if (isset($_POST['event']))
+			{
+				try
+				{
+					//event_validator($_POST['event']);
+				}
+				catch (Validate_Exception $e)
+				{
+					$errors['event'] = $e->array->errors();
+				}
+		
+
 		$this->name = $data['name'];
 		if (isset($data['slug']))
 		{
@@ -118,5 +133,5 @@ class Ecommerce_Model_Event extends Model_Application
 		
 		return $this;
 	}
-	
+ }
 }

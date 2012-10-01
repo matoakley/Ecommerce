@@ -11,12 +11,6 @@
 				{% if modules.brands %}
 					<li><a href="/admin/brands">Brands</a></li>
 				{% endif %}
-				
-			<!--
-	{% if modules.events %}
-					<li><a href="/admin/events">Events</a></li>
-				{% endif %}
--->
 			
 				{% if modules.categories %}
 					<li><a href="/admin/categories">Categories</a></li>
@@ -87,9 +81,18 @@
 		</li>
 		{% endif %}
 		
+			{% if (modules.promotion_codes) or (modules.reward_points) %}
+		<li><a href="#">Promotions</a>
+		   <ul>
 		{% if modules.promotion_codes %}
-			<li><a href="/admin/promotion_codes">Promotion Codes</a></li>
+			  <li><a href="/admin/promotion_codes">Promotion Codes</a></li>
 		{% endif %}
+			{% if modules.reward_points %}
+			  <li><a href="/admin/reward_points_profiles">Reward Points</a></li>
+		{% endif %}
+		  </ul>
+		</li>
+		  {% endif %}
 		
 		{% if modules.delivery_options %}
 			<li><a href="/admin/delivery_options">Delivery Options</a></li>

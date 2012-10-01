@@ -25,7 +25,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	{
 		$this->config = Kohana::config('ecommerce');
 		
-		Cookie::$salt = 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M'.$this->config['site_name'];
+		Cookie::$salt = $this->config['cookie_salt'].$this->config['site_name'];
 		Cookie::$expiration = Date::YEAR;
 			
 		if ( ! IN_PRODUCTION)
@@ -80,6 +80,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// API key when using Leaflet.js for maps
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
+		
+		$this->template->basket = $this->basket;
 	
 		parent::after();
 	}

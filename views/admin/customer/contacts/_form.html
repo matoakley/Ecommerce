@@ -41,6 +41,17 @@
 </div>
 
 <div class="field">
+	<div class="grid_2 alpha">
+		<label for="contact-notes">Notes</label>
+	</div>
+	<div class="grid_14 omega">
+		<input type="text" id="contact-notes" class="inputtext longest" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+
+<div class="field">
 	<div class="grid_2 alpha">&nbsp;</div>
 	<div class="grid_3">
 		<input type="submit" value="Add Contact" id="add-contact" data-url="{% url "customer_contact_add", ['customer_id': customer.id] %}" />

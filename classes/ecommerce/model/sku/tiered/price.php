@@ -57,6 +57,13 @@ class Ecommerce_Model_Sku_Tiered_Price extends Model_Application
 	 */
 	public function retail_price()
 	{
-		return Currency::add_tax($this->price, $this->vat_rate());
+		return Currency::deduct_tax($this->price, $this->vat_rate());
+	}
+	
+	public function retail_price_add_tax()
+	{
+  	$this->price = Currency::add_tax(str_replace(',', '', $price), $this->vat_rate());
+		return $this->save();
+
 	}
 }
