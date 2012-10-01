@@ -140,8 +140,15 @@ class Ecommerce_Model_Product_Image extends Model_Application
 	{	
 		$product = $this->product;
 		
-		unlink(DOCROOT . $this->get_filepath('full_size'));
-		unlink(DOCROOT . $this->get_filepath('thumb'));
+		if (file_exists(DOCROOT . $this->get_filepath('full_size')))
+		{
+			unlink(DOCROOT . $this->get_filepath('full_size'));	
+		}
+		
+		if (file_exists(DOCROOT . $this->get_filepath('thumb')))
+		{
+			unlink(DOCROOT . $this->get_filepath('thumb'));
+		}
 		
 		parent::delete($key);
 		
