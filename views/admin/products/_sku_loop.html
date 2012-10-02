@@ -48,17 +48,22 @@
 		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
 	</div>
 	<div class="grid_6">
-		<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
-		<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter price including VAT if applicable.</span>
+  	<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{% if default_price_includes_vat %}{{sku.retail_price|num_format(2)}}{% else %}{{sku.price|num_format(2)}}{% endif %}" class="inputtext shortest" />
+		<span class="left-pad">
+		<input type="checkbox" id="sku-{{sku.id}}-price-includes-vat" name="skus[{{sku.id}}][price_includes_vat]" value="1" {% if default_price_includes_vat %}checked{% endif %} />
+		  Price entered includes VAT (if applicable)</span>
 	</div>
 	<div class="grid_2">
-		{% if modules.stock_control %}
 			<label for="sku-{{sku.id}}-stock">Stock</label>
-		{% endif %}
 	</div>
 	<div class="grid_2 omega">
 		{% if modules.stock_control %}
 			<input type="text" id="sku-{{sku.id}}-stock" name="skus[{{sku.id}}][stock]" value="{{sku.stock}}" class="inputtext shortest" />
+		{% else %}
+		<select id="stock_status" name="skus[{{sku.id}}][stock_status]" value="{{sku.stock_status}}"/>
+			<option value="in_stock" {% if sku.stock_status == 'in_stock' %}selected="selected"{% endif %}>In Stock</option>
+			<option value="out_stock" {% if sku.stock_status == 'out_stock' %}selected="selected"{% endif %}>Out Of Stock</option>
+			</select>
 		{% endif %}
 	</div>
 	<div class="clear"></div>
@@ -82,6 +87,9 @@
 			<div class="grid_12 omega">
 				<input type="text" id="sku-{{sku.id}}-price-tier-{{tier.id}}" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices_array[tier.id]|num_format(2)}}" class="inputtext shortest" />
 			</div>
+			<span class="left-pad">
+		<input type="checkbox" id="sku-{{sku.id}}-price-tier-{{tier.id}}-includes-vat" name="skus[{{sku.id}}][tiered_price_includes_vat][{{tier.id}}]" value="1" {% if default_price_includes_vat %}checked{% endif %} />
+		  Price entered includes VAT (if applicable)</span>
 			<div class="clear"></div>
 		</div>
 	{% endfor %}
@@ -108,6 +116,22 @@
 			</select>
 		</div>
 	{% endif %}
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+		<div class="grid_2 alpha">
+			<label for="sku-{{sku.id}}-thumbnail-id">Image ID: </label>
+		</div>
+		<div class="grid_6 omega">
+			<select id="sku-{{sku.id}}-thumbnail-id" name="skus[{{sku.id}}][thumbnail][id]" value="{{sku.thumbnail.id}}">
+			<option value="NULL"></option>
+			{% for key, image in fields.product_images %}
+			<option{% if image.id == sku.thumbnail.id %} selected="selected" {% endif %}>{{image.id}}</option>
+      {% endfor %}
+				</select>
+		</div>
+		
 	<div class="clear"></div>
 </div>
 

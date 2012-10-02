@@ -10,6 +10,33 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	$('.datepicker_one_month').datepicker({
+		constrainInput: true,
+		dateFormat: 'yy/mm/dd',
+		firstDay: 1,
+		numberOfMonths: 1,
+		selectOtherMonths: true
+	});
+	
+	// Manage datepicker for customer callbacks and show/hide "assigned to" selector as required 
+	$('input#communication-callback-on').datepicker({
+		constrainInput: true,
+		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
+		numberOfMonths: 2,
+		selectOtherMonths: true,
+		onSelect: function(dateText, inst){
+  		$('select#communication-callback-assigned-to').removeAttr('disabled');
+		}
+   });
+   $('input#communication-callback-on').change(function(){
+     if ($(this).val() != ""){
+      $('select#communication-callback-assigned-to').removeAttr('disabled');
+     } else {
+      $('select#communication-callback-assigned-to').attr('disabled', 'disabled');
+     }
+   });
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		
@@ -18,6 +45,26 @@ $(function(){
     filebrowserUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
     filebrowserImageUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
 	});
+	
+	$('.delete-custom-field-document').live('click', function(e){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to permanently delete this file?'))
+		{
+			$.ajax({   
+				url: $(this).attr('href'),
+				type: 'GET',
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeOut(200, function(){
+  			    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').html(response.html);
+  		    })
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeIn(200);
+				}
+		  })
+		}
+  });
 
 	$('.slugify').keyup(function(){
 		$(this).slugify($('.slug'));
@@ -116,13 +163,15 @@ $(function(){
 		var email = $('input#contact-email');
 		var telephone = $('input#contact-telephone');
 		var position = $('input#contact-position');
+		var notes = $('input#contact-notes');
 		var data = {
 			contact: {
 				firstname: firstname.val(),
 				lastname: lastname.val(),
 				email: email.val(),
 				telephone: telephone.val(),
-				position: position.val()
+				position: position.val(),
+				notes: notes.val()
 			}
 		};
 		$.ajax({
@@ -151,6 +200,22 @@ $(function(){
 			}
 		});
 	});
+	//show/hide notes of customer contact
+	$('img.show-contact-notes').live('mouseenter', function(){
+		if ($('div.contact-notes[data-contact-id="'+$(this).attr('data-contact-id')+'"]').is(':visible')){
+			$(this).attr('src', '/media/images/icons/note_delete.png');
+		} else {
+			$(this).attr('src', '/media/images/icons/note_add.png');	
+		}
+	}).live('mouseleave', function(){
+		$(this).attr('src', '/media/images/icons/note.png');
+	}).live('click', function(){
+	  $('#edit-pencil-text[data-contact-id="'+ $('.inline_editor_textarea_contacts').data('contact-id')+'"]').addClass('hidden');//hide pencil in case of glitch
+
+		$('div.contact-notes[data-contact-id="'+$(this).attr('data-contact-id')+'"]').slideToggle('slow');
+		$('td.contact-notes-container[data-contact-id="'+$(this).attr('data-contact-id')+'"]');
+	});
+
 
 	// Show/hide notes of customer addresses	
 	$('img.show-address-notes').live('mouseenter', function(){
@@ -162,6 +227,7 @@ $(function(){
 	}).live('mouseleave', function(){
 		$(this).attr('src', '/media/images/icons/note.png');
 	}).live('click', function(){
+	  $('#edit-pencil-text[data-contact-id="'+ $('.inline_editor_textarea_contacts').data('contact-id')+'"]').addClass('hidden');//hide pencil in case of glitch
 		$('div.address-notes[data-address-id="'+$(this).attr('data-address-id')+'"]').slideToggle('slow');
 		$('td.address-notes-container[data-address-id="'+$(this).attr('data-address-id')+'"]');
 	});
@@ -211,18 +277,20 @@ $(function(){
 		var title = $('input#communication-title');
 		var text = $('textarea#communication-text');
 		var date = $('div#communication-date');
-		/* var sendToCustomer = $('input#communication-send-to-customer'); */
+		var callbackOn = $('input#communication-callback-on');
+		var callbackAssignedTo = $('select#communication-callback-assigned-to');
 		var data = {
 			communication: {
 				type: type.val(),
 				title: title.val(),
 				text: text.val(),
 				date: Math.round(date.datetimepicker('getDate').getTime() /1000),
-/* 				send_to_customer: sendToCustomer.is(':checked') */
+				callback_on: Math.round(callbackOn.datepicker('getDate').getTime() /1000),
+				callback_assigned_to: callbackAssignedTo.val()
 			}
 		};
 		$.ajax({
-			url: button.attr('data-url'),
+			url: button.data('add-url'),
 			type: 'POST',
 			data: data,
 			dataType: 'json',
@@ -240,6 +308,8 @@ $(function(){
 				date.datetimepicker('setDate', (new Date()));
 				$('div#new-communication').slideUp(600);
 				$('a#show-new-communication').children('span').html('New Communication');
+				callbackOn.val('');
+				callbackAssignedTo.val($('input#default-callback-user').val());
 			},
 			complete: function(){
 				$('#add-communication-spinner').hide();
@@ -247,7 +317,51 @@ $(function(){
 			}
 		});
 	});
-	
+	$('div#customer-communications-table-container').on('click', 'a.customer-communication-delete', function(e){
+		e.preventDefault();
+		var button = $(this);
+		$.ajax({
+			url: button.data('url'),
+			dataType: 'json',
+			beforeSend: function(){
+				button.hide();
+				$('img#delete-communication-spinner[data-communication-id="'+button.data('communication-id')+'"]').show();
+			},
+			success: function(response){
+				$('div#customer-communications-table-container').html(response.html);
+			},
+			complete: function(){
+				$('img#delete-communication-spinner[data-communication-id="'+button.data('communication-id')+'"]').hide();
+				button.show();
+			}
+		});
+	});
+	$('a.callback-complete').live('click', function(e){
+  	e.preventDefault();
+  	if (confirm('Are you sure you wich to mark this callback as completed?')){
+    	var link = $(this);
+    	var communicationId = $(this).data('communication-id');
+    	var spinner = $('img.callback_completed_spinner[data-communication-id="'+communicationId+'"]');
+    	var icon = $('img.callback_completed_icon[data-communication-id="'+communicationId+'"]');
+    	var details = $('span.callback_details[data-communication-id="'+communicationId+'"]');
+    	$.ajax({
+      	url: link.attr('href'),
+      	type: 'get',
+      	beforeSend: function(){
+        	icon.hide();
+        	spinner.show();
+      	},
+      	error: function(){
+        	spinner.hide();
+        	icon.show();
+      	},
+      	success: function(){
+        	spinner.hide();
+        	details.css('text-decoration', 'line-through');
+      	}
+    	});
+    }
+	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
 		e.preventDefault();
@@ -473,6 +587,7 @@ $(function(){
 			});
 		}
 	});
+	now = $.datepicker.formatDate('dd/mm/yy', new Date());
 	$('#email-invoice').click(function(e){
 		e.preventDefault();
 		if (confirm('Are you sure that you want to email the invoice to the customer?')) {
@@ -486,7 +601,12 @@ $(function(){
 				success: function(response){
 					if (response == 'ok')
 					{
+					   var invoicedOn = ($('#sales-order-invoiced-on').val() + "empty");
+					   console.log(invoicedOn);
 						$('#sales-order-status').val('invoice_sent');
+						if (invoicedOn === "empty"){
+						$('#sales-order-invoiced-on').val(now);
+						}
 						$('#email-invoice').hide();
 					}
 				}
@@ -529,7 +649,683 @@ $(function(){
 	$('input#sales-order-invoiced-on').datepicker({
 		dateFormat: 'dd/mm/yy'
 	});
+	
+	//inline editor for communications
+
+	$('.inline_editor_textarea').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-text[data-communication-id="'+area.data('communication-id')+'"]').removeClass('hidden');
+		$('.inline_editor_textarea').live('mouseleave', function(){
+	$('#edit-pencil-text[data-communication-id="'+area.data('communication-id')+'"]').addClass('hidden');
+	});
+	});
+
+	$('.inline_editor_textarea').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<textarea class="inplace_field">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text();
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	 //Perform Ajax on click
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	  var new_value = $('.inplace_field').val();
+	 var updatedValues = { text: new_value }
+	 $.ajax({
+			url: original.data('communication-url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-communication-spinner[data-communication-id="'+original.data('communication-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-communication-spinner[data-communication-id="'+original.data('communication-id')+'"]').hide();
+  		  original.show();
+			}
+		});
+	 });         	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+  
+	$('.inline_editor_input').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-title[data-communication-id="'+area.data('communication-id')+'"]').show();
+		$('.inline_editor_input').live('mouseleave', function(){
+	$('#edit-pencil-title[data-communication-id="'+area.data('communication-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { title: new_value }
+	 $.ajax({
+			url: original.data('communication-url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-communication-title-spinner[data-communication-id="'+original.data('communication-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-communication-title-spinner[data-communication-id="'+original.data('communication-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
 });
+
+// inline editor for contacts
+
+$('.inline_editor_textarea_contacts').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-text[data-contact-id="'+area.data('contact-id')+'"]').removeClass('hidden');
+		$('.inline_editor_textarea').live('mouseleave', function(){
+	$('#edit-pencil-text[data-contact-id="'+area.data('contact-id')+'"]').addClass('hidden');
+	});
+	});
+
+	$('.inline_editor_textarea_contacts').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<textarea class="inplace_field">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text();
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	 //Perform Ajax on click
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	  var new_value = $('.inplace_field').val();
+	 var updatedValues = { notes: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-contact-spinner[data-contact-id="'+original.data('contact-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+				$('#edit-pencil-text[data-contact-id="'+ $('.inline_editor_textarea_contacts').data('contact-id')+'"]').addClass('hidden');
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-contact-spinner[data-contact-id="'+original.data('contact-id')+'"]').hide();
+  		  original.show();
+			}
+		});
+	 });         	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+  //firstname contacts
+	$('.inline_editor_input_contacts_name').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-name[data-contact-id="'+area.data('contact-id')+'"]').show();
+		$('.inline_editor_input_contacts_name').live('mouseleave', function(){
+	$('#edit-pencil-name[data-contact-id="'+area.data('contact-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_contacts_name').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('Firstname:<input class="inplace_form"></br>');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { firstname: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-contact-name-spinner[data-contact-id="'+original.data('contact-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-contact-name-spinner[data-contact-id="'+original.data('contact-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+  
+  //email contacts
+  $('.inline_editor_input_contacts_email').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-email[data-contact-id="'+area.data('contact-id')+'"]').show();
+		$('.inline_editor_input_contacts_email').live('mouseleave', function(){
+	$('#edit-pencil-email[data-contact-id="'+area.data('contact-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_contacts_email').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { email: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-contact-email-spinner[data-contact-id="'+original.data('contact-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-contact-email-spinner[data-contact-id="'+original.data('contact-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+//telephone contacts
+  $('.inline_editor_input_contacts_tel').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-tel[data-contact-id="'+area.data('contact-id')+'"]').show();
+		$('.inline_editor_input_contacts_tel').live('mouseleave', function(){
+	$('#edit-pencil-tel[data-contact-id="'+area.data('contact-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_contacts_tel').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { telephone: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-contact-tel-spinner[data-contact-id="'+original.data('contact-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-contact-tel-spinner[data-contact-id="'+original.data('contact-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+//position contacts
+  $('.inline_editor_input_contacts_position').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-position[data-contact-id="'+area.data('contact-id')+'"]').show();
+		$('.inline_editor_input_contacts_position').live('mouseleave', function(){
+	$('#edit-pencil-position[data-contact-id="'+area.data('contact-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_contacts_position').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { position: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-contact-position-spinner[data-contact-id="'+original.data('contact-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-contact-position-spinner[data-contact-id="'+original.data('contact-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+// inline editor for address
+
+$('.inline_editor_textarea_address').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-text[data-address-id="'+area.data('address-id')+'"]').removeClass('hidden');
+		$('.inline_editor_textarea_address').live('mouseleave', function(){
+	$('#edit-pencil-text[data-address-id="'+area.data('address-id')+'"]').addClass('hidden');
+	});
+	});
+
+	$('.inline_editor_textarea_address').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<textarea class="inplace_field">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text();
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	 //Perform Ajax on click
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	  var new_value = $('.inplace_field').val();
+	 var updatedValues = { notes: new_value }
+	 $.ajax({
+			url: original.data('address-url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-address-spinner[data-address-id="'+original.data('address-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+				$('#edit-pencil-text[data-contact-id="'+ $('.inline_editor_textarea_contacts').data('contact-id')+'"]').addClass('hidden');
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-address-spinner[data-address-id="'+original.data('address-id')+'"]').hide();
+  		  original.show();
+			}
+		});
+	 });         	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+  //name address
+	$('.inline_editor_input_address_name').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-name[data-address-id="'+area.data('address-id')+'"]').show();
+		$('.inline_editor_input_address_name').live('mouseleave', function(){
+	$('#edit-pencil-name[data-address-id="'+area.data('address-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_address_name').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { name: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-address-name-spinner[data-address-id="'+original.data('address-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-address-name-spinner[data-address-id="'+original.data('address-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+  
+  //address address
+  $('.inline_editor_input_address_address').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-address[data-address-id="'+area.data('address-id')+'"]').show();
+		$('.inline_editor_input_address_address').live('mouseleave', function(){
+	$('#edit-pencil-address[data-address-id="'+area.data('address-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_address_address').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { address: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-address-address-spinner[data-address-id="'+original.data('address-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-address-address-spinner[data-address-id="'+original.data('address-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+  });
+
+//telephone address
+  $('.inline_editor_input_address_tel').live('mouseenter', function(){
+	var area = $(this);
+	$('#edit-pencil-tel[data-address-id="'+area.data('address-id')+'"]').show();
+		$('.inline_editor_input_address_tel').live('mouseleave', function(){
+	$('#edit-pencil-tel[data-address-id="'+area.data('address-id')+'"]').hide();
+	});
+	});
+	$('.inline_editor_input_address_tel').live('click', function(){
+	 var original = $(this);
+	 var container = $(this).parent();
+	 
+	 
+	 var field = $('<input class="inplace_form">');
+	 field.val($(this).html()); 
+	 $(this).replaceWith(field).text(); 
+	 
+	 
+	 var saveButton = $('<button>');
+	 saveButton.html('Save');
+	 container.append(saveButton);
+	
+	 saveButton.click(function(e){
+	 e.preventDefault();
+	 var new_value = $('.inplace_form').val();
+	 var updatedValues = { telephone: new_value }
+	 $.ajax({
+			url: original.data('url'),
+			type: 'POST',
+			data: updatedValues,
+			dataType: 'json',
+			beforeSend: function(){
+				original.text(new_value);
+				field.replaceWith(original);
+				original.hide();
+				$('img#edit-address-tel-spinner[data-address-id="'+original.data('address-id')+'"]').show();
+				saveButton.remove();
+				cancelButton.remove();
+			},
+			success: function(response){
+				
+		  },
+		  complete: function(){
+  		  $('img#edit-address-tel-spinner[data-address-id="'+original.data('address-id')+'"]').hide();
+  		  original.show();
+			}		});
+	 });
+	 
+            	 
+	
+	 var cancelButton =  $('<button>');
+	 cancelButton.html('Cancel');
+	 container.append(cancelButton);
+	 cancelButton.click(function(e){
+	   e.preventDefault();
+    field.replaceWith(original);
+    saveButton.remove();
+    cancelButton.remove();
+   });
+});
+
 
 function number_format (number, decimals, dec_point, thousands_sep) {
     // Formats a number with grouped thousands  

@@ -109,4 +109,39 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->add_breadcrumb('/search', 'Search');
 	}
 	
+	public function action_price_with_options()
+	{
+		$this->auto_render = FALSE;
+		
+		$data = array();
+		
+		if ($_POST)
+		{
+			// Find the SKU that matches the product/options combination
+			$skus = Model_Product::load($_POST['product'])->skus;
+
+  		foreach ($skus as $sku)
+  		{
+    		$matches = TRUE;
+    		
+    		$sku_product_options = $sku->product_options->as_array('id', 'value');
+    		
+    		foreach ($_POST['options'] as $option_id)
+    		{ 
+      		if ( ! isset($sku_product_options[$option_id]))
+      		{
+          	$matches = FALSE;
+      		}
+    		}
+    		
+    		if ($matches AND $sku->status == 'active')
+    		{
+        	$data['price'] = number_format($sku->retail_price(), 2);
+        	$data['image'] = $sku->thumbnail->full_size_path;
+    		}
+    	}
+		}
+		
+		echo json_encode($data);
+	}
 }

@@ -161,7 +161,7 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 			$image->resize($image_size['width'], NULL);
 		}
 		
-		$directory = DOCROOT . '/images/blog-posts';
+		$directory = DOCROOT . 'images/blog-posts';
 		if ( ! is_dir($directory))
 		{
 			mkdir($directory);

@@ -10,6 +10,7 @@ class Ecommerce_Model_Sku extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('skus')
+		      ->sorting(array('price' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'product' => new Field_BelongsTo,
@@ -24,6 +25,12 @@ class Ecommerce_Model_Sku extends Model_Application
 				'stock' => new Field_Integer(array(
 					'default' => 0,
 				)),				
+				'stock_status' => new Field_String,
+				'thumbnail' => new Field_BelongsTo(array(
+					'foreign' => 'product_image.id',
+					'column' => 'thumbnail_id',
+					'on_copy' => 'copy',
+				)),
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
@@ -60,7 +67,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		$sku->commercial_only = FALSE;
 		return $sku->save();
 	}
-	
+
 	public static function create_with_options($product, $options)
 	{
 		$sku_exists = FALSE;
@@ -96,6 +103,7 @@ class Ecommerce_Model_Sku extends Model_Application
 							->join('products')->on('products.id', '=', 'skus.product_id')
 							->where('products.status', '=', 'active')
 							->where('skus.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
 							->order_by('products.name', 'ASC')
 							->execute();
 	}
@@ -119,14 +127,27 @@ class Ecommerce_Model_Sku extends Model_Application
 	 * @author  Matt Oakley
 	 * @return  float
 	 */
-	public function retail_price()
+	public function retail_price($ignore_tiered_pricing = FALSE)
 	{
-		return Currency::add_tax($this->price, $this->vat_rate());
+		if (Caffeine::modules('tiered_pricing') AND ! $ignore_tiered_pricing AND Auth::instance()->logged_in('trade_area'))
+		{
+			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
+		}
+  		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
 	public function update($data)
-	{
-		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+	{ 
+	//echo Kohana::debug($data);exit;
+		  if (isset($data['price_includes_vat']))
+	  {
+  		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+  	}
+	  else 
+	  {
+  		$this->price = $data['price'];
+		}  
+		 
 		$this->sku = $data['sku'];
 		if (isset($data['status']))
 		{
@@ -142,6 +163,14 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			$this->stock = $data['stock'];
 		}
+		if (isset($data['stock_status']))
+		{
+  		$this->stock_status = $data['stock_status'];
+		}
+		if (isset($data['thumbnail']['id']))
+		{
+  		$this->thumbnail = $data['thumbnail']['id'];
+		}
 		
 		if (Caffeine::modules('product_weights'))
 		{
@@ -152,11 +181,12 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['tiered_prices']))
 		{
 			foreach ($data['tiered_prices'] as $price_tier_id => $price)
-			{
-				Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);
+			{   
+      		Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);  
+         
 			}
 		}
-		
+
 		return $this->save();
 	}
 
@@ -194,7 +224,7 @@ class Ecommerce_Model_Sku extends Model_Application
 		}
 		else
 		{
-			return $this->retail_price();
+			return $this->retail_price(TRUE);
 		}
 	}
 	

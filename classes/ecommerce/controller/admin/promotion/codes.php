@@ -143,14 +143,19 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 		
 		$promotion_code_reward = Model_Promotion_Code_Reward::load($this->request->param('promotion_code_reward_id'));
 		
+		if ( $promotion_code_reward->loaded())
+		{
+			$this->template->promotion_code_reward = $promotion_code_reward;
+		}
+		
 		$fields = array(
 			'reward' => $promotion_code_reward->as_array(),
 		);
 		$fields['reward']['sku_reward_retail_price'] = $promotion_code_reward->sku_reward_retail_price();
 		$errors = array();
 		
-		$all_skus = Model_Sku::search();
-		
+		$all_skus = Model_Sku::search();		
+		$all_rewards = array();
 		if ($_POST)
 		{	
 			try
@@ -166,8 +171,6 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 			{
 				$promotion_code_reward->update($promotion_code, $_POST['reward']);
 				
-				$all_rewards = array();
-				
 				foreach ($promotion_code->rewards as $reward)
 				{
 					$all_rewards[] = Arr::merge($reward->as_array(), array('sku_reward_retail_price' => $reward->sku_reward_retail_price()));
@@ -181,6 +184,7 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 					'reward_types' => Model_Promotion_Code_Reward::$reward_types,
 					'all_skus' => $all_skus['results'],
 				);
+				
 				$view = Twig::factory('admin/promotion/codes/_promotion_code_rewards.html', $template_data, $this->environment)->render();
 				
 				$data = array(
@@ -188,8 +192,8 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 					'view' => $view,
 				);
 				
-				echo json_encode($data);
-				exit;
+			echo json_encode($data);
+				exit;	
 			}
 			else
 			{
@@ -197,14 +201,19 @@ class Ecommerce_Controller_Admin_Promotion_Codes extends Controller_Admin_Applic
 				exit;
 			}
 		}
+
+		$template_data = array(
+					'promotion_code' => $promotion_code,
+					'fields' => array(
+						'reward' => $promotion_code_reward,
+					),
+					'reward_types' => Model_Promotion_Code_Reward::$reward_types,
+					'all_skus' => $all_skus['results'],
+				);
+				$view = Twig::factory('admin/promotion/codes/edit_reward.html', $template_data, $this->environment)->render();
+				
+				echo $view;
 		
-		$this->template->fields = $fields;
-		$this->template->errors = $errors;
-		
-		$this->template->promotion_code = $promotion_code;
-		$this->template->promotion_code_reward = $promotion_code_reward;
-		$this->template->all_skus = $all_skus['results'];
-		$this->template->reward_types = Model_Promotion_Code_Reward::$reward_types;
 	}
 	
 	public function action_delete_reward()

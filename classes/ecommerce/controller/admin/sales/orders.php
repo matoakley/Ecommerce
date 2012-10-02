@@ -89,6 +89,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		if ($sales_order->loaded() AND $sales_order->status = 'payment_received')
 		{
 			$sales_order->update_status('complete')->send_shipped_email();
+
 			echo 'ok';
 		}
 		else
@@ -107,7 +108,10 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 	
 		if ($sales_order->loaded() AND $sales_order->status = 'invoice_generated')
 		{
+		  $sales_order->set_invoiced_on_date();
+		  
 			$sales_order->update_status('invoice_sent')->send_invoice();
+			
 			echo 'ok';
 		}
 		else
@@ -150,9 +154,10 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 				{
 					$sales_order = Model_Sales_Order::load($sales_order_id);
 					
-					if ($sales_order->status == 'payment_received')
-					{
-						$sales_order->update_status('complete')->send_shipped_email();
+					if ($sales_order->status === 'payment_received')
+		{
+			$sales_order->update_status('complete')->send_shipped_email();
+			echo 'ok';
 					}
 				}
 			}
@@ -324,11 +329,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		// If this is the fist time that the invoice has been
 		// generated then set invoiced on as now.
-		if ( ! $sales_order->invoiced_on)
-		{
-			$sales_order->invoiced_on = time();
-			$sales_order->save();
-		}
+		$sales_order->set_invoiced_on_date();
 		
 		$this->template->base_url = URL::site();
 		$this->template->sales_order = $sales_order;
@@ -366,30 +367,31 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			throw new Kohana_Exception('Module is not enabled.');
 		}
 
-		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent', 'complete'))->where('exported_to_sage', 'IS', NULL)->execute();
+		$sales_orders = Jelly::select('sales_order')->where('type', '=', 'commercial')->where('status', 'IN', array('invoice_sent'))->where('exported_to_sage', 'IS', NULL)->execute();
 		
 		$data = array();
 		
 		foreach ($sales_orders as $sales_order)
 		{
 			$company_name = $sales_order->customer->company != '' ? $sales_order->customer->company : $sales_order->customer->name();
-		
+			$sales_order->set_invoiced_on_date();
+			
 			$sales_order_data = array(
 				'SI',
 				$sales_order->customer->account_ref,
 				$sales_order->customer->custom_field('nominal-code'),
 				0,
-				date('d/m/Y', $sales_order->created),
+				date('d/m/Y', $sales_order->invoiced_on),
 				'INV-'.$sales_order->id,
 				$company_name,
-				number_format($sales_order->order_subtotal, 2),
+				round($sales_order->order_subtotal, 2),
 				'T1',
-				number_format($sales_order->order_vat, 2),
+				round($sales_order->order_vat, 2),
 			);
 		
 			$data[] = $sales_order_data;
 		}
-		
+
 		$dir_name = APPPATH.'exports/sage/';
 		
 		if ( ! is_dir($dir_name))
@@ -397,12 +399,15 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 			mkdir($dir_name, 0777, TRUE);
 		}
 		
+		ini_set("auto_detect_line_endings", true);
+		
 		$filename = 'Sales_Order_Export_'.date('Y-m-d').'.csv';
 		$file_path = $dir_name.$filename;
 		$handle = fopen($file_path, 'w+');
 		foreach ($data as $line)
 		{
-			fputcsv($handle, $line);	
+			$formatted_line = CSV::get_csv_line($line);
+			fwrite($handle, $formatted_line);
 		}
 		
 		$export_timestamp = time();

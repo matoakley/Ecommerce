@@ -1,3 +1,4 @@
+
 $(function(){
 
 	$('#add-new-option-container').click(function(e){
@@ -28,7 +29,7 @@ $(function(){
 		$('<span>').html(' ').appendTo(optionsContainer);
 		$('<input>').attr('type', 'text').attr('id', 'new-option-input-'+option).addClass('inputtext short').attr('placeholder', 'New value...').appendTo(optionsContainer);
 		$('<span>').html(' ').appendTo(optionsContainer);
-		$('<img>').attr('src', '/media/images/admin/ajax-loader.gif').attr('alt', 'Loading…').attr('id', 'add-option-value-spinner-'+option).addClass('hidden left-pad inline-icon').appendTo(optionsContainer);
+		$('<img>').attr('src', '/media/images/admin/ajax-loader.gif').attr('alt', 'Loading?').attr('id', 'add-option-value-spinner-'+option).addClass('hidden left-pad inline-icon').appendTo(optionsContainer);
 		var addOption = $('<a>').attr('href', '#').addClass('add-product-option').attr('data-option', option)
 														.attr('data-product-id', $(this).attr('data-product-id'))
 														.html('<img src="/images/icons/add.png" alt="" class="inline-icon" /> Add').appendTo(optionsContainer);
@@ -51,7 +52,7 @@ $(function(){
 		var removeButton = $(this);
 		var valueId = removeButton.attr('data-value-id');
 		
-		// Replace the Add… button with a spinner as feedback to the user
+		// Replace the Add? button with a spinner as feedback to the user
 		removeButton.hide();
 		$('#remove-option-value-spinner-'+valueId).show();
 		
@@ -67,7 +68,7 @@ $(function(){
 				});
 			},
 			complete: function(){
-				// Replace the spinner with the Add… button
+				// Replace the spinner with the Add? button
 				$('#remove-option-value-spinner-'+valueId).hide();
 				removeButton.show();
 			}
@@ -92,7 +93,7 @@ $(function(){
 			return true;
 		}
 			
-		// Replace the Add… button with a spinner as feedback to the user
+		// Replace the Add? button with a spinner as feedback to the user
 		addButton.hide();
 		$('#add-option-value-spinner-'+newOptionKey).show();
 	
@@ -127,7 +128,7 @@ $(function(){
 				}
 			},
 			complete: function(){
-				// Replace the spinner with the Add… button
+				// Replace the spinner with the Add? button
 				$('#add-option-value-spinner-'+newOptionKey).hide();
 				addButton.show();
 			}
@@ -194,7 +195,19 @@ $(function(){
 				}
 			}
 		});
-	});
+	}); 
+	
+	$('.option-container').sortable({ 
+	  handle: '.inline-icon',
+	  cursor: 'move',
+    update : function (event, ui) { 
+      var rel = $(this).attr('rel');
+      var order = $(this).sortable('toArray');
+      $('.input-list[rel='+ rel +']').each(function(i) {
+        $(this).val(order[i]);
+      })
+    } 
+  }); 
 	
 	$('.sku-delete-button').live('click', function(e){
 		

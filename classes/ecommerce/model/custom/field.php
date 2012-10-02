@@ -27,7 +27,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 					'valid' => array('Model_Custom_Field', '_check_valid_object')
 				),
 			)),
-			'show_editor' => new Field_Boolean,
+			'type' => new Field_String(array(
+				'rules' => array(
+					'not_empty' => NULL,
+				),
+				'callbacks' => array(
+					'valid' => array('Model_Custom_Field', '_check_valid_type')
+				),
+			)),
 			'values' => new Field_HasMany(array(
 				'foreign' => 'custom_field_value.custom_field_id',
 			)),
@@ -52,6 +59,12 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		'product',
 	);
 	
+	public static $types = array(
+	 'Text' => 'text',
+	 'WYSIWYG' => 'wysiwyg',
+	 'Upload' => 'upload',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'object' => array(
@@ -72,6 +85,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		}
 	}
 	
+	public static function _check_valid_type(Validate $array, $field)
+	{	
+		if ( ! in_array($array[$field], self::$types))
+		{
+			$array->error($field, 'valid');
+		}
+	}
+	
 	public static function _is_unique_to_object(Validate $array, $field)
 	{
 		$exists = (BOOL) Jelly::select('custom_field')->where('tag', '=', $array[$field])->where('object', '=', $array['object'])->count();
@@ -85,14 +106,14 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 	public function update($data)
 	{
 		$this->name = $data['name'];
-
+		
 		if (isset($data['tag']))
 		{
 			$this->tag = $data['tag'];
 		}
 
 		$this->object = $data['object'];
-		$this->show_editor = isset($data['show_editor']);
+		$this->type = $data['type'];
 		return $this->save();
 	}
 	
