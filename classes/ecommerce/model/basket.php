@@ -201,7 +201,14 @@ class Ecommerce_Model_Basket extends Model_Application
 				}
 			}
 		}
-			
+		
+		// Don't allow a discount greater than the subtotal, 
+		// that's just asking for trouble!
+		if ($discount > $subtotal)
+		{
+  		$discount = $subtotal;
+		}
+		
 		return number_format($discount, 2);
 	}
 	
