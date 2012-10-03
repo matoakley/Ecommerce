@@ -401,6 +401,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$message->customer = $this;
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
 		$to = array(
 			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
 		);
