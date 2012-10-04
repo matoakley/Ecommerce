@@ -58,7 +58,7 @@
 		<div class="grid_2 alpha">
 			<label for="delivery-option-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="delivery-option-status" name="delivery_option[status]">
 			{% for status in statuses %}
 				<option value="{{status}}" {{ status == delivery_option.status ? "selected" : "" }}>{{status|humanize|title}}</option>

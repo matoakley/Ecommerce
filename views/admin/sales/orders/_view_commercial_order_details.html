@@ -42,6 +42,10 @@
 	<tfoot>
 	{% set colspan = (modules.vat_codes) ? "4" : "3" %}
 		<tr>
+			<td colspan="{{colspan}}" class="tr"><strong>Subtotal</strong></td>
+			<td class="tr">&pound;{{sales_order.order_subtotal|num_format(2)}}</td>
+		</tr>
+		<tr>
 			<td class="tr" colspan="{{colspan}}">
 			{% if sales_order.delivery_option_name %}
 				{{sales_order.delivery_option_name}}
@@ -50,16 +54,12 @@
 			{% endif %}
 			</td>
 			<td class="tr">
-			{% if sales_order.delivery_option_price %}
-				&pound;{{sales_order.delivery_option_price|num_format(2)}}
+			{% if sales_order.delivery_option_net_price %}
+				&pound;{{sales_order.delivery_option_net_price|num_format(2)}}
 			{% else %}
 				&pound;{{sales_order.delivery_option.price|num_format(2)}}
 			{% endif %}
 			</td>
-		</tr>
-		<tr>
-			<td colspan="{{colspan}}" class="tr"><strong>Subtotal</strong></td>
-			<td class="tr">&pound;{{sales_order.order_subtotal|num_format(2)}}</td>
 		</tr>
 		<tr>
 			<td colspan="{{colspan}}" class="tr"><strong>VAT Total</strong></td>
