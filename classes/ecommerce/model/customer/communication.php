@@ -76,9 +76,12 @@ class Ecommerce_Model_Customer_Communication extends Model_Application
 		$communication->text = $data['text'];
 		$communication->date = $data['date'];
 		
-		$communication->callback_on = $data['callback_on'];
-		$communication->callback_assigned_to = $data['callback_assigned_to'];
-		
+    if (isset($data['callback_on']))
+		{
+      $communication->callback_on = $data['callback_on'];
+		  $communication->callback_assigned_to = $data['callback_assigned_to'];
+		}
+		  
 		return $communication->save();
 	}
 	
