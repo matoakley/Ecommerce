@@ -279,7 +279,20 @@ $(function(){
 		var date = $('div#communication-date');
 		var callbackOn = $('input#communication-callback-on');
 		var callbackAssignedTo = $('select#communication-callback-assigned-to');
-		var data = {
+		if ( !callbackOn.val() ) {
+		 var data = {
+			communication: {
+				type: type.val(),
+				title: title.val(),
+				text: text.val(),
+				date: Math.round(date.datetimepicker('getDate').getTime() /1000)
+			}
+		};
+		}
+		else 
+		{
+	
+    var data = {
 			communication: {
 				type: type.val(),
 				title: title.val(),
@@ -289,6 +302,7 @@ $(function(){
 				callback_assigned_to: callbackAssignedTo.val()
 			}
 		};
+		 }
 		$.ajax({
 			url: button.data('add-url'),
 			type: 'POST',
