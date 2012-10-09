@@ -91,12 +91,32 @@ class Ecommerce_Model_Blog_Category extends Model_Application
 		return (bool) count($this->categories);
 	}
 	
-	public function display_active_posts($order_by = 'name', $order_dir = 'ASC')
+	public function display_active_posts($order_by = 'name', $order_dir = 'ASC', $limit = NULL, $offset = NULL)
 	{
-		return $this->get('posts')
-					->where('status', '=', 'active')
-					->order_by($order_by, $order_dir)
-					->execute();
+		$posts_query = Jelly::select('blog_post')
+														->join('blog_categories_blog_posts')->on('blog_posts.id', '=', 'blog_categories_blog_posts.blog_post_id')
+														->and_where_open()
+														->where('blog_categories_blog_posts.blog_category_id', '=', $this->id);
+		
+		// Include subcategories of this category in search
+		foreach ($this->categories as $child_category)
+		{
+			$posts_query->or_where('blog_categories_blog_posts.blog_category_id', '=', $child_category->id);
+		}
+	
+		$posts_query->and_where_close()->where('status', '=', 'active');
+	
+		if ($limit)
+		{
+			$posts_query->limit($limit);
+		}
+		
+		if ($offset)
+		{
+			$posts_query->offset($offset);
+		}
+	
+		return $posts_query->order_by($order_by, $order_dir)->execute();
 	}
 	
 	/**

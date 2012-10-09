@@ -4,8 +4,10 @@
 			<th width="1">&nbsp;</th>
 			<th width="1">&nbsp;</th>
 			<th>User</th>
-			<th width="50%">Title</th>
+			<th width="25%">Title</th>
 			<th class="tr">Date</th>
+			<th class="tr">Callback?</th>
+			<th width="1">&nbsp;</th>
 			<th width="1">&nbsp;</th>
 		</thead>
 		<tbody>
@@ -31,15 +33,42 @@
 						{% endif %}
 					</td>
 					<td>{{communication.user.name}}</td>
-					<td><div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">{{communication.title}}</div><img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/>
-					<img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-title" data-communication-id="{{communication.id}}" />
-</td>
+					<td>
+					  <div class="inline_editor_input" data-communication-url="{% url "customer_communication_edit", ["customer_id": customer.id, "communication_id": communication.id] %}"
+					    data-communication-id="{{communication.id}}">
+					    {{communication.title}}
+					  </div>
+					  <img src="/media/images/admin/ajax-loader.gif" class="hidden" id="edit-communication-title-spinner" data-communication-id="{{communication.id}}"/>
+					  <img src="/media/images/icons/pencil_add.png" alt="" class="hidden edit-pencil" id="edit-pencil-title" data-communication-id="{{communication.id}}" />
+					</td>
 					<td class="tr">{{communication.date|date('d/m/Y H:i')}}</td>
 					
-<td><a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
-					<img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
-				</a>
-				<img src="/media/images/admin/ajax-loader.gif" alt="" class="hidden inline-icon delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
+					<td class="tr">
+					  <span class="callback_details" data-communication-id="{{communication.id}}" {% if communication.callback_completed_on %}style="text-decoration:line-through;"{% endif %}>
+					    {% if communication.callback_on %}
+					      {{communication.callback_assigned_to.name}} on {{communication.callback_on|date('d/m/Y')}}
+					    {% else %} 
+					      No
+					    {% endif %}
+					  </span>
+				  </td>
+				
+				  <td>
+				    {% if communication.callback_on %}
+				      {% if not communication.callback_completed_on %}
+      				  <a href="{% url "mark_callback_complete", ["customer_id": customer.id, "communication_id": communication.id] %}" class="callback-complete" data-communication-id="{{communication.id}}">
+      				    <img src="/media/images/icons/telephone_add.png" alt="" class="inline-icon callback_completed_icon" data-communication-id="{{communication.id}}" />
+      				  </a>
+      				  <img src="/media/images/admin/ajax-loader.gif" alt="" class="callback_completed_spinner hidden" data-communication-id="{{communication.id}}" />
+      				{% endif %}
+    				{% endif %}
+				  </td>
+				
+  				<td>
+  				  <a href="#" class="customer-communication-delete" data-url="{% url "customer_communication_delete", ["customer_id": customer.id, "communication_id": communication.id] %}" data-communication-id="{{communication.id}}">
+    				  <img src="/media/images/icons/delete.png" class="inline-icon" alt="" />
+					 </a>
+					 <img src="/media/images/admin/ajax-loader.gif" alt="" class="hidden inline-icon delete-communication-spinner" id="delete-communication-spinner" data-communication-id="{{communication.id}}" />
 				</td>
 
 				</tr>

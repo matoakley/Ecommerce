@@ -20,15 +20,15 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'delivery_address' => new Field_BelongsTo(array(
 					'foreign' => 'address.id',
 					'column' => 'delivery_address_id',
-					'rules' => array(
-						'not_empty' => NULL,
-					),
 				)),
 				'delivery_option' => new Field_BelongsTo(array(
 					'foreign' => 'delivery_option.id',
 					'column' => 'delivery_option_id',
 				)),
 				'delivery_option_name' => new Field_String,
+				'delivery_option_net_price' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'delivery_option_price' => new Field_Float(array(
 					'places' => 4,
 				)),
@@ -38,6 +38,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'places' => 4,
 					'default' => 0,
 				)),
+				'reward_points' => new Field_Integer,
 				'type' => new Field_String,
 				'status' => new Field_String,
 				'order_subtotal' => new Field_Float(array(
@@ -118,20 +119,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	protected function calculate_vat_and_subtotal()
 	{
 		$vat = 0;
-		$dvat = 0;
 	
 		foreach ($this->items as $item)
 		{
 			$vat += $item->total_price - $item->net_total_price;
 		}
 	
-		// Delivery VAT
-		$dvat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
-	
-		$this->order_vat = $vat;
+		$this->order_vat = $vat + ($this->delivery_option_price - $this->delivery_option_net_price);
 		$this->order_subtotal = $this->order_total - $vat;
-		$this->order_vat = $vat + $dvat;
-		$this->order_total = $this->order_total + $dvat;
 		
 		return $this->save();
 	}
@@ -180,10 +175,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sales_order->save();
 		
-		foreach ($basket->items as $basket_item)
-		{
-			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
-		}
+		//save the baskets referral code against the customer
+		$customer->customer_referral_code = $basket->customer_referral_code;
+		$customer->save();
 		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
@@ -205,9 +199,91 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				default:
 					break;
 			}
-			
+
 			$sales_order->save();
 		}
+		
+			if ($basket->using_reward_points > 0)
+		{
+		  $sales_order->discount_amount += $basket->using_reward_points;
+		  $sales_order->save();
+    }
+    
+		
+		foreach ($basket->items as $basket_item)
+		{
+			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		$session = Session::instance();
+		$session->delete('basket_id');
+		$session->set('sales_order_id', $sales_order->id);
+		
+		return $sales_order;
+	}
+	
+	public static function create_trade_from_basket($basket, $customer, $delivery_address)
+	{
+		// Final check that basket shipping total is correct if using cusotm calculations
+		Model_Basket::instance()->calculate_shipping();
+	
+		$sales_order = Jelly::factory('sales_order');
+		$sales_order->customer = $customer;
+		$sales_order->billing_address = $customer->default_billing_address;
+		$sales_order->delivery_address = $delivery_address;
+		$sales_order->delivery_option = $basket->delivery_option;
+		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_net_price = $basket->delivery_option->price;
+		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
+		$sales_order->status = 'invoice_generated';
+		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
+		$sales_order->basket = $basket;
+		$sales_order->type = 'commercial';
+		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		
+		$sales_order->save();
+		
+		foreach ($basket->items as $basket_item)
+		{
+			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		//save the baskets referral code against the customer
+		$customer->customer_referral_code = $basket->customer_referral_code;
+		$customer->save();
+		
+		// Handle any promotional codes that are added to the basket.
+		if ($basket->promotion_code_reward->loaded())
+		{
+			$sales_order->promotion_code = $basket->promotion_code;
+			$sales_order->promotion_code_code = $basket->promotion_code->code;
+			$basket->promotion_code->redeem();
+			
+			switch ($basket->promotion_code_reward->reward_type)
+			{
+				case 'discount':
+					$sales_order->discount_amount = $basket->calculate_discount();
+					break;
+					
+				case 'item':
+					Model_Sales_Order_Item::create_from_promotion_code_reward($sales_order, $basket->promotion_code_reward);
+					break;
+					
+				default:
+					break;
+			}
+		}
+		
+			if ($basket->using_reward_points > 0)
+		{
+		  $sales_order->discount_amount += $basket->using_reward_points;
+		  $sales_order->save();
+    }
+    
+		
+		
+		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		$session = Session::instance();
 		$session->delete('basket_id');
@@ -379,9 +455,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->billing_address = $customer->default_billing_address;
 		$sales_order->delivery_address = $data['delivery_address'];
 		$sales_order->delivery_option_name = 'Commercial Delivery';
-		$sales_order->delivery_option_price = $data['delivery_charge'];
+		$sales_order->delivery_option_net_price = $data['delivery_charge'];
+		$sales_order->delivery_option_price = Currency::add_tax($data['delivery_charge'], Kohana::config('ecommerce.vat_rate'));
 		$sales_order->status = 'invoice_generated';
-		$sales_order->order_total = $data['delivery_charge'];
 		$sales_order->ip_address = Request::$client_ip;
 		$sales_order->ref = $data['ref'];
 		$sales_order->user = Auth::instance()->get_user();
@@ -394,7 +470,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$sales_order->order_total += $line->total_price;
 		}
 		
-		$sales_order->calculate_vat_and_subtotal()->generate_invoice();
+		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		return $sales_order->save();
 	}
@@ -434,6 +511,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$message = Twig::factory('emails/order_shipped.html');
 		$message->sales_order = $this;
+		$message->modules = Kohana::config('ecommerce.modules');
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
@@ -488,6 +566,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					}
 				}
 			}
+			if (Kohana::config('ecommerce.modules.reward_points'))
+			{
+  			if ( ! empty($this->basket->referral_code) AND $status == 'payment_received')
+  			 {
+  			   $reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+  			   $existing_customer = Model_Customer::load($this->basket->referral_code);
+  			   
+    			 $this->customer->add_new_customer_referral_points();
+    			 $existing_customer->reward_points += $reward_points_profile->customer_referral;
+    			 $existing_customer->save();
+  			 }
+			}
 			
 			return $this->save();
 		}
@@ -502,13 +592,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return Model_Sales_Order_Note::add_note($this, $text, $is_system);
 	}
 	
-	public function send_invoice()
+	public function send_invoice($copy_to_administrator = FALSE)
 	{
 		$email = Email::connect();
 		
+		$site_name = Kohana::config('ecommerce.trade_site_name') != '' ? Kohana::config('ecommerce.trade_site_name') : Kohana::config('ecommerce.site_name');
+		$from_address = Kohana::config('ecommerce.commercial_email_from_address') != '' ? Kohana::config('ecommerce.commercial_email_from_address') : Kohana::config('ecommerce.email_from_address');
+		$from_name = Kohana::config('ecommerce.commercial_email_from_name') != '' ? Kohana::config('ecommerce.commercial_email_from_name') : Kohana::config('ecommerce.email_from_name');
+		
 		$content = Twig::factory('emails/invoice.html');
 		$content->sales_order = $this;
-		$content->site_name = Kohana::config('ecommerce.site_name');
+		$content->site_name = $site_name;
 		
 		$pdf_template = Twig::factory('admin/sales/orders/generate_invoice');
 		$pdf_template->base_url = URL::site();
@@ -517,10 +611,16 @@ class Ecommerce_Model_Sales_Order extends Model_Application
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($pdf_template->render());
 
-		$message = Swift_Message::newInstance('Your invoice from '.Kohana::config('ecommerce.site_name'), $content, 'text/html', 'utf-8');
-		$message->setFrom(array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')))
+		$message = Swift_Message::newInstance('Your invoice from '.$site_name, $content, 'text/html', 'utf-8');
+		$message->setFrom(array($from_address => $from_name))
 						->addTo($this->customer->email, $this->customer->firstname.' '.$this->customer->lastname)
 						->attach(Swift_Attachment::newInstance($html2pdf->Output('', TRUE), 'Invoice '.$this->id.'.pdf', 'application/pdf'));
+						
+		if ($copy_to_administrator)
+		{
+			$copy_to = Kohana::config('ecommerce.copy_trade_area_order_confirmations_to') != '' ? Kohana::config('ecommerce.copy_trade_area_order_confirmations_to') : Kohana::config('ecommerce.copy_order_confirmations_to');
+			$message->addTo($copy_to);
+		}
 						
 		$email->send($message);
 		
@@ -528,6 +628,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		// generated then set invoiced on as now.
 		if ( ! $this->invoiced_on )
 		{
+			$this->update_status('invoice_sent');
 			$this->invoiced_on = time();
 		}
 		
@@ -544,7 +645,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		if (Caffeine::modules('commercial_sales_orders') AND isset($data['invoiced_on']))
 		{
-			$this->invoiced_on = $data['invoiced_on'] != '' ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
+			$this->invoiced_on = ($data['invoiced_on'] != '') ? strtotime(str_replace('/', '-', $data['invoiced_on'])) : NULL;
 		}
 	
 		return $this->save();
@@ -563,4 +664,72 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		return $this->save()->calculate_total();
 	}
+	
+	public function invoice_due_date()
+	{
+		return $this->invoiced_on + (86400 * $this->invoice_terms);
+	}
+	
+	//Reward Points
+	
+	public function calculate_reward_points($sales_order)
+	{
+	  if (Kohana::config('ecommerce.modules.reward_points'))
+	 {
+	  // REWARD POINTS CALCULATION
+	  
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+  	$per_pound = $profile->points_per_pound; 
+ 
+	  $pounds = $sales_order->order_total;
+ 
+	  $reward_points = floor($pounds) * $per_pound;
+  	
+  	$sales_order->reward_points = $reward_points;
+  	
+  	//SEND TO CUSTOMER TO ADD TO TOTAL
+  	
+  	$sales_order->customer->add_reward_points($reward_points);
+  	
+  	//CALCULATE VALUE TEST
+  	
+  	$this->calculate_reward_points_redemption($reward_points);
+  	
+  	}
+	}
+	
+	public static function calculate_remaining_reward_points($reward_points_value)
+	{
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+  	$per_pound = $profile->points_per_pound; 
+ 
+	  $reward_points = floor($reward_points_value) * $per_pound;
+  	
+  	return $reward_points;
+	}
+	
+	public static function calculate_reward_points_redemption($reward_points)
+	{
+  	$profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+	  $point_value = $profile->redeem_value;
+  	
+  	$reward_points_value = $reward_points * $point_value;
+  	
+  	return round($reward_points_value, 1, PHP_ROUND_HALF_DOWN);
+  	
+	}
+	
+	public static function calculate_points_from_remaining_value($reward_value)
+	{
+	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+	
+	  $point_value = $profile->redeem_value;
+	  
+  	$remaining_points = $reward_value / $point_value;
+  	return floor($remaining_points);
+	}
+	
 }

@@ -5,8 +5,9 @@ return array
 	'software_version' => '1.2.2', 
 
 	'vat_rate' => 20,
+	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
-	'default_web_customer_type' => 1, // When using CRM customer types
+	'default_web_customer_type' => NULL, // When using CRM customer types
 	'default_commercial_customer_type' => 2,
 	
 	'site_name' => 'Creative Intent Ecommerce Software',
@@ -14,7 +15,13 @@ return array
 	'email_from_name' => 'Creative Intent Ecommerce Software',
 	'copy_order_confirmations_to' => '',
 	
+	'trade_site_name' => '',
+	'commercial_email_from_address' => '',
+	'commercial_email_from_name' => '',
+	'commercial_copy_order_confirmations_to' => '',
+	
 	'default_invoice_terms' => 30,
+	'invoice_trade_area_orders_at_checkout' => FALSE, // If TRUE then an invoice is emailed to the customer immediately after checkout in trade area
 	
 	'pagination' => array(
 		'products' => 10,
@@ -41,12 +48,14 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
 		'tiered_pricing' => FALSE,
+		'trade_area' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
 		
@@ -56,6 +65,7 @@ return array
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
 	'default_promotion_code_length' => 6,
+	'default_customer_referral_code_length' => 16,
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	
@@ -80,4 +90,6 @@ return array
 	'cloudmade_api_key' => 'af4f31e0445f463ebe783a749812d374', // Generic API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps
 	
 	'forum_post_name_max_length' => 245,
+	
+	'cookie_salt' => 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M',
 );

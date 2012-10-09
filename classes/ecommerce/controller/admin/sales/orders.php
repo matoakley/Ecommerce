@@ -89,6 +89,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		if ($sales_order->loaded() AND $sales_order->status = 'payment_received')
 		{
 			$sales_order->update_status('complete')->send_shipped_email();
+
 			echo 'ok';
 		}
 		else

@@ -137,6 +137,7 @@ class Ecommerce_Controller_Products extends Controller_Application
     		if ($matches AND $sku->status == 'active')
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
+        	$data['image'] = $sku->thumbnail->full_size_path;
     		}
     	}
 		}

@@ -195,7 +195,19 @@ $(function(){
 				}
 			}
 		});
-	});
+	}); 
+	
+	$('.option-container').sortable({ 
+	  handle: '.inline-icon',
+	  cursor: 'move',
+    update : function (event, ui) { 
+      var rel = $(this).attr('rel');
+      var order = $(this).sortable('toArray');
+      $('.input-list[rel='+ rel +']').each(function(i) {
+        $(this).val(order[i]);
+      })
+    } 
+  }); 
 	
 	$('.sku-delete-button').live('click', function(e){
 		

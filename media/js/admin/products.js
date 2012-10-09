@@ -133,6 +133,7 @@ $(function(){
 			});
 		}
 	});
+	
 });
 
 function ucwords (str) {

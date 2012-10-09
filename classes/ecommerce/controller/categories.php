@@ -4,9 +4,9 @@ class Ecommerce_Controller_Categories extends Controller_Application
 {
 	public function before()
 	{
-		if ( ! Kohana::config('ecommerce.modules.categories'))
+		if ( ! Caffeine::modules('categories'))
 		{
-			throw new Kohana_Exception('This module is not enabled');
+			throw new Kohana_Exception('The "categories" module is not enabled');
 		}
 		
 		parent::before();

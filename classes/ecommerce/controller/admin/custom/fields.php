@@ -90,6 +90,7 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 		
 		$this->template->custom_field = $custom_field;
 		$this->template->objects = Model_Custom_Field::$objects;
+		$this->template->types = Model_Custom_Field::$types;
 	}
 	
 	public function action_delete()
@@ -100,5 +101,28 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 		$custom_field->delete();
 		
 		$this->request->redirect($this->session->get('admin.custom_fields.index', 'admin/custom_fields'));
+	}
+	
+	public function action_delete_document()
+	{
+	 $this->auto_render = FALSE;
+	
+	 $custom_field_value = Jelly::select('custom_field_value')->where('custom_field_id', '=', $this->request->param('field_id'))->where('object_id', '=', $this->request->param('object_id'))->load();
+	 $custom_field = $custom_field_value->custom_field;
+	 
+	 $data = array();
+	 
+	 $custom_field_value->delete();
+	 
+		$data['html'] = Twig::factory('/admin/custom/fields/_upload.html', array(
+			'custom_field' => $custom_field,
+		))->render();
+		
+		$data['custom_field'] = $custom_field->as_array();
+		
+		if (Request::$is_ajax)
+		{
+		  echo json_encode($data);
+		}
 	}
 }

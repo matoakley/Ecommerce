@@ -90,6 +90,10 @@ class Ecommerce_Model_Product extends Model_Application
 		'active', 'disabled',
 	);
 	
+	public static $inputs = array(
+		'application/pdf', '.doc', '.xls', '.csv', 'image/*',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'category' => array(
@@ -149,7 +153,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	public static function most_popular_products($num_products = 5)
 	{
-		$sql = "SELECT sales_order_items.product_name, products.name, SUM(sales_order_items.quantity) AS sold
+		$sql = "SELECT skus.id AS sku_id, products.id AS product_id, sales_order_items.product_name, SUM(sales_order_items.quantity) AS sold
 						FROM products
 						JOIN skus ON products.id = skus.product_id
 						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
@@ -164,7 +168,7 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
-	
+
 	public static function newest_products($num_products = 5)
 	{
 		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
@@ -242,6 +246,7 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{	
+	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -255,7 +260,6 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
-		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
@@ -333,7 +337,7 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->order_by('value', 'ASC')
+							->order_by('value', 'DESC')
 							->execute();
 	}
 	

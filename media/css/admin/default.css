@@ -29,7 +29,9 @@ th, td {
 }
 
 /** Form Styling **/
-
+#upload {
+  height:20px;
+}
 div.field {
 	margin-bottom:10px;
 	background:#F0F0F0;
@@ -408,6 +410,10 @@ span.status_tag.awaiting_payment {
 
 span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
+}
+
+span.status_tag.dispatched {
+	background-color:cadetblue;
 }
 
 span.status_tag.invoice_sent {
