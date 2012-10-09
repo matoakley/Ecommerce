@@ -675,8 +675,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function calculate_reward_points($sales_order)
 	{
+	  if (Kohana::config('ecommerce.modules.reward_points'))
+	 {
 	  // REWARD POINTS CALCULATION
-	
+	  
 	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
 	
   	$per_pound = $profile->points_per_pound; 
@@ -695,6 +697,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
   	
   	$this->calculate_reward_points_redemption($reward_points);
   	
+  	}
 	}
 	
 	public static function calculate_remaining_reward_points($reward_points_value)
