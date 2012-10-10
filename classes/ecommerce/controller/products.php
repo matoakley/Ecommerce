@@ -12,9 +12,9 @@ class Ecommerce_Controller_Products extends Controller_Application
 		parent::before();
 	}
 
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$product = Model_Product::load($slug);
+		$product = Model_Product::load($this->request->param('slug'));
 		
 		if ( ! $product->loaded())
 		{
