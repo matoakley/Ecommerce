@@ -35,7 +35,7 @@ class Ecommerce_Controller_Admin_Delivery_Options extends Controller_Admin_Appli
 		$this->template->items = $items;
 	}
 	
-		public function action_edit($id = FALSE)
+  public function action_edit($id = FALSE)
 	{
 		$delivery_option = Model_Delivery_Option::load($id);
 	
@@ -50,6 +50,11 @@ class Ecommerce_Controller_Admin_Delivery_Options extends Controller_Admin_Appli
 		$errors = array();
 		
 		$fields['delivery_option']['price'] = $delivery_option->retail_price();
+		
+		if ( ! $delivery_option->loaded())
+		{
+  		$fields['delivery_option']['customer_selectable'] = TRUE;
+		}
 		
 		$redirect_to = $this->session->get('admin.delivery_options.index', '/admin/delivery_options');
 		$this->template->cancel_url = $redirect_to;

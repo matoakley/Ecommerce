@@ -166,7 +166,16 @@
 		{% endif %}
 		<div class="clear"></div>
 	</div>
-	
+	{% if modules.reward_points %}
+	<div class="field">
+		<div class="grid_4 alpha">
+			<label form="customer-status">Current Reward Points Total</label>
+		</div>
+		<div class="grid_4"><input type="text" class="inputtext short" disabled="disabled" value="{{customer.reward_points}}" style="text-align:center;color:navy"></div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+
 	{# Custom Fields #}
 	{% set object = customer %}
 	{% include "admin/custom/fields/_edit_form_snippet.html" %}

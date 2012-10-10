@@ -12,6 +12,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer_referral_code' => new Field_String,
 				'user' => new Field_BelongsTo,
 				'orders' => new Field_HasMany(array(
 					'foreign' => 'sales_order.customer_id',
@@ -400,6 +401,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$message->customer = $this;
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
 		$to = array(
 			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
 		);
@@ -467,5 +469,58 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->email = $data['email'];
 		$this->user->update_email($data['email']);
 		return $this->save();
+	}
+	
+	//Reward Points
+	
+		public function add_reward_points($reward_points)
+	{
+  	$existing_points = $this->reward_points;
+  	
+  	$new_total = $existing_points + $reward_points;
+  	
+  	$this->reward_points = $new_total;
+  	$this->save();
+	}
+	
+	public static function get_reward_points($customer)
+	{
+  	$existing_points = $customer->reward_points;
+  	return $existing_points;
+	}
+	
+	public function remove_reward_points($new_point_total)
+	{
+  	$this->reward_points = $new_point_total;
+  	$this->save();
+	}
+	
+	public static function redeem_customer_referral_code($code)
+	{
+	  //find the customer that the code belongs to and load the reward values
+  	$id = Jelly::select('customer')->where('customer_referral_code', '=', $code['code'])->load();
+  	$existing_customer = Model_Customer::load($id->id);
+  	
+  	$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+  	
+  	//if there is a customer with the code then add the reward points bonus to that customers reward points
+  	if ($existing_customer->loaded())
+  	 {
+  	   $basket = Model_Basket::load($_POST['basket']);
+  	   $basket->referral_code = $existing_customer->id;
+  	   $basket->save();
+  	 }
+  	else
+  	{
+    	return "error";
+  	}  	
+	}
+	
+	public function add_new_customer_referral_points()
+	{
+  	 $reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+  			   
+     $this->reward_points += $reward_points_profile->new_customer_referral;
+     $this->save();
 	}
 }

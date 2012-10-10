@@ -14,6 +14,12 @@ Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/
 	'action' => 'generate_invoice',
 ));
 
+Route::set('sales_order_generate_receipt', 'admin/sales_orders/<sales_order_id>/generate_receipt')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_receipt',
+));
+
 Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
@@ -109,6 +115,12 @@ Route::set('delete_promotion_code_reward', 'admin/promotion_codes/<promotion_cod
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',
 	'action' => 'delete_reward',
+));
+
+Route::set('edit_reward_points_profiles', 'admin/reward_points_profiles/edit/<profile_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'reward_points_profiles',
+	'action' => 'edit',
 ));
 
 Route::set('add_blog_post', 'admin/blog/add_post')->defaults(array(

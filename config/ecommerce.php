@@ -48,6 +48,7 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
@@ -64,6 +65,7 @@ return array
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
 	'default_promotion_code_length' => 6,
+	'default_customer_referral_code_length' => 16,
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	
