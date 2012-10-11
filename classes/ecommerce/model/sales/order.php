@@ -26,6 +26,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'column' => 'delivery_option_id',
 				)),
 				'delivery_option_name' => new Field_String,
+				'delivery_option_net_price' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'delivery_option_price' => new Field_Float(array(
 					'places' => 4,
 				)),
@@ -116,20 +119,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	protected function calculate_vat_and_subtotal()
 	{
 		$vat = 0;
-		$dvat = 0;
 	
 		foreach ($this->items as $item)
 		{
 			$vat += $item->total_price - $item->net_total_price;
 		}
 	
-		// Delivery VAT
-		$dvat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
-	
-		$this->order_vat = $vat;
+		$this->order_vat = $vat + ($this->delivery_option_price - $this->delivery_option_net_price);
 		$this->order_subtotal = $this->order_total - $vat;
-		$this->order_vat = $vat + $dvat;
-		$this->order_total = $this->order_total + $dvat;
 		
 		return $this->save();
 	}
@@ -236,9 +233,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->delivery_address = $delivery_address;
 		$sales_order->delivery_option = $basket->delivery_option;
 		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_net_price = $basket->delivery_option->price;
 		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
 		$sales_order->status = 'invoice_generated';
-		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
@@ -285,7 +282,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
     
 		
 		
-		$sales_order->calculate_vat_and_subtotal()->save();
+		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		$session = Session::instance();
 		$session->delete('basket_id');
@@ -457,9 +455,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->billing_address = $customer->default_billing_address;
 		$sales_order->delivery_address = $data['delivery_address'];
 		$sales_order->delivery_option_name = 'Commercial Delivery';
-		$sales_order->delivery_option_price = $data['delivery_charge'];
+		$sales_order->delivery_option_net_price = $data['delivery_charge'];
+		$sales_order->delivery_option_price = Currency::add_tax($data['delivery_charge'], Kohana::config('ecommerce.vat_rate'));
 		$sales_order->status = 'invoice_generated';
-		$sales_order->order_total = $data['delivery_charge'];
 		$sales_order->ip_address = Request::$client_ip;
 		$sales_order->ref = $data['ref'];
 		$sales_order->user = Auth::instance()->get_user();
@@ -473,6 +471,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 		
 		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		return $sales_order->save();
 	}
@@ -675,8 +674,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function calculate_reward_points($sales_order)
 	{
+	  if (Kohana::config('ecommerce.modules.reward_points'))
+	 {
 	  // REWARD POINTS CALCULATION
-	
+	  
 	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
 	
   	$per_pound = $profile->points_per_pound; 
@@ -695,6 +696,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
   	
   	$this->calculate_reward_points_redemption($reward_points);
   	
+  	}
 	}
 	
 	public static function calculate_remaining_reward_points($reward_points_value)

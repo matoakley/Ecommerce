@@ -207,7 +207,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		return $data;
 	}
-
+	
 	public function get_avatar()
 	{
 		$file_path = '/images/users/' . $this->id . '.jpg';

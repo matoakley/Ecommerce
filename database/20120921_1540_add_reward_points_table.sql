@@ -14,3 +14,5 @@ CREATE TABLE `reward_points_profiles` (
 	PRIMARY KEY (`id`)
 );
 ALTER TABLE `baskets` ADD COLUMN `using_reward_points` decimal(10,4) AFTER `deleted`;
+
+ALTER TABLE `sales_orders` ADD COLUMN `reward_points` int;

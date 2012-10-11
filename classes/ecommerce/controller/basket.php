@@ -31,28 +31,28 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
 		
-		//reward points stuff
-		if ($this->auth->logged_in('customer'))
-		{ 
-  		$user_id = Auth::instance()->get_user()->id;
-  		$customer = Jelly::select('customer')->where('user_id', '=', $user_id)->load();
-  		$this->template->reward_points = $customer->get_reward_points($customer);
-  		$this->template->customer = $customer;
-  		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
-		}
-		else
-		{
-  		$this->template->customer_referral_code = $this->basket->generate_unique_code();
-		}
-		
-		$this->template->reward_points_value = Model_Sales_Order::calculate_reward_points_redemption($this->template->reward_points);
-		$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-		$this->template->customer_referral = $reward_points_profile->customer_referral;
-		$this->template->new_customer_referral = $reward_points_profile->new_customer_referral;
-		
+		if (Kohana::config('ecommerce.modules.reward_points'))
+		 {
+  		//reward points stuff
+  		if ($this->auth->logged_in('customer'))
+  		{ 
+    		$customer = $this->auth->get_user()->customer;
+    		$this->template->reward_points = $customer->get_reward_points($customer);
+    		$this->template->customer = $customer;
+    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
+  		}
+  		else
+  		{
+    		$this->template->customer_referral_code = $this->basket->generate_unique_code();
+  		}
+  		
+  		$this->template->reward_points_value = Model_Sales_Order::calculate_reward_points_redemption($this->template->reward_points);
+  		$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
+  		$this->template->customer_referral = $reward_points_profile->customer_referral;
+  		$this->template->new_customer_referral = $reward_points_profile->new_customer_referral;
+    }
 		
 		$this->add_breadcrumb('/basket', 'Your Basket');
-
 	}
 
 	public function action_add_items()
