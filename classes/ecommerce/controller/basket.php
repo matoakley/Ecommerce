@@ -106,13 +106,18 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	  	}
 		}
 		
+		$this->basket->calculate_shipping();
+		
 		if (Request::$is_ajax)
 		{
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => $this->basket->calculate_subtotal(),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
+				'line_name' => $item->sku->name(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
 			);
 			
 			echo json_encode($data);
@@ -136,13 +141,18 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$item = Model_Basket_Item::load($item_id)->update_quantity($quantity);
 		}
 		
+		$this->basket->calculate_shipping();
+		
 		if (Request::$is_ajax)
 		{
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
+				'line_name' => $item->sku->name(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
 			);
 			
 			echo json_encode($data);
@@ -201,9 +211,14 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			);
 			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
 						
+		  $this->basket->calculate_shipping();
+						
 			$data = array(
 				'code' => $this->basket->promotion_code->code,
 				'reward_item' => $reward_item,
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
+				'discount_amount' => number_format($this->basket->calculate_discount(), 2),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
 			);
 			echo json_encode($data);
 		}
