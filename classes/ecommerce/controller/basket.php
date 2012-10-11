@@ -149,6 +149,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
+				'discount_amount' => number_format($this->basket->calculate_discount(), 2),
 			);
 			
 			echo json_encode($data);
