@@ -54,7 +54,7 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 
 	public static function available_options()
 	{
-		return Jelly::select('delivery_option')->where('status', '=', 'active')->execute();
+		return Jelly::select('delivery_option')->where('status', '=', 'active')->where('customer_selectable', '=', 1)->order_by('featured', 'DESC')->order_by('name', 'ASC')->execute();
 	}
 
 	/**
