@@ -12,7 +12,9 @@ class Ecommerce_Model_Basket extends Model_Application
 				)),
 				'customer_referral_code' => new Field_String,
 				'referral_code' => new Field_Integer,
-				'using_reward_points' => new Field_Float,
+				'use_reward_points' => new Field_Boolean(array(
+				  'default' => FALSE,
+				)),
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
@@ -144,9 +146,9 @@ class Ecommerce_Model_Basket extends Model_Application
 		$discount = 0;
 		
 		//if the customer is using their reward points then apply the discount
-		if ($this->using_reward_points > 0)
+		if ($this->reward_points > 0)
 		{
-  		$discount = number_format($this->using_reward_points , 2);
+  		$discount += $this->calculate_discount_for_reward_points($this->reward_points);
 		}
 		
 		if ($this->promotion_code->loaded())
@@ -169,10 +171,10 @@ class Ecommerce_Model_Basket extends Model_Application
 				switch ($this->promotion_code_reward->discount_unit)
 				{
 					case 'pounds':
-						$discount = $this->promotion_code_reward->discount_amount;
+						$discount += $this->promotion_code_reward->discount_amount;
 						break;
 					case 'percent':
-						$discount = $subtotal * ($this->promotion_code_reward->discount_amount / 100);
+						$discount += $subtotal * ($this->promotion_code_reward->discount_amount / 100);
 						break;
 				}
 			}
@@ -186,8 +188,6 @@ class Ecommerce_Model_Basket extends Model_Application
 					$items_in_basket[] = $item->sku->product->id;
 				}
 				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
-				
-				$discount = 0;
 				
 				foreach ($qualifying_basket_items as $item_id)
 				{
@@ -304,6 +304,12 @@ class Ecommerce_Model_Basket extends Model_Application
   	return $basket_points_max > $customer->reward_points ? $customer->reward_points : $basket_points_max ;
 	}
 	
+	public function redeem_reward_points()
+	{
+  	$this->reward_points = $this->max_reward_points();
+  	return $this->save();
+	}
+	
 	public function calculate_discount_for_reward_points($points = NULL)
 	{
   	if ( ! Caffeine::modules('reward_points'))
@@ -319,11 +325,11 @@ class Ecommerce_Model_Basket extends Model_Application
   	return $points * Model_Reward_Points_Profile::load(1)->redeem_value;
 	}
 	
-	public function save_reward_points_discount($reward_points_discount)
+	public function reset_reward_points()
 	{
-	 $this->using_reward_points = $reward_points_discount;
-   $this->save();
-  }
+  	$this->reward_points = 0;
+  	return $this->save();
+	}
   
   public function generate_unique_code($customer = NULL)
 	{

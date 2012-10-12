@@ -175,6 +175,7 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
 	}
 
+/*
 	public function display_meta_description()
 	{
 		// If a meta description has not been set then we'll build one from the description.
@@ -190,6 +191,7 @@ class Ecommerce_Model_Product extends Model_Application
 		
 		return $meta_description;
 	}
+*/
 
 	public function summarise_sku_price($is_admin = FALSE)
 	{

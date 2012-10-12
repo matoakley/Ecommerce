@@ -473,20 +473,16 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	//Reward Points
 	
-		public function add_reward_points($reward_points)
-	{
-  	$existing_points = $this->reward_points;
-  	
-  	$new_total = $existing_points + $reward_points;
-  	
-  	$this->reward_points = $new_total;
-  	$this->save();
+  public function add_reward_points($points)
+	{	
+  	$this->reward_points += $points;
+  	return $this->save();
 	}
 	
-	public function remove_reward_points($new_point_total)
+	public function remove_reward_points($points)
 	{
-  	$this->reward_points = $new_point_total;
-  	$this->save();
+  	$this->reward_points -= $points;
+  	return $this->save();
 	}
 	
 	public static function redeem_customer_referral_code($code)
