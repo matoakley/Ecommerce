@@ -145,12 +145,17 @@ class Ecommerce_Controller_Basket extends Controller_Application
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
 				'basket_total' => number_format($this->basket->calculate_total(), 2),
-				'line_name' => $item->sku->name(),
-				'line_items' => ($item !== 0) ? $item->quantity : 0,
-				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
 				'discount_amount' => number_format($this->basket->calculate_discount(), 2),
 			);
+			
+			if ($item){
+				$data['line_name'] = $item->sku->name();
+				$data['line_items'] = ($item !== 0) ? $item->quantity : 0;
+				$data['line_total'] = ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0;
+		  } else {
+  		  $data['line_items'] = 0;
+		  }
 			
 			echo json_encode($data);
 		}
