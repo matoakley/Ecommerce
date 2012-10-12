@@ -39,6 +39,8 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th class="tr">Price</th>
+			<th class="tc">Featured</th>
+			<th class="tc">Selectable</th>
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -48,6 +50,8 @@
 			<td><input type="checkbox" class="row-selector" value="{{delivery_option.id}}" /></td>
 			<td><a href="/admin/delivery_options/edit/{{delivery_option.id}}">{{delivery_option.name}}</a></td>
 			<td class="tr">&pound;{{delivery_option.retail_price|num_format(2)}}</td>
+			<td class="tc">{% if delivery_option.featured %}Yes{% else %}No{% endif %}</td>
+			<td class="tc">{% if delivery_option.customer_selectable %}Yes{% else %}No{% endif %}</td>
 			<td class="{{delivery_option.status}}">{{delivery_option.status|title}}</td>
 		</tr>
 	{% endfor %}

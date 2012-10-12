@@ -30,17 +30,14 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
+		$this->template->customer = $this->auth->logged_in() ? $this->auth->get_user()->customer : NULL;
 		
 		if (Kohana::config('ecommerce.modules.reward_points'))
 		 {
-		//reward points stuff
+  		//reward points stuff
   		if ($this->auth->logged_in('customer'))
   		{ 
-    		$user_id = Auth::instance()->get_user()->id;
-    		$customer = Jelly::select('customer')->where('user_id', '=', $user_id)->load();
-    		$this->template->reward_points = $customer->get_reward_points($customer);
-    		$this->template->customer = $customer;
-    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
+//    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
   		}
   		else
   		{
@@ -51,12 +48,9 @@ class Ecommerce_Controller_Basket extends Controller_Application
   		$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
   		$this->template->customer_referral = $reward_points_profile->customer_referral;
   		$this->template->new_customer_referral = $reward_points_profile->new_customer_referral;
-  
     }
 		
-		
 		$this->add_breadcrumb('/basket', 'Your Basket');
-
 	}
 
 	public function action_add_items()
@@ -106,13 +100,18 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	  	}
 		}
 		
+		$this->basket->calculate_shipping();
+		
 		if (Request::$is_ajax)
 		{
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => $this->basket->calculate_subtotal(),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
+				'line_name' => $item->sku->name(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
 			);
 			
 			echo json_encode($data);
@@ -136,14 +135,31 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$item = Model_Basket_Item::load($item_id)->update_quantity($quantity);
 		}
 		
+		$this->basket->calculate_shipping();
+		
 		if (Request::$is_ajax)
 		{
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
-				'line_items' => ($item !== 0) ? $item->quantity : 0,
-				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
+				'discount_amount' => number_format($this->basket->calculate_discount(), 2),
 			);
+			
+			if ($item){
+				$data['line_name'] = $item->sku->name();
+				$data['line_items'] = ($item !== 0) ? $item->quantity : 0;
+				$data['line_total'] = ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0;
+		  } else {
+  		  $data['line_items'] = 0;
+		  }
+			
+			if (Caffeine::modules('reward_points'))
+			{
+  			$data['max_reward_points'] = $this->basket->max_reward_points();
+  			$data['max_reward_points_discount'] = $this->basket->calculate_discount_for_reward_points();
+			}
 			
 			echo json_encode($data);
 		}
@@ -169,6 +185,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	{
 		$this->auto_render = FALSE;
 		
+		$this->basket->update_delivery_option($_POST['id']);
 		$this->basket->calculate_shipping();
 
 		echo number_format($this->basket->delivery_option->retail_price(), 2);
@@ -199,11 +216,24 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$template_data = array(
 				'basket' => $this->basket,
 			);
-			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
+			
+			try
+			{
+  			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
+			}
+			catch (Exception $e)
+			{
+  			$reward_item = NULL;
+			}
+						
+		  $this->basket->calculate_shipping();
 						
 			$data = array(
 				'code' => $this->basket->promotion_code->code,
 				'reward_item' => $reward_item,
+				'shipping' => number_format($this->basket->delivery_option->retail_price(), 2),
+				'discount_amount' => number_format($this->basket->calculate_discount(), 2),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
 			);
 			echo json_encode($data);
 		}

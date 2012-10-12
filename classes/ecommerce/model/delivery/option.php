@@ -19,6 +19,8 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 					),
 				)),
 				'status' => new Field_String,
+				'featured' => new Field_Boolean,
+				'customer_selectable' => new Field_Boolean,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -52,7 +54,7 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 
 	public static function available_options()
 	{
-		return Jelly::select('delivery_option')->where('status', '=', 'active')->execute();
+		return Jelly::select('delivery_option')->where('status', '=', 'active')->where('customer_selectable', '=', 1)->order_by('featured', 'DESC')->order_by('name', 'ASC')->execute();
 	}
 
 	/**
@@ -70,6 +72,8 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 		$this->name = $data['name'];
 		$this->price = Currency::deduct_tax($data['price'], Kohana::config('ecommerce.vat_rate'));
 		$this->status = $data['status'];
+		$this->featured = isset($data['featured']);
+		$this->customer_selectable = isset($data['customer_selectable']);
 	
 		return $this->save();
 	}

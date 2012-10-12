@@ -483,12 +483,6 @@ class Ecommerce_Model_Customer extends Model_Application
   	$this->save();
 	}
 	
-	public static function get_reward_points($customer)
-	{
-  	$existing_points = $customer->reward_points;
-  	return $existing_points;
-	}
-	
 	public function remove_reward_points($new_point_total)
 	{
   	$this->reward_points = $new_point_total;
@@ -522,5 +516,11 @@ class Ecommerce_Model_Customer extends Model_Application
   			   
      $this->reward_points += $reward_points_profile->new_customer_referral;
      $this->save();
+	}
+	
+	// Helper method as customer is cached when logged in
+	public function get_reward_points()
+	{
+  	return $this->reward_points;
 	}
 }

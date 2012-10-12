@@ -284,6 +284,41 @@ class Ecommerce_Model_Basket extends Model_Application
 		return $this;
 	}
 	
+	// Calculate the maximum number of points that could be used against this basket.
+	public function max_reward_points()
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	if ( ! Auth::instance()->logged_in())
+  	{
+    	return 0;
+  	}
+  	
+  	$reward_points_profile = Model_Reward_Points_Profile::load(1);
+  	$basket_points_max = $this->calculate_subtotal() / $reward_points_profile->redeem_value; 
+  	$customer = Auth::instance()->get_user()->customer;
+  	
+  	return $basket_points_max > $customer->reward_points ? $customer->reward_points : $basket_points_max ;
+	}
+	
+	public function calculate_discount_for_reward_points($points = NULL)
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	if ( ! $points)
+  	{
+    	$points = $this->max_reward_points();
+  	}
+  	
+  	return $points * Model_Reward_Points_Profile::load(1)->redeem_value;
+	}
+	
 	public function save_reward_points_discount($reward_points_discount)
 	{
 	 $this->using_reward_points = $reward_points_discount;
