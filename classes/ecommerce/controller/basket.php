@@ -30,7 +30,6 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
-		$this->template->customer = $this->auth->logged_in() ? $this->auth->get_user()->customer : NULL;
 		
 		if (Kohana::config('ecommerce.modules.reward_points'))
 		 {
@@ -158,7 +157,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			if (Caffeine::modules('reward_points'))
 			{
   			$data['max_reward_points'] = $this->basket->max_reward_points();
-  			$data['max_reward_points_discount'] = $this->basket->calculate_discount_for_reward_points();
+  			$data['max_reward_points_discount'] = number_format($this->basket->calculate_discount_for_reward_points(), 2);
 			}
 			
 			echo json_encode($data);
@@ -268,56 +267,27 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	
 	public function action_use_reward_points()
 	{
-	  
 	  $this->auto_render = FALSE;
-	
-	  // get the customer
-	  $user_id = Auth::instance()->get_user()->id;
-	 	$customer = Jelly::select('customer')->where('user_id', '=', $user_id)->load();
 	 	
-	 	//get the customers points and calculate the value
-	 	$customer_points = $customer->get_reward_points($customer);
-	 	$discount = Model_Sales_Order::calculate_reward_points_redemption($customer_points);
-	 
-	  //recieve the order total from ajax
-	  $order_total = number_format($_POST['data'], 2);
-	 
-	  //calculate the remaining discount to the nearest 10p
-	  $remaining_discount = round(($discount - $order_total), 1, PHP_ROUND_HALF_DOWN);
-	  
-	  //if the discount is less than zero then its zero
-	  if ($remaining_discount < 0)
-  	  {
-    	  $remaining_discount = 0;
-    	  $used_discount = $discount;
-    	 }
-    else 
-    {
-      $used_discount = $order_total;
-    }
-	  //calculate the remaining points
-	  $remaining_points = Model_Sales_Order::calculate_points_from_remaining_value($remaining_discount);
-	  
-	  //if the points are less than zero then there are none
-	  if ($remaining_points < 0)
-  	  {
-    	  $remaining_points = 0;
-  	  }
-	  
+	 	if ( ! Caffeine::modules('reward_points'))
+	 	{
+  	 	throw new Kohana_Exception('The Reward Points module is not enabled.');
+	 	}
+	 	
+	 	if ( ! Auth::instance()->logged_in('customer'))
+	 	{
+  	 	throw new Kohana_Exception('Customer is not logged in.');
+	 	}
+	 	
+	 	$this->basket->redeem_reward_points();
+	 		  
 	  //array to send remaining points and value back to basket
 	  $data = array(
-  	  'points' => $remaining_points,
-  	  'value' => number_format($remaining_discount, 2),
-  	  'discount' => $used_discount,
-  	  'order_total' => $order_total,
-  	  'remaining' => $remaining_discount,
-  	  );
-  	  
-  	 // save the discount to the basket to update the total with ajax
-  	 $this->basket->save_reward_points_discount($used_discount);
-  	 
-  	 //now we have finished remove the used points from the customers total
-  	$customer->remove_reward_points($remaining_points);
+	    'reward_points' => $this->basket->reward_points,
+	    'reward_points_value' => number_format($this->basket->calculate_discount_for_reward_points($this->basket->reward_points), 2),
+  	  'basket_discount' => number_format($this->basket->calculate_discount(), 2),
+  	  'basket_total' => number_format($this->basket->calculate_total(), 2)
+    );
   	  
   	echo json_encode($data);
 	}

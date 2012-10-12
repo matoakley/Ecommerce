@@ -33,9 +33,6 @@ $(function(){
 		else {
 			quantity = ($(this).hasClass('increment')) ? parseInt($('#'+basketItemId+'-quantity').val()) + 1 : parseInt($('#'+basketItemId+'-quantity').val()) - 1; 
 		}
-	
-		
-	
 		var basketItem = {
 			item_id: basketItemId,
 			quantity: quantity
@@ -213,23 +210,24 @@ $(function(){
 	
 	$('#use_reward_points').live('click', function(e){
   	e.preventDefault();
-  	confirm("Are you sure you want to use your reward points?");
-  	var orderTotal = $('#basket_total').html();
+  	var use_reward_points = $(this).is(':checked');
   	$.ajax({
-				url: '/basket/use_reward_points',
-				type: 'GET',
-				dataType: 'json',
-				error: function(){
-					// Handle error message for failure, probably an invlaid code
-					$('#promotion-code-error').html('You have no remaining points.').fadeIn();
-				},
-				success: function(response){
-  				//maybe some discount stuff in here.
-  				$('#points-value').html('&pound;' + response.value);
-  				$('#points').html(response.points);
-					update_basket_total();
-				}
-			});
+			url: '/basket/use_reward_points',
+			type: 'POST',
+			dataType: 'json',
+			data: { use_reward_points: use_reward_points },
+			success: function(response){
+			  //maybe some discount stuff in here.
+			  $('#discount').html(response.basket_discount);
+			  $('#basket_discount').slideDown();
+			  $('#basket_total').html(response.basket_total);
+			  $('#use_reward_points').slideUp(400, function(){
+			    $('#basket_reward_points').html(response.reward_points);
+			    $('#basket_reward_points_value').html(response.reward_points_value);
+				  $('#basket_points').slideDown();
+			  });
+			}
+	  });
 	});
 	
 	$('button#add-referral-code').live('click', function(e){

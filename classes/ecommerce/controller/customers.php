@@ -71,6 +71,14 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	{
 		// Log out and redirect to log in page
 		$this->auth->logout();
+		
+		// If customer has been logged in and added reward 
+		// points to their basket, we should remove them now
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->basket->reset_reward_points();
+		}
+		
 		$this->request->redirect(Route::get('customer_login')->uri());
 	}
 	
