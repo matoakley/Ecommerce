@@ -67,6 +67,7 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'clone',
 				)),
 				'vat_code' => new Field_BelongsTo,
+				'reviews' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -328,7 +329,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
-									
+
 		return array_values(array_unique($options));
 	}
 	
@@ -374,5 +375,10 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$option->delete();
 		}
+	}
+	
+	public function average_rating()
+	{
+  	return Model_Review::get_average_rating($this);
 	}
 }

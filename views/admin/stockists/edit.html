@@ -1,12 +1,8 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
 	<script type="text/javascript" src="/media/js/admin/stockists.js?v=1"></script>
-
 {% endblock %}
 
 {% block page_title %}
