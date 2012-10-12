@@ -138,6 +138,15 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
+        	
+        	 if (Kohana::config('ecommerce.modules.stock_control')) 
+          	 {
+                $data['stock'] = $sku->stock;
+          	 }
+           else 
+             {
+               $data['stock'] = $sku->stock_status;
+             }
     		}
     	}
 		}
