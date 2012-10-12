@@ -247,4 +247,16 @@ class Ecommerce_Model_Sku extends Model_Application
 			return $this->price;
 		}
 	}
+	
+	public function calculate_reward_points()
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	$reward_points_profile = Model_Reward_Points_Profile::load(1);
+  	
+  	return round($reward_points_profile->points_per_pound * floor($this->retail_price()), 0);
+	}
 }

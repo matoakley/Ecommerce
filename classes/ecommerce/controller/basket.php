@@ -30,16 +30,14 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
+		$this->template->customer = $this->auth->logged_in() ? $this->auth->get_user()->customer : NULL;
 		
 		if (Kohana::config('ecommerce.modules.reward_points'))
 		 {
   		//reward points stuff
   		if ($this->auth->logged_in('customer'))
   		{ 
-    		$customer = $this->auth->get_user()->customer;
-    		$this->template->reward_points = $customer->get_reward_points($customer);
-    		$this->template->customer = $customer;
-    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
+//    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
   		}
   		else
   		{
@@ -137,9 +135,16 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
+				'basket_total' => number_format($this->basket->calculate_total(), 2),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 			);
+			
+			if (Caffeine::modules('reward_points'))
+			{
+  			$data['max_reward_points'] = $this->basket->max_reward_points();
+  			$data['max_reward_points_discount'] = $this->basket->calculate_discount_for_reward_points();
+			}
 			
 			echo json_encode($data);
 		}
@@ -165,6 +170,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	{
 		$this->auto_render = FALSE;
 		
+		$this->basket->update_delivery_option($_POST['id']);
 		$this->basket->calculate_shipping();
 
 		echo number_format($this->basket->delivery_option->retail_price(), 2);

@@ -8,8 +8,12 @@ class Ecommerce_Model_Reward_Points_Profile extends Model_Application
 			->fields(array(
 			   'id' => new Field_Primary,
 			  'name' => new Field_String,
-				'points_per_pound' => new Field_Float,
-				'redeem_value' => new Field_Float,
+				'points_per_pound' => new Field_Float(array(
+				  'places' => 4,
+				)),
+				'redeem_value' => new Field_Float(array(
+				  'places' => 4,
+				)),
 				'customer_referral' => new Field_Integer,
 				'new_customer_referral' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
