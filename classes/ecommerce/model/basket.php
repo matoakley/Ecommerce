@@ -146,9 +146,9 @@ class Ecommerce_Model_Basket extends Model_Application
 		$discount = 0;
 		
 		//if the customer is using their reward points then apply the discount
-		if ($this->reward_points > 0)
+		if ($this->use_reward_points)
 		{
-  		$discount += $this->calculate_discount_for_reward_points($this->reward_points);
+  		$discount += $this->calculate_discount_for_reward_points();
 		}
 		
 		if ($this->promotion_code->loaded())
@@ -304,9 +304,9 @@ class Ecommerce_Model_Basket extends Model_Application
   	return $basket_points_max > $customer->reward_points ? $customer->reward_points : $basket_points_max ;
 	}
 	
-	public function redeem_reward_points()
+	public function use_reward_points($use)
 	{
-  	$this->reward_points = $this->max_reward_points();
+  	$this->use_reward_points = $use;
   	return $this->save();
 	}
 	
@@ -327,27 +327,7 @@ class Ecommerce_Model_Basket extends Model_Application
 	
 	public function reset_reward_points()
 	{
-  	$this->reward_points = 0;
+  	$this->reward_points = FALSE;
   	return $this->save();
-	}
-  
-  public function generate_unique_code($customer = NULL)
-	{
-	   //if the customer already has a referral code show it
-	  if (! empty($customer->customer_referral_code))
-  	 {
-    	 $code = $customer->customer_referral_code;
-     }
-    //else generate a new one
-	  else
-	  {
-  		$length = Kohana::config('ecommerce.default_customer_referral_code_length');
-  		$code = Text::random('distinct', $length);
-		}
-		
-		$this->customer_referral_code = $code;
-		$this->save();
-		
-		return $code;
 	}
 }

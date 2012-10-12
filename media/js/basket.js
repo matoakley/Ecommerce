@@ -61,7 +61,7 @@ $(function(){
 				}
 				
 				$('span#subtotal').html(response.basket_subtotal);
-			
+				$('#delivery_price').html(response.shipping);
 				$('span#vat').html(response.basket_vat);
 				
 				// Shrinks the number in the basket widget, updates it and expands it back.
@@ -209,7 +209,6 @@ $(function(){
 	}
 	
 	$('#use_reward_points').live('click', function(e){
-  	e.preventDefault();
   	var use_reward_points = $(this).is(':checked');
   	$.ajax({
 			url: '/basket/use_reward_points',
@@ -219,13 +218,12 @@ $(function(){
 			success: function(response){
 			  //maybe some discount stuff in here.
 			  $('#discount').html(response.basket_discount);
-			  $('#basket_discount').slideDown();
+			  if (parseInt(response.basket_discount) > 0){
+  			  $('#basket_discount').slideDown(); 
+			  } else {
+  			  $('#basket_discount').slideUp();
+			  }
 			  $('#basket_total').html(response.basket_total);
-			  $('#use_reward_points').slideUp(400, function(){
-			    $('#basket_reward_points').html(response.reward_points);
-			    $('#basket_reward_points_value').html(response.reward_points_value);
-				  $('#basket_points').slideDown();
-			  });
 			}
 	  });
 	});

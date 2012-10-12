@@ -42,11 +42,11 @@ class Ecommerce_Controller_Basket extends Controller_Application
   		{
     		$this->template->customer_referral_code = $this->basket->generate_unique_code();
   		}
-  		
-  		$this->template->reward_points_value = Model_Sales_Order::calculate_reward_points_redemption($this->template->reward_points);
-  		$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-  		$this->template->customer_referral = $reward_points_profile->customer_referral;
-  		$this->template->new_customer_referral = $reward_points_profile->new_customer_referral;
+    }
+		
+		if ($this->auth->logged_in('customer'))
+		{
+  		$this->template->customer = $this->auth->get_user()->get('customer')->load();
     }
 		
 		$this->add_breadcrumb('/basket', 'Your Basket');
@@ -279,12 +279,10 @@ class Ecommerce_Controller_Basket extends Controller_Application
   	 	throw new Kohana_Exception('Customer is not logged in.');
 	 	}
 	 	
-	 	$this->basket->redeem_reward_points();
+	 	$this->basket->use_reward_points($_POST['use_reward_points']);
 	 		  
 	  //array to send remaining points and value back to basket
 	  $data = array(
-	    'reward_points' => $this->basket->reward_points,
-	    'reward_points_value' => number_format($this->basket->calculate_discount_for_reward_points($this->basket->reward_points), 2),
   	  'basket_discount' => number_format($this->basket->calculate_discount(), 2),
   	  'basket_total' => number_format($this->basket->calculate_total(), 2)
     );

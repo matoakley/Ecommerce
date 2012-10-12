@@ -38,7 +38,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'places' => 4,
 					'default' => 0,
 				)),
-				'reward_points' => new Field_Integer,
+				'reward_points_used' => new Field_Integer,
+				'reward_points_used_value' => new Field_Float(array(
+				  'places' => 4,
+				)),
+				'reward_points_earned' => new Field_Integer,
+				'reward_points_processed' => new Field_Boolean(array(
+				  'default' => FALSE,
+				)),
 				'type' => new Field_String,
 				'status' => new Field_String,
 				'order_subtotal' => new Field_Float(array(
@@ -175,10 +182,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$sales_order->save();
 		
-		//save the baskets referral code against the customer
-		$customer->customer_referral_code = $basket->customer_referral_code;
-		$customer->save();
-		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -203,23 +206,31 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$sales_order->save();
 		}
 		
-			if ($basket->using_reward_points > 0)
-		{
-		  $sales_order->discount_amount += $basket->using_reward_points;
-		  $sales_order->save();
-    }
-    
-		
 		foreach ($basket->items as $basket_item)
 		{
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
+		}
+		
+		if (Caffeine::modules('reward_points'))
+		{
+  	  if ($basket->use_reward_points)
+  	  {
+    	  $sales_order->reward_points_used = $basket->max_reward_points();
+    	  $sales_order->reward_points_used_value = $basket->calculate_discount_for_reward_points();
+		  }
+		  
+		  $sales_order->reward_points_earned = $sales_order->order_total / Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  
+		  //save the baskets referral code against the customer
+  		//$customer->customer_referral_code = $basket->customer_referral_code;
+  		//$customer->save();
 		}
 		
 		$session = Session::instance();
 		$session->delete('basket_id');
 		$session->set('sales_order_id', $sales_order->id);
 		
-		return $sales_order;
+		return $sales_order->save();
 	}
 	
 	public static function create_trade_from_basket($basket, $customer, $delivery_address)
@@ -240,6 +251,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
 		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		
+		if (Auth::instance()->logged_in('customer'))
+		{
+  		$sales_order->user = Auth::instance()->get_user();
+		}
 		
 		$sales_order->save();
 		
@@ -273,14 +289,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					break;
 			}
 		}
-		
-			if ($basket->using_reward_points > 0)
-		{
-		  $sales_order->discount_amount += $basket->using_reward_points;
-		  $sales_order->save();
-    }
-    
-		
 		
 		$sales_order->calculate_vat_and_subtotal();
 		$sales_order->calculate_total();
@@ -552,8 +560,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			
 			
 			// If we are controlling stock and setting an order to payment received then we should decrement the stock count of each item
-			$is_controlling_stock = Kohana::config('ecommerce.modules.stock_control');
-			if ($is_controlling_stock)
+			if (Caffeine::modules('stock_control'))
 			{
 				if ($status == 'payment_received')
 				{
@@ -566,19 +573,22 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					}
 				}
 			}
-			if (Kohana::config('ecommerce.modules.reward_points'))
-			{
-  			if ( ! empty($this->basket->referral_code) AND $status == 'payment_received')
+			
+			// If we are using reward points then remove any points used and assign points earned
+			// once their order has been paid for
+			if (Caffeine::modules('reward_points') AND ! $this->reward_points_processed)
+			{ 
+  			if ($status == 'payment_received')
   			 {
-  			   $reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-  			   $existing_customer = Model_Customer::load($this->basket->referral_code);
+  			   $this->customer->remove_reward_points($this->reward_points_used)->add_reward_points($this->reward_points_earned);
   			   
-    			 $this->customer->add_new_customer_referral_points();
-    			 $existing_customer->reward_points += $reward_points_profile->customer_referral;
-    			 $existing_customer->save();
+  			   // Referral points for customer and referrer...
+  			  
+  			  
+  			   $this->reward_points_processed = TRUE; 
   			 }
 			}
-			
+
 			return $this->save();
 		}
 		else
@@ -668,68 +678,5 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function invoice_due_date()
 	{
 		return $this->invoiced_on + (86400 * $this->invoice_terms);
-	}
-	
-	//Reward Points
-	
-	public function calculate_reward_points($sales_order)
-	{
-	  if (Kohana::config('ecommerce.modules.reward_points'))
-	 {
-	  // REWARD POINTS CALCULATION
-	  
-	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-	
-  	$per_pound = $profile->points_per_pound; 
- 
-	  $pounds = $sales_order->order_total;
- 
-	  $reward_points = floor($pounds) * $per_pound;
-  	
-  	$sales_order->reward_points = $reward_points;
-  	
-  	//SEND TO CUSTOMER TO ADD TO TOTAL
-  	
-  	$sales_order->customer->add_reward_points($reward_points);
-  	
-  	//CALCULATE VALUE TEST
-  	
-  	$this->calculate_reward_points_redemption($reward_points);
-  	
-  	}
-	}
-	
-	public static function calculate_remaining_reward_points($reward_points_value)
-	{
-	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-	
-  	$per_pound = $profile->points_per_pound; 
- 
-	  $reward_points = floor($reward_points_value) * $per_pound;
-  	
-  	return $reward_points;
-	}
-	
-	public static function calculate_reward_points_redemption($reward_points)
-	{
-  	$profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-	
-	  $point_value = $profile->redeem_value;
-  	
-  	$reward_points_value = $reward_points * $point_value;
-  	
-  	return round($reward_points_value, 1, PHP_ROUND_HALF_DOWN);
-  	
-	}
-	
-	public static function calculate_points_from_remaining_value($reward_value)
-	{
-	  $profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-	
-	  $point_value = $profile->redeem_value;
-	  
-  	$remaining_points = $reward_value / $point_value;
-  	return floor($remaining_points);
-	}
-	
+	}	
 }
