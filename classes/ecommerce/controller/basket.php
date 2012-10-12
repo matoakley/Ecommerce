@@ -206,7 +206,15 @@ class Ecommerce_Controller_Basket extends Controller_Application
 			$template_data = array(
 				'basket' => $this->basket,
 			);
-			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
+			
+			try
+			{
+  			$reward_item = Twig::factory('basket/_promotion_code_item.html', $template_data, $this->environment)->render();
+			}
+			catch (Exception $e)
+			{
+  			$reward_item = NULL;
+			}
 						
 		  $this->basket->calculate_shipping();
 						
