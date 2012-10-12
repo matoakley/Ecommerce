@@ -31,22 +31,18 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
 		
-		if (Kohana::config('ecommerce.modules.reward_points'))
-		 {
-  		//reward points stuff
-  		if ($this->auth->logged_in('customer'))
-  		{ 
-//    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
-  		}
-  		else
-  		{
-    		$this->template->customer_referral_code = $this->basket->generate_unique_code();
-  		}
-    }
-		
 		if ($this->auth->logged_in('customer'))
 		{
   		$this->template->customer = $this->auth->get_user()->get('customer')->load();
+    }
+    else
+    {
+      if (Caffeine::modules('reward_points'))
+      {
+        $reward_points_profile = Model_Reward_Points_Profile::load(1);
+        $this->template->customer_referral_reward = $reward_points_profile->customer_referral;
+        $this->template->new_customer_referral_reward = $reward_points_profile->new_customer_referral;
+      }
     }
 		
 		$this->add_breadcrumb('/basket', 'Your Basket');
@@ -288,5 +284,28 @@ class Ecommerce_Controller_Basket extends Controller_Application
     );
   	  
   	echo json_encode($data);
+	}
+	
+	public function action_add_customer_referral_code()
+	{
+	  $this->auto_render = FALSE;
+	  
+  	$customer = Model_Customer::find_by_referral_code($_POST['code']);
+  	
+  	if ($customer->loaded())
+  	{
+    	$this->basket->use_referral_code($_POST['code']);
+      $data = array(
+    	 'code' => $_POST['code'],
+    	);
+  	}
+  	else
+  	{
+      $data = array(
+  	   'code' => $_POST['code'],
+  	  );
+  	}
+  	
+    echo json_encode($data);	
 	}
 }

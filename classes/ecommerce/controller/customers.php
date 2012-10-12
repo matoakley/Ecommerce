@@ -45,6 +45,12 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		{
 			if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in('customer'))
 			{
+			  // If customer is logging in, clear any referral codes from basket 
+    		if (Caffeine::modules('reward_points'))
+    		{
+      		$this->basket->reset_referral_code();
+    		}
+			
 				if (isset($_GET['return_url']))
 				{
 					$this->request->redirect('/'.$_GET['return_url']);
@@ -156,24 +162,5 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		{
 			$this->request->redirect(Route::get('customer_dashboard')->uri());
 		}
-	}
-	
-	public function action_redeem_customer_referral_code()
-	{
-	  $this->auto_render = FALSE;
-	  
-  	$code = Model_Customer::redeem_customer_referral_code($_POST);
-  	
-  	if ($code == "ok")
-  	{
-    	$basket = Model_Basket::load($_POST['basket']);
-    	$basket->referral_code = $_POST['code'];
-  	}
-  	
-  	if ($code != NULL)
-  	{
-    	echo json_encode($code);
-  	}
-  	
 	}
 }

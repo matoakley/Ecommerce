@@ -138,19 +138,15 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
-<<<<<<< HEAD
         	
-        	 if (Kohana::config('ecommerce.modules.stock_control')) 
-          	 {
-                $data['stock'] = $sku->stock;
-          	 }
-           else 
-             {
-               $data['stock'] = $sku->stock_status;
-             }
-=======
-        	$data['stock'] = $sku->stock;
->>>>>>> 697af78a9158f40faff192eb8503a52c545a16c5
+          if (Caffeine::modules('stock_control')) 
+          {
+            $data['stock'] = $sku->stock;
+          }
+          else 
+          {
+            $data['stock'] = $sku->stock_status == 'in_stock';
+          }
     		}
     	}
 		}

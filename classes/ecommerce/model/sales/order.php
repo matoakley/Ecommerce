@@ -74,6 +74,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'invoiced_on' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'customer_referral_code' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -175,6 +176,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->delivery_firstname = $delivery_name['delivery_firstname'];
 		$sales_order->delivery_lastname = $delivery_name['delivery_lastname'];
 		$sales_order->status = 'awaiting_payment';
+		$sales_order->order_subtotal = $basket->calculate_subtotal();
 		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
@@ -218,12 +220,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
     	  $sales_order->reward_points_used = $basket->max_reward_points();
     	  $sales_order->reward_points_used_value = $basket->calculate_discount_for_reward_points();
 		  }
-		  
-		  $sales_order->reward_points_earned = $sales_order->order_total / Model_Reward_Points_Profile::load(1)->points_per_pound;
-		  
-		  //save the baskets referral code against the customer
-  		//$customer->customer_referral_code = $basket->customer_referral_code;
-  		//$customer->save();
+		  $sales_order->reward_points_earned = $sales_order->order_subtotal / Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  $sales_order->customer_referral_code = $basket->customer_referral_code;
 		}
 		
 		$session = Session::instance();
@@ -583,7 +581,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
   			   $this->customer->remove_reward_points($this->reward_points_used)->add_reward_points($this->reward_points_earned);
   			   
   			   // Referral points for customer and referrer...
-  			  
+  			  if ($this->customer_referral_code)
+  			  {
+    			  $referring_customer = Model_Customer::find_by_referral_code($this->customer_referral_code);
+    			  
+    			  if ($referring_customer->loaded())
+    			  {
+    			    $reward_points_profile = Model_Reward_Points_Profile::load(1);
+    			  
+      			  $referring_customer->add_reward_points($reward_points_profile->customer_referral);
+      			  $this->customer->add_reward_points($reward_points_profile->new_customer_referral);
+    			  }
+  			  }
   			  
   			   $this->reward_points_processed = TRUE; 
   			 }
@@ -678,5 +687,5 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function invoice_due_date()
 	{
 		return $this->invoiced_on + (86400 * $this->invoice_terms);
-	}	
+	}
 }

@@ -195,6 +195,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
+	public static function find_by_referral_code($code)
+	{
+  	return Jelly::select('customer')->where('customer_referral_code', 'LIKE', $code)->load();
+	}
+	
 	public function update_at_checkout($data)
 	{
 		// Format email address to lowercase

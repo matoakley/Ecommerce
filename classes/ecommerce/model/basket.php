@@ -11,7 +11,6 @@ class Ecommerce_Model_Basket extends Model_Application
 					'foreign' => 'basket_item.basket_id',
 				)),
 				'customer_referral_code' => new Field_String,
-				'referral_code' => new Field_Integer,
 				'use_reward_points' => new Field_Boolean(array(
 				  'default' => FALSE,
 				)),
@@ -328,6 +327,18 @@ class Ecommerce_Model_Basket extends Model_Application
 	public function reset_reward_points()
 	{
   	$this->reward_points = FALSE;
+  	return $this->save();
+	}
+	
+	public function reset_referral_code()
+	{
+  	$this->customer_referral_code = FALSE;
+  	return $this->save();
+	}
+	
+	public function use_referral_code($code)
+	{
+  	$this->customer_referral_code = $code;
   	return $this->save();
 	}
 }

@@ -231,31 +231,21 @@ $(function(){
 	$('button#add-referral-code').live('click', function(e){
   	e.preventDefault();
   	var code = $('#box-add-referral-code').val();
-  	var href = $(this).data('url');
-  	var basket = $('#box-add-referral-code').data('id');
-  	
   	$.ajax({
-				url: href,
-				type: 'POST',
-				data: { code: code, basket: basket },
-				dataType: 'html',
-				beforeSend: function(){
-				},
-				success: function(response){
-				console.log(response);
-				if (response){
-				  alert('The code you entered is incorrect, please try again.');
-				 }
-				else {
-  				$('#referral-code-enter').slideUp().delay(100);
-				  $('#referral-code-thank-you').removeClass('hidden').slideDown();
-				 }
-				},
-				complete: function(){
-				}
-			
-			});
-	})
-	
-	
+			url: '/basket/add_customer_referral_code',
+			type: 'POST',
+			data: { code: code},
+			dataType: 'json',
+			success: function(response){
+			  if (response.code){
+  				$('#add-referral-code-form').slideUp(400, function(){
+  				  $('#current-referral-code-code').html(response.code);
+    				$('#current-referral-code').removeClass('hidden').slideDown();
+  				});
+  		  } else {
+    		  $('#referral-code-error').removeClass('hidden').slideDown();
+  		  }
+			}
+		});
+	});
 });
