@@ -7,7 +7,7 @@
 {% for product in products %}
 	{% for sku in product.active_skus %}
 		<item>
-		<title>{{product.name|title|e}}</title>
+		<title>{{product.name|e}}</title>
 		<link>{% url "view_product", ["slug":product.slug] %}</link>
 		<description>{{product.description|striptags|e}}</description>
 		<g:image_link>{{base_url}}{{product.default_image.full_size_path}}</g:image_link>
