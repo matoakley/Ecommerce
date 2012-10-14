@@ -31,25 +31,18 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->template->basket = $this->basket;
 		$this->template->delivery_options = Model_Delivery_Option::available_options();
 		
-		if (Kohana::config('ecommerce.modules.reward_points'))
-		 {
-  		//reward points stuff
-  		if ($this->auth->logged_in('customer'))
-  		{ 
-    		$customer = $this->auth->get_user()->customer;
-    		$this->template->reward_points = $customer->get_reward_points($customer);
-    		$this->template->customer = $customer;
-    		$this->template->customer_referral_code = $this->basket->generate_unique_code($customer);
-  		}
-  		else
-  		{
-    		$this->template->customer_referral_code = $this->basket->generate_unique_code();
-  		}
-  		
-  		$this->template->reward_points_value = Model_Sales_Order::calculate_reward_points_redemption($this->template->reward_points);
-  		$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-  		$this->template->customer_referral = $reward_points_profile->customer_referral;
-  		$this->template->new_customer_referral = $reward_points_profile->new_customer_referral;
+		if ($this->auth->logged_in('customer'))
+		{
+  		$this->template->customer = $this->auth->get_user()->get('customer')->load();
+    }
+    else
+    {
+      if (Caffeine::modules('reward_points'))
+      {
+        $reward_points_profile = Model_Reward_Points_Profile::load(1);
+        $this->template->customer_referral_reward = $reward_points_profile->customer_referral;
+        $this->template->new_customer_referral_reward = $reward_points_profile->new_customer_referral;
+      }
     }
 		
 		$this->add_breadcrumb('/basket', 'Your Basket');
@@ -157,6 +150,12 @@ class Ecommerce_Controller_Basket extends Controller_Application
   		  $data['line_items'] = 0;
 		  }
 			
+			if (Caffeine::modules('reward_points'))
+			{
+  			$data['max_reward_points'] = $this->basket->max_reward_points();
+  			$data['max_reward_points_discount'] = number_format($this->basket->calculate_discount_for_reward_points(), 2);
+			}
+			
 			echo json_encode($data);
 		}
 		else
@@ -181,6 +180,7 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	{
 		$this->auto_render = FALSE;
 		
+		$this->basket->update_delivery_option($_POST['id']);
 		$this->basket->calculate_shipping();
 
 		echo number_format($this->basket->delivery_option->retail_price(), 2);
@@ -263,57 +263,49 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	
 	public function action_use_reward_points()
 	{
-	  
 	  $this->auto_render = FALSE;
-	
-	  // get the customer
-	  $user_id = Auth::instance()->get_user()->id;
-	 	$customer = Jelly::select('customer')->where('user_id', '=', $user_id)->load();
 	 	
-	 	//get the customers points and calculate the value
-	 	$customer_points = $customer->get_reward_points($customer);
-	 	$discount = Model_Sales_Order::calculate_reward_points_redemption($customer_points);
-	 
-	  //recieve the order total from ajax
-	  $order_total = number_format($_POST['data'], 2);
-	 
-	  //calculate the remaining discount to the nearest 10p
-	  $remaining_discount = round(($discount - $order_total), 1, PHP_ROUND_HALF_DOWN);
-	  
-	  //if the discount is less than zero then its zero
-	  if ($remaining_discount < 0)
-  	  {
-    	  $remaining_discount = 0;
-    	  $used_discount = $discount;
-    	 }
-    else 
-    {
-      $used_discount = $order_total;
-    }
-	  //calculate the remaining points
-	  $remaining_points = Model_Sales_Order::calculate_points_from_remaining_value($remaining_discount);
-	  
-	  //if the points are less than zero then there are none
-	  if ($remaining_points < 0)
-  	  {
-    	  $remaining_points = 0;
-  	  }
-	  
+	 	if ( ! Caffeine::modules('reward_points'))
+	 	{
+  	 	throw new Kohana_Exception('The Reward Points module is not enabled.');
+	 	}
+	 	
+	 	if ( ! Auth::instance()->logged_in('customer'))
+	 	{
+  	 	throw new Kohana_Exception('Customer is not logged in.');
+	 	}
+	 	
+	 	$this->basket->use_reward_points($_POST['use_reward_points']);
+	 		  
 	  //array to send remaining points and value back to basket
 	  $data = array(
-  	  'points' => $remaining_points,
-  	  'value' => number_format($remaining_discount, 2),
-  	  'discount' => $used_discount,
-  	  'order_total' => $order_total,
-  	  'remaining' => $remaining_discount,
-  	  );
-  	  
-  	 // save the discount to the basket to update the total with ajax
-  	 $this->basket->save_reward_points_discount($used_discount);
-  	 
-  	 //now we have finished remove the used points from the customers total
-  	$customer->remove_reward_points($remaining_points);
+  	  'basket_discount' => number_format($this->basket->calculate_discount(), 2),
+  	  'basket_total' => number_format($this->basket->calculate_total(), 2)
+    );
   	  
   	echo json_encode($data);
+	}
+	
+	public function action_add_customer_referral_code()
+	{
+	  $this->auto_render = FALSE;
+	  
+  	$customer = Model_Customer::find_by_referral_code($_POST['code']);
+  	
+  	if ($customer->loaded())
+  	{
+    	$this->basket->use_referral_code($_POST['code']);
+      $data = array(
+    	 'code' => $_POST['code'],
+    	);
+  	}
+  	else
+  	{
+      $data = array(
+  	   'code' => $_POST['code'],
+  	  );
+  	}
+  	
+    echo json_encode($data);	
 	}
 }

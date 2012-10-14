@@ -138,7 +138,15 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
-        	$data['stock'] = $sku->stock;
+        	
+          if (Caffeine::modules('stock_control')) 
+          {
+            $data['stock'] = $sku->stock;
+          }
+          else 
+          {
+            $data['stock'] = $sku->stock_status == 'in_stock';
+          }
     		}
     	}
 		}

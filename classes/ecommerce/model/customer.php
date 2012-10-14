@@ -195,6 +195,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
+	public static function find_by_referral_code($code)
+	{
+  	return Jelly::select('customer')->where('customer_referral_code', 'LIKE', $code)->load();
+	}
+	
 	public function update_at_checkout($data)
 	{
 		// Format email address to lowercase
@@ -217,6 +222,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function create_account($password)
 	{
 		$this->user = Model_User::create_for_customer($this, $password);
+		
+		// If we're using reward points, they now have an account
+		// and so we'll give them a referral code.
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->generate_referral_code();
+		}
+		
 		return $this->save();
 	}
 	
@@ -473,54 +486,37 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	//Reward Points
 	
-		public function add_reward_points($reward_points)
-	{
-  	$existing_points = $this->reward_points;
-  	
-  	$new_total = $existing_points + $reward_points;
-  	
-  	$this->reward_points = $new_total;
-  	$this->save();
-	}
-	
-	public static function get_reward_points($customer)
-	{
-  	$existing_points = $customer->reward_points;
-  	return $existing_points;
-	}
-	
-	public function remove_reward_points($new_point_total)
-	{
-  	$this->reward_points = $new_point_total;
-  	$this->save();
-	}
-	
-	public static function redeem_customer_referral_code($code)
-	{
-	  //find the customer that the code belongs to and load the reward values
-  	$id = Jelly::select('customer')->where('customer_referral_code', '=', $code['code'])->load();
-  	$existing_customer = Model_Customer::load($id->id);
-  	
-  	$reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-  	
-  	//if there is a customer with the code then add the reward points bonus to that customers reward points
-  	if ($existing_customer->loaded())
-  	 {
-  	   $basket = Model_Basket::load($_POST['basket']);
-  	   $basket->referral_code = $existing_customer->id;
-  	   $basket->save();
-  	 }
-  	else
+	public function generate_referral_code()
+	{	
+  	while ($this->customer_referral_code = NULL)
   	{
-    	return "error";
-  	}  	
+    	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
+    	
+    	// Check code is unique
+    	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
+    	{
+      	$this->customer_referral_code = $code;
+    	}
+  	}
+		
+		return $this->save();
 	}
 	
-	public function add_new_customer_referral_points()
+  public function add_reward_points($points)
+	{	
+  	$this->reward_points += $points;
+  	return $this->save();
+	}
+	
+	public function remove_reward_points($points)
 	{
-  	 $reward_points_profile = Jelly::select('reward_points_profile')->where('is_default', '=', 1)->limit(1)->execute();
-  			   
-     $this->reward_points += $reward_points_profile->new_customer_referral;
-     $this->save();
+  	$this->reward_points -= $points;
+  	return $this->save();
+	}
+			
+	// Helper method as customer is cached when logged in
+	public function get_reward_points()
+	{
+  	return $this->reward_points;
 	}
 }
