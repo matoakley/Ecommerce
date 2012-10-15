@@ -4,19 +4,19 @@ class Ecommerce_Controller_Categories extends Controller_Application
 {
 	public function before()
 	{
-		if ( ! Kohana::config('ecommerce.modules.categories'))
+		if ( ! Caffeine::modules('categories'))
 		{
-			throw new Kohana_Exception('This module is not enabled');
+			throw new Kohana_Exception('The "categories" module is not enabled');
 		}
 		
 		parent::before();
 	}
 	
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$category = Model_Category::load($slug);
+		$category = Model_Category::load($this->request->param('slug'));
 						
-		$this->session->set('last_viewed_category', $category);						
+		$this->session->set('last_viewed_category', $category);			
 								
 		$sidebar_categories = ($category->has_children() OR ! $category->parent->loaded()) ? 
 										Model_Category::build_category_tree($category->id, TRUE) : 

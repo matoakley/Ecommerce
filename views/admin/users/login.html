@@ -5,8 +5,8 @@
 	<title>{{site_name}} Ecommerce Management System</title> 
 	<link rel="stylesheet" href="/media/css/admin/reset.css" type="text/css" /> 
 	<link rel="stylesheet" href="/media/css/admin/960.css" type="text/css" /> 
-	<link rel="stylesheet" href="/css/text.css" type="text/css" /> 
-	<link rel="stylesheet" href="/media/css/admin/login.css" type="text/css" /> 
+	<link rel="stylesheet" href="/css/text.css?v=1" type="text/css" /> 
+	<link rel="stylesheet" href="/media/css/admin/login.css?v=1" type="text/css" /> 
 </head> 
 <body> 
 	<div class="container_16"> 
@@ -26,6 +26,10 @@
 					
 					<p class="tc"><em>Access to this area is restricted to {{site_name}} employees only.</em></p> 		
 		
+					{% if error %}
+						<p class="tc error"><em>Email/Password combination was incorrect.</em></p>
+					{% endif %}
+		
 					<form method="POST"> 
 						<div class="field"> 
 							<label for="email">Email</label> 
@@ -43,11 +47,7 @@
 				</div> 
 			</div> 
 			
-			<div class="admin-footer">
-				<a href="http://www.creativeintent.co.uk/development/ecommerce-development/" target="_blank">Ecommerce Software Development</a>
-				by
-				<a href="http://www.creativeintent.co.uk" target="_blank">Creative Intent</a>
-			</div>
+			{% include "admin/users/_login_footer.html" %}
  
 		</div> 
 		

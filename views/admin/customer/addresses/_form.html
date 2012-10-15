@@ -1,0 +1,98 @@
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="address-line-1">Line 1</label>
+	</div>
+	<div class="grid_4">
+		<input type="text" id="address-line-1" class="inputtext" />
+	</div>	
+	<div class="grid_2">
+		<label for="address-line-2">Line 2</label>
+	</div>
+	<div class="grid_8 omega">
+		<input type="text" id="address-line-2" class="inputtext" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="address-line-3">Line 3</label>
+	</div>
+	<div class="grid_4">
+		<input type="text" id="address-line-3" class="inputtext" />
+	</div>	
+	<div class="clear"></div>
+</div>
+
+<div class="field">	
+	<div class="grid_2 alpha">
+		<label for="address-town">Town</label>
+	</div>
+	<div class="grid_4">
+		<input type="text" id="address-town" class="inputtext" />
+	</div>	
+	<div class="grid_2">
+		<label for="address-county">County</label>
+	</div>
+	<div class="grid_8 omega">
+		<input type="text" id="address-county" class="inputtext" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">	
+	<div class="grid_2 alpha">
+		<label for="address-postcode">Postcode</label>
+	</div>
+	<div class="grid_4">
+		<input type="text" id="address-postcode" class="inputtext" />
+	</div>	
+	<div class="grid_2">
+		<label for="address-country">Country</label>
+	</div>
+	<div class="grid_8 omega">
+		<select id="address-country">
+		{% for country in countries %}
+			<option value="{{country.id}}">{{country.name}}</option>
+		{% endfor %}
+		</select>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="address-telephone">Telephone</label>
+	</div>
+	<div class="grid_4">
+		<input type="text" id="address-telephone" class="inputtext" />
+	</div>
+	<div class="grid_2">
+		<label for="address-county">Name</label>
+	</div>
+	<div class="grid_8 omega">
+		<input type="text" id="address-name" class="inputtext" placeholder="Home, Work..." />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+	<div class="grid_2 alpha">
+		<label for="address-notes">Notes</label>
+	</div>
+	<div class="grid_14 omega">
+		<input type="text" id="address-notes" class="inputtext longest" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="field">
+	<div class="grid_2 alpha">&nbsp;</div>
+	<div class="grid_3">
+		<input type="submit" value="Add Address" id="add-address" data-module="customer" data-url="{% url "customer_address_add", ["customer_id": customer.id] %}" />
+		<img src="/media/images/admin/ajax-loader.gif" class="hidden" id="add-address-spinner" />
+	</div>
+	<div class="clear"></div>
+</div>
+
+<br/>

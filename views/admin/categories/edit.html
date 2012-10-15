@@ -1,11 +1,7 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
 {% endblock %}
 
 {% block page_title %}
@@ -69,7 +65,7 @@
 		</div>
 		<div class="grid_14 omega">
 			<a href="{% url "view_category", ["slug":category.slug] %}" target="_blank">
-				{{base_url}}{% url "view_category", ["slug":category.slug] %}
+				{% url "view_category", ["slug":category.slug] %}
 			</a>
 		</div>
 		<div class="clear"></div>
@@ -99,6 +95,10 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{# Custom Fields #}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	<div class="field">
 		<div class="grid_2 alpha">

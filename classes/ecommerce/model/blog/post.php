@@ -23,6 +23,10 @@ class Ecommerce_Model_Blog_Post extends Model_Application
         'featured_image' => new Field_String(array(
           'in_db' => FALSE,
         )),
+        'categories' => new Field_ManyToMany(array(
+					'foreign' => 'blog_category',
+					'through' => 'blog_categories_blog_posts',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -40,11 +44,21 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 	public static $statuses = array(
 		'active', 'disabled'
 	);
+	public static $authors = array(
+	   'author' 
+	   );
 	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'status' => array(
 				'field' => 'status',
+			),
+			'category' => array(
+				'join' => array(
+					'blog_categories_blog_posts' => array('blog_post.id', 'blog_categories_blog_posts.blog_post_id'),
+					'blog_categories' => array('blog_category.id', 'blog_categories_blog_posts.blog_category_id'),
+				),
+				'field' => 'blog_category.id',
 			),
 		),
 		'search' => array(
@@ -98,6 +112,14 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 			$this->author = Auth::instance()->get_user()->id;
 		}
 		
+		// Clear down and save categories.
+		$this->remove('categories', $this->categories);
+		
+		if (isset($data['categories']))
+		{
+			$this->add('categories', $data['categories']);
+		}
+		
 		// Ping sitemap to search engines to alert them of content change
 		if (IN_PRODUCTION AND $this->status == 'active')
 		{
@@ -142,7 +164,7 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 			$image->resize($image_size['width'], NULL);
 		}
 		
-		$directory = DOCROOT . '/images/blog-posts';
+		$directory = DOCROOT . 'images/blog-posts';
 		if ( ! is_dir($directory))
 		{
 			mkdir($directory);

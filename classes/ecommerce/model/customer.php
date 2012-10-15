@@ -1,31 +1,28 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Represents a Customer within the ecommerce system.
+ *
+ * @package    Ecommerce
+ * @author     Matt Oakley
+ */
 class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->table('customers')
+		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer_referral_code' => new Field_String,
 				'user' => new Field_BelongsTo,
 				'orders' => new Field_HasMany(array(
 					'foreign' => 'sales_order.customer_id',
 				)),
-				'firstname' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
-				'lastname' => new Field_String(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),
-				)),
-				'email' => new Field_Email(array(
-					'rules' => array(
-						'not_empty' => NULL,
-					),					
-				)),
+				'firstname' => new Field_String,
+				'lastname' => new Field_String,
+				'company' => new Field_String,
+				'account_ref' => new Field_String,
+				'customer_types' => new Field_ManyToMany,
+				'email' => new Field_Email,
 				'referred_by' => new Field_String,
 				'default_billing_address' => new Field_BelongsTo(array(
 					'foreign' => 'address.id',
@@ -38,6 +35,20 @@ class Ecommerce_Model_Customer extends Model_Application
 				'addresses' => new Field_HasMany(array(
 					'foreign' => 'address.customer_id',
 				)),
+				'status' => new Field_String,
+				'price_tier' => new Field_BelongsTo,
+				'parent' => new Field_BelongsTo(array(
+					'foreign' => 'customer.id',
+					'column' => 'customer_id',
+				)),
+				'notes' => new Field_String,
+				'contacts' => new Field_HasMany(array(
+					'foreign' => 'customer.customer_id',
+				)),
+				'telephone' => new Field_String,
+				'position' => new Field_String,
+				'invoice_terms' => new Field_Integer,
+				'reward_points' => new Field_Integer,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -51,8 +62,64 @@ class Ecommerce_Model_Customer extends Model_Application
 					'format' => 'Y-m-d H:i:s',
 				)),
 			));
+			
+		// Include relationships that exist with CRM module
+		if (Kohana::config('ecommerce.modules.crm'))
+		{
+			$meta->fields(array(
+				'communications' => new Field_HasMany(array(
+					'foreign' => 'customer_communication.customer_id',
+				)),
+			));
+		}
 	}
-
+	
+	public static $statuses = array(
+		'active',
+		'on_hold',
+		'archived',
+	);
+	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'customer_type' => array(
+				'join' => array(
+					'customer_types_customers' => array('customer.id', 'customer_types_customers.customer_id'),
+					'customer_types' => array('customer_types.id', 'customer_types_customers.customer_type_id'),
+				),
+				'field' => 'customer_type.id',
+			),
+			'status' => array(
+				'field' => 'status',
+			),
+			'price_tier' => array(
+				'field' => 'price_tier',
+			),
+		),
+		'search' => array(
+			'firstname',
+			'lastname',
+			'account_ref',
+			'company',
+		),
+	);
+	
+	public static function customer_email_validator($data)
+	{
+		$validator = Validate::factory($data)
+											->filter(TRUE, 'trim')
+											->rule('email', 'not_empty')
+											->rule('firstname', 'not_empty')
+											->rule('lastname', 'not_empty');
+		
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
+	
 	public static function create($data)
 	{
 		// Format email address to lowercase
@@ -64,11 +131,27 @@ class Ecommerce_Model_Customer extends Model_Application
 		$customer->lastname = $data['lastname'];
 		$customer->email = $data['email'];
 		
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
+		
 		if (isset($data['referred_by']))
 		{
 			$customer->referred_by = $data['referred_by'];
 		}
-				
+		
+		if (Caffeine::modules('crm'))
+		{
+			$customer->add('customer_types', Kohana::config('ecommerce.default_web_customer_type'));
+		}
+		
+		if (isset($data['company']))
+		{
+			$customer->company = $data['company'];
+		}
+		
+		$customer->status = 'active';
 		$customer->save();
 		
 		if (isset($data['email_subscribe']))
@@ -112,6 +195,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
+	public static function find_by_referral_code($code)
+	{
+  	return Jelly::select('customer')->where('customer_referral_code', 'LIKE', $code)->load();
+	}
+	
 	public function update_at_checkout($data)
 	{
 		// Format email address to lowercase
@@ -134,6 +222,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function create_account($password)
 	{
 		$this->user = Model_User::create_for_customer($this, $password);
+		
+		// If we're using reward points, they now have an account
+		// and so we'll give them a referral code.
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->generate_referral_code();
+		}
+		
 		return $this->save();
 	}
 	
@@ -151,6 +247,276 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	public function completed_orders()
 	{
-		return $this->get('orders')->where('status', '=', 'completed')->execute();
+		return $this->get('orders')->where('status', '=', 'complete')->execute();
+	}
+	
+	/*
+	 * Little helper method to spit out the customer's full name.
+	 */
+	public function name()
+	{
+		if ($this->firstname != '')
+		{
+			return $this->firstname.' '.$this->lastname;
+		}
+		elseif ($this->company != '')
+		{
+			return $this->company; 
+		}
+	}
+	
+	public function add_communication($data)
+	{
+		return Model_Customer_Communication::create_communication_for_customer($this, $data);
+	}
+
+	public function add_address($data)
+	{
+		return Model_Address::create($data, $this->id);
+	}
+		
+	public function admin_update($data)
+	{
+		$this->firstname = $data['firstname'];
+		$this->lastname = $data['lastname'];
+		$this->company = $data['company'];
+		$this->account_ref = $data['account_ref'];
+		$this->email = $data['email'];
+		if (isset($data['default_billing_address']))
+		{
+			$this->default_billing_address = $data['default_billing_address'];
+		}
+		if (isset($data['default_shipping_address']))
+		{
+			$this->default_shipping_address = $data['default_shipping_address'];
+		}
+		if (isset($data['notes']))
+		{
+  		$customer->notes = $data['contact_notes'];
+		}
+
+	
+		// Clear down and save customer types.
+		$this->remove('customer_types', $this->customer_types);
+		if (isset($data['customer_types']))
+		{
+			$this->add('customer_types', $data['customer_types']);
+		}
+		
+		if (Caffeine::modules('tiered_pricing') AND isset($data['price_tier']))
+		{
+			$this->price_tier = $data['price_tier'];
+		}
+		if (isset($data['invoice_terms']))
+		{
+			$this->invoice_terms = $data['invoice_terms'];
+		}
+		
+		if (Caffeine::modules('trade_area') AND isset($data['trade_area']))
+		{
+			$this->user->add('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+		}
+		elseif (Caffeine::modules('trade_area') AND ! isset($data['trade_area']))
+		{ 
+		  if (Jelly::select('role')->where('name', '=', 'trade_area')->count() < 1)
+		   { 
+			   $this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+			 }
+		}
+
+		$this->status = $data['status'];
+		
+	
+		return $this->save();
+	}
+	
+	public function is_commercial_customer()
+	{
+		return (bool) $this->get('customer_types')->where('id', '=', Kohana::config('ecommerce.default_commercial_customer_type'))->count();
+	}
+	
+	/**
+	 * Fetch the price that the Customer should pay for a SKU, taking tiered pricing into account when necessary.
+	 * @author  Matt Oakley
+	 * @param   Model_Sku   SKU to fetch price for
+	 * @return  float				price
+	 */
+	public function price_for_sku($sku)
+	{
+		if (Kohana::config('ecommerce.modules.tiered_pricing') AND $this->price_tier->loaded())
+		{
+			return $sku->price_for_tier($this->price_tier);
+		}
+		else
+		{
+			return $sku->retail_price();
+		}
+	}
+	
+	public function delete($key = NULL)
+	{
+		// Remove any communications held against the customer to keep the DB tidy
+		if ($this->communications)
+		{
+  		foreach ($this->communications as $communication)
+  		{
+  			$communication->delete();
+  		}  
+  	
+  		return parent::delete($key);
+    }
+	}
+	
+	public function archive()
+	{
+		$this->status = 'archived';
+		return $this->save();
+	}
+	
+	/**
+	 * Creates a new Customer as a Contact of the Customer.
+	 * @author  Matt Oakley
+	 * @param   array   Contact data
+	 * @return  Customer
+	 */
+	public function add_contact($data)
+	{
+		$contact = Jelly::factory('customer');
+		$contact->parent = $this;
+		$contact->firstname = $data['firstname'];
+		$contact->lastname = $data['lastname'];
+		$contact->email = $data['email'];
+		$contact->telephone = $data['telephone'];
+		$contact->position = $data['position'];
+		$contact->status = 'active';
+		$contact->id = 'id';
+		if (isset($data['notes']))
+		{
+  		$contact->notes = $data['notes'];
+		}
+		
+
+
+		return $contact->save();
+	}
+	
+
+	/**
+	 * Email a new trade customer to confirm receipt.
+	 * @author  Matt Oakley
+	 * @return  boolean
+	 */
+	public function email_trade_sign_up_confirmation()
+	{
+		Email::connect();
+		
+		$message = Twig::factory('emails/trade_sign_up_received.html');
+		$message->customer = $this;
+		$message->site_name = Kohana::config('ecommerce.site_name');
+
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
+		$to = array(
+			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Trade account sign up for '.Kohana::config('ecommerce.site_name').' received', $message, true);
+	}
+	
+	public function update()
+	{
+		if (isset($_POST['email']))
+		{
+	    $this->email = $_POST['email'];
+	  }
+	  
+		if (isset($_POST['notes']))
+		{
+	    $this->notes = $_POST['notes'];
+	  }
+	  
+	  if (isset($_POST['telephone']))
+		{
+	    $this->telephone = $_POST['telephone'];
+	  }
+	  
+	  if (isset($_POST['position']))
+		{
+	    $this->position = $_POST['position'];
+	  }
+	  
+	  if (isset($_POST['firstname']))
+	  {
+	    explode(" ", $_POST['firstname']);
+	    $first = explode(" ", $_POST['firstname']);
+	    $this->firstname = $first[0];
+	    $this->lastname = $first[1];
+	  }
+ 
+  	return $this->save();
+	}
+	
+	public function trade_update_validator($data)
+	{
+		$validator = Validate::factory($data)
+			->filters('firstname', array('trim' => NULL))->rules('firstname', array('not_empty' => NULL)) // Firstname
+			->filters('lastname', array('trim' => NULL))->rules('lastname', array('not_empty' => NULL)) // Lastname
+			->filters('email', array('trim' => NULL))->rules('email', array('not_empty' => NULL, 'email' => NULL))->callback('email', 'Model_User::_email_is_unique', array('id' => $this->user->id)); // Email
+			
+		if ( ! $validator->check())
+		{
+			throw new Validate_Exception($validator);
+		}
+		
+		return TRUE;
+	}
+	
+	// This is where the customer updates their own account
+	public function customer_update($data)
+	{
+		$this->firstname = $data['firstname'];
+		$this->lastname = $data['lastname'];
+		if (isset($data['company']))
+		{
+			$this->company = $data['company'];
+		}
+		$this->email = $data['email'];
+		$this->user->update_email($data['email']);
+		return $this->save();
+	}
+	
+	//Reward Points
+	
+	public function generate_referral_code()
+	{	
+  	while ($this->customer_referral_code = NULL)
+  	{
+    	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
+    	
+    	// Check code is unique
+    	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
+    	{
+      	$this->customer_referral_code = $code;
+    	}
+  	}
+		
+		return $this->save();
+	}
+	
+  public function add_reward_points($points)
+	{	
+  	$this->reward_points += $points;
+  	return $this->save();
+	}
+	
+	public function remove_reward_points($points)
+	{
+  	$this->reward_points -= $points;
+  	return $this->save();
+	}
+			
+	// Helper method as customer is cached when logged in
+	public function get_reward_points()
+	{
+  	return $this->reward_points;
 	}
 }

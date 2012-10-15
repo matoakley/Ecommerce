@@ -15,7 +15,6 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'copy',
 				)),
 				'slug' => new Field_String(array(
-					'unique' => TRUE,
 					'on_copy' => 'clear',
 					'callbacks' => array(
 						'slug_valid' => array('Model_Product', '_is_slug_valid'),
@@ -63,9 +62,12 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
+				
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
+				'vat_code' => new Field_BelongsTo,
+				'reviews' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -89,6 +91,10 @@ class Ecommerce_Model_Product extends Model_Application
 		'active', 'disabled',
 	);
 	
+	public static $inputs = array(
+		'application/pdf', '.doc', '.xls', '.csv', 'image/*',
+	);
+	
 	public static $searchable_fields = array(
 		'filtered' => array(
 			'category' => array(
@@ -100,6 +106,9 @@ class Ecommerce_Model_Product extends Model_Application
 			),
 			'brand' => array(
 				'field' => 'brand',
+			),
+			'vat_code' => array(
+				'field' => 'vat_code',
 			),
 			'status' => array(
 				'field' => 'status',
@@ -145,7 +154,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	public static function most_popular_products($num_products = 5)
 	{
-		$sql = "SELECT products.id, products.name, SUM(sales_order_items.quantity) AS sold
+		$sql = "SELECT skus.id AS sku_id, products.id AS product_id, sales_order_items.product_name, SUM(sales_order_items.quantity) AS sold
 						FROM products
 						JOIN skus ON products.id = skus.product_id
 						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
@@ -154,13 +163,19 @@ class Ecommerce_Model_Product extends Model_Application
 						AND products.deleted IS NULL
 						AND sales_orders.deleted IS NULL
 						AND sales_order_items.deleted IS NULL
-						GROUP BY products.name
+						GROUP BY sales_order_items.product_name
 						ORDER BY SUM(sales_order_items.quantity) DESC
 						LIMIT $num_products";
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
 
+	public static function newest_products($num_products = 5)
+	{
+		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
+	}
+
+/*
 	public function display_meta_description()
 	{
 		// If a meta description has not been set then we'll build one from the description.
@@ -176,12 +191,14 @@ class Ecommerce_Model_Product extends Model_Application
 		
 		return $meta_description;
 	}
+*/
 
-	public function summarise_sku_price()
+	public function summarise_sku_price($is_admin = FALSE)
 	{
 		$summary = '';
 		
-		$skus = $this->get('skus')->where('status', '=', 'active')->execute();
+		// If this is a call from the admin then we want all SKUs, else just the ones that are live to the public and non-commercial
+		$skus = $is_admin ? $this->get('skus')->execute() : $this->get('skus')->where('commercial_only', '=', 0)->where('status', '=', 'active')->execute();
 		
 		if (count($skus) > 1)
 		{
@@ -232,11 +249,11 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{	
+	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
-		}
-		
+		}	
 		$this->name = $data['name'];
 		$this->slug = (isset($data['slug'])) ? $data['slug'] : $this->slug;
 		$this->description = $data['description'];
@@ -246,13 +263,17 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
-		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
 		if (isset($data['categories']))
 		{
 			$this->add('categories', $data['categories']);
+		}
+		
+		if (Kohana::config('ecommerce.modules.vat_codes'))
+		{
+			$this->vat_code = $data['vat_code'];
 		}
 		
 		// Ping sitemap to search engines to alert them of content change
@@ -310,7 +331,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
-									
+
 		return array_values(array_unique($options));
 	}
 	
@@ -319,6 +340,7 @@ class Ecommerce_Model_Product extends Model_Application
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
+							->order_by('value', 'DESC')
 							->execute();
 	}
 	
@@ -326,7 +348,14 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		return $this->get('skus')
 								->where('status', '=', 'active')
+								->where('commercial_only', '=', 0)
 								->execute();
+	}
+	
+	// Alias of active_skus()
+	public function retail_skus()
+	{
+		return $this->active_skus();
 	}
 	
 	public function total_stock()
@@ -348,5 +377,10 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$option->delete();
 		}
+	}
+	
+	public function average_rating()
+	{
+  	return Model_Review::get_average_rating($this);
 	}
 }

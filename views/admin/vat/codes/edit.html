@@ -1,0 +1,69 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if vat_code.loaded %}
+		Edit VAT Code: <strong>{{vat_code.code}}</strong>
+	{% else %}
+		Adding: <strong>New VAT Code</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if vat_code.loaded %}
+				<a href="/admin/vat_codes/delete/{{vat_code.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete VAT Code
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>VAT Code Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="vat-code-code" {{ errors.vat_code.code ? "class='error'" : "" }}>Code *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="vat-code-code" name="vat_code[code]" value="{{fields.vat_code.code}}"
+				class="inputtext long" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="vat-code-description">Description</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="vat-code-description" name="vat_code[description]" value="{{fields.vat_code.description}}"
+				class="inputtext long" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="vat-code-value" class="top" {{ errors.vat_code.value ? "class='error'" : "" }}>Value *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="vat-code-value" name="vat_code[value]" class="inputtext shortest tr" value="{{fields.vat_code.value}}" /> %
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+{% endblock %}

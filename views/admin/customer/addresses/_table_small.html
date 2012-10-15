@@ -1,0 +1,31 @@
+<table>
+	<thead>
+		<th width="1">&nbsp;</th>
+		<th>Name</th>
+		<th class="tr">Previous Delivery Addresses</th>
+		<th>&nbsp;</th>
+	</thead>
+	<tbody>	
+	{% for key, address in addresses %}
+		{% set row_class = ['', 'alternate']|cycle(key) %}
+		<tr width="1" class="{{row_class}}">
+			<td class="tc"><input type="radio" name="sales_order[delivery_address]" value="{{address.id}}" {% if fields.sales_order.delivery_address %}{% if address.id == fields.sales_order.delivery_address %}checked="checked"{% endif %}{% else %}{% if address.id == customer.default_shipping_address.id %}checked="checked"{% endif %}{% endif %} /></td>
+			<td>{{address.name}}</td>
+			<td class="tr">{{address.human_string}}</td>
+			<td width="1">
+			{% if address.notes %}
+				<img src="/media/images/icons/note.png" alt="" class="inline-icon show-address-notes" data-address-id="{{address.id}}" title="Show notes" />
+			{% endif %}
+			</td>
+		</tr>
+		{% if address.notes %}
+			<tr class="{{row_class}}">
+				<td colspan="999" class="address-notes-container" data-address-id="{{address.id}}">
+					<div class="hidden address-notes" data-address-id="{{address.id}}"><strong>Notes:</strong> {{address.notes}}</div>
+				</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+	</tbody>
+</table>
+{{addresses_pagination}}

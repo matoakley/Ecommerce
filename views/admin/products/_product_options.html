@@ -1,5 +1,3 @@
-<script type="text/javascript" src="/media/js/admin/product_options.js?v=5"></script>
-
 {% set i = 1 %}
 
 <div id="product-options">
@@ -15,17 +13,22 @@
 			</div>
 			<div class="grid_6 omega">
 			
-				<div class="option-container">
-				{% for value in product.get_option_values(option) %}
-					<div class="product-option-row">
+				<div class="option-container" id="option-container"  rel="{{option}}">
+				{% for key, value in product.get_option_values(option) %}
+
+					<div class="product-option-row" id="{{key}}" data-id="{{key}}" rel="{{option}}">
 						<input type="radio" name="new_sku_options_{{option}}" class="new-sku-options" value="{{value.id}}" />
 						<input type="text" name="product_options[{{value.id}}][value]" value="{{value.value}}" class="inputtext short" />
 						<img src="/media/images/admin/ajax-loader.gif" alt="Loading…" id="remove-option-value-spinner-{{value.id}}"
 							class="hidden left-pad inline-icon" />
- 						<a href="#" class="product-option-remove" data-value-id="{{value.id}}">remove</a>
+							<a href="#" class="product-option-remove" data-value-id="{{value.id}}">remove</a>
+ 					&nbsp;&nbsp;&nbsp;<img src="/images/icons/arrow_switch.png" alt="" class="inline-icon" align="middle right">
 					</div>
 				{% endfor %}
 				</div>
+				{% for key, value in product.get_option_values(option) %}
+  				<input type="hidden" name="product_options[{{value.id}}][order]" class="input-list" value="{{key}}" rel="{{option}}">
+				{% endfor %}
 
 				<input type="radio" name="" class="" value="" disabled="disabled" />
 				<input type="text" class="inputtext short" id="new-option-input-{{option}}" placeholder="New value..." />

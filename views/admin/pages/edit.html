@@ -1,12 +1,7 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/js/admin/pages.js"></script>
-
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
 {% endblock %}
 
 {% block page_title %}
@@ -92,7 +87,7 @@
 	</div>
 	
 	<div class="field">
-		<textarea name="page[body]" id="cms_body">{{page.body|e}}</textarea>
+		<textarea name="page[body]" class="description">{{page.body|e}}</textarea>
 	</div>
 	
 	<div class="field">

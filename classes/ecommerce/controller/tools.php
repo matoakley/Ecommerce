@@ -58,7 +58,14 @@ class Ecommerce_Controller_Tools extends Controller_Application
 	
 	public function action_sitemap()
 	{
-		$this->auto_render = FALSE;
+		if ( ! $this->request->param('human'))
+		{
+			$this->auto_render = FALSE;	
+		}
+		
+		// We will also create an array that can be used
+		// for a human readable sitemap
+		$human_sitemap = array();
 		
 		// Sitemap instance.
 		$sitemap = new Sitemap;
@@ -78,22 +85,20 @@ class Ecommerce_Controller_Tools extends Controller_Application
 			// Products
 			$products = Model_Product::search(array('status:active'));
 			
+			// Human readable container
+			$human_sitemap['products'] = array();
+			
 			foreach ($products['results'] as $product)
 			{
-				if (is_int($product->modified))
-				{
-					$last_mod = $product->modified;
-				}
-				else
-				{
-					$last_mod = $product->created;
-				}
-				
+				$location = URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE);
+				$human_sitemap['products'][$product->name] = $location;
+				$last_mod = is_int($product->modified) ? $product->modified : $product->created;
+								
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('view_product')->uri(array('slug' => $product->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -105,16 +110,21 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		if ($this->modules['categories'])
 		{
 			$categories = Model_Category::search(array('status:active'));
+		
+			// Human readable container
+			$human_sitemap['categories'] = array();
 			
 			foreach ($categories['results'] as $category)
 			{
-				$last_mod = time();
-				
+				$location = URL::site(Route::get('view_category')->uri(array('slug' => $category->slug)), TRUE);
+				$human_sitemap['categories'][$category->name] = $location;
+				$last_mod = is_int($category->modified) ? $category->modified : $category->created;
+							
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('view_category')->uri(array('slug' => $category->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -127,15 +137,20 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		{
 			$brands = Model_Brand::search(array('status:active'));
 			
+			// Human readable container
+			$human_sitemap['brands'] = array();
+			
 			foreach ($brands['results'] as $brand)
 			{
-				$last_mod = time();
+				$location = URL::site(Route::get('view_brand')->uri(array('slug' => $brand->slug)), TRUE);
+				$human_sitemap['brands'][$brand->name] = $location;
+				$last_mod = is_int($brand->modified) ? $brand->modified : $brand->created;
 				
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('view_brand')->uri(array('slug' => $brand->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -148,15 +163,20 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		{
 			$stockists = Model_Stockist::search(array('status:active'));
 			
+			// Human readable container
+			$human_sitemap['stockists'] = array();
+			
 			foreach ($stockists['results'] as $stockist)
 			{
-				$last_mod = time();
+				$location = URL::site(Route::get('view_stockist')->uri(array('slug' => $stockist->slug)), TRUE);
+				$human_sitemap['stockists'][$stockist->name] = $location;
+				$last_mod = is_int($stockist->modified) ? $stockist->modified : $stockist->created;
 				
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('view_stockist')->uri(array('slug' => $stockist->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -169,23 +189,21 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		{
 			// CMS Pages
 			$pages = Model_Page::search(array('status:active'));
+		
+			// Human readable container
+			$human_sitemap['pages'] = array();
 			
 			foreach ($pages['results'] as $page)
 			{
-				if (is_int($page->modified))
-				{
-					$last_mod = $page->modified;
-				}
-				else
-				{
-					$last_mod = $page->created;
-				}
+				$location = URL::site(Route::get('view_page')->uri(array('slug' => $page->slug)), TRUE);
+				$human_sitemap['pages'][$page->name] = $location;
+				$last_mod = is_int($page->modified) ? $page->modified : $page->created;
 				
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -200,17 +218,25 @@ class Ecommerce_Controller_Tools extends Controller_Application
 				{
 					$file = APPPATH.'views/pages/static/'.$page_file;
 					$file_bits = pathinfo($file);
-					$last_mod = filemtime($file);
 				
-					$url = new Sitemap_URL;
-					
-					// Set arguments.
-					$url->set_loc(URL::site(Route::get('view_static_page')->uri(array('slug' => $file_bits['filename'])), TRUE))
-				    ->set_last_mod($last_mod)
-				    ->set_change_frequency('daily');
+					// Ignore elements starting with _, empty filename and .
+					if (strlen($file_bits['filename']) > 1 AND substr($file_bits['filename'], 0, 1) != '_')
+					{
+						$location = URL::site(Route::get('view_static_page')->uri(array('slug' => $file_bits['filename'])), TRUE);
+						$tidy_file_name = ucwords(str_replace('-', ' ', $file_bits['filename']));
+						$human_sitemap['pages'][$tidy_file_name] = $location;
+						$last_mod = filemtime($file);
 	
-				// Add it to sitemap.
-				$sitemap->add($url);
+						$url = new Sitemap_URL;
+						
+						// Set arguments.
+						$url->set_loc($location)
+					    ->set_last_mod($last_mod)
+					    ->set_change_frequency('daily');
+		
+					  // Add it to sitemap.
+					  $sitemap->add($url);
+				  }
 				}
 			}
 		}
@@ -219,23 +245,21 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		{
 			// Products
 			$posts = Model_Blog_Post::search(array('status:active'));
+		
+			// Human readable container
+			$human_sitemap['blog_posts'] = array();
 			
 			foreach ($posts['results'] as $post)
 			{
-				if (is_int($post->modified))
-				{
-					$last_mod = $post->modified;
-				}
-				else
-				{
-					$last_mod = $post->created;
-				}
+				$location = URL::site(Route::get('blog_view')->uri(array('slug' => $post->slug)), TRUE);
+				$human_sitemap['blog_posts'][$post->name] = $location;
+				$last_mod = is_int($post->modified) ? $post->modified : $post->created;
 				
 				// New basic sitemap.
 				$url = new Sitemap_URL;
 	
 				// Set arguments.
-				$url->set_loc(URL::site(Route::get('blog_view')->uri(array('slug' => $post->slug)), TRUE))
+				$url->set_loc($location)
 				    ->set_last_mod($last_mod)
 				    ->set_change_frequency('daily');
 	
@@ -243,12 +267,20 @@ class Ecommerce_Controller_Tools extends Controller_Application
 				$sitemap->add($url);
 			}
 		}
-		
-		// Render the output.
-		$output = $sitemap->render();
 
-		// __toString is also supported.
-		echo $sitemap;
+		if ($this->request->param('human'))
+		{
+			ksort($human_sitemap);
+			foreach ($human_sitemap as &$a)
+			{ 
+				ksort($a);	
+			}
+			$this->template->sitemap = $human_sitemap;
+		}
+		else
+		{
+			echo $sitemap;
+		}
 		
 	}
 	
@@ -370,5 +402,19 @@ class Ecommerce_Controller_Tools extends Controller_Application
 		}
 		
 		echo '<p><strong>FIN</strong></p>';
+	}
+	
+	public function action_accept_cookies()
+	{
+		$this->auto_render = FALSE;
+		
+		// Dump a cookie on the user's machine so that we don't show them
+		// the EU Cookie Law disclaimer on future visits.
+		Cookie::set('cookies_accepted', time());
+		
+		if ( ! Request::$is_ajax)
+		{
+			$this->request->redirect(Request::$referrer);
+		}
 	}
 }

@@ -57,6 +57,21 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 			));
 	}
 	
+	public static $searchable_fields = array(
+		'filtered' => array(
+			'status' => array(
+				'field' => 'status',
+			),
+			'type' => array(
+				'field' => 'type',
+			),
+		),
+		'search' => array(
+			'code',
+			'description',
+		),
+	);
+	
 	public static $statuses = array(
 		'active', 'disabled',
 	);
@@ -138,7 +153,7 @@ class Ecommerce_Model_Promotion_Code extends Model_Application
 		$this->code = $data['code'];
 		$this->description = $data['description'];
 		$this->status = $data['status'];
-		$this->run_indefinitely = $data['run_indefinitely'];
+		$this->run_indefinitely = isset($data['run_indefinitely']);
 		if ( ! $this->run_indefinitely)
 		{
 			$this->start_date = $data['start_date'];

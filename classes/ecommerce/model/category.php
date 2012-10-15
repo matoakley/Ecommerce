@@ -5,6 +5,7 @@ class Ecommerce_Model_Category extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('categories')
+		  ->sorting(array('order' => 'ASC', 'name' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
@@ -147,12 +148,16 @@ class Ecommerce_Model_Category extends Model_Application
 	
 	public function update($data)
 	{
-		if (array_key_exists('parent', $data))
+		$this->name = $data['name'];
+		if (isset($data['slug']))
 		{
-			$data['parent'] = ($data['parent'] > 0) ? $data['parent'] : NULL;
+			$this->slug = $data['slug'];
 		}
-		
-		$this->set($data);
+		$this->status = $data['status'];
+		$this->description = $data['description'];
+		$this->meta_description = $data['meta_description'];
+		$this->meta_keywords = $data['meta_keywords'];
+		$this->parent = $data['parent'] > 0 ? $data['parent'] : NULL;
 		
 		return $this->save();
 	}

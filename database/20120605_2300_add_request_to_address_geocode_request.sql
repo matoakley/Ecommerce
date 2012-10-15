@@ -1,0 +1,2 @@
+-- Record the request URL when geocoding addresses as this is useful for debugging
+ALTER TABLE `address_geocode_requests` ADD COLUMN `request` varchar(1000) AFTER `status`, CHANGE COLUMN `response` `response` text DEFAULT NULL AFTER `request`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `response`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;

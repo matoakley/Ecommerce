@@ -4,12 +4,21 @@
 
 {% block content %}
 
-<p>
-	<a href="/admin/snippets/add" class="img-button">
-		<img src="/images/icons/add.png" alt="" />
-		New Page
-	</a>
-</p>
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/snippets/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Snippet
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
@@ -20,7 +29,7 @@
 </div>
 
 <div class="grid_8 omega tr">
-	Showing <strong>{{snippet * items - (items - 1)}}</strong> to <strong>{% if (snippet * items) <= total_snippets %}{{snippet * items}}{% else %}{{total_snippets}}{% endif %}</strong> of <strong>{{total_snippets}}</strong> items
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_snippets %}{{page * items}}{% else %}{{total_snippets}}{% endif %}</strong> of <strong>{{total_snippets}}</strong> items
 </div>
 
 <div class="clear"></div>

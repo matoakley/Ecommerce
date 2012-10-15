@@ -10,6 +10,10 @@ class Ecommerce_Model_Basket extends Model_Application
 				'items' => new Field_HasMany(array(
 					'foreign' => 'basket_item.basket_id',
 				)),
+				'customer_referral_code' => new Field_String,
+				'use_reward_points' => new Field_Boolean(array(
+				  'default' => FALSE,
+				)),
 				'delivery_option' => new Field_BelongsTo,
 				'sales_order' => new Field_BelongsTo,
 				'promotion_code' => new Field_BelongsTo,
@@ -52,6 +56,27 @@ class Ecommerce_Model_Basket extends Model_Application
 		$this->delivery_option = Kohana::config('ecommerce.default_delivery_option');
 	}
 	
+	protected function calculate_weight()
+	{
+		if ( ! Caffeine::modules('product_weights'))
+		{
+			throw new Kohana_Exception('Product weights module is not enabled.');
+		}
+	
+		$weight = 0;
+		foreach ($this->items as $item)
+		{
+			$weight += $item->sku->weight * $item->quantity;
+		}
+		
+		return $weight;
+	}
+	
+	public function calculate_shipping()
+	{
+		return $this; // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	}
+	
 	public function save($key = NULL)
 	{	
 		if ($this->promotion_code->loaded())
@@ -88,7 +113,7 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		foreach ($this->items as $item)
 		{
-			$subtotal += $item->sku->retail_price() * $item->quantity;
+			$subtotal += round($item->sku->retail_price(), 2) * $item->quantity;
 		}
 		
 		// Are there any special priced items to add due to promotion codes?
@@ -119,6 +144,12 @@ class Ecommerce_Model_Basket extends Model_Application
 		
 		$discount = 0;
 		
+		//if the customer is using their reward points then apply the discount
+		if ($this->use_reward_points)
+		{
+  		$discount += $this->calculate_discount_for_reward_points();
+		}
+		
 		if ($this->promotion_code->loaded())
 		{
 			// We should chack the promotion code conditions are still met as
@@ -139,10 +170,10 @@ class Ecommerce_Model_Basket extends Model_Application
 				switch ($this->promotion_code_reward->discount_unit)
 				{
 					case 'pounds':
-						$discount = $this->promotion_code_reward->discount_amount;
+						$discount += $this->promotion_code_reward->discount_amount;
 						break;
 					case 'percent':
-						$discount = $subtotal * ($this->promotion_code_reward->discount_amount / 100);
+						$discount += $subtotal * ($this->promotion_code_reward->discount_amount / 100);
 						break;
 				}
 			}
@@ -157,8 +188,6 @@ class Ecommerce_Model_Basket extends Model_Application
 				}
 				$qualifying_basket_items = array_intersect($items_on_offer, $items_in_basket);
 				
-				$discount = 0;
-				
 				foreach ($qualifying_basket_items as $item_id)
 				{
 					$item = $this->get('items')
@@ -171,7 +200,7 @@ class Ecommerce_Model_Basket extends Model_Application
 					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code_reward->discount_amount * $item->quantity;
+							$discount += $this->promotion_code_reward->discount_amount;
 							break;
 						case 'percent':
 							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
@@ -180,7 +209,14 @@ class Ecommerce_Model_Basket extends Model_Application
 				}
 			}
 		}
-			
+		
+		// Don't allow a discount greater than the subtotal, 
+		// that's just asking for trouble!
+		if ($discount > $subtotal)
+		{
+  		$discount = $subtotal;
+		}
+		
 		return number_format($discount, 2);
 	}
 	
@@ -235,5 +271,74 @@ class Ecommerce_Model_Basket extends Model_Application
 		return $this->save();
 	}
 	
-	public function calculate_shipping() {} // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	public function create_from_sales_order($sales_order)
+	{
+		foreach ($sales_order->items as $item)
+		{
+			if ($item->sku->loaded())
+			{
+				$this->add_item($item->sku->id, $item->quantity);
+			}
+		}
+		return $this;
+	}
+	
+	// Calculate the maximum number of points that could be used against this basket.
+	public function max_reward_points()
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	if ( ! Auth::instance()->logged_in())
+  	{
+    	return 0;
+  	}
+  	
+  	$reward_points_profile = Model_Reward_Points_Profile::load(1);
+  	$basket_points_max = $this->calculate_subtotal() / $reward_points_profile->redeem_value; 
+  	$customer = Auth::instance()->get_user()->customer;
+  	
+  	return $basket_points_max > $customer->reward_points ? $customer->reward_points : $basket_points_max ;
+	}
+	
+	public function use_reward_points($use)
+	{
+  	$this->use_reward_points = $use;
+  	return $this->save();
+	}
+	
+	public function calculate_discount_for_reward_points($points = NULL)
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	if ( ! $points)
+  	{
+    	$points = $this->max_reward_points();
+  	}
+  	
+  	return $points * Model_Reward_Points_Profile::load(1)->redeem_value;
+	}
+	
+	public function reset_reward_points()
+	{
+  	$this->reward_points = FALSE;
+  	return $this->save();
+	}
+	
+	public function reset_referral_code()
+	{
+  	$this->customer_referral_code = FALSE;
+  	return $this->save();
+	}
+	
+	public function use_referral_code($code)
+	{
+  	$this->customer_referral_code = $code;
+  	return $this->save();
+	}
 }

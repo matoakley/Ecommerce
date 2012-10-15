@@ -14,6 +14,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	
 	protected $auth;
 
+	protected $config;
+
 	/**
 	 * Setup view
 	 *
@@ -21,6 +23,11 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	 */
 	public function before()
 	{
+		$this->config = Kohana::config('ecommerce');
+		
+		Cookie::$salt = $this->config['cookie_salt'].$this->config['site_name'];
+		Cookie::$expiration = Date::YEAR;
+			
 		if ( ! IN_PRODUCTION)
 		{
 			$this->environment = 'development';
@@ -39,11 +46,13 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		$this->modules = Kohana::config('ecommerce.modules');
 		
-		parent::before();
+		parent::before();		
 	}
 	
 	public function after()
 	{	
+		$this->template->show_cookie_warning = ! Cookie::get('cookies_accepted');
+	
 		$this->template->base_url = URL::base(TRUE, TRUE);
 		$this->template->site_name = Kohana::config('ecommerce.site_name');
 		
@@ -54,8 +63,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
 		
-		$brands = Model_Brand::search(array('status:active'));
-		$this->template->all_brands = $brands['results'];
+		$this->template->all_brands = Jelly::select('brand')->where('status', '=', 'active')->execute();
 		
 		// Set recently viewed products
 		$this->template->recent_products = array_reverse($this->recent_products);
@@ -71,6 +79,8 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		
 		// API key when using Leaflet.js for maps
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
+		
+		$this->template->basket = $this->basket;
 	
 		parent::after();
 	}
@@ -83,6 +93,14 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 	private function build_breadcrumbs()
 	{		
 		return array_merge(array('/' => 'Home'), $this->breadcrumbs);
+	}
+	
+	public function requires_login()
+	{
+		if ( ! $this->auth->logged_in('login'))
+		{
+			$this->request->redirect(Route::get('login')->uri(array('get' => '?return_url='.$this->request->uri)));
+		}
 	}
 	
 }

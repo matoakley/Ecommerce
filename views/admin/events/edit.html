@@ -1,0 +1,185 @@
+{% extends "admin/templates/default.html" %}
+
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
+{% endblock %}
+
+{% block page_title %}
+	{% if event.loaded %}
+		Edit Event: <strong>{{event.name}}</strong>
+	{% else %}
+		Adding: <strong>New Event</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>.error
+{
+color:red;
+font-weight: bold;
+}
+</style>
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad{% if errors %} error{% endif %}">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if event.loaded %}
+				<a href="/admin/events/delete/{{event.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Event
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Event Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-name" class="{% if errors %} error{% endif %}">Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="event-name" name="event[name]" value="{{fields.event.name}}"
+				class="inputtext longest {% if not event.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-slug" class="{% if errors %} error{% endif %}">SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="event-slug" name="event[slug]" value="{{fields.event.slug}}" class="inputtext longest slug" 
+				{% if event.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+		<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-start_date" class="top{% if errors %} error{% endif %}">Start Date *</label>
+		</div>
+		<div class="grid_14 omega">		
+		  <input type="text" id="event-start_date" name="event[start_date]" value="{% if fields.event.start_date %}{{fields.event.start_date|date('Y/m/d')}}{% endif %}" class="inputtext shortest datepicker_one_month" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-start_date" class="top{% if errors %} error{% endif %}">End Date *</label>
+		</div>
+		<div class="grid_14 omega">		
+		  <input type="text" id="event-end_date" name="event[end_date]" value="{% if fields.event.end_date %}{{fields.event.end_date|date('Y/m/d')}}{% endif %}" class="inputtext shortest datepicker_one_month" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="event-status" name="event[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == event.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="event-description" class="top{% if errors %} error{% endif %}">Description *</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="event-description" name="event[description]" class="description">{{fields.event.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="grid_8 omega">
+	
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-line-1" {{ errors.address.line_1 ? "class='error'" : "" }}>Address 1</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-line-1" name="address[line_1]" value="{{fields.event.address.line_1}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-line-2" {{ errors.address.line_2 ? "class='error'" : "" }}>Address 2</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-line-2" name="address[line_2]" value="{{fields.event.address.line_2}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-town" {{ errors.address.town ? "class='error'" : "" }}>Town</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-town" name="address[town]" value="{{fields.event.address.town}}" class="inputtext long {% if not stockist.loaded %}slugify{% endif %}" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-county" {{ errors.address.county ? "class='error'" : "" }}>County</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-county" name="address[county]" value="{{fields.event.address.county}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="address-postcode" {{ errors.address.postcode ? "class='error'" : "" }}>Postcode</label>
+			</div>
+			<div class="grid_6 omega">
+				<input type="text" id="address-postcode" name="address[postcode]" value="{{fields.event.address.postcode}}" class="inputtext long" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+	<div class="grid_6 omega">
+				<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+	</div>
+	<div class="clear"></div>
+
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#event-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#event-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+	</script>
+{% endblock %}

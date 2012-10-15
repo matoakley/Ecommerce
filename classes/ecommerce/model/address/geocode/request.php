@@ -8,6 +8,7 @@ class Ecommerce_Model_Address_Geocode_Request extends Model_Application
 			'id' => new Field_Primary,
 			'address' => new Field_BelongsTo,
 			'status' => new Field_String,
+			'request' => new Field_String,
 			'response' => new Field_Serialized,
 			'created' =>  new Field_Timestamp(array(
 				'auto_now_create' => TRUE,
@@ -49,20 +50,45 @@ class Ecommerce_Model_Address_Geocode_Request extends Model_Application
 		$request_parts = array(
 			'q' => (string)$this->address,
 			'format' => 'json',
+			'countrycodes' => strtolower($this->address->country->iso_3_code),
 		);
 	
 		try
 		{
-			$response = json_decode(Remote::get($base_url.'?'.http_build_query($request_parts)));
+			$request_url = $base_url.'?'.http_build_query($request_parts);
+			$response = json_decode(Remote::get($request_url));
 			
+			$this->request = $request_url;
 			$this->response = $response;
 			
 			if (isset($response[0]))
 			{
 				$this->address->set_lat_lng($response[0]->lat, $response[0]->lon);
+				$this->status = 'completed';
 			}
-			
-			$this->status = 'completed';
+			else
+			{
+				$request_parts = array(
+					'q' => (string)$this->address->generic_string(),
+					'format' => 'json',
+					'countrycodes' => strtolower($this->address->country->iso_3_code),
+				);
+				$request_url = $base_url.'?'.http_build_query($request_parts);
+				$response = json_decode(Remote::get($request_url));
+				
+				$this->request = $request_url;
+				$this->response = $response;
+				
+				if (isset($response[0]))
+				{
+					$this->address->set_lat_lng($response[0]->lat, $response[0]->lon);
+					$this->status = 'completed';
+				}
+				else
+				{
+					$this->status = 'failed';
+				}
+			}
 		}
 		catch (Kohana_Exception $e)
 		{

@@ -1,10 +1,9 @@
 {% extends "admin/templates/default.html" %}
 
 {% block custom_scripts %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?3"></script>
-
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/media/js/admin/products.js?v=1"></script>
+	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=3"></script>{% endif %}
 {% endblock %}
 
 {% block page_title %}
@@ -17,7 +16,7 @@
 
 {% block content %}
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data" >
 
 	<div class="field">
 		<div class="grid_5 alpha">
@@ -82,13 +81,26 @@
 		<div class="grid_2 alpha">
 			<label for="product-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="product-status" name="product[status]">
 			{% for status in statuses %}
 				<option value="{{status}}" {{ status == fields.product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
+		
+		{% if modules.vat_codes %}
+		<div class="grid_2">
+			<label for="product-vat-code">VAT Code</label>
+		</div>
+		<div class="grid_8 omega">
+			<select name="product[vat_code]">
+			{% for vat_code in vat_codes %}
+				<option value="{{vat_code.id}}" {% if vat_code.id == product.vat_code.id %}selected="selected"{% endif %}>{{vat_code.code}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		{% endif %}
 		<div class="clear"></div>
 	</div>
 	
@@ -101,6 +113,10 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	
+	{# Custom Fields #}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	{% if modules.brands %}	
 	<div class="field">
@@ -227,7 +243,7 @@
 					<div class="grid_3 alpha tc">
 						
 						<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
-						
+						<p>Image ID : {{image.id}}</p>
 					</div>
 					
 					<div class="grid_2 tc" style="line-height:120px;">

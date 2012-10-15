@@ -1,0 +1,5 @@
+{% if template == 'customer' %}
+	{% include "admin/customer/addresses/_table.html" %}
+{% else %}
+	{% include "admin/customer/addresses/_table_small.html" %}
+{% endif %}

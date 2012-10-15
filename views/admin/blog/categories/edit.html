@@ -1,0 +1,160 @@
+{% extends "admin/templates/default.html" %}
+
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
+{% endblock %}
+
+{% block page_title %}
+	{% if category.loaded %}
+		Edit Blog Category: <strong>{{category.name}}</strong>
+	{% else %}
+		Adding: <strong>New Blog Category</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if category.loaded %}
+				<a href="/admin/blog_categories/delete/{{category.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Category
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Blog Category Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-name" {{ errors.category.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="category-name" name="category[name]" value="{{fields.category.name}}"
+				class="inputtext longest {% if not category.loaded %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-slug" {{ errors.category.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="category-slug" name="category[slug]" value="{{fields.category.slug}}" class="inputtext longest slug" 
+				{% if category.loaded %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if category.loaded %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="{% url "view_blog_category", ["slug":category.slug] %}" target="_blank">
+				{% url "view_blog_category", ["slug":category.slug] %}
+			</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="category-status" name="category[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == fields.category.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="category-description" name="category[description]" class="description">{{fields.category.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-parent">Parent Category</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="category-parent" name="category[parent]">
+				<option value="0">-- Top Level Category --</option>
+			{% for tlc in top_level_categories %}
+				<option value="{{tlc.id}}" {{ tlc.id == fields.category.parent.id ? "selected" : "" }}>{{tlc.name}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<h2>Meta Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-meta-description">Description</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="category-meta-description" name="category[meta_description]" class="wide">{{fields.category.meta_description}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the category.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="category-meta-keywords">Keywords</label>
+		</div>
+		<div class="grid_6">
+			<textarea id="category-meta-keywords" name="category[meta_keywords]" class="wide">{{fields.category.meta_keywords}}</textarea>
+		</div>
+		<div class="grid_2 tr">
+			<p><strong>What's this?</strong></p>
+		</div>
+		<div class="grid_6 omega">
+			<p class="right-pad">Provide a few keywords, separated by commas that relate to this category. These are used by Search Engines when indexing pages.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+<script type="text/javascript" charset="utf-8">
+	$('#category-meta-description').counter({
+		count: 'up',
+		goal: 160
+	});
+	$('#category-meta-keywords').counter({
+		count: 'up',
+		goal: 255
+	});
+</script>
+
+{% endblock %}
