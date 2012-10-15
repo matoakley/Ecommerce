@@ -17,9 +17,9 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 		parent::before();
 	}
 	
-	function action_view($slug = FALSE)
-	{		
-		$page = Model_Page::get_by_slug($slug);
+	function action_view()
+	{	
+		$page = Model_Page::get_by_slug($this->request->param('slug'));
 		
 		if ( ! $page->loaded())
 		{
@@ -35,9 +35,11 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 		$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug))), $page->name);
 	}
 	
-	function action_static($slug = FALSE)
+	function action_static()
 	{	
-		if ($slug = 'home')
+	  $slug = $this->request->param('slug');
+	  
+		if ($slug == 'home')
 		{
 			$this->template->featured_products = Jelly::select('product')
 														->where('status', '=', 'active')
@@ -46,6 +48,5 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 														->limit(4)								
 														->execute();
 		}
-	}
-	
+	}	
 }
