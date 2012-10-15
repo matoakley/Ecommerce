@@ -2,7 +2,7 @@
 
 class Ecommerce_Model_Application extends Jelly_Model
 {
-  public function display_meta_description()
+  public function display_meta_description($length = 160)
   { 
     if ($this->_meta->columns('meta_description') AND $this->meta_description AND $this->meta_description != '')
     {
@@ -10,15 +10,15 @@ class Ecommerce_Model_Application extends Jelly_Model
     }
     elseif ($this->_meta->columns('description'))
     {
-      return Text::limit_chars(strip_tags($this->description), 160, NULL, TRUE);
+      return Text::limit_chars(strip_tags($this->description), $length, NULL, TRUE);
     }
     elseif ($this->_meta->columns('body'))
     {
-      return Text::limit_chars(strip_tags($this->body), 160, NULL, TRUE);
+      return Text::limit_chars(strip_tags($this->body), $length, NULL, TRUE);
     }
     elseif ($this->_meta->columns('text'))
     {
-      return Text::limit_chars(strip_tags($this->text), 160, NULL, TRUE);
+      return Text::limit_chars(strip_tags($this->text), $length, NULL, TRUE);
     }
     
     return FALSE;
