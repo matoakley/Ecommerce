@@ -22,9 +22,9 @@ class Ecommerce_Controller_Brands extends Controller_Application {
 		$this->add_breadcrumb('/brands', 'Brands');
 	}
 
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$brand = Model_Brand::load($slug);
+		$brand = Model_Brand::load($this->request->param('slug'));
 	
 		if ( ! $brand->loaded())
 		{

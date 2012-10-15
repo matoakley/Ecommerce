@@ -27,7 +27,7 @@
 				{% endfor %}
 				</div>
 				{% for key, value in product.get_option_values(option) %}
-				<input type="hidden" name="product_options[{{value.id}}][order]" id="input-list{{key}}" class="input-list" value="{{key}}" rel="{{option}}">
+  				<input type="hidden" name="product_options[{{value.id}}][order]" class="input-list" value="{{key}}" rel="{{option}}">
 				{% endfor %}
 
 				<input type="radio" name="" class="" value="" disabled="disabled" />

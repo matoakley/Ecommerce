@@ -2,6 +2,28 @@
 
 class Ecommerce_Model_Application extends Jelly_Model
 {
+  public function display_meta_description($length = 160)
+  { 
+    if ($this->_meta->columns('meta_description') AND $this->meta_description AND $this->meta_description != '')
+    {
+      return $this->meta_description;
+    }
+    elseif ($this->_meta->columns('description'))
+    {
+      return Text::limit_chars(strip_tags($this->description), $length, NULL, TRUE);
+    }
+    elseif ($this->_meta->columns('body'))
+    {
+      return Text::limit_chars(strip_tags($this->body), $length, NULL, TRUE);
+    }
+    elseif ($this->_meta->columns('text'))
+    {
+      return Text::limit_chars(strip_tags($this->text), $length, NULL, TRUE);
+    }
+    
+    return FALSE;
+  }
+
 	public static function load($id = FALSE)
 	{
 		$model_meta = Jelly::meta(get_called_class());

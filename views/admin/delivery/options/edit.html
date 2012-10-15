@@ -55,10 +55,27 @@
 	</div>	
 	
 	<div class="field">
+	  <div class="grid_2 alpha">
+	    <label for="delivery-option-featured">Featured?</label>
+	  </div>
+	  <div class="grid_3">
+	    <input type="checkbox" name="delivery_option[featured]" id="delivery-option-featured" value="1" {% if fields.delivery_option.featured %}checked="checked"{% endif %} />
+	  </div>
+	  <div class="grid_3">
+	    <label for="delivery-option-customer-selectable">Selectable in retail basket?</label>
+	  </div>
+	  <div class="grid_8 omega">
+	    <input type="checkbox" name="delivery_option[customer_selectable]" id="delivery-option-customer-selectable" value="1" {% if fields.delivery_option.customer_selectable %}checked="checked"{% endif %} />
+	  </div>
+	  <div class="clear"></div>
+  </div>
+	
+	
+	<div class="field">
 		<div class="grid_2 alpha">
 			<label for="delivery-option-status">Status</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_4">
 			<select id="delivery-option-status" name="delivery_option[status]">
 			{% for status in statuses %}
 				<option value="{{status}}" {{ status == delivery_option.status ? "selected" : "" }}>{{status|humanize|title}}</option>

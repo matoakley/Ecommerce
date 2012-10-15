@@ -12,9 +12,9 @@ class Ecommerce_Controller_Categories extends Controller_Application
 		parent::before();
 	}
 	
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$category = Model_Category::load($slug);
+		$category = Model_Category::load($this->request->param('slug'));
 						
 		$this->session->set('last_viewed_category', $category);			
 								
