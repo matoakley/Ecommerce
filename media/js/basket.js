@@ -82,9 +82,13 @@ $(function(){
 				}
 				
 				// Check if we need to update the delivery option.
+				
+	      var dropdown = $('#delivery_option');
+				
 				$.ajax({
 					url: '/basket/update_delivery_option',
-					type: 'GET',
+					type: 'POST',
+					data: {id:dropdown.val()},
 					success: function(response){
 						if (response != 'false'){
 							$('#delivery_price').html(response);
