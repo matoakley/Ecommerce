@@ -83,6 +83,8 @@ $(function(){
 				
 				// Check if we need to update the delivery option.
 				
+if ($('#delivery_option').length) {
+				
 	      var dropdown = $('#delivery_option');
 				
 				$.ajax({
@@ -98,7 +100,23 @@ $(function(){
 						update_basket_total();
 					}
 				});
-			}
+			  }
+			  
+			  else {
+			     $.ajax({
+					url: '/basket/update_delivery_option',
+					type: 'GET',
+					success: function(response){
+						if (response != 'false'){
+							$('#delivery_price').html(response);
+						}
+					},
+					complete: function(){
+						update_basket_total();
+					}
+				});
+			  }		
+		   }
 		});
 	});
 	
