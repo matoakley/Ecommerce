@@ -107,9 +107,17 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 		$this->meta_description = $data['meta_description'];
 		$this->meta_keywords = $data['meta_keywords'];
 		
-		if ( ! $this->author->loaded())
-		{
-			$this->author = Auth::instance()->get_user()->id;
+	
+	  if (isset($data['author']))
+			{
+				$this->author = intval($data['author']);
+			}
+		else {
+		
+  		if ( ! $this->author->loaded())
+  		{
+  			$this->author = Auth::instance()->get_user()->id;
+  		}
 		}
 		
 		// Clear down and save categories.
