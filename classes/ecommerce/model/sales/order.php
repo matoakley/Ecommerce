@@ -172,12 +172,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->delivery_address = $delivery_address;
 		$sales_order->delivery_option = $basket->delivery_option;
 		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_net_price = $basket->delivery_option->price;
 		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
 		$sales_order->delivery_firstname = $delivery_name['delivery_firstname'];
 		$sales_order->delivery_lastname = $delivery_name['delivery_lastname'];
 		$sales_order->status = 'awaiting_payment';
-		$sales_order->order_subtotal = $basket->calculate_subtotal();
-		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'retail';
@@ -212,6 +211,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		{
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
 		}
+		
+		$sales_order->order_total = $basket->calculate_total();
+		$sales_order->calculate_vat_and_subtotal();
 		
 		if (Caffeine::modules('reward_points'))
 		{

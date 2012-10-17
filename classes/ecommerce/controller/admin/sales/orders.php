@@ -337,6 +337,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($this->template->render());
     $html2pdf->Output('Invoice '.$sales_order->id.'.pdf', 'D');
+    exit;
 	}
 	
 	public function action_generate_delivery_note()
@@ -356,6 +357,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($this->template->render());
     $html2pdf->Output('Delivery Note '.$sales_order->id.'.pdf', 'D');
+    exit;
 	}
 	
 	public function action_export_to_sage()

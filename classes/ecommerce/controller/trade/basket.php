@@ -147,7 +147,7 @@ class Ecommerce_Controller_Trade_Basket extends Controller_Trade_Application
 		
 		$this->basket->calculate_shipping();
 
-		echo number_format($this->basket->delivery_option->retail_price(), 2);
+		echo number_format($this->basket->delivery_option->price, 2);
 	}
 	
 	public function action_update_total()
