@@ -386,14 +386,14 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 				date('d/m/Y', $sales_order->invoiced_on),
 				'INV-'.$sales_order->id,
 				$company_name,
-				round($sales_order->order_subtotal, 2),
+				round(($sales_order->order_subtotal + $sales_order->delivery_option_net_price), 2),
 				'T1',
 				round($sales_order->order_vat, 2),
 			);
-		
+			
 			$data[] = $sales_order_data;
 		}
-
+		
 		$dir_name = APPPATH.'exports/sage/';
 		
 		if ( ! is_dir($dir_name))
