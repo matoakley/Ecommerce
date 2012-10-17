@@ -5,6 +5,7 @@ class Ecommerce_Model_Category extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('categories')
+		  ->sorting(array('order' => 'ASC', 'name' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(

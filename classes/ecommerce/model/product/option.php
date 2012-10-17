@@ -55,9 +55,10 @@ class Ecommerce_Model_Product_Option extends Model_Application
 	{	
 		$this->value = $data['value'];
 		
-		//if (isset($data['order'])) {
+		if (isset($data['order']))
+		{
   		$this->list_order = $data['order'];
-		//}
+		}
 		
 		return $this->save();
 	}

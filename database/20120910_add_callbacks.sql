@@ -1,0 +1,2 @@
+-- CREATE CALLBACKS FIELDs
+ALTER TABLE `customers` ADD COLUMN `callback_user` varchar(255) AFTER `notes`, ADD COLUMN `callback_date` datetime AFTER `callback_user`, ADD COLUMN `callback_notes` longtext AFTER `callback_date`;

@@ -12,9 +12,9 @@ class Ecommerce_Controller_Products extends Controller_Application
 		parent::before();
 	}
 
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$product = Model_Product::load($slug);
+		$product = Model_Product::load($this->request->param('slug'));
 		
 		if ( ! $product->loaded())
 		{
@@ -138,6 +138,15 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
+        	
+          if (Caffeine::modules('stock_control')) 
+          {
+            $data['stock'] = $sku->stock;
+          }
+          else 
+          {
+            $data['stock'] = $sku->stock_status == 'in_stock';
+          }
     		}
     	}
 		}

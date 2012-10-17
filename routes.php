@@ -14,6 +14,12 @@ Route::set('sales_order_generate_invoice', 'admin/sales_orders/<sales_order_id>/
 	'action' => 'generate_invoice',
 ));
 
+Route::set('sales_order_generate_receipt', 'admin/sales_orders/<sales_order_id>/generate_receipt')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'generate_receipt',
+));
+
 Route::set('customer_export_to_sage', 'admin/customers/<customer_id>/export_to_sage')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',
@@ -86,6 +92,12 @@ Route::set('customer_communication_delete', 'admin/customers/<customer_id>/delet
 	'action' => 'delete_communication',
 ));
 
+Route::set('mark_callback_complete', 'admin/customers/<customer_id>/mark_callback_complete/<communication_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'customers',
+	'action' => 'mark_callback_complete',
+));
+
 Route::set('add_promotion_code_reward', 'admin/promotion_codes/<promotion_code_id>/add_reward')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',
@@ -103,6 +115,12 @@ Route::set('delete_promotion_code_reward', 'admin/promotion_codes/<promotion_cod
 	'directory' => 'admin',
 	'controller' => 'promotion_codes',
 	'action' => 'delete_reward',
+));
+
+Route::set('edit_reward_points_profiles', 'admin/reward_points_profiles/edit/<profile_id>')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'reward_points_profiles',
+	'action' => 'edit',
 ));
 
 Route::set('add_blog_post', 'admin/blog/add_post')->defaults(array(
@@ -203,6 +221,11 @@ Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)
 ))->defaults(array(
 	'controller' => 'customers',
 	'action' => 'forgotten_password',
+));
+
+Route::set('customer_register', 'register')->defaults(array(
+  'controller' => 'customers',
+  'action' => 'register',
 ));
 
 Route::set('customer_dashboard', 'account')->defaults(array(

@@ -116,6 +116,7 @@ class Ecommerce_Controller_Trade_Basket extends Controller_Trade_Application
 			$data = array(
 				'basket_items' => $this->basket->count_items(),
 				'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
+				'basket_vat' => $this->basket->calculate_vat(),
 				'line_items' => ($item !== 0) ? $item->quantity : 0,
 				'line_total' => ($item !== 0) ? number_format(($item->sku->retail_price() * $item->quantity), 2) : 0,
 			);
@@ -146,13 +147,13 @@ class Ecommerce_Controller_Trade_Basket extends Controller_Trade_Application
 		
 		$this->basket->calculate_shipping();
 
-		echo number_format($this->basket->delivery_option->retail_price(), 2);
+		echo number_format($this->basket->delivery_option->price, 2);
 	}
 	
 	public function action_update_total()
 	{
 		$this->auto_render = FALSE;		
-		
+
 		$data = array(
 			'basket_subtotal' => number_format($this->basket->calculate_subtotal(), 2),
 			'basket_total' => number_format($this->basket->calculate_total(), 2),

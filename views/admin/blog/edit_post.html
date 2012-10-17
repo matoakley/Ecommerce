@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block custom_scripts %}
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
   <script type="text/javascript" src="/media/js/admin/blog_posts.js?v=1"></script>
 {% endblock %}
 
@@ -60,21 +60,21 @@
 		<div class="clear"></div>
 	</div>
 	
-<!--
+
 <div class="field">
 		<div class="grid_2 alpha">
-			<label for="blog-post-author">Author</label>
+			<label for="blog-post-status">Author</label>
 		</div>
 		<div class="grid_14 omega">
-		{% for key, author in fields.authors %}
 			<select id="blog-post-author" name="blog_post[author]">
-				<option value="{{blog_post.author.id}}">{{blog_post.author.firstname}} {{blog_post.author.lastname}}</option>
+			{% for user in users %}
+				<option value="{{user.id}}" {{ user.id == blog_post.author.id ? "selected" : "" }}>{{user.firstname}} {{user.lastname}}</option>
+				{% endfor %}
 			</select>
-			{% endfor %}
 		</div>
 		<div class="clear"></div>
 	</div>
--->
+
 
 	{% if blog_post.loaded %}
 	<div class="field">

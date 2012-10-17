@@ -42,6 +42,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 					'default' => 0
 				)),
 				'last_login' => new Field_Timestamp(array(
+				  'format' => 'Y-m-d H:i:s',
 					'pretty_format' => 'D M Y H:i',
 				)),
 				'short_bio' => new Field_Text,
@@ -207,7 +208,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		return $data;
 	}
-
+	
 	public function get_avatar()
 	{
 		$file_path = '/images/users/' . $this->id . '.jpg';

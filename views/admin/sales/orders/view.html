@@ -60,18 +60,26 @@
 			</div>
 			<div class="clear"></div>
 		</div>
+		{% endif %}
 		<div class="field">
 			<div class="grid_2 alpha tr">
 				<strong>Download</strong>
 			</div>
+			{% if sales_order.type == 'commercial' %}
 			<div class="grid_2">
-				<a href="{% url "sales_order_generate_invoice", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Invoice</a>
+				<a href="{% url "sales_order_generate_invoice", ["sales_order_id": sales_order.id] %}" class="right-pad" type='application/pdf'><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Invoice</a>
 			</div>
+			{% elseif sales_order.type == 'retail' %}
+				<div class="grid_2">
+				<a href="{% url "sales_order_generate_receipt", ["sales_order_id": sales_order.id] %}" class="right-pad" type='application/pdf'><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Receipt</a>
+			</div>
+			{% endif %}
 			<div class="grid_4 omega">
-				<a href="{% url "sales_order_generate_delivery_note", ["sales_order_id": sales_order.id] %}" class="right-pad"><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Delivery Note</a>
+				<a href="{% url "sales_order_generate_delivery_note", ["sales_order_id": sales_order.id] %}" class="right-pad" type='application/pdf'><img src="/media/images/icons/page_white_acrobat.png" alt="" class="inline-icon" /> Delivery Note</a>
 			</div>
 			<div class="clear"></div>
 		</div>
+		{% if modules.commercial_sales_orders %}
 		<div class="field">
 			<div class="grid_2 alpha">
 				<label for="sales-order-invoiced-on">Invoiced On</label>
@@ -81,8 +89,8 @@
 			</div>
 			<div class="clear"></div>
 		</div>
-	{% endif %}
-		
+		{% endif %}
+			
 		<div class="field">
 			<div class="grid_2 alpha">
 				<label>Status</label>

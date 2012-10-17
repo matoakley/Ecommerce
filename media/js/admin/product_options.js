@@ -200,12 +200,19 @@ $(function(){
 	$('.option-container').sortable({ 
 	  handle: '.inline-icon',
 	  cursor: 'move',
-    update : function (event, ui) { 
+    update : function (event, ui) {
       var rel = $(this).attr('rel');
       var order = $(this).sortable('toArray');
+      console.log(order);
+      var fields = $('.input-list[rel='+ rel +']');
+      $(order).each(function(i){
+        $(fields[order[i]]).val(i);
+      });
+/*
       $('.input-list[rel='+ rel +']').each(function(i) {
         $(this).val(order[i]);
       })
+*/
     } 
   }); 
 	

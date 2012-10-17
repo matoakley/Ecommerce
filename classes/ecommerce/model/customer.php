@@ -12,6 +12,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer_referral_code' => new Field_String,
 				'user' => new Field_BelongsTo,
 				'orders' => new Field_HasMany(array(
 					'foreign' => 'sales_order.customer_id',
@@ -194,6 +195,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
+	public static function find_by_referral_code($code)
+	{
+  	return Jelly::select('customer')->where('customer_referral_code', 'LIKE', $code)->load();
+	}
+	
 	public function update_at_checkout($data)
 	{
 		// Format email address to lowercase
@@ -216,6 +222,14 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function create_account($password)
 	{
 		$this->user = Model_User::create_for_customer($this, $password);
+		
+		// If we're using reward points, they now have an account
+		// and so we'll give them a referral code.
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->generate_referral_code();
+		}
+		
 		return $this->save();
 	}
 	
@@ -303,8 +317,11 @@ class Ecommerce_Model_Customer extends Model_Application
 			$this->user->add('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
 		}
 		elseif (Caffeine::modules('trade_area') AND ! isset($data['trade_area']))
-		{
-			$this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+		{ 
+		  if (Jelly::select('role')->where('name', '=', 'trade_area')->count() < 1)
+		   { 
+			   $this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+			 }
 		}
 
 		$this->status = $data['status'];
@@ -339,12 +356,15 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function delete($key = NULL)
 	{
 		// Remove any communications held against the customer to keep the DB tidy
-		foreach ($this->communications as $communication)
+		if ($this->communications)
 		{
-			$communication->delete();
-		}  
-	
-		return parent::delete($key);
+  		foreach ($this->communications as $communication)
+  		{
+  			$communication->delete();
+  		}  
+  	
+  		return parent::delete($key);
+    }
 	}
 	
 	public function archive()
@@ -394,6 +414,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$message->customer = $this;
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
 		$to = array(
 			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
 		);
@@ -461,5 +482,41 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->email = $data['email'];
 		$this->user->update_email($data['email']);
 		return $this->save();
+	}
+	
+	//Reward Points
+	
+	public function generate_referral_code()
+	{	
+  	while ($this->customer_referral_code = NULL)
+  	{
+    	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
+    	
+    	// Check code is unique
+    	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
+    	{
+      	$this->customer_referral_code = $code;
+    	}
+  	}
+		
+		return $this->save();
+	}
+	
+  public function add_reward_points($points)
+	{	
+  	$this->reward_points += $points;
+  	return $this->save();
+	}
+	
+	public function remove_reward_points($points)
+	{
+  	$this->reward_points -= $points;
+  	return $this->save();
+	}
+			
+	// Helper method as customer is cached when logged in
+	public function get_reward_points()
+	{
+  	return $this->reward_points;
 	}
 }
