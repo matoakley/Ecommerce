@@ -16,7 +16,19 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
-		$search = Model_Customer::search(array(), $items, FALSE, isset($_GET['include_archived']));
+		$order = array();
+		
+		if (isset($_GET['q']) && $_GET['q'] == "customer_type:1")
+		{
+  		$order['company'] = 'ASC';
+		}
+		else
+		{
+  		$order['lastname'] = 'ASC';
+  		$order['firstname'] = 'ASC';
+		}
+		
+		$search = Model_Customer::search(array(), $items, $order, isset($_GET['include_archived']));
 			
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(

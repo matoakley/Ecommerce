@@ -367,10 +367,20 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	public function active_skus()
 	{
-		return $this->get('skus')
+		if (IS_TRADE)
+		{
+  		return $this->get('skus')
 								->where('status', '=', 'active')
-								->where('commercial_only', '=', 0)
+								->where('show_in_commercial', '=', 1)
 								->execute();
+		}
+		else 
+		{
+  		return $this->get('skus')
+								->where('status', '=', 'active')
+								->where('show_in_retail', '=', 1)
+								->execute();
+		}
 	}
 	
 	// Alias of active_skus()

@@ -42,7 +42,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 					'default' => 0
 				)),
 				'last_login' => new Field_Timestamp(array(
-				  'format' => 'Y-m-d H:i:s',
+				  'format' => 'U',
 					'pretty_format' => 'D M Y H:i',
 				)),
 				'short_bio' => new Field_Text,
@@ -112,10 +112,10 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return parent::__get($field);
 	}
 	
-	public static function create_for_customer($customer, $password)
+	public static function create_for_customer($customer, $password, $username = NULL)
 	{
 		$user = Jelly::factory('user');
-		$user->username = $customer->email;
+		$user->username = $username ? $username : $customer->email;
 		$user->email = $customer->email;
 		$user->password = $password;
 		$user->password_confirm = $password;

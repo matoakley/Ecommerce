@@ -9,7 +9,8 @@ class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
+		$meta
+		//->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'customer_referral_code' => new Field_String,
@@ -219,9 +220,9 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $this;
 	}
 	
-	public function create_account($password)
+	public function create_account($password, $username = NULL)
 	{
-		$this->user = Model_User::create_for_customer($this, $password);
+		$this->user = Model_User::create_for_customer($this, $password, $username);
 		
 		// If we're using reward points, they now have an account
 		// and so we'll give them a referral code.

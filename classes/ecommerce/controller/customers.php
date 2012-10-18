@@ -146,21 +146,62 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	
 	public function action_create_account()
 	{
-		if ( ! $_POST)
-		{
-			throw new Kohana_Exception('No data posted');
-		}
-		
-		try
-		{
-			$customer = Model_Customer::load($_POST['customer_id']);
-			$customer->create_account($_POST['password']);
-			$this->auth->force_login($customer->user);
-			$this->request->redirect(Route::get('customer_dashboard')->uri());
-		}
-		catch (Kohana_Exception $e)
-		{
-			$this->request->redirect(Route::get('customer_dashboard')->uri());
-		}
+	  $fields = array();
+	  $errors = array();
+	 
+	  if ($_POST)
+	  {
+	    $customer = isset($_POST['customer_id']) ? Model_Customer::load($_POST['customer_id']) : Model_Customer::load();
+	  
+	    if ( ! $customer->loaded())
+	    {
+	      try
+	      {
+  	      $customer->validate($_POST); 
+	      }
+	      catch (Validate_Exception $e)
+	      {
+  	      $errors['customer'] = $e->array->errors('model/customer');
+	      }
+	    }
+	  
+	    $user = Model_User::load();
+	    try
+	    {
+  	    $user->validate($_POST);
+	    }
+	    catch (Validate_Exception $e)
+	    {
+  	    $errors['user'] = $e->array->errors('model/user');
+	    }
+	  
+	    if (empty($errors))
+	    {
+	      try
+	      {
+	        if ( ! $customer->loaded())
+	        {
+  	        $customer = Model_Customer::create($_POST);
+	        }
+    	    $customer->create_account($_POST['password'], $_POST['username']);
+    	    $this->auth->force_login($customer->user);
+    	    $this->request->redirect(Route::get('customer_dashboard')->uri());
+    	  }
+    	  catch (Kohana_Exception $e)
+    	  {
+  			  $this->request->redirect(Route::get('customer_dashboard')->uri());
+  		  }
+	    }
+	    else
+	    {
+  	    $fields = $_POST;
+	    }
+    }
+    
+    $this->template->fields = $fields;
+    $this->template->errors = $errors;
+    
+		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
+		$this->add_breadcrumb(URL::site(Route::get('customer_register')->uri()), 'Register');		
 	}
 }

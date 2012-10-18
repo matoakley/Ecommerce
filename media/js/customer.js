@@ -1,11 +1,11 @@
 define([], function(){
   
-  var signIn = function(email, password){
-    alert('signing in');
+  var authenticate = function(email, password){
+    $.post('/customers/ajax_login', { email: email, password: password: password });
   }
   
   return {
-    signIn: signIn
+    authenticate: authenticate
   };
   
 });

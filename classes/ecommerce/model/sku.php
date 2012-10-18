@@ -33,6 +33,8 @@ class Ecommerce_Model_Sku extends Model_Application
 				)),
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
+				'show_in_commercial' => new Field_Boolean,
+				'show_in_retail' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
 					'foreign' => 'sku_tiered_price.sku_id',
 				)),
@@ -158,6 +160,9 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
 		}
+		
+		$this->show_in_retail = isset($data['retail']) ? $data['retail'] : FALSE;
+		$this->show_in_commercial = isset($data['commercial']) ? $data['commercial'] : FALSE;
 		
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
