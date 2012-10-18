@@ -41,6 +41,7 @@ return array
 		'customer_accounts' => FALSE,
 		'dashboard_enhanced_sales_orders' => FALSE,
 		'delivery_options' => FALSE,
+		'display_in_retail_or_commercial' => FALSE,
 		'events' => FALSE,
 		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,

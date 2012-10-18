@@ -1,0 +1,2 @@
+-- adding show in columns to display product in different trade types
+ALTER TABLE `skus` ADD COLUMN `show_in_retail` tinyint(1) DEFAULT '1', ADD COLUMN `show_in_commercial` tinyint DEFAULT '1' AFTER `show_in_retail`;

@@ -88,7 +88,11 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		}
 		$item->unit_price = $basket_item->sku->retail_price();
 		$item->vat_rate = $basket_item->sku->vat_rate();
-		$item->net_total_price = round($item->net_unit_price, 2) * $basket_item->quantity; // Round here first to avoid anomalies of 1p on exports
+		$item->net_total_price = $basket_item->sku->price * $basket_item->quantity;//this was rounded on sku price but broke marriages (just a reminder)
+		
+		//THIS IS THE ORIGINAL JUST INCASE IT BREAKS ANYTHING
+		//$item->total_price = round($basket_item->sku->retail_price(), 2) * $basket_item->quantity;// Round here first to avoid anomalies of 1p on exports
+		
 		$item->total_price = ($item->net_total_price * (($item->vat_rate + 100) / 100)); // Round here first to avoid anomalies of 1p on exports
 		
 		$basket = $sales_order->basket;

@@ -222,7 +222,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
     	  $sales_order->reward_points_used = $basket->max_reward_points();
     	  $sales_order->reward_points_used_value = $basket->calculate_discount_for_reward_points();
 		  }
-		  $sales_order->reward_points_earned = $sales_order->order_subtotal / Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  $sales_order->reward_points_earned = floor($sales_order->order_total - $sales_order->delivery_option_price) * Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  //ORIGINAL $sales_order->order_subtotal / Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  
 		  $sales_order->customer_referral_code = $basket->customer_referral_code;
 		}
 		
