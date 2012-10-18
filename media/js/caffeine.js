@@ -1,3 +1,19 @@
+require.config({
+  paths: {
+    bootstrap: 'libs/bootstrap/bootstrap'
+  },
+  urlArgs: "v=1"
+});
+
+require(['app'], function(App){
+  App.initialize();
+});
+
+
+
+
+
+// This doesn't belong here
 $(function(){
 	// Deal with user dismissing EU Cookie Law disclaimer.
 	$('a#caffeine-accept-cookies').click(function(e){

@@ -66,10 +66,6 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 				{
 					$blog_post->update_custom_field_values($_POST['custom_fields']);
 				}
-				if (isset($_POST['author']))
-				{
-  				$this->author = $_POST['author'];
-				}
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
 				{
@@ -92,8 +88,11 @@ class Ecommerce_Controller_Admin_Blog extends Controller_Admin_Application {
 		
 		// Loads the script that counts chars on the fly for Meta fields.
 		$this->scripts[] = 'jquery.counter-1.0.min';
-		
 		$this->template->blog_post = $blog_post;
+		
+		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
+		$search = Model_User::search(array('role:'.Jelly::select('role')->where('name', '=', 'admin')->limit(1)->execute()->id), $items);
+		$this->template->users = $search['results'];
 		$this->template->statuses = Model_Blog_Post::$statuses;
 		$this->template->categories = Model_Blog_Category::get_admin_categories(FALSE, FALSE);
 	}

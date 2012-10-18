@@ -166,7 +166,7 @@
 		{% endif %}
 		<div class="clear"></div>
 	</div>
-	{% if modules.reward_points %}
+	{% if (modules.reward_points) and (customer.user.id) %}
 	<div class="field">
 		<div class="grid_4 alpha">
 			<label form="customer-status">Current Reward Points Total</label>

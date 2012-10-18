@@ -223,6 +223,11 @@ Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)
 	'action' => 'forgotten_password',
 ));
 
+Route::set('customer_register', 'register')->defaults(array(
+  'controller' => 'customers',
+  'action' => 'register',
+));
+
 Route::set('customer_dashboard', 'account')->defaults(array(
 	'controller' => 'customers',
 	'action' => 'index',

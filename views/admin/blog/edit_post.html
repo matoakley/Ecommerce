@@ -60,21 +60,21 @@
 		<div class="clear"></div>
 	</div>
 	
-<!--
+
 <div class="field">
 		<div class="grid_2 alpha">
 			<label for="blog-post-status">Author</label>
 		</div>
 		<div class="grid_14 omega">
 			<select id="blog-post-author" name="blog_post[author]">
-			{% for key, name in fields.author.firstname %}
-				<option value="{{blog_post.author.id}}">{{blog_post.author.firstname}} {{blog_post.author.lastname}}</option>
+			{% for user in users %}
+				<option value="{{user.id}}" {{ user.id == blog_post.author.id ? "selected" : "" }}>{{user.firstname}} {{user.lastname}}</option>
 				{% endfor %}
 			</select>
 		</div>
 		<div class="clear"></div>
 	</div>
--->
+
 
 	{% if blog_post.loaded %}
 	<div class="field">

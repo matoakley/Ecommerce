@@ -37,6 +37,7 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 		{
 			$this->template->blog_categories = Model_Blog_Category::build_category_tree(NULL, TRUE);
 		}
+		
 	}
 	
 	public function action_view($slug = FALSE)
