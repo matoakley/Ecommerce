@@ -9,7 +9,8 @@ class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
+		$meta
+		//->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'customer_referral_code' => new Field_String,

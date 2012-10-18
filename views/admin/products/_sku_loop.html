@@ -150,10 +150,11 @@
 {% if modules.commercial_sales_orders %}
 <div class="field">
 	<div class="grid_2 alpha">
-		<label for="sku-{{sku.id}}-commercial-only">Commercial only?</label>
+		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Display in:</label>
 	</div>
-	<div class="grid_14 omega">
-		<input type="checkbox" id="sku-{{sku.id}}-commercial-only" name="skus[{{sku.id}}][commercial_only]" {% if sku.commercial_only %}checked="checked"{% endif %} />
+	<div class="grid_8">
+		<input type="checkbox" id="sku-{{sku.id}}-retail" name="skus[{{sku.id}}][retail]" {% if sku.show_in_retail %}checked{% endif %} />Retail 
+		<input type="checkbox" id="sku-{{sku.id}}-commercial" name="skus[{{sku.id}}][commercial]" {% if sku.show_in_commercial %}checked{% endif %} />Commercial 
 	</div>
 	<div class="clear"></div>
 </div>
