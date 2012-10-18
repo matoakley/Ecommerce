@@ -219,9 +219,9 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $this;
 	}
 	
-	public function create_account($password)
+	public function create_account($password, $username = NULL)
 	{
-		$this->user = Model_User::create_for_customer($this, $password);
+		$this->user = Model_User::create_for_customer($this, $password, $username);
 		
 		// If we're using reward points, they now have an account
 		// and so we'll give them a referral code.

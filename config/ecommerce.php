@@ -2,7 +2,8 @@
 
 return array
 (
-	'software_version' => '1.2.2', 
+	'software_version' => '1.2.3',
+	'js_buster' => '1',
 
 	'vat_rate' => 20,
 	'default_price_includes_vat' => TRUE,

@@ -9,5 +9,10 @@ return array(
 	'lastname' => array(
 		'not_empty' => 'Last name cannot be blank.',
 	),
+	
+	'email' => array(
+  	'not_empty' => 'Email address cannot be blank.',
+  	'email' => 'Enter a valid email address.',
+	),
 
 );
