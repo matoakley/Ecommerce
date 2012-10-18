@@ -169,6 +169,27 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
+	
+		public static function top_selling_products($items = 5)
+	{
+  	$sql = "SELECT products.*
+						FROM products
+						JOIN skus ON products.id = skus.product_id
+						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
+						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
+						WHERE sales_orders.status = 'complete'
+						AND products.deleted IS NULL
+						AND sales_orders.deleted IS NULL
+						AND sales_order_items.deleted IS NULL
+						GROUP BY sales_order_items.product_name
+						ORDER BY SUM(sales_order_items.quantity) DESC
+						LIMIT $items";
+						
+		//return Database::instance()->query(Database::SELECT, $sql, FALSE);
+	
+	return Database::instance()->query(Database::SELECT, $sql, 'Model_Product');
+	                           
+	}
 
 	public static function newest_products($num_products = 5)
 	{
