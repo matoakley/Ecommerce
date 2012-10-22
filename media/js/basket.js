@@ -6,11 +6,13 @@ $(function(){
 			type: 'POST',
 			url: '/basket/update_delivery_option',
 			data: { id:dropdown.val() },
+			dataType: 'json',
 			beforeSend: function(){
 				$('#delivery-option-spinner').show();
 			},
 			success: function(response){
-				$('#delivery_price').html(response);
+				$('#delivery_price').html(response.price);
+				$('#delivery_option').val(response.id);
 				update_basket_total();
 			},
 			complete: function(){
@@ -83,23 +85,26 @@ $(function(){
 				
 				// Check if we need to update the delivery option.
 		   if ($('#delivery_option').length) {
-				
-	     var id = $('#delivery_option');
-	     
-	     }
+  	     var id = $('#delivery_option');
+  	     }
 	     else {
-	     
-	     var id = $('#id');
-	     
-	     }
+  	     var id = $('#id');
+  	     }
 				$.ajax({
 					url: '/basket/update_delivery_option',
 					type: 'POST',
+					dataType: 'json',
 					data: {id:id.val()},
 					success: function(response){
-						if (response != 'false'){
-							$('#delivery_price').html(response);
-						}
+					
+					//if the response id is the hidden option we want, we need to create a option for it
+  					 if (response.id == 2) {
+  						 add_hidden_delivery_option(response.id)
+						 }
+						 else {
+  						 $('#delivery_price').html(response.price);
+  						 $('#delivery_option').val(response.id);
+						 }
 					},
 					complete: function(){
 						update_basket_total();
@@ -108,6 +113,31 @@ $(function(){
 			}
 		});
 	});
+	
+	//a function to make the response of the hidden delivery option into a selectable option in the dropdown, only once!
+	
+	function add_hidden_delivery_option(id){
+	
+	if ( !$('#hidden_option').length) {
+	
+  	$.ajax({
+			type: 'POST',
+			url: '/delivery_options/available_options',
+			data: {id:id},
+			dataType: 'json',
+			async: false, // to stop things being done too cleverly at the same time
+			success: function(response){
+				console.log(response);
+				var hiddenOption = '<option id="hidden_option" value="' + response.id + '" selected="selected">' + response.name + '</option>';
+				$('#delivery_option').append(hiddenOption);
+				
+			},
+			complete: function () {
+
+  			}
+  		});
+  	}
+	}
 	
 	// Hide the manual basket update form elements if JS enabled
 	// as user will be able to use the awesome + and - buttons!
