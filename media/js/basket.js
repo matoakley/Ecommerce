@@ -96,15 +96,8 @@ $(function(){
 					dataType: 'json',
 					data: {id:id.val()},
 					success: function(response){
-					
-					//if the response id is the hidden option we want, we need to create a option for it
-  					 if (response.id == 2) {
-  						 add_hidden_delivery_option(response.id)
-						 }
-						 else {
   						 $('#delivery_price').html(response.price);
   						 $('#delivery_option').val(response.id);
-						 }
 					},
 					complete: function(){
 						update_basket_total();
@@ -127,7 +120,6 @@ $(function(){
 			dataType: 'json',
 			async: false, // to stop things being done too cleverly at the same time
 			success: function(response){
-				console.log(response);
 				var hiddenOption = '<option id="hidden_option" value="' + response.id + '" selected="selected">' + response.name + '</option>';
 				$('#delivery_option').append(hiddenOption);
 				
