@@ -489,7 +489,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	public function generate_referral_code()
 	{	
-  	while ($this->customer_referral_code = NULL)
+  	while (! $this->customer_referral_code)
   	{
     	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
     	
@@ -497,10 +497,11 @@ class Ecommerce_Model_Customer extends Model_Application
     	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
     	{
       	$this->customer_referral_code = $code;
+      	$this->save();
     	}
   	}
-		
-		return $this->save();
+  	
+  	return $this->save();
 	}
 	
   public function add_reward_points($points)
