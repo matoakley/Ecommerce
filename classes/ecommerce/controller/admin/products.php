@@ -207,11 +207,14 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				{
   				foreach ($_POST['skus'] as $sku_id => $sku)
   				{
-  					foreach($sku['tiered_prices'] as $tier_id => $price)
-  					{
-  						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
-  					}
-  				}
+  				  if (Caffeine::modules('tiered_prices'))
+  				     {
+        					foreach($sku['tiered_prices'] as $tier_id => $price)
+        					{
+        						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
+        					}
+        		   }
+  				  }
   		  }
 				
 				if (isset($_POST['product_images']))
