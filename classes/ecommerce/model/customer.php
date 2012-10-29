@@ -153,13 +153,13 @@ class Ecommerce_Model_Customer extends Model_Application
 		}
 		
 		$customer->status = 'active';
+		
 		$customer->save();
 		
 		if (isset($data['email_subscribe']))
 		{
 			Model_Subscriber::create($customer->email, $customer->id);
 		}
-		
 		return $customer;
 	}
 	
