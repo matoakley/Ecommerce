@@ -334,6 +334,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
+						AND deleted IS NULL
 						AND EXTRACT(MONTH FROM created) = $month
 						AND EXTRACT(YEAR FROM created) = $year";
 						
@@ -443,7 +444,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')";
+						WHERE status IN ('payment_received', 'complete')
+						AND deleted IS NULL";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
