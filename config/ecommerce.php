@@ -35,6 +35,7 @@ return array
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
 		'categories' => FALSE,
+		'comments' => FALSE,
 		'commercial_sales_orders' => FALSE,
 		'crm' => FALSE,
 		'custom_fields' => FALSE,
@@ -50,6 +51,7 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'reviews' => FALSE,
 		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
@@ -94,4 +96,6 @@ return array
 	'forum_post_name_max_length' => 245,
 	
 	'cookie_salt' => 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M',
+	
+	'moderate_reviews' => TRUE, // Should reviews be hidden until moderated?
 );

@@ -161,6 +161,16 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('event_delete', 'events/<event_slug>/delete')->defaults(array(
+	'controller' => 'events',
+	'action' => 'delete',
+));
+
+Route::set('event_add', 'events/add')->defaults(array(
+	'controller' => 'events',
+	'action' => 'add',
+));
+
 Route::set('event', 'events')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',

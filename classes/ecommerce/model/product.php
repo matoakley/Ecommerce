@@ -67,7 +67,6 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'clone',
 				)),
 				'vat_code' => new Field_BelongsTo,
-				'reviews' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -174,24 +173,6 @@ class Ecommerce_Model_Product extends Model_Application
 	{
 		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
 	}
-
-/*
-	public function display_meta_description()
-	{
-		// If a meta description has not been set then we'll build one from the description.
-		// Not ideal, but it's better than nothing!
-		if ( ! is_null($this->meta_description) AND $this->meta_description != '')
-		{
-			$meta_description = $this->meta_description;
-		}
-		else
-		{
-			$meta_description = Text::limit_chars(strip_tags($this->description), 160, ' &hellip;', TRUE);
-		}
-		
-		return $meta_description;
-	}
-*/
 
 	public function summarise_sku_price($is_admin = FALSE)
 	{
@@ -387,10 +368,5 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$option->delete();
 		}
-	}
-	
-	public function average_rating()
-	{
-  	return Model_Review::get_average_rating($this);
 	}
 }

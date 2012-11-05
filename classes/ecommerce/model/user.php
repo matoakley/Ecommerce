@@ -53,6 +53,8 @@ class Ecommerce_Model_User extends Model_Auth_User
 				'avatar' => new Field_String(array(
 					'in_db' => FALSE,
 				)),
+				'comments' => new Field_HasMany,
+				'reviews' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',

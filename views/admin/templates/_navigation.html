@@ -2,7 +2,6 @@
 	<ul>
 		<li class="first"><a href="/admin">Dashboard</a></li>
 		
-		
 		{% if modules.brands or modules.categories or modules.products or modules.stockists %}
 		<li>
 			<a href="#">Catalog</a>
@@ -30,6 +29,10 @@
 			</ul>
 
 		</li>
+		{% endif %}
+		
+		{% if modules.reviews %}
+		  <li><a href="/admin/reviews">Reviews</a></li>
 		{% endif %}
 		
 		{% if modules.sales_orders %}

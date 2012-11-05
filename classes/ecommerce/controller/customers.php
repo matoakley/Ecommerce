@@ -40,6 +40,8 @@ class Ecommerce_Controller_Customers extends Controller_Application
 			$this->request->redirect(Route::get('customer_dashboard')->uri());
 		}
 	
+		$ajax_data = array();
+	
 		// Process the log in
 		if ($_POST)
 		{
@@ -50,15 +52,22 @@ class Ecommerce_Controller_Customers extends Controller_Application
     		{
       		$this->basket->reset_referral_code();
     		}
-			
-				if (isset($_GET['return_url']))
-				{
-					$this->request->redirect('/'.$_GET['return_url']);
-				}
-				else
-				{
-					$this->request->redirect(Route::get('customer_dashboard')->uri());
-				}
+    		
+    		if (Request::$is_ajax)
+    		{
+      	  $ajax_data['user'] = $this->auth->get_user()->as_array();
+    		}
+    		else
+    		{
+  				if (isset($_GET['return_url']))
+  				{
+  					$this->request->redirect('/'.$_GET['return_url']);
+  				}
+  				else
+  				{
+  					$this->request->redirect(Route::get('customer_dashboard')->uri());
+  				}
+  		  }
 			}
 			else
 			{
@@ -66,7 +75,19 @@ class Ecommerce_Controller_Customers extends Controller_Application
 				$this->auth->logout();
 				$this->template->email = $_POST['login']['email'];
 				$this->template->login_failed = TRUE;
+				
+				$ajax_data['error'] = TRUE;
 			}
+		}
+		elseif (Request::$is_ajax)
+		{
+  		throw new Kohana_Exception('No data POSTed.');
+		}
+		
+		if (Request::$is_ajax)
+		{
+  		echo json_encode($ajax_data);
+  		exit;
 		}
 		
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
@@ -203,5 +224,5 @@ class Ecommerce_Controller_Customers extends Controller_Application
     
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
 		$this->add_breadcrumb(URL::site(Route::get('customer_register')->uri()), 'Register');		
-	}
+	}	
 }
