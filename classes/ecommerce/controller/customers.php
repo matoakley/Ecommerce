@@ -204,7 +204,7 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	        {
   	        $customer = Model_Customer::create($_POST);
 	        }
-    	    $customer->create_account($_POST['password'], $_POST['username']);
+    	    $customer->create_account($_POST['password'], isset($_POST['username']));
     	    $this->auth->force_login($customer->user);
     	    $this->request->redirect(Route::get('customer_dashboard')->uri());
     	  }

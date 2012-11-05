@@ -183,7 +183,12 @@ class Ecommerce_Controller_Basket extends Controller_Application
 		$this->basket->update_delivery_option($_POST['id']);
 		$this->basket->calculate_shipping();
 
-		echo number_format($this->basket->delivery_option->retail_price(), 2);
+		$data = array(
+		              'price' => number_format($this->basket->delivery_option->retail_price(), 2),
+		              'id' => $this->basket->delivery_option->id,
+		      );
+		
+		echo json_encode($data);
 	}
 	
 	public function action_update_total()
