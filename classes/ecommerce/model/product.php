@@ -244,7 +244,7 @@ class Ecommerce_Model_Product extends Model_Application
 				}
 				
 				$summary = ($multiple_prices) ? 'From ' : '';
-				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, Kohana::config('ecommerce.vat_rate')), 2);
+				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, $sku->vat_rate()), 2);
 			}
 		}
 		else
