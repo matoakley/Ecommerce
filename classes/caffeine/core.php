@@ -30,4 +30,29 @@ abstract class Caffeine_Core
 			return Kohana::config('ecommerce.modules');
 		}
 	}
+	
+	/**
+	 * Shortcut method for accessing config. If the config key is set then 
+	 * value is returned otherwise returns NULL.
+	 *
+	 * @param   string  config key to get
+	 * @return  mixed
+	 */
+	public static function config($path = NULL)
+	{
+	  $config = Kohana::config('ecommerce'); 
+  	return Arr::path($config, $path);
+	}
+	
+	/**
+	 * In order to bust the JS cache on production sites, we merge the 
+	 * software version for the module and the js_buster application value
+	 * to create a unique version number to append within RequireJS.
+	 *
+	 * @return  string
+	 */
+	public static function js_buster()
+	{
+  	return self::config('software_version').'.'.self::config('js_buster');
+	}
 }

@@ -1,11 +1,20 @@
 define([], function(){
   
-  var signIn = function(email, password){
-    alert('signing in');
+  /**
+  *  Handle asynchronous user sign in.
+  */
+  var authenticate = function(email, password, successCallback, errorCallback){
+    $.post('/customers/login', { login: { email: email, password: password }}, function(response){
+      if (response.user){
+        successCallback(response.user);
+      } else {
+        errorCallback(response.errors);
+      }
+    }, 'json');
   }
   
   return {
-    signIn: signIn
+    authenticate: authenticate
   };
   
 });

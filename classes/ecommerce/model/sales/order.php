@@ -182,7 +182,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->type = 'retail';
 		
 		$sales_order->save();
-		
+	
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -194,6 +194,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			{
 				case 'discount':
 					$sales_order->discount_amount = $basket->calculate_discount();
+					$sales_order->save();
 					break;
 					
 				case 'item':
@@ -333,6 +334,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
+						AND deleted IS NULL
 						AND EXTRACT(MONTH FROM created) = $month
 						AND EXTRACT(YEAR FROM created) = $year";
 						
@@ -442,7 +444,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 		$sql = "SELECT SUM(order_total) as total
 						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')";
+						WHERE status IN ('payment_received', 'complete')
+						AND deleted IS NULL";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -583,7 +586,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
   			if ($status == 'payment_received')
   			 {
   			   $this->customer->remove_reward_points($this->reward_points_used)->add_reward_points($this->reward_points_earned);
-  			   
+  			 
   			   // Referral points for customer and referrer...
   			  if ($this->customer_referral_code)
   			  {

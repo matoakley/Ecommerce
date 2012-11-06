@@ -3,7 +3,7 @@
 return array(
 
 	'email' => array(
-		'not_empty' => 'Email cannot be blank.',
+		'not_empty' => 'Email address cannot be blank.',
 		'email' => 'Email address is not valid.',
 		'unique' => 'Email address is already in use.',
 	),
@@ -12,11 +12,17 @@ return array(
 		'not_empty' => 'Email cannot be blank.',
 		'email' => 'Email address is not valid.',
 		'unique' => 'Email address is already in use.',
-	),	
+	),
 	
 	'password' => array(
 		'not_empty' => 'Password cannot be blank.',
-		'min_length' => 'Password must be at least 8 characters.',
+		'min_length' => 'Password too short.',
+	),
+	
+	'password_confirm' => array(
+		'not_empty' => 'Confirm your password.',
+		'min_length' => 'Password too short.',
+		'matches' => 'Does not match password.',
 	),
 
 );

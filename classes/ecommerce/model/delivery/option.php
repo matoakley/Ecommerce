@@ -52,9 +52,29 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 		),
 	);
 
-	public static function available_options()
+	public static function available_options($include_hidden = NULL)
 	{
-		return Jelly::select('delivery_option')->where('status', '=', 'active')->where('customer_selectable', '=', 1)->order_by('featured', 'DESC')->order_by('name', 'ASC')->execute();
+	     // if an id is passed then load that specific delivery option whether or not it is customer selectable
+	     // (for overriding dropdowns to show hidden delivery options)
+	 
+	 if ($include_hidden != NULL) 
+  	 {
+    	 $option = Jelly::select('delivery_option')->where('status', '=', 'active')->where('id', '=', $include_hidden)->load();
+    	 
+    	 $data = array (
+    	     'id' => $option->id,
+    	     'name' => $option->name,
+    	     'price' =>$option->price,
+    	     );
+    	     
+    	 echo json_encode($data);
+  	 }
+  	 
+	else 
+  	{
+    	return Jelly::select('delivery_option')->where('status', '=', 'active')->where('customer_selectable', '=', 1)->order_by('featured', 'DESC')->order_by('name', 'ASC')->execute();
+    }
+    
 	}
 
 	/**

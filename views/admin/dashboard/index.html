@@ -107,6 +107,8 @@
 		
 	</div>
 	
+	{% if modules.sales_orders %}
+	
 	<div class="dashboard-row">
 	
 		<div class="grid_8 alpha dashboard-element">
@@ -156,6 +158,59 @@
 		<div class="clear"></div>
 		
 	</div>
+	
+	{% endif %}
+
+	{% if modules.reviews %}
+
+	<div class="dashboard-row">
+	
+		<div class="grid_8 alpha dashboard-element">
+		
+			<h2>Reviews Awaiting Moderation</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					{% for key, review in reviews_for_moderation %}
+						<tr class="{{['', 'alternate']|cycle(key)}}">
+							<td><a href="/admin/reviews/edit/{{review.id}}">{{review.item().name}} by {% if review.user.customer.name() != '' %}{{review.user.customer.name()}}{% else %}{{review.user.name()}}{% endif %}</a></td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+
+		</div>
+		
+		<div class="grid_8 omega dashboard-element">
+			<h2>Comments Awaiting Approval</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					
+					{% for key, product in top_products %}
+						<tr class="{{['', 'alternate']|cycle(key)}}">
+							<td><a href="/admin/products/edit/{{product.product_id}}">{{product.product_name}}</a></td>
+							<td class="tr">{{product.sold}}</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+				
+		</div>
+	
+		<div class="clear"></div>
+		
+	</div>
+	
+	{% endif %}
 	
 	<div class="dashboard-row">
 		
