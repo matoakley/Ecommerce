@@ -158,6 +158,9 @@
 	</div>
 	<div class="clear"></div>
 </div>
+{% else %}
+		<input type="hidden" id="sku-{{sku.id}}-retail" name="skus[{{sku.id}}][retail]" value="1" />
+		<input type="hidden" id="sku-{{sku.id}}-commercial" name="skus[{{sku.id}}][commercial]" value="1"/>
 {% endif %}
 
 {% endfor %}
