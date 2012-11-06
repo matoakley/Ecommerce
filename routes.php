@@ -161,6 +161,16 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('event_delete', 'events/<event_slug>/delete')->defaults(array(
+	'controller' => 'events',
+	'action' => 'delete',
+));
+
+Route::set('event_add', 'events/add')->defaults(array(
+	'controller' => 'events',
+	'action' => 'add',
+));
+
 Route::set('event', 'events')->defaults(array(
 	'controller' => 'events',
 	'action' => 'index',
@@ -225,7 +235,7 @@ Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)
 
 Route::set('customer_register', 'register')->defaults(array(
   'controller' => 'customers',
-  'action' => 'register',
+  'action' => 'create_account',
 ));
 
 Route::set('customer_dashboard', 'account')->defaults(array(

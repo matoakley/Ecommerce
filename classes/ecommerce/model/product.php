@@ -67,7 +67,6 @@ class Ecommerce_Model_Product extends Model_Application
 					'on_copy' => 'clone',
 				)),
 				'vat_code' => new Field_BelongsTo,
-				'reviews' => new Field_HasMany,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -120,11 +119,12 @@ class Ecommerce_Model_Product extends Model_Application
 		),
 	);
 
-	/****** Validation Callbacks ******/
+		/****** Validation Callbacks ******/
 	
 	public static function _is_slug_valid(Validate $array, $field)
 	{
 		$valid = TRUE;
+		$product = Model_Product::load();
 		
 		// Is slug set (unless duplicating...)
 		if ( ! isset($array['duplicating']))
@@ -136,7 +136,11 @@ class Ecommerce_Model_Product extends Model_Application
 			else
 			{
 				// Is slug a duplicate?
-				$is_duplicate = (bool) Jelly::select('product')->where('slug', '=', $array['slug'])->where('deleted', 'IS', NULL)->count();
+				$is_duplicate = (bool) Jelly::select('product')
+                        				->where('slug', '=', $array['slug'])
+                        				->where('id', '<>', $product->id)
+                        				->where('deleted', 'IS', NULL)->count();
+				
 				if ($is_duplicate)
 				{
 					$valid = FALSE;
@@ -149,7 +153,7 @@ class Ecommerce_Model_Product extends Model_Application
 			$array->error('slug', 'Slug is a required field.');
 		}
 	}
-
+	
 	/****** Public Functions ******/
 	
 	public static function most_popular_products($num_products = 5)
@@ -169,29 +173,32 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
+	
+		public static function top_selling_products($items = 5)
+	{
+  	$sql = "SELECT products.*
+						FROM products
+						JOIN skus ON products.id = skus.product_id
+						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
+						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
+						WHERE sales_orders.status = 'complete'
+						AND products.deleted IS NULL
+						AND sales_orders.deleted IS NULL
+						AND sales_order_items.deleted IS NULL
+						GROUP BY sales_order_items.product_name
+						ORDER BY SUM(sales_order_items.quantity) DESC
+						LIMIT $items";
+						
+		//return Database::instance()->query(Database::SELECT, $sql, FALSE);
+	
+	return Database::instance()->query(Database::SELECT, $sql, 'Model_Product');
+	                           
+	}
 
 	public static function newest_products($num_products = 5)
 	{
 		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
 	}
-
-/*
-	public function display_meta_description()
-	{
-		// If a meta description has not been set then we'll build one from the description.
-		// Not ideal, but it's better than nothing!
-		if ( ! is_null($this->meta_description) AND $this->meta_description != '')
-		{
-			$meta_description = $this->meta_description;
-		}
-		else
-		{
-			$meta_description = Text::limit_chars(strip_tags($this->description), 160, ' &hellip;', TRUE);
-		}
-		
-		return $meta_description;
-	}
-*/
 
 	public function summarise_sku_price($is_admin = FALSE)
 	{
@@ -218,7 +225,7 @@ class Ecommerce_Model_Product extends Model_Application
 				}
 				
 				$summary = ($multiple_prices) ? 'From ' : '';
-				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, Kohana::config('ecommerce.vat_rate')), 2);
+				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, $sku->vat_rate()), 2);
 			}
 		}
 		else
@@ -387,10 +394,5 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$option->delete();
 		}
-	}
-	
-	public function average_rating()
-	{
-  	return Model_Review::get_average_rating($this);
 	}
 }

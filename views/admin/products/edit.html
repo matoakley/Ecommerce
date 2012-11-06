@@ -2,7 +2,7 @@
 
 {% block custom_scripts %}
 	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?v=1"></script>
+	<script type="text/javascript" src="/media/js/admin/products.js?v=2"></script>
 	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=3"></script>{% endif %}
 {% endblock %}
 
@@ -58,9 +58,12 @@
 		<div class="grid_2 alpha">
 			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
-		<div class="grid_14 omega">
-			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
-				{% if product.loaded and product.slug %} disabled {% endif %} />
+		<div class="grid_8 omega product-slug">
+		  <input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
+				readonly="readonly"/>
+		</div>
+		<div class="grid_2">
+		  <button id="edit-slug">Edit SEO Slug</button>
 		</div>
 		<div class="clear"></div>
 	</div>

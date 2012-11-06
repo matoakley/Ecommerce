@@ -138,7 +138,7 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
-        	
+        
           if (Caffeine::modules('stock_control')) 
           {
             $data['stock'] = $sku->stock;
@@ -146,6 +146,11 @@ class Ecommerce_Controller_Products extends Controller_Application
           else 
           {
             $data['stock'] = $sku->stock_status == 'in_stock';
+          }
+          
+          if (Caffeine::modules('reward_points'))
+          {
+            $data['reward_points'] = floor($data['price']) * Model_Reward_Points_Profile::load(1)->points_per_pound;
           }
     		}
     	}

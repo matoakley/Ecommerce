@@ -1,8 +1,7 @@
 require.config({
   paths: {
     bootstrap: 'libs/bootstrap/bootstrap'
-  },
-  urlArgs: "v=1"
+  }
 });
 
 require(['app'], function(App){

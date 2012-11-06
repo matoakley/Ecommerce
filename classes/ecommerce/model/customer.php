@@ -153,13 +153,13 @@ class Ecommerce_Model_Customer extends Model_Application
 		}
 		
 		$customer->status = 'active';
+		
 		$customer->save();
 		
 		if (isset($data['email_subscribe']))
 		{
 			Model_Subscriber::create($customer->email, $customer->id);
 		}
-		
 		return $customer;
 	}
 	
@@ -220,9 +220,9 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $this;
 	}
 	
-	public function create_account($password)
+	public function create_account($password, $username = NULL)
 	{
-		$this->user = Model_User::create_for_customer($this, $password);
+		$this->user = Model_User::create_for_customer($this, $password, $username);
 		
 		// If we're using reward points, they now have an account
 		// and so we'll give them a referral code.
@@ -489,7 +489,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	
 	public function generate_referral_code()
 	{	
-  	while ($this->customer_referral_code = NULL)
+  	while (! $this->customer_referral_code)
   	{
     	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
     	
@@ -497,10 +497,11 @@ class Ecommerce_Model_Customer extends Model_Application
     	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
     	{
       	$this->customer_referral_code = $code;
+      	$this->save();
     	}
   	}
-		
-		return $this->save();
+  	
+  	return $this->save();
 	}
 	
   public function add_reward_points($points)

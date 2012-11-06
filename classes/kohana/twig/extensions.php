@@ -49,6 +49,7 @@ class Kohana_Twig_Extensions extends Twig_Extension
 			'plural' => new Twig_Filter_Function('inflector::plural'),
 			'singular' => new Twig_Filter_Function('inflector::singular'),
 			'humanize' => new Twig_Filter_Function('inflector::humanize'),
+			'md5' => new Twig_Filter_Function('md5'),
 			
 			// HTML 
 			'obfuscate' => new Twig_Filter_Function('html::obfuscate'),			
