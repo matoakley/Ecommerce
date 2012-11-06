@@ -1340,6 +1340,18 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
    });
 });
 
+//IS immediate payment required?
+
+$('#immediate-payment').live('click', function(){
+
+  if ($('#immediate-payment').prop('checked')) {
+    $("#terms").attr('disabled', 'disabled');
+   }
+    
+  else {
+    $("#terms").removeAttr('disabled', 'disabled');
+   }
+});
 
 function number_format (number, decimals, dec_point, thousands_sep) {
     // Formats a number with grouped thousands  
