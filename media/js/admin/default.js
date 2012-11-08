@@ -1,4 +1,45 @@
+/* Bulk delete
 $(function(){
+  
+  $(function(){
+
+	$('#bulk-actions').change(function(e){
+		
+		if ($(this).val() == 'delete'){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to delete the selected item(s)?')) {
+		
+		var customers = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						customers[i] = $(this).val();
+  						i++;
+  				
+	
+  				var data = {
+    				customers: customers,
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/customers/bulk_delete',
+			type: 'POST',
+			data: data,
+			success: function(response){
+			     
+    				 window.location.reload();
+    				 }
+    				 });
+    				});
+    		   };
+    		  }
+    		})
+	     });
+*/
+
 
 	$('#nav ul').superfish();
 	
@@ -1338,6 +1379,7 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
     saveButton.remove();
     cancelButton.remove();
    });
+   
 });
 
 

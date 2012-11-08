@@ -1,4 +1,1 @@
-ALTER TABLE `reviews` CHANGE COLUMN `product_id` `object` varchar(50) NOT NULL, ADD COLUMN `object_id` int NOT NULL AFTER `object`, CHANGE COLUMN `user_id` `user_id` int(10) UNSIGNED DEFAULT NULL AFTER `object_id`, CHANGE COLUMN `rating` `rating` tinyint(1) DEFAULT NULL AFTER `user_id`, CHANGE COLUMN `review` `review` text DEFAULT NULL AFTER `rating`, ADD COLUMN `status` varchar(25) AFTER `review`, CHANGE COLUMN `created` `created` datetime NOT NULL AFTER `status`, CHANGE COLUMN `modified` `modified` datetime DEFAULT NULL AFTER `created`, CHANGE COLUMN `deleted` `deleted` datetime DEFAULT NULL AFTER `modified`;
-
--- Remove legacy table (was never used)
-DROP TABLE `product_reviews`;
+ALTER TABLE `comments` ADD COLUMN `status` varchar(255) AFTER `deleted`;

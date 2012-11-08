@@ -158,4 +158,41 @@ class Ecommerce_Controller_Products extends Controller_Application
 		
 		echo json_encode($data);
 	}
+	
+	public function action_get_product_reviews()
+	{  
+	  $product = Model_Product::load($_POST['id']);
+	  $errors = array();
+	  try
+      	{
+        	$reviews = $product->get_product_reviews($_POST['items'], $_POST['offset']);
+        }
+        catch (Validate_Exception $e)
+        {
+           $errors['reviews'] = $e->array->errors('model/reviews');
+        }
+        
+        $view = array();
+        
+  	foreach ($reviews->as_array() as $review)
+  	  {
+  	    $review_model = Model_Review::load($review['id']);
+    	  $template_data = array(
+					'review' => $review_model,
+					'auth' => $this->auth,
+				);
+				
+				$view[] = Twig::factory('products/_review.html', $template_data, $this->environment)->render(); 
+		  }
+		  
+  	if (Request::$is_ajax)
+    {
+      $this->auto_render = FALSE;
+      $this->request->headers['Content-Type'] = 'application/json';
+      echo json_encode(array(
+        'errors' => $errors,
+        'reviews' => isset($view) ? $view : NULL,
+      ));
+    }
+ }
 }

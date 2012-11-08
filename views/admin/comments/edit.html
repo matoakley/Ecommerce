@@ -1,0 +1,83 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+  Moderate comment of <strong>{{comment.item().name}}</strong> by <strong>{% if comment.user.customer.name() != '' %}{{comment.user.customer.name()}}{% else %}{{comment.user.name()}}{% endif %}</strong>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if comment.loaded %}
+				<a href="/admin/comments/delete/{{comment.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete comment
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>comment Details</h2>
+	
+	<div class="field">
+  	<div class="grid_2 alpha">
+  	  <label>Customer</label>
+    </div>
+    <div class="grid_4">
+      <a href="/admin/customers/edit/{{comment.user.customer.id}}">{% if comment.user.customer.name() != '' %}{{comment.user.customer.name()}}{% else %}{{comment.user.name()}}{% endif %}</a>
+    </div>
+    <div class="grid_2">
+			<label>Customer Email</label>
+		</div>
+		<div class="grid_4 omega">
+		  <a href="mailto:{{comment.user.email}}">{{comment.user.email}}</a>
+		</div>
+		<div class="clear"></div>
+  </div>
+  
+  <div class="field">
+    <div class="grid_2 alpha">
+      <label>Item</label>
+    </div>
+    <div class="grid_4">
+      {{comment.object|title}}
+    </div>
+		<div class="clear"></div>
+  </div>
+				
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="comment-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="comment-status" name="comment[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == fields.comment.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="comment-comment" class="top">comment</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="comment-comment" name="comment[comment]">{{fields.comment.comment}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+		
+</form>
+
+{% endblock %}
