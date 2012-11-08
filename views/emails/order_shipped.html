@@ -30,6 +30,10 @@
 			<td style="text-align:right;">&pound;{{sales_order.delivery_option_price|num_format(2)}}</td>
 		</tr>
 		<tr>
+			<td colspan="2" style="text-align:right;"><strong>Discount</strong></td>
+			<td style="text-align:right;"> - &pound;{{sales_order.discount_amount|num_format(2)}}</td>
+		</tr>
+		<tr>
 			<td colspan="2" style="text-align:right;"><strong>Order Total</strong></td>
 			<td style="text-align:right;"><strong>&pound;{{sales_order.order_total|num_format(2)}}</strong></td>
 		</tr>

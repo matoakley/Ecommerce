@@ -81,7 +81,8 @@
 			<label for="sales-order-invoice-terms">Invoice Terms</label>
 		</div>
 		<div class="grid_8 omega">
-			<input type="text" name="sales_order[invoice_terms]" value="{{fields.sales_order.invoice_terms}}" class="inputtext shortest" /> days
+   			<input type="text" class="inputtext shortest" name="sales_order[invoice_terms]" id="terms" value="{{fields.sales_order.invoice_terms}}" {% if fields.sales_order.invoice_terms == 0 %} disabled="disabled" {% endif %}/> days / 
+				<input type="checkbox" id="immediate-payment" name="sales_order[invoice_terms]" value="0" {% if fields.sales_order.invoice_terms == 0 %} checked {% endif %}> Immediate payment required
 		</div>
 		<div class="clear"></div>
 	</div>

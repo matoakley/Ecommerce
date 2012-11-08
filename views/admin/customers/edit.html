@@ -107,7 +107,8 @@
 				<label for="customer-invoice-terms">Invoice Terms</label>
 			</div>
 			<div class="grid_14 omega">
-				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" value="{{fields.customer.invoice_terms}}" /> days
+				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" id="terms" value="{{fields.customer.invoice_terms}}" {% if fields.customer.invoice_terms == 0 %} disabled="disabled" {% endif %}/> days / 
+				<input type="checkbox" id="immediate-payment" name="customer[invoice_terms]" value="0" {% if fields.customer.invoice_terms == 0 %} checked {% endif %}> Immediate payment required
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -377,5 +378,6 @@
 	{% endif %}
 		
 </form>
+
 
 {% endblock %}

@@ -89,7 +89,7 @@
 			<td class="tc"><span class="status_tag {{sales_order.status}}">{{sales_order.status|humanize|title}}</td>
 			<td class="tr">{{sales_order.created|date('d/m/Y H:i')}}</td>
 			{% if modules.commercial_sales_orders %}
-				<td class="tr">{% if sales_order.invoice_terms %}{{sales_order.invoice_due_date|date('d/m/Y')}}{% endif %}</td>
+				<td class="tr">{% if sales_order.invoice_terms > 0 %}{{sales_order.invoice_due_date|date('d/m/Y')}}{% elseif (sales_order.invoice_terms == 0) and (sales_order.type == "commercial") %}Immediate{% endif %}</td>
 			{% endif %}
 		</tr>
 	{% endfor %}
