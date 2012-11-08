@@ -25,7 +25,7 @@ class Ecommerce_Controller_Comments extends Controller_Application
   	}
   	
   	$errors = array();
-  	
+  
   	try
   	{
     	$comment = Model_Comment::create($_POST['object'], $_POST['comment'], $this->auth->get_user());
@@ -42,7 +42,6 @@ class Ecommerce_Controller_Comments extends Controller_Application
       echo json_encode(array(
         'errors' => $errors,
         'comment' => isset($comment) ? $comment->as_array() : NULL,
-        'user' => $this->auth->get_user()->as_array(),
       ));
     }
 	}

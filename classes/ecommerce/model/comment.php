@@ -68,7 +68,7 @@ class Ecommerce_Model_Comment extends Model_Application
 	  {
   	  throw new Kohana_Exception('Invalid object.');
 	  }
-	
+	  
   	$comment = Jelly::factory('comment');
   	
   	$comment->object = $object;
@@ -76,6 +76,21 @@ class Ecommerce_Model_Comment extends Model_Application
   	$comment->user = $user;
   	$comment->up_vote = isset($data['up_vote']) ? $data['up_vote'] : NULL;
   	$comment->down_vote = isset($data['down_vote']) ? $data['down_vote'] : NULL;
+  	$comment->comment = isset($data['comment']) ? $data['comment'] : NULL;
+  	
+  	
+  	$review = Model_Review::load($comment->object_id);
+  	
+  	if ($comment->up_vote = 1)
+  	  {
+    	  $review->popularity += 1;
+    	  $review->save();
+  	  }
+    if ($comment->down_vote = 1)
+  	  {
+    	  $review->popularity -= 1;
+    	  $review->save();
+  	  }
   	
   	$comment->save()->update_status(Caffeine::config('moderate_reviews') ? 'awaiting_moderation' : 'active');
 

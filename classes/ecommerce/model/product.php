@@ -351,11 +351,11 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 	
-	public function get_product_reviews($items, $offset = NULL)
+	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')
 	{
 		return Jelly::select('review')
 							->where('object_id', '=', $this->id)
-							->order_by('created', 'ASC')
+							->order_by($order, $direction)
 							->limit($items)
 							->offset($offset)
 							->execute();

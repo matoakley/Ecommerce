@@ -16,6 +16,7 @@ class Ecommerce_Model_Review extends Model_Application
   				),
   			)),
   			'object_id' => new Field_Integer,
+  			'popularity' => new Field_Integer,
   			'user' => new Field_BelongsTo,
   			'rating' => new Field_Integer,
   			'review' => new Field_Text,

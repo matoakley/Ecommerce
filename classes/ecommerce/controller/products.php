@@ -165,7 +165,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 	  $errors = array();
 	  try
       	{
-        	$reviews = $product->get_product_reviews($_POST['items'], $_POST['offset']);
+        	$reviews = $product->get_product_reviews($_POST['items'], $_POST['offset'], isset($_POST['order']) ? $_POST['order'] : 'created' , isset($_POST['direction']) ? $_POST['direction'] : 'ASC');
         }
         catch (Validate_Exception $e)
         {
