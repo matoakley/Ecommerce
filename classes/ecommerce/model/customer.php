@@ -50,6 +50,10 @@ class Ecommerce_Model_Customer extends Model_Application
 				'position' => new Field_String,
 				'invoice_terms' => new Field_Integer,
 				'reward_points' => new Field_Integer,
+				'D_O_B' =>  new Field_Timestamp(array(
+					'format' => 'Y-m-d',
+					'pretty_format' => 'd/m/Y',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -150,6 +154,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		if (isset($data['company']))
 		{
 			$customer->company = $data['company'];
+		}
+		
+		if (isset($data['D_O_B']))
+		{
+			$customer->D_O_B = $data['D_O_B'];
 		}
 		
 		$customer->status = 'active';
