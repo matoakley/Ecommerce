@@ -34,10 +34,21 @@ define([], function(){
      }, 'json');
   };
   
+  var submitABook = function(obj, successCallback, errorCallback){
+    $.post('/products/submit_a_book', obj, function(response){
+       if (response.id){
+        successCallback(response.id);
+      } else {
+        errorCallback(response.error);
+      }
+     }, 'json');
+  };
+  
   return {
     asyncSubmit: asyncSubmit,
     likeDislike: likeDislike,
-    showMore: showMore
+    showMore: showMore,
+    submitABook: submitABook
   };
   
 });
