@@ -28,6 +28,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+<!-- 		bulk delete <option value="delete">Delete Selected</option> -->
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -60,7 +61,7 @@
 			{% set edit_link = customer.parent.id %}
 		{% endif %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{customer.id}}" /></td>
 			<td><a href="/admin/customers/edit/{{edit_link}}">{{customer.lastname}}, {{customer.firstname}}</td>
 			<td>{{customer.company}}</td>
 			<td>{{customer.account_ref}}</td>

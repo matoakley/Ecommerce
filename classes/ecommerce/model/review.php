@@ -16,6 +16,7 @@ class Ecommerce_Model_Review extends Model_Application
   				),
   			)),
   			'object_id' => new Field_Integer,
+  			'popularity' => new Field_Integer,
   			'user' => new Field_BelongsTo,
   			'rating' => new Field_Integer,
   			'review' => new Field_Text,
@@ -88,7 +89,7 @@ class Ecommerce_Model_Review extends Model_Application
   	$review->review = isset($data['review']) ? $data['review'] : NULL;
   	
   	$review->save()->update_status(Caffeine::config('moderate_reviews') ? 'awaiting_moderation' : 'active');
-  	
+
   	return $review;
 	}
 	
