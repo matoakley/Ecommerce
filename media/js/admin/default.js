@@ -827,8 +827,6 @@ $(function(){
    });
   });
 
-});
-
 // inline editor for contacts
 
 $('.inline_editor_textarea_contacts').live('mouseenter', function(){
