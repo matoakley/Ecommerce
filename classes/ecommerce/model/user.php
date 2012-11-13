@@ -55,6 +55,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 				)),
 				'comments' => new Field_HasMany,
 				'reviews' => new Field_HasMany,
+				'wish_list_id' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -301,5 +302,36 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$this->email = $email;
 		$this->username = $email;
 		return $this->save();
+	}
+	
+	public function watch_item($item)
+	{
+	  $wish_list = Model_Wish_List::load();
+	  $wish_list->add_watch_item($this, $item);
+
+	}
+	
+	public function unwatch_item($item)
+	{
+		$wish_list = Model_Wish_List::load();
+	  $wish_list->remove_watch_item($this, $item);
+	}
+	
+	public function generate_wish_list_id()
+	{
+    $user = Jelly::select('user')->where('id', '=', $this->id)->load();
+    
+		$length = 16;
+	
+		$code = FALSE;
+		
+		while ( ! $code OR Jelly::select('user')->where('wish_list_id', '=', $code)->count() > 0)
+		{
+			$code = Text::random('distinct', $length);
+		}
+		
+		$user->wish_list_id = $code;
+		$user->save();
+	
 	}
 }

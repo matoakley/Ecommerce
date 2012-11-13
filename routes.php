@@ -161,6 +161,30 @@ Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'action' => 'accept_cookies',
 ));
 
+Route::set('public_wish_list_page', 'wish_lists/public/<wish_list_id>')
+	->defaults(array(
+		'controller' => 'wish_lists',
+		'action' => 'public_wish_list_page',
+	));
+
+Route::set('add_to_wish_list', 'wish_lists/wish-list-items/<product_slug>/add')
+	->defaults(array(
+		'controller' => 'wish_lists',
+		'action' => 'add_to_wish_lists',
+	));
+	
+Route::set('remove_from_wish_list', 'wish_lists/<product_slug>/remove')
+	->defaults(array(
+		'controller' => 'wish_lists',
+		'action' => 'remove_from_wish_lists',
+	));
+
+Route::set('wish_lists', 'wish_lists/wish_list/')
+	->defaults(array(
+		'controller' => 'wish_lists',
+		'action' => 'wish_lists',
+	));
+	
 Route::set('event_delete', 'events/<event_slug>/delete')->defaults(array(
 	'controller' => 'events',
 	'action' => 'delete',

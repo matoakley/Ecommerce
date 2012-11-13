@@ -112,14 +112,20 @@ $(function(){
 	});
 	
 	$('#check-all').click(function(){
-		
-		var checked = $(this).attr('checked');
-		
-		$('.row-selector').each(function(){
-			
-			$(this).attr('checked', checked).trigger('change');
-		});
-	});
+    
+      var checked = $(this).attr('checked');
+      $('.row-selector').each(function(){
+          
+      if (checked){
+              
+      $(this).attr('checked', 'checked');
+          }
+      else {
+              
+      $(this).removeAttr('checked');
+      }
+    });
+  });
 	
 	$('#bulk-actions').change(function(){
 		
@@ -826,8 +832,6 @@ $(function(){
     cancelButton.remove();
    });
   });
-
-});
 
 // inline editor for contacts
 

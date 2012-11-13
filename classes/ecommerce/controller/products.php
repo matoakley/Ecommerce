@@ -48,6 +48,10 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
 		
+		if (Caffeine::modules('wish_list'))
+		  {
+  		  $this->template->in_wish_list = ($this->auth->logged_in()) ? in_array($product->id, $this->auth->get_user()->wish_list_items->as_array('id', 'id')) : FALSE;
+		  }
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');
 		

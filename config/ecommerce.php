@@ -62,6 +62,7 @@ return array
 		'trade_area' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
+		'wish_list' => FALSE,
 		
 	),
 	
