@@ -87,6 +87,7 @@ class Ecommerce_Model_Review extends Model_Application
   	$review->user = $user;
   	$review->rating = isset($data['rating']) ? $data['rating'] : NULL;
   	$review->review = isset($data['review']) ? $data['review'] : NULL;
+  	$review->popularity = 0;
   	
   	$review->save()->update_status(Caffeine::config('moderate_reviews') ? 'awaiting_moderation' : 'active');
 

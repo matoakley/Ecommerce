@@ -7,7 +7,7 @@ define([], function(){
   var asyncSubmit = function(obj, successCallback, errorCallback){
     $.post('/comments/add', obj, function(response){
       if (response.comment){
-        successCallback(response.comment);
+        successCallback(window.location.reload(true));
       } else {
         errorCallback(response.errors);
       }

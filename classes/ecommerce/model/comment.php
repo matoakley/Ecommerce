@@ -11,12 +11,12 @@ class Ecommerce_Model_Comment extends Model_Application
   				'rules' => array(
   					'not_empty' => NULL,
   				),
-  				'callbacks' => array(
-  					'valid' => array('Model_Custom_Field', '_check_valid_object')
-  				),
   			)),
   			'object_id' => new Field_Integer,
-  			'user' => new Field_BelongsTo,
+  			'user' => new Field_BelongsTo(array(
+					'foreign' => 'user.id',
+					'column' => 'user_id',
+				)),
   			'comment' => new Field_Text,
   			'up_vote' => new Field_Boolean,
   			'down_vote' => new Field_Boolean,
@@ -62,13 +62,15 @@ class Ecommerce_Model_Comment extends Model_Application
 		}
 	}
 	
-  public static function create($object, $data, $user)
+  public static function create($object = 'review', $data, $user)
 	{
-	  if ( ! in_array($object, self::$objects))
+	  
+  	if ( ! in_array($object, self::$objects))
 	  {
   	  throw new Kohana_Exception('Invalid object.');
 	  }
-	  
+
+	
   	$comment = Jelly::factory('comment');
   	
   	$comment->object = $object;
@@ -78,15 +80,15 @@ class Ecommerce_Model_Comment extends Model_Application
   	$comment->down_vote = isset($data['down_vote']) ? $data['down_vote'] : NULL;
   	$comment->comment = isset($data['comment']) ? $data['comment'] : NULL;
   	
-  	
+  	  
   	$review = Model_Review::load($comment->object_id);
   	
-  	if ($comment->up_vote = 1)
+  	if ($comment->up_vote != FALSE)
   	  {
     	  $review->popularity += 1;
     	  $review->save();
   	  }
-    if ($comment->down_vote = 1)
+    if ($comment->down_vote != FALSE)
   	  {
     	  $review->popularity -= 1;
     	  $review->save();
