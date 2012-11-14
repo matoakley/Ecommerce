@@ -230,6 +230,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
+		$this->template->related_products = Model_Related_Product::get_related_products($product->id);
+		$this->template->products = Model_Product::list_all();
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->inputs = Model_Product::$inputs;

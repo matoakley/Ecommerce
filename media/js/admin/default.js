@@ -39,6 +39,56 @@ $(function(){
     		})
 	     });
 */
+  
+  $('#add-to-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-unrelated').val();
+    var productOption = $('#product-unrelated option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    console.log(originalProduct);
+    $.ajax({   
+				url: '/admin/related_products/add_to_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-related').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-related').val();
+    var productOption = $('#product-related option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    
+    $.ajax({   
+				url: '/admin/related_products/remove_from_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-unrelated').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
 
 
 	$('#nav ul').superfish();

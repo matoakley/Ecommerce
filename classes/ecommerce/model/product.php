@@ -62,7 +62,9 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				
+				'related_products' => new Field_HasMany(array(
+					'foreign' => 'related_product.product_id',
+				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -153,6 +155,20 @@ class Ecommerce_Model_Product extends Model_Application
 			$array->error('slug', 'Slug is a required field.');
 		}
 	}
+	
+	
+
+public static function list_all()
+	{
+	 
+		return Jelly::select('product')
+							->where('products.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
+							->order_by('name', 'ASC')
+							->execute();
+	}
+
+
 	
 	/****** Public Functions ******/
 	

@@ -43,6 +43,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 										
 		$this->template->product = $product;
 		$this->template->brand = $product->brand;
+		$this->template->related_products = Model_Related_Product::get_related_products($product->id);
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
 		$this->template->meta_description = $product->display_meta_description();

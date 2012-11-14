@@ -51,6 +51,7 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'related_products' => FALSE,
 		'reviews' => FALSE,
 		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
