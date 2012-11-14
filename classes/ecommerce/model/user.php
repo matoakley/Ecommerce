@@ -334,4 +334,10 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$user->save();
 	
 	}
+	
+	// get users age from timestamp date of birth
+	public function get_age($dob)
+	{
+  	return $age = floor((time() - $dob)/(86400*365));
+	}
 }
