@@ -144,24 +144,24 @@
 			<label for="product-related">Related Products</label>
 		</div>
 		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
-		<div class="grid_4 omega">
-			<select id="product-unrelated" size="10" style="width:224px" name="product[related]">
+		<div class="grid_5 omega">All Products
+			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
 			{% set this_product = product %}
 			{% for product in products %}
 			{% if (product in related_products) or (product.id == this_product.id) %}{% else %}
-				<option value="{{product.id}}">{{product.name}}</option>
+				<option value="{{product.id}}">{{product.name|title}}</option>
 				{% endif %}
 			{% endfor %}
 			</select>
 		</div>
-			<div class="grid_1">
+			<div class="grid_1" style="margin-right:40px;">
 			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-related">>></button>
 			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-related"><<</button>
 			</div>
-		<div class="grid_4">
-      <select id="product-related" size="10" style="width:224px" name="product[related]">
+		<div class="grid_5">Related Products
+      <select id="product-related" size="10" style="width:250px" name="product[related]">
 			{% for product in related_products %}
-				<option value="{{product.id}}">{{product.name}}</option>
+				<option value="{{product.id}}">{{product.name|title}}</option>
 			{% endfor %}
 			</select>
 		</div>
