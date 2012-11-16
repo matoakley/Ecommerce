@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
-{
+class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
+
 	function before()
 	{
-		if ( ! Kohana::config('ecommerce.modules.products'))
+		if ( ! Kohana::config('ecommerce.modules.bundles'))
 		{
 			throw new Kohana_Exception('This module is not enabled');
 		}
@@ -13,25 +13,26 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	}
 	
 	function action_index()
-	{					
+	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
 		$product = Model_Product::load();
-		$search = $product->get_all_products();
+		
+		$search = $product->get_admin_bundles();
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items' => count($search),
-			'items_per_page' => ($items) ? $items : count($search),
+			'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 			'view' => 'pagination/admin',
 		));
 		
 		// Set URI into session for redirecting back from forms
-		$this->session->set('admin.products.index', $_SERVER['REQUEST_URI']);
+		$this->session->set('admin.bundles.index', $_SERVER['REQUEST_URI']);
 		
-		$this->template->products = $search;
-		$this->template->total_products = count($search);
+		$this->template->bundles = $search;
+		$this->template->total_bundles = count($search);
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
 	}
@@ -44,7 +45,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		{
 			throw new Kohana_Exception('Product could not be found.');
 		}
-		
+		echo Kohana::debug($id, $product);exit;
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
@@ -73,7 +74,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		$errors = array();
 		
-		$redirect_to = $this->session->get('admin.products.index', '/admin/products');
+		$redirect_to = $this->session->get('admin.bundles.index', '/admin/bundles/');
 		$this->template->cancel_url = $redirect_to;
 		
 		  
@@ -194,7 +195,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				}
 				else
 				{
-					$this->request->redirect('/admin/products/edit/' . $product->id);
+					$this->request->redirect('/admin/bundles/edit/' . $product->id);
 				}
 			}
 			else
@@ -259,73 +260,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	{
 		$this->auto_render = FALSE;
 		
-		$product = Model_Product::load($id);
-		$product->delete();
+		$bundles = Model_Product::load($id);
+		$bundles->delete();
 		
-		$this->request->redirect($this->session->get('admin.products.index', 'admin/products'));
-	}
-	
-	public function action_upload_image()
-	{	
-		$this->auto_render = FALSE;
-		
-		if ($_FILES)
-		{
-			$product = Model_Product::load($_POST['product_id']);
-			
-			if ($product->loaded())
-			{
-				$image = Model_Product_Image::upload($_FILES['image']['tmp_name'], $product->id);
-				
-				// If this is the only image for this product then set it as default and thumb.
-				if (count($product->images) == 1)
-				{
-					$product->set_default_image($image->id);
-					$product->set_thumbnail($image->id);
-				}
-				
-				// Spit out the result for processing
-				echo '<div id="upload-response">';
-				echo json_encode($image->as_array());
-				echo '</div>';
-			}
-		}
-	}
-  
-	public function action_delete_image($image_id = FALSE)
-	{
-		$image = Model_Product_Image::load($image_id);
-		$product = $image->product;
-		
-		if ( ! $image->loaded())
-		{
-			throw new Kohana_Exception('Image not found');
-		}
-		
-		$image->delete();
-		
-		if (Request::$is_ajax)
-		{
-			$data = array(
-				'default_image' => $product->default_image->id,
-				'thumbnail' => $product->thumbnail->id,
-			);
-			echo json_encode($data);
-		}
-		else
-		{
-			// If it ain't AJAX, send 'em back where they came from.
-			$this->request->redirect(Request::$referrer);
-		}
-		
-		exit();
-	}
-	
-	public function action_option_statuses()
-	{
-		$this->auto_render = FALSE;
-		
-		echo json_encode(Model_Product_Option::$statuses);
+		$this->request->redirect($this->session->get('admin.bundles.index', 'admin/bundles/'));
 	}
 	
 	public function action_duplicate($id = FALSE)
@@ -334,118 +272,12 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		if (! $product->loaded())
 		{
-			throw new Kohana_Exception('Product could not be found.');
+			throw new Kohana_Exception('Bundle could not be found.');
 		}
 		
 		$cloned_product = $product->copy();
 		
-		$this->request->redirect('/admin/products/edit/'.$cloned_product->id);
-	}
-	
-	// Takes a search term and provides search result in 
-	// JSON format for live searches
-	public function action_live_search()
-	{
-		$this->auto_render = FALSE;
-		
-		if (isset($_GET['q']))
-		{
-			$results = Model_Product::search(array(), 10);
-			echo json_encode($results['results']->as_array());
-		}
-	}
-	
-	public function action_add_option()
-	{
-		$this->auto_render = FALSE;
-		
-		if ( ! Request::$is_ajax OR ! $_POST)
-		{
-			throw new Kohana_Exception('Page not found', array(), 404);
-		}
-		
-	// Check if option value already exists
-		$product = Model_Product::load($_POST['product_id']);
-		$product_options = $product->get('product_options')
-																->where('key', '=', $_POST['key'])
-																->where('value', '=', $_POST['value'])
-																->order_by('value', 'DESC')
-																->execute();
-		$data = array();
-		if (count($product_options) == 0)
-		{
-			$data['option'] = Model_Product_Option::add_option($product, $_POST['key'], $_POST['value'])->as_array();
-		}
-		else
-		{
-			$data['error'] = 'Product option already exists.';
-		}
-		
-		echo json_encode($data);
-	}
-	
-	public function action_remove_option()
-	{
-		$this->auto_render = FALSE;
-		
-		if ( ! Request::$is_ajax OR ! $_POST)
-		{
-			throw new Kohana_Exception('Page not found', array(), 404);
-		}
-		
-		$product_option = Model_Product_Option::load($_POST['option_id']);
-		$product_option->delete();
-	}
-	
-	public function action_remove_options()
-	{
-		$this->auto_render = FALSE;
-		
-		if ( ! Request::$is_ajax OR ! $_POST)
-		{
-			throw new Kohana_Exception('Page not found', array(), 404);
-		}
-		
-		Model_Product::load($_POST['product_id'])->remove_options($_POST['option_key']);
-	}
-	
-	public function action_add_sku()
-	{
-		$this->auto_render = FALSE;
-		
-		if ( ! Request::$is_ajax OR ! $_POST)
-		{
-			throw new Kohana_Exception('Page not found', array(), 404);
-		}
-		
-		$data = array();
-		
-		$product = Model_Product::load($_POST['product_id']);
-		$sku = Model_Sku::create_with_options($product, $_POST['product_options']);
-		
-		if ($sku)
-		{
-			$data['sku'] = $sku->as_array();
-		}
-		else
-		{
-			$data['error'] = 'Variant already exists.';
-		}
-		
-		echo json_encode($data);
-	}
-	
-	public function action_remove_sku()
-	{
-		$this->auto_render = FALSE;
-		
-		if ( ! Request::$is_ajax OR ! $_POST)
-		{
-			throw new Kohana_Exception('Page not found', array(), 404);
-		}
-		
-		Model_Sku::load($_POST['sku_id'])->delete();
+		$this->request->redirect('/admin/bundles/edit/'.$cloned_product->id);
 	}
 	
 }
-

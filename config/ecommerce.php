@@ -34,6 +34,7 @@ return array
 		'blog' => FALSE,
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
+		'bundles' => FALSE,
 		'categories' => FALSE,
 		'comments' => FALSE,
 		'commercial_sales_orders' => FALSE,

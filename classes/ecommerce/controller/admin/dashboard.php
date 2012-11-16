@@ -46,6 +46,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		$this->template->merged = array_reverse($merged_thirty_orders);
 	
 		$this->template->reviews_for_moderation = Model_Review::reviews_to_moderate(5);
+		$this->template->comments_for_moderation = Model_Comment::comments_to_moderate(5);
+		$this->template->books_for_moderation = Model_Product::products_to_moderate(5);
 	}
 	
 }

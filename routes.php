@@ -156,6 +156,16 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<id>)))')->defaults(array(
 	
 // Default Public Routes
 
+Route::set('admin_add_bundle', 'admin/products/add/<bundle>')->defaults(array(
+	'controller' => 'admin_products',
+	'action' => 'edit',
+));
+
+Route::set('admin_add_products', 'admin/products/add')->defaults(array(
+	'controller' => 'admin_products',
+	'action' => 'edit',
+));
+
 Route::set('accept_cookies', 'accept-cookies')->defaults(array(
 	'controller' => 'tools',
 	'action' => 'accept_cookies',

@@ -192,19 +192,39 @@
 			
 				<table>
 					<tbody>
-					
-					{% for key, product in top_products %}
+					{% for key, comment in comments_for_moderation %}
 						<tr class="{{['', 'alternate']|cycle(key)}}">
-							<td><a href="/admin/products/edit/{{product.product_id}}">{{product.product_name}}</a></td>
-							<td class="tr">{{product.sold}}</td>
+							<td><a href="/admin/comments/edit/{{comment.id}}">Comment on, {{comment.item().name}} by {% if comment.user.customer.name() != '' %}{{comment.user.customer.name()}}{% else %}{{comment.user.name()}}{% endif %}</a></td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>				
+		</div>
+		
+			<div class="dashboard-row">
+	
+		<div class="grid_8 alpha dashboard-element" style="margin-top:20px;">
+		
+			<h2>Books Awaiting Moderation</h2>
+			
+			<div class="table-container">
+			
+				<table>
+					<tbody>
+					{% for key, book in books_for_moderation %}
+						<tr class="{{['', 'alternate']|cycle(key)}}">
+							<td><a href="/admin/products/edit/{{book.id}}">{{book.name}}</a></td>
 						</tr>
 					{% endfor %}
 					</tbody>
 				</table>
 
 			</div>
-				
+
 		</div>
+
 	
 		<div class="clear"></div>
 		

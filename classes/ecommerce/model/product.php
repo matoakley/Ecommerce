@@ -39,6 +39,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'status' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
+				'type' => new Field_String,
 				'meta_description' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
@@ -272,7 +273,6 @@ public static function list_all()
 	 */
 	public function update($data)
 	{	
-	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -286,6 +286,8 @@ public static function list_all()
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
+		$this->type = isset($data['type']) ? $data['type'] : 'product';
+		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
@@ -304,13 +306,14 @@ public static function list_all()
 		{
 			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 		}
-		
+		//echo Kohana::debug($this);exit;
 		$this->save();
 		
 		// If there are no SKUs set for this product then it must
 		// be a new product so create a default SKU.
-		if ( ! count($this->skus))
-		{
+		
+		if (! count($this->skus))
+		{  
 			Model_Sku::create_default($this);
 		}
 		
@@ -420,5 +423,27 @@ public static function list_all()
 		{
 			$option->delete();
 		}
+	}
+	
+	//function to get all bundles not products
+		public function get_admin_bundles()
+	{
+  	$bundles = Jelly::select('product')
+		        ->where('type', '=', 'bundle')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $bundles;
+	}
+	
+	//function to get all products excluding bundles.
+	public function get_all_products()
+	{
+  	$products = Jelly::select('product')
+  	        ->where('type', '=', 'product')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $products;
 	}
 }

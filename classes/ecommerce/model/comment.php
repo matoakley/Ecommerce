@@ -99,11 +99,6 @@ class Ecommerce_Model_Comment extends Model_Application
   	return $comment;
 	}
 	
-	public static function comments_to_moderate($limit = 5)
-	{
-  	return Jelly::select('comment')->where('status', '=', 'awaiting_moderation')->order_by('created', 'ASC')->limit($limit)->execute();
-	}
-	
 	// Return the instace of the object which is reviewed
 	public function item()
 	{
@@ -142,5 +137,10 @@ class Ecommerce_Model_Comment extends Model_Application
   	$comment->down_vote = $down;
   	
   	return $comment->save();
+	}
+	
+	public static function comments_to_moderate($limit = 5)
+	{
+  	return Jelly::select('comment')->where('status', '=', 'awaiting_moderation')->order_by('created', 'ASC')->limit($limit)->execute();
 	}
 }

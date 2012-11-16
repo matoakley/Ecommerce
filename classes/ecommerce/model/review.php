@@ -114,7 +114,9 @@ class Ecommerce_Model_Review extends Model_Application
 	// Return the instace of the object which is reviewed
 	public function item()
 	{
-  	return Jelly::select($this->object)->where('id', '=', $this->object_id)->load();
+  	$review = Jelly::select($this->object)->where('id', '=', $this->object_id)->load();
+  	
+  	return $review;
 	}
 	
 	public function item_admin_link()

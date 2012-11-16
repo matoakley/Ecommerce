@@ -22,11 +22,21 @@ class Ecommerce_Controller_Admin_Events extends Controller_Application
 									
 		}
 		
-   function action_view()
-   {
-			
+  public function action_view()
+    {
+    
+     $event = Model_Event::load($this->request->param('event_slug'));
 		
-	}
+     if ( ! $event->loaded())
+       {
+         throw new Kohana_Exception('Event not found.');
+       }
+		
+		$this->template->event = $event;
+		
+		$this->add_breadcrumb('/event', 'Current Event');
+   
+   }
 
 	public function action_edit()
 	{
