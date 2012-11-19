@@ -66,18 +66,4 @@ class Ecommerce_Model_Related_Product extends Model_Application
       return $related_products;
 	}
 	
-	/*
-	
-  public static function get_users_wish_list_items($user = NULL)
-	{
-	  if ($user != NULL) 
-	   {
-  	   $user_id = $user->id;
-      	
-      	$wish_list_items = Jelly::select('wish_list')->where('user_id', '=', $user_id)->execute();
-      	
-      	return $wish_list_items;
-     }
-	}
-*/
 }

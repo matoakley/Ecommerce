@@ -80,6 +80,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		if ($_POST)
 		{	
 				// Try validating the posted data
+				//echo Kohana::debug($_POST);exit;
 			try
 			{
 				$product->validate($_POST['product']);

@@ -45,7 +45,7 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 		{
 			throw new Kohana_Exception('Product could not be found.');
 		}
-		echo Kohana::debug($id, $product);exit;
+		
 		$fields = array(
 			'product' => $product->as_array(),
 			'product_categories' => $product->categories->as_array('id', 'id'),
@@ -77,10 +77,10 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 		$redirect_to = $this->session->get('admin.bundles.index', '/admin/bundles/');
 		$this->template->cancel_url = $redirect_to;
 		
-		  
 		if ($_POST)
 		{	
 				// Try validating the posted data
+				
 			try
 			{
 				$product->validate($_POST['product']);
@@ -145,7 +145,7 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 			
 			// No errors, so let's save the data
 			if (empty($errors))
-			{
+			{  
 				// Save the product
 				$product->update($_POST['product']);
 				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
@@ -239,6 +239,7 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 		    }
 		    
 		$this->template->product = $product;
+		$this->template->skus = Model_Sku::list_all();
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->inputs = Model_Product::$inputs;
 		$this->template->sku_statuses = Model_Sku::$statuses;
@@ -278,6 +279,16 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 		$cloned_product = $product->copy();
 		
 		$this->request->redirect('/admin/bundles/edit/'.$cloned_product->id);
+	}
+	
+	public function action_add_to_bundle()
+	{	
+	  return $bundle = Model_Product::add_to_bundle($_POST['product_id'], $_POST['sku_id']);
+	}
+	
+	public function action_remove_from_bundle()
+	{	
+	  return $bundle = Model_Product::remove_from_bundle($_POST['product_id'], $_POST['sku_id']);
 	}
 	
 }

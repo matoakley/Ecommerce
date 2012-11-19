@@ -89,6 +89,57 @@ $(function(){
     console.log(product, productOption);
     
   })
+  
+   $('#add-to-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-sku-id').val();
+    var productOption = $('#product-sku-id option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    
+    $.ajax({   
+				url: '/admin/bundles/add_to_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-bundle').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-bundle').val();
+    var productOption = $('#product-bundle option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    $.ajax({   
+				url: '/admin/bundles/remove_from_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-sku-id').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
 
 
 	$('#nav ul').superfish();

@@ -32,6 +32,11 @@ class Ecommerce_Model_Product extends Model_Application
 					'through' => 'categories_products',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'brand' => new Field_BelongsTo(array(
 					'foreign' => 'brand.id',
 					'on_copy' => 'copy',
@@ -446,4 +451,19 @@ public static function list_all()
 						
 		return $products;
 	}
+	
+	public static function add_to_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->add('bundle_items', $sku_id);
+		$bundle->save();
+	}
+	
+		public static function remove_from_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->remove('bundle_items', $sku_id);
+		$bundle->save();
+	}
+
 }

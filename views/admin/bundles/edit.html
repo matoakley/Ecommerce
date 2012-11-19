@@ -16,7 +16,7 @@
 
 {% block content %}
 
-<form method="POST" enctype="multipart/form-data" action="/admin/bundles/edit">
+<form method="POST" enctype="multipart/form-data" action="/admin/bundles/edit/{{product.id}}">
 <input type="hidden" name="product[type]" value="bundle">
 	<div class="field">
 		<div class="grid_5 alpha">
@@ -41,7 +41,7 @@
 		<div class="clear"></div>
 	</div>
 
-	<h2>Product Details</h2>
+	<h2>Bundle Details</h2>
 	
 	<div class="field">
 		<div class="grid_2 alpha">
@@ -143,18 +143,17 @@
 	</div>
 	{% endif %}
 	{% endif %}
-	
-	{% if product.type == "product" %}
-	{% if modules.related_products %}	
+		
+	{% if product.loaded %}
 	<div class="field">
 		<div class="grid_2 omega">
-			<label for="product-related">Related Products</label>
+			<label for="product-related">Bundle Items</label>
 		</div>
 		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
 		<div class="grid_5 omega">All Products
-			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
+			<select id="product-sku-id" size="10" style="width:250px" name="product[sku_id]">
 			{% set this_product = product %}
-			{% for product in products %}
+			{% for product in skus %}
 			{% if (product in related_products) or (product.id == this_product.id) %}{% else %}
 				<option value="{{product.id}}">{{product.name|title}}</option>
 				{% endif %}
@@ -162,12 +161,12 @@
 			</select>
 		</div>
 			<div class="grid_1" style="margin-right:40px;">
-			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-related">>></button>
-			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-related"><<</button>
+			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-bundle">>></button>
+			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-bundle"><<</button>
 			</div>
-		<div class="grid_5">Related Products
-      <select id="product-related" size="10" style="width:250px" name="product[related]">
-			{% for product in related_products %}
+		<div class="grid_5">Bundle Items
+      <select id="product-bundle" size="10" style="width:250px" name="product[bundle]">
+			{% for product in product.bundle_items %}
 				<option value="{{product.id}}">{{product.name|title}}</option>
 			{% endfor %}
 			</select>
@@ -175,7 +174,7 @@
 		<div class="clear"></div>
 	</div>
 	{% endif %}
-	{% endif %}
+
 	
 	{% if not product.loaded %}
 	
