@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Events</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Events</strong>{% endblock %}
 
 {% block content %}
 
@@ -11,10 +11,10 @@
 	</a>
 </p>
 
-<!--
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -23,7 +23,6 @@
 <div class="grid_8 omega tr">
 	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_events %}{{page * items}}{% else %}{{total_events}}{% endif %}</strong> of <strong>{{total_events}}</strong> items
 </div>
--->
 
 <div class="clear"></div>
 
@@ -40,7 +39,7 @@
 	<tbody>
 	{% for key, event in events %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{event.id}}"/></td>
 			<td><a href="/admin/events/edit/{{event.id}}">{{event.name}}</a></td>
 			<td>{{event.start_date|date("jS")}}{% if not(event.end_date) or (event.start_date == event.end_date) %}{{event.start_date|date(" F Y")}}{% endif %}{% if (event.end_date)                and (event.start_date != event.end_date) %} - {{event.end_date|date("jS F Y")}}{% endif %}</td>
 			<td>{{event.address}}</td>

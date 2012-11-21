@@ -1,6 +1,3 @@
-/* Bulk delete
-$(function(){
-  
   $(function(){
 
 	$('#bulk-actions').change(function(e){
@@ -9,28 +6,28 @@ $(function(){
 		e.preventDefault();
 		if (confirm('Are you sure that you want to delete the selected item(s)?')) {
 		
-		var customers = [];
+		var items = [];
   						var i = 0;
 		
 						$(".row-selector").filter(':checked').each(function(){
 				
-  						customers[i] = $(this).val();
+  						items[i] = $(this).val();
   						i++;
   				
 	
   				var data = {
-    				customers: customers,
+    				items: items,
+    				type: $('#type').text(),
     				
     				}
 
 		$.ajax({
 		
-			url: '/admin/customers/bulk_delete',
+			url: '/admin/tools/bulk_delete',
 			type: 'POST',
 			data: data,
 			success: function(response){
-			     
-    				 window.location.reload();
+			  window.location.reload();
     				 }
     				 });
     				});
@@ -38,7 +35,45 @@ $(function(){
     		  }
     		})
 	     });
-*/
+	     
+	 $('#bulk-actions').change(function(e){
+		var status = $(this).val();
+		var statusUgly = $('#bulk-actions option:selected').text();
+		var statusPretty = statusUgly.replace('Mark ', '');
+		
+		if (status == 'awaiting_payment' || status == 'problem_occurred' || status == 'payment_received' || status == "order_cancelled" || status == 'invoice_generated' || status == 'invoice_sent' || status == 'complete'){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to change the status of the selected item(s) to ' + statusPretty +  '?')) {
+		
+		var items = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						items[i] = $(this).val();
+  						i++;
+  				
+	
+  				var data = {
+    				items: items,
+    				status: status,
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/tools/bulk_change_status',
+			type: 'POST',
+			data: data,
+			success: function(response){
+			  window.location.reload();
+    				 }
+    				 });
+    				});
+    		   };
+    		  }
+    		});
   
   $('#add-to-related').click(function(e){
     e.preventDefault();

@@ -105,7 +105,15 @@ class Ecommerce_Model_Comment extends Model_Application
   	$review = Jelly::select($this->object)->where('id', '=', $this->object_id)->load();
   	$product = Jelly::select($review->object)->where('id', '=', $review->object_id)->load();
   	
-  	return $product;
+  	//echo Kohana::debug($product);exit;
+  	if ($product->loaded())
+  	  {
+  	    return $product;
+  	  }
+    else
+      {
+        return NULL;
+      }
 	}
 	
 	public function item_admin_link()

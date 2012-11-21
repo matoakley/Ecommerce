@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Promotion Codes</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Promotion Codes</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>
@@ -49,7 +50,7 @@
 	<tbody>
 	{% for key, promotion_code in promotion_codes %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{promotion_code.id}}" /></td>
 			<td><a href="/admin/promotion_codes/edit/{{promotion_code.id}}">{{promotion_code.code}}</a></td>
 			<td>{{promotion_code.description}}</td>
 			<td class="tr">
