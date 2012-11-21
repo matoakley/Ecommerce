@@ -530,4 +530,27 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
   	return $this->reward_points;
 	}
+	
+	public static function send_email_verification($user)
+	{
+		// Send an email to user with a key (maybe use hashed password?)
+		Email::connect();
+		
+		$message = Twig::factory('customers/email_verification.html');
+		
+		// Check that the email address provided links to a use and also to a customer
+		if ( ! $user->loaded() OR ! $user->customer->loaded())
+		{
+			throw new Kohana_Exception('User not found');
+		}
+				
+		$message->verification_link = 'http://'. $_SERVER['SERVER_NAME'] . '/email/verification/' . $user->email_verification_id;
+
+		$to = array(
+			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
+	}
+
 }

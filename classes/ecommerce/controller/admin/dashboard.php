@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application {
-
+  
 	function action_index()
 	{
 		// Try/Catch around the Google Analytics call as this sometimes fails
@@ -45,9 +45,14 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		$merged_thirty_orders = Arr::overwrite($this->template->thirty, $this->template->order_days);
 		$this->template->merged = array_reverse($merged_thirty_orders);
 	
-		$this->template->reviews_for_moderation = Model_Review::reviews_to_moderate(5);
-		$this->template->comments_for_moderation = Model_Comment::comments_to_moderate(5);
-		$this->template->books_for_moderation = Model_Product::products_to_moderate(5);
+		
+	if (Caffeine::modules('reviews'))
+	  {
+  	  $this->template->reviews_for_moderation = Model_Review::reviews_to_moderate(5);
+  	  $this->template->comments_for_moderation = Model_Comment::comments_to_moderate(5);
+	  }
+
+
 	}
 	
 }

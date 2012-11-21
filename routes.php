@@ -267,6 +267,12 @@ Route::set('customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)
 	'action' => 'forgotten_password',
 ));
 
+Route::set('email/verification/', 'email/verification/<email_verification_id>')
+	->defaults(array(
+		'controller' => 'customers',
+		'action' => 'activate_account',
+	));
+
 Route::set('customer_register', 'register')->defaults(array(
   'controller' => 'customers',
   'action' => 'create_account',
@@ -275,6 +281,12 @@ Route::set('customer_register', 'register')->defaults(array(
 Route::set('customer_dashboard', 'account')->defaults(array(
 	'controller' => 'customers',
 	'action' => 'index',
+)); 
+
+Route::set('email_verification', 'email-verification')->defaults(array(
+	'controller' => 'pages',
+	'action' => 'static',
+	'slug' => 'email_verification',
 )); 
 
 Route::set('customer_login', 'login')->defaults(array(
