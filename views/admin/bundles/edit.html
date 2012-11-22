@@ -225,7 +225,7 @@
 			</div>
 			<div class="clear"></div>
 		</div>	
-		
+		{% if product.type == "product" %}
 		<h2>Categories</h2>
 		{% set i = 1 %}
 		{% for key, category in categories %}
@@ -250,12 +250,13 @@
 				{% set i = i + 1 %}
 			{% endif %}
 		{% endfor %}
+		{% endif %}
 		
 		<div class="clear"></div>
 		
 		{% if product.type == "product" %}
 		<h2>Product Images</h2>
-		
+
 		{% if product.loaded %}
 		
 			<div id="product-images-header" class="{% if product.images.count() == 0 %}hidden{% endif %}">
@@ -287,7 +288,7 @@
 					<div class="grid_3 alpha tc">
 						
 						<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
-						<p>Image ID : {{image.id}}</p>
+						<p>Image ID : {{loop.index}}</p>
 					</div>
 					
 					<div class="grid_2 tc" style="line-height:120px;">
@@ -331,17 +332,18 @@
 			{% endfor %}
 	
 			</div>
-			
-		{% else %}
+			{% endif %}
+	
+			{% if not product.loaded %}
 			
 			<p><em>You must save the product before adding images.</em></p>
 			
-		{% endif %}
+			{% endif %}
 		
 	</form>
 	
+
 	{% if product.loaded %}
-	
 		<!-- Async image uploader -->
 		<form enctype="multipart/form-data" action="/admin/products/upload_image" method="post" id="upload-image-form" target="upload-image">
 			
@@ -353,7 +355,7 @@
 				</div>
 				<div class="grid_8">
 					<input type="file" id="image-upload" name="image" />
-					<img src="/media/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" />
+					<img src="/media/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" width="160" height="185"/>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -364,7 +366,6 @@
 	
 	{% endif %}
 	{% endif %}
-	
 {% endif %}	
 
 {% endblock %}
