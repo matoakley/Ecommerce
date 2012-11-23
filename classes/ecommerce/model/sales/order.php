@@ -390,6 +390,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public static function daily_order_count()
 	{
+	  $num = date("t");
   	$query = "SELECT COUNT(created) AS order_no, 
           DATE(created) AS order_day 
           FROM 
@@ -400,7 +401,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
           ORDER BY 
               created 
           DESC
-          LIMIT 31";
+          LIMIT $num";
             
     $results = Database::instance()->query(Database::SELECT, $query, FALSE);
     
@@ -427,8 +428,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
      $day = date("d");
      $year = date("Y");
      $num = date("t");
+     
       //LOOP THROUGH DAYS
-     for($i=1; $i<=$num; $i++){
+     for($i=1; $i<=$num +1; $i++){
           $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
      }
      
@@ -439,6 +441,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
      //RETURN DATE ARRAY
      return $output;
   }
+
     
 	public static function overall_completed_total()
 	{
