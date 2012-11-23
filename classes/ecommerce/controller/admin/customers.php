@@ -557,4 +557,32 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->request->send_file($file_path, $customer->account_ref.'.csv', array('delete' => TRUE));
 		exit();
 	}
+	
+	// Bulk delete
+	/*
+public function action_bulk_delete()
+	{
+		if ($_POST)
+		{
+			try
+			{
+				foreach ($_POST['customers'] as $customer_id)
+				{
+					$customer = Model_Customer::load($customer_id);
+					
+    			$customer->deleted = time();
+    			$customer->save();
+    			
+    			echo 'ok';
+					
+				}
+			}
+			catch (Validate_Exception $e)
+			{
+			
+			}
+		}
+	}
+*/
+
 }

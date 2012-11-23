@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Delivery Options</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Delivery Options</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>

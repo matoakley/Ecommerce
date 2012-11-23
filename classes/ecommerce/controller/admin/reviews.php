@@ -95,6 +95,15 @@ class Ecommerce_Controller_Admin_Reviews extends Controller_Admin_Application
 		$this->auto_render = FALSE;
 		
 		$review = Model_Review::load($this->request->param('id'));
+		
+		//make sure we get all the comments connected to this review and delete them too
+		$comments = Jelly::select('comment')->where('object', '=', 'review')->where('object_id', '=', $review->id)->execute();
+		
+		foreach ($comments as $comment)
+		  {
+  		  $comment->delete();
+		  }
+		  
 		$review->delete();
 		
 		$this->request->redirect($this->session->get('admin.reviews.index', 'admin/reviews'));

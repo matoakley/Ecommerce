@@ -32,6 +32,11 @@ class Ecommerce_Model_Product extends Model_Application
 					'through' => 'categories_products',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'brand' => new Field_BelongsTo(array(
 					'foreign' => 'brand.id',
 					'on_copy' => 'copy',
@@ -39,6 +44,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'status' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
+				'type' => new Field_String,
 				'meta_description' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
@@ -62,7 +68,9 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				
+				'related_products' => new Field_HasMany(array(
+					'foreign' => 'related_product.product_id',
+				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -153,6 +161,20 @@ class Ecommerce_Model_Product extends Model_Application
 			$array->error('slug', 'Slug is a required field.');
 		}
 	}
+	
+	
+
+public static function list_all()
+	{
+	 
+		return Jelly::select('product')
+							->where('products.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
+							->order_by('name', 'ASC')
+							->execute();
+	}
+
+
 	
 	/****** Public Functions ******/
 	
@@ -256,7 +278,6 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{	
-	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -270,6 +291,8 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
+		$this->type = isset($data['type']) ? $data['type'] : 'product';
+		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
@@ -288,13 +311,14 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 		}
-		
+		//echo Kohana::debug($this);exit;
 		$this->save();
 		
 		// If there are no SKUs set for this product then it must
 		// be a new product so create a default SKU.
-		if ( ! count($this->skus))
-		{
+		
+		if (! count($this->skus))
+		{  
 			Model_Sku::create_default($this);
 		}
 		
@@ -351,6 +375,16 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 	
+	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')
+	{
+		return Jelly::select('review')
+							->where('object_id', '=', $this->id)
+							->order_by($order, $direction)
+							->limit($items)
+							->offset($offset)
+							->execute();
+	}
+	
 	public function active_skus()
 	{
 		if (IS_TRADE)
@@ -395,4 +429,41 @@ class Ecommerce_Model_Product extends Model_Application
 			$option->delete();
 		}
 	}
+	
+	//function to get all bundles not products
+		public function get_admin_bundles()
+	{
+  	$bundles = Jelly::select('product')
+		        ->where('type', '=', 'bundle')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $bundles;
+	}
+	
+	//function to get all products excluding bundles.
+	public function get_all_products()
+	{
+  	$products = Jelly::select('product')
+  	        ->where('type', '=', 'product')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $products;
+	}
+	
+	public static function add_to_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->add('bundle_items', $sku_id);
+		$bundle->save();
+	}
+	
+		public static function remove_from_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->remove('bundle_items', $sku_id);
+		$bundle->save();
+	}
+
 }

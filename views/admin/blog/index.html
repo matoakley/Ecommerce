@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Blog Posts</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Blog Posts</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>
@@ -47,7 +48,7 @@
 	<tbody>
 	{% for key, post in blog_posts %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{post.id}}"/></td>
 			<td><a href="/admin/blog/edit_post/{{post.id}}">{{post.name}}</a></td>
 			<td>{{post.author.firstname}} {{post.author.lastname}}</td>
 			<td class="tr"><em>{% if post.published_on %}{{post.published_on|date('d/m/Y')}}{% else %} - {% endif %}</em></td>

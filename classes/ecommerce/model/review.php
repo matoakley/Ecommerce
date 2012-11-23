@@ -16,6 +16,7 @@ class Ecommerce_Model_Review extends Model_Application
   				),
   			)),
   			'object_id' => new Field_Integer,
+  			'popularity' => new Field_Integer,
   			'user' => new Field_BelongsTo,
   			'rating' => new Field_Integer,
   			'review' => new Field_Text,
@@ -86,9 +87,10 @@ class Ecommerce_Model_Review extends Model_Application
   	$review->user = $user;
   	$review->rating = isset($data['rating']) ? $data['rating'] : NULL;
   	$review->review = isset($data['review']) ? $data['review'] : NULL;
+  	$review->popularity = 0;
   	
   	$review->save()->update_status(Caffeine::config('moderate_reviews') ? 'awaiting_moderation' : 'active');
-  	
+
   	return $review;
 	}
 	
@@ -112,7 +114,9 @@ class Ecommerce_Model_Review extends Model_Application
 	// Return the instace of the object which is reviewed
 	public function item()
 	{
-  	return Jelly::select($this->object)->where('id', '=', $this->object_id)->load();
+  	$review = Jelly::select($this->object)->where('id', '=', $this->object_id)->load();
+  	
+  	return $review;
 	}
 	
 	public function item_admin_link()

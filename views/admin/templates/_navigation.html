@@ -26,6 +26,10 @@
 				{% if modules.stockists %}
 					<li><a href="/admin/stockists">Stockists</a></li>
 				{% endif %}
+				
+				{% if modules.bundles %}
+					<li><a href="/admin/bundles">Bundles</a></li>
+				{% endif %}
 			</ul>
 
 		</li>
@@ -33,6 +37,10 @@
 		
 		{% if modules.reviews %}
 		  <li><a href="/admin/reviews">Reviews</a></li>
+		{% endif %}
+		
+		{% if modules.comments %}
+		  <li><a href="/admin/comments">Comments</a></li>
 		{% endif %}
 		
 		{% if modules.sales_orders %}

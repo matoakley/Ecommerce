@@ -1,0 +1,371 @@
+{% extends "admin/templates/default.html" %}
+
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
+	<script type="text/javascript" src="/media/js/admin/products.js?v=2"></script>
+	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=3"></script>{% endif %}
+{% endblock %}
+
+{% block page_title %}
+	{% if product.loaded %}
+		Edit Bundle: <strong>{{product.name}}</strong>
+	{% else %}
+		Adding: <strong>New Bundle</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" enctype="multipart/form-data" action="/admin/bundles/edit/{{product.id}}">
+<input type="hidden" name="product[type]" value="bundle">
+	<div class="field">
+		<div class="grid_5 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_11 omega tr">
+			{% if product.loaded %}
+				<a href="/admin/bundles/duplicate/{{product.id}}" class="clone-button">
+					<img src="/images/icons/table_refresh.png" alt="" class="inline-icon" />
+					Duplicate Bundle
+				</a>
+				<a href="/admin/bundles/delete/{{product.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Bundle
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+			
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Bundle Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-name" {{ errors.product.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="product-name" name="product[name]" value="{{fields.product.name}}"
+				class="inputtext longest {% if not product.loaded or not product.slug %}slugify{% endif %}" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_8 omega product-slug">
+		  <input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
+				readonly="readonly"/>
+		</div>
+		<div class="grid_2">
+		  <button id="edit-slug">Edit SEO Slug</button>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if product.loaded and product.slug %}
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label>Public Page</label>
+		</div>
+		<div class="grid_14 omega">
+			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{% url "view_product", ["slug":product.slug] %}</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-status">Status</label>
+		</div>
+		<div class="grid_4">
+			<select id="product-status" name="product[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == fields.product.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		
+		{% if product.type == "product" %}
+		{% if modules.vat_codes %}
+		<div class="grid_2">
+			<label for="product-vat-code">VAT Code</label>
+		</div>
+		<div class="grid_8 omega">
+			<select name="product[vat_code]">
+			{% for vat_code in vat_codes %}
+				<option value="{{vat_code.id}}" {% if vat_code.id == product.vat_code.id %}selected="selected"{% endif %}>{{vat_code.code}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		{% endif %}
+		{% endif %}
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="product-description" name="product[description]" class="description">{{fields.product.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% if product.type == "product" %}
+	{# Custom Fields #}
+	{% set object = product %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
+	{% endif %}
+	
+	{% if product.type == "product" %}
+	{% if modules.brands %}	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-brand">Brand</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="product-brand" name="product[brand]">
+				<option value="0">None</option>
+			{% for brand in brands %}
+				<option value="{{brand.id}}" {{ brand.id == fields.product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	{% endif %}
+		
+	{% if product.loaded %}
+	<div class="field">
+		<div class="grid_2 omega">
+			<label for="product-related">Bundle Items</label>
+		</div>
+		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
+		<div class="grid_5 omega">All Products
+			<select id="product-sku-id" size="10" style="width:250px" name="product[sku_id]">
+			{% set this_product = product %}
+			{% for product in skus %}
+			{% if (product in related_products) or (product.id == this_product.id) %}{% else %}
+				<option value="{{product.id}}">{{product.name|title}}</option>
+				{% endif %}
+			{% endfor %}
+			</select>
+		</div>
+			<div class="grid_1" style="margin-right:40px;">
+			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-bundle">>></button>
+			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-bundle"><<</button>
+			</div>
+		<div class="grid_5">Bundle Items
+      <select id="product-bundle" size="10" style="width:250px" name="product[bundle]">
+			{% for product in product.bundle_items %}
+				<option value="{{product.id}}">{{product.name|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+
+	
+	{% if not product.loaded %}
+	
+		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
+	
+	{% else %}
+	
+	{% if product.type == "product" %}
+		{% if modules.product_options %}
+			<h2>Product Options</h2>
+			{% include "admin/products/_product_options.html" %}
+			{% if modules.product_options and product.skus|length > 1 %}
+				<h3>Product Variants</h3>
+			{% endif %}
+		{% endif %}
+		{% include "admin/products/_sku_loop.html" %}
+  {% endif %}
+			
+		<h2>Meta Details</h2>
+		
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="product-meta-description">Description</label>
+			</div>
+			<div class="grid_6">
+				<textarea id="product-meta-description" name="product[meta_description]" class="wide">{{fields.product.meta_description}}</textarea>
+			</div>
+			<div class="grid_2 tr">
+				<p><strong>What's this?</strong></p>
+			</div>
+			<div class="grid_6 omega">
+				<p class="right-pad">A meta description is recommended to help Search Engines rank of the page. Try to provide a short (between 70 - 160 chars) description of the product.</p>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="field">
+			<div class="grid_2 alpha">
+				<label for="product-meta-keywords">Keywords</label>
+			</div>
+			<div class="grid_6">
+				<textarea id="product-meta-keywords" name="product[meta_keywords]" class="wide">{{fields.product.meta_keywords}}</textarea>
+			</div>
+			<div class="grid_2 tr">
+				<p><strong>What's this?</strong></p>
+			</div>
+			<div class="grid_6 omega">
+				<p class="right-pad">Provide a few keywords, separated by commas that relate to this product. These are used by Search Engines when indexing pages.</p>
+			</div>
+			<div class="clear"></div>
+		</div>	
+		{% if product.type == "product" %}
+		<h2>Categories</h2>
+		{% set i = 1 %}
+		{% for key, category in categories %}
+			{% if not category.parent.loaded %}
+				<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
+					<input type="checkbox" id="product-category-{{category.id}}" name="product[categories][]" value="{{category.id}}" 
+						class="top-level-category" {% if product.loaded and category.id in fields.product_categories %}checked{% endif %} />
+					<label for="product-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+					{% if category.categories %}
+						<ul class="subcategory-list">
+							{% for subcategory in category.categories %}
+							<li>
+								<input type="checkbox" id="product-category-{{subcategory.id}}" name="product[categories][]" 
+									value="{{subcategory.id}}" {% if product.loaded and subcategory.id in fields.product_categories %}checked{% endif %} />
+								<label for="product-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+							</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
+				{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
+				{% set i = i + 1 %}
+			{% endif %}
+		{% endfor %}
+		{% endif %}
+		
+		<div class="clear"></div>
+		
+		{% if product.type == "product" %}
+		<h2>Product Images</h2>
+
+		{% if product.loaded %}
+		
+			<div id="product-images-header" class="{% if product.images.count() == 0 %}hidden{% endif %}">
+			
+				<div class="grid_3 alpha">&nbsp;</div>
+				
+				<div class="grid_2 tc">
+					<strong>Default</strong>
+				</div>
+				
+				<div class="grid_2 tc">
+					<strong>Thumb</strong>
+				</div>
+				
+				<div class="grid_6 tc">
+					<strong>Short Description</strong>
+				</div>
+				
+				<div class="clear"></div>
+	
+			</div>
+		
+			<div id="product-images">
+			
+			{% for key, image in fields.product_images %}
+				
+				<div class="product-image-row">
+					
+					<div class="grid_3 alpha tc">
+						
+						<img src="{{image.thumb_path}}" alt="{{image.alt_text}}" class="product-image" />
+						<p>Image ID : {{loop.index}}</p>
+					</div>
+					
+					<div class="grid_2 tc" style="line-height:120px;">
+					
+						<input type="radio" name="product[default_image]" value="{{image.id}}" {% if image.id == product.default_image.id %}checked{% endif %} />
+					
+					</div>
+					
+					<div class="grid_2 tc" style="line-height:120px;">
+		
+						<input type="radio" name="product[thumbnail]" value="{{image.id}}" {% if image.id == product.thumbnail.id %}checked{% endif %} />
+					
+					</div>
+					
+					<div class="grid_6">
+					
+						<textarea class="wide" name="product_images[{{image.id}}][alt_text]">{{image.alt_text}}</textarea>
+					
+					</div>
+					
+					<div class="grid_3 omega">
+						
+	<!--
+						<a href="#">
+							<img src="/images/icons/arrow_inout.png" alt="" class="inline-icon" />
+							Adjust
+						</a>
+	-->	
+						
+						<a href="/admin/products/delete_image/{{image.id}}" class="delete-product-image">
+							<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+							Delete
+						</a>
+						
+					</div>
+					
+					<div class="clear"></div>
+					
+				</div>
+			
+			{% endfor %}
+	
+			</div>
+			{% endif %}
+	
+			{% if not product.loaded %}
+			
+			<p><em>You must save the product before adding images.</em></p>
+			
+			{% endif %}
+		
+	</form>
+	
+
+	{% if product.loaded %}
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/products/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="product_id" value="{{product.id}}" />
+			
+			<div class="field">
+				<div class="grid_2 alpha">
+					<label>Add new image</label>
+				</div>
+				<div class="grid_8">
+					<input type="file" id="image-upload" name="image" />
+					<img src="/media/images/admin/ajax-loader.gif" alt="" id="image-upload-spinner" class="hidden" width="160" height="185"/>
+				</div>
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
+	{% endif %}
+{% endif %}	
+
+{% endblock %}

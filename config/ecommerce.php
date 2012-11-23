@@ -34,6 +34,7 @@ return array
 		'blog' => FALSE,
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
+		'bundles' => FALSE,
 		'categories' => FALSE,
 		'comments' => FALSE,
 		'commercial_sales_orders' => FALSE,
@@ -43,6 +44,7 @@ return array
 		'dashboard_enhanced_sales_orders' => FALSE,
 		'delivery_options' => FALSE,
 		'display_in_retail_or_commercial' => FALSE,
+		'email_verification' => FALSE,
 		'events' => FALSE,
 		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,
@@ -51,6 +53,7 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'related_products' => FALSE,
 		'reviews' => FALSE,
 		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
@@ -62,6 +65,7 @@ return array
 		'trade_area' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
+		'wish_list' => FALSE,
 		
 	),
 	

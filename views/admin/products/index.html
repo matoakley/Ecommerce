@@ -8,10 +8,9 @@
 
 {% endblock %}
 
-{% block page_title %}Viewing: <strong>Products</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Products</strong>{% endblock %}
 
 {% block content %}
-
 <div class="search-bar">
 	<div class="grid_8 alpha">
 		<a href="/admin/products/add" class="img-button">
@@ -32,6 +31,7 @@
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
 		<option value="update_price">Update Price</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>
@@ -48,9 +48,6 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th class="tc">Retail Price</th>
-			{% if modules.stock_control %}
-				<th class="tc">Stock</th>
-			{% endif %}
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -59,10 +56,7 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
 			<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
-			<td class="tc">{{product.summarise_sku_price(true)}}</td>
-			{% if modules.stock_control %}
-				<td class="tc">{{product.total_stock}}</td>
-			{% endif %}
+			<td>{{product.price|num_format(2)}}</td>
 			<td class="{{product.status}}">{{product.status|title}}</td>
 		</tr>
 	{% endfor %}
