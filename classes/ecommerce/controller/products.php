@@ -43,23 +43,11 @@ class Ecommerce_Controller_Products extends Controller_Application
 										
 		$this->template->product = $product;
 		$this->template->brand = $product->brand;
-		
-		  if (Caffeine::modules('related_products'))
-		    {
-  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
-		    }
-		    
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
-		echo Kohana::debug($this->auth->user->customer->D_O_B);exit;
-		$this->template->age = Model_User::get_age($this->auth->user->customer->D_O_B);
 		
-		if (Caffeine::modules('wish_list'))
-		  {
-  		  $this->template->in_wish_list = ($this->auth->logged_in()) ? in_array($product->id, $this->auth->get_user()->wish_list_items->as_array('id', 'id')) : FALSE;
-		  }
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');
 		
@@ -170,41 +158,4 @@ class Ecommerce_Controller_Products extends Controller_Application
 		
 		echo json_encode($data);
 	}
-	
-	public function action_get_product_reviews()
-	{  
-	  $product = Model_Product::load($_POST['id']);
-	  $errors = array();
-	  try
-      	{
-        	$reviews = $product->get_product_reviews($_POST['items'], $_POST['offset'], isset($_POST['order']) ? $_POST['order'] : 'created' , isset($_POST['direction']) ? $_POST['direction'] : 'ASC');
-        }
-        catch (Validate_Exception $e)
-        {
-           $errors['reviews'] = $e->array->errors('model/reviews');
-        }
-        
-        $view = array();
-        
-  	foreach ($reviews->as_array() as $review)
-  	  {
-  	    $review_model = Model_Review::load($review['id']);
-    	  $template_data = array(
-					'review' => $review_model,
-					'auth' => $this->auth,
-				);
-				
-				$view[] = Twig::factory('products/_review.html', $template_data, $this->environment)->render(); 
-		  }
-		  
-  	if (Request::$is_ajax)
-    {
-      $this->auto_render = FALSE;
-      $this->request->headers['Content-Type'] = 'application/json';
-      echo json_encode(array(
-        'errors' => $errors,
-        'reviews' => isset($view) ? $view : NULL,
-      ));
-    }
- }
 }
