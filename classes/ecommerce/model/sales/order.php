@@ -388,59 +388,59 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return ( ! is_null($result[0]['alltimeorders'])) ? $result[0]['alltimeorders'] : 0;
 	}
 	
-	public static function daily_order_count()
-	{
-	  $num = date("t");
-  	$query = "SELECT COUNT(created) AS order_no, 
-          DATE(created) AS order_day 
-          FROM 
-              sales_orders 
-          WHERE status IN ('payment_received', 'complete') 
-          GROUP BY 
-              order_day 
-          ORDER BY 
-              created 
-          DESC
-          LIMIT $num";
-            
-    $results = Database::instance()->query(Database::SELECT, $query, FALSE);
-    
-        
-    $orders = array();
-		foreach ($results as $result)
-		{
-      $value = $result['order_no'];
-      $key = $result['order_day'];
-      $keystripped = str_replace("-","", $key);
-      $orders[intval($keystripped)] = intval($value); 
-		}
-
-    return $orders;
-  }		
-    
-  public static function thirtydays()
-  {
-     //CLEAR OUTPUT FOR USE
-     $output = array();
-
-      //SET CURRENT DATE
-     $month = date("m");
-     $day = date("d");
-     $year = date("Y");
-     $num = date("t");
-     
-      //LOOP THROUGH DAYS
-     for($i=1; $i<=$num +1; $i++){
-          $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
-     }
-     
-     foreach ($results as $result)
-     {
-         $output[$result] = 0;
-     }
-     //RETURN DATE ARRAY
-     return $output;
-  }
+  	public static function daily_order_count()
+  	{
+  	  $num = date("t");
+    	$query = "SELECT COUNT(created) AS order_no, 
+            DATE(created) AS order_day 
+            FROM 
+                sales_orders 
+            WHERE status IN ('payment_received', 'complete') 
+            GROUP BY 
+                order_day 
+            ORDER BY 
+                created 
+            DESC
+            LIMIT $num";
+              
+      $results = Database::instance()->query(Database::SELECT, $query, FALSE);
+      
+          
+      $orders = array();
+  		foreach ($results as $result)
+  		{
+        $value = $result['order_no'];
+        $key = $result['order_day'];
+        $keystripped = str_replace("-","", $key);
+        $orders[intval($keystripped)] = intval($value); 
+  		}
+  
+      return $orders;
+    }		
+      
+    public static function thirtydays()
+    {
+       //CLEAR OUTPUT FOR USE
+       $output = array();
+  
+        //SET CURRENT DATE
+       $month = date("m");
+       $day = date("d");
+       $year = date("Y");
+       $num = date("t");
+       
+        //LOOP THROUGH DAYS
+       for($i=1; $i<=($num +1); $i++){
+            $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
+       }
+       
+       foreach ($results as $result)
+       {
+           $output[$result] = 0;
+       }
+       //RETURN DATE ARRAY
+       return $output;
+    }
 
     
 	public static function overall_completed_total()
