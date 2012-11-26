@@ -53,7 +53,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
-		echo Kohana::debug($this->auth->user->customer->D_O_B);exit;
+		
 		$this->template->age = Model_User::get_age($this->auth->user->customer->D_O_B);
 		
 		if (Caffeine::modules('wish_list'))

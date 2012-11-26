@@ -142,7 +142,8 @@ class Ecommerce_Model_Product extends Model_Application
 				$valid = FALSE;
 			}
 			else
-			{
+			{ // echo Kohana::debug($field);
+			  //echo Kohana::debug($product->id);exit;
 				// Is slug a duplicate?
 				$is_duplicate = (bool) Jelly::select('product')
                         				->where('slug', '=', $array['slug'])
