@@ -79,6 +79,15 @@
 				<a href="mailto:{{customer.email}}">Send Email</a>
 			{% endif %}
 		</div>
+		{% if modules.email_verification and customer.user %}
+			<div class="grid_3">
+			Account Activated
+		  <select id="activated" name="customer[account_activated]">
+		    <option value="{{customer.user.verification}}">{% if customer.user.verification == "TRUE" %}Yes{% else %}No{% endif %}</option>
+		    <option{% if customer.user.verification == "TRUE" %} value="0">No{% else %} value="1">Yes{% endif %}</option>
+		  </select>
+		{% endif %}
+		  </div>
 		<div class="clear"></div>
 	</div>
 	

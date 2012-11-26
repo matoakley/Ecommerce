@@ -304,8 +304,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
   		$customer->notes = $data['contact_notes'];
 		}
-
-	
+		if (Caffeine::modules('email_verification'))
+		  {
+  		   $this->user->verification = $data['account_activated'];
+  		   $this->user->save(); 
+		  }
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
 		if (isset($data['customer_types']))
@@ -552,5 +555,6 @@ class Ecommerce_Model_Customer extends Model_Application
 
 		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
+	
 
 }
