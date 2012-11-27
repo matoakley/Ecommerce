@@ -505,7 +505,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->auto_render = FALSE;
 		
 		$customer = Model_Customer::load($this->request->param('id'));
-		$customer->delete();
+		// not sure why this doesnt work yet but il overload it to fix it for now ... $customer->delete();
+		$customer->deleted = time();
+		$customer->save();
 		
 		$this->request->redirect($this->session->get('admin.customers.index', 'admin/customers'));
 	}
