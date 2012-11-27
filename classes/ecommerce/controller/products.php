@@ -47,11 +47,8 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
-<<<<<<< HEAD
 		
 		$this->template->age = Model_User::get_age($this->auth->user->customer->D_O_B);
-=======
->>>>>>> 0fda163310142ca5d0c431948f08ef6ab68aeb17
 		
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');
@@ -87,7 +84,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 	function action_search()
 	{
 		if (isset($_GET['q']))
-		{
+		{  
 			$items = Kohana::config('ecommerce.pagination.products');
 			$products_search = Model_Product::search(array('status:active'), $items);
 			

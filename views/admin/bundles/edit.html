@@ -54,7 +54,19 @@
 		<div class="clear"></div>
 	</div>
 	
-	<div class="field">
+			<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
+				{% if product.loaded and product.slug %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<!--
+<div class="field">
 		<div class="grid_2 alpha">
 			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
@@ -67,6 +79,7 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+-->
 	
 	{% if product.loaded and product.slug %}
 	<div class="field">

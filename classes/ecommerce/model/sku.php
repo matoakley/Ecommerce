@@ -31,6 +31,11 @@ class Ecommerce_Model_Sku extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'bundles' => new Field_ManyToMany(array(
+					'foreign' => 'product',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
 				'show_in_commercial' => new Field_Boolean,

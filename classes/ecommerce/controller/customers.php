@@ -55,7 +55,7 @@ class Ecommerce_Controller_Customers extends Controller_Application
 		  $user = $this->auth->get_user();
 		  $verified = TRUE;
 		  
-		  if (Caffeine::modules('email_verification'))
+		  if (Caffeine::modules('email_verification') AND $user_logged_in)
 		  {
   		  $verified = $user->verification;
 		  }
