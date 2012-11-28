@@ -157,9 +157,9 @@ class Ecommerce_Model_Customer extends Model_Application
 		}
 		
 		if (isset($data['D_O_B']))
-		{
-			$customer->D_O_B = $data['D_O_B'];
-		}
+    {
+      $customer->D_O_B = $data['D_O_B'];
+    }
 		
 		$customer->status = 'active';
 		

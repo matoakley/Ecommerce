@@ -15,17 +15,9 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	function action_index()
 	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
-		
-		/*
-if (isset($_GET['q']))
-  		{
-    		$search = Model_Product::search(array(), $items);
-  		}
-		else 
-		  {
-*/
+
   		  $search = Model_Product::search(array('type', 'product'), $items);
-		  //}
+
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 		  'total_items' => $search['count_all'],

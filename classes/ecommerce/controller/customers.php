@@ -223,22 +223,8 @@ class Ecommerce_Controller_Customers extends Controller_Application
       	        
           	   $customer->create_account($_POST['password'], isset($_POST['username']) ? $_POST['username'] : isset($_POST['username']));
           	   
-          	   $user = Model_User::load();
-          	   //get the users age
-          	   $age = $user->get_age(strtotime($_POST['D_O_B']));
-          	   
-          	   // check they arent 14 or under
-          	   if ($age <= 15)
-          	     {
-            	     $customer->send_parental_consent_form($customer->user);
-            	      $this->request->redirect(Route::get('parental_consent')->uri());
-          	     }
-          	   else
-          	     {
-            	     $customer->send_email_verification($customer->user);
-            	      $this->request->redirect(Route::get('email_verification')->uri());
-          	     }
-          	   
+            	 $customer->send_email_verification($customer->user);
+            	 $this->request->redirect(Route::get('email_verification')->uri());
             }
             else
               {
