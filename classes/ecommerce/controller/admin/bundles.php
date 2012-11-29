@@ -16,7 +16,7 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
-		$search = Model_Product::search(array('type', 'bundle'), $items);
+		$search = Model_Product::search(array('type:bundle'), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(

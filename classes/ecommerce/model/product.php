@@ -120,6 +120,9 @@ class Ecommerce_Model_Product extends Model_Application
 			'status' => array(
 				'field' => 'status',
 			),
+			'type' => array(
+				'field' => 'type',
+			),
 		),
 		'search' => array(
 			'name',

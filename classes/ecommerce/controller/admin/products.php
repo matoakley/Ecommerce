@@ -16,7 +16,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-  		  $search = Model_Product::search(array('type', 'product'), $items);
+  		  $search = Model_Product::search(array('type:product'), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
