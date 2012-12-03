@@ -328,11 +328,13 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		{
 			$month = date('m');
 		}
+		$year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as orders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -343,12 +345,13 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 	
 	   $month = date('m');
-		
+	   $year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as thismonthsorders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
