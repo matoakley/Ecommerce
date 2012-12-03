@@ -202,29 +202,6 @@
 
 			</div>				
 		</div>
-		
-			<div class="dashboard-row">
-	
-		<div class="grid_8 alpha dashboard-element" style="margin-top:20px;">
-		
-			<h2>Books Awaiting Moderation</h2>
-			
-			<div class="table-container">
-			
-				<table>
-					<tbody>
-					{% for key, book in books_for_moderation %}
-						<tr class="{{['', 'alternate']|cycle(key)}}">
-							<td><a href="/admin/products/edit/{{book.id}}">{{book.name}}</a></td>
-						</tr>
-					{% endfor %}
-					</tbody>
-				</table>
-
-			</div>
-
-		</div>
-
 	
 		<div class="clear"></div>
 		
@@ -238,15 +215,31 @@
 			
 			<div class="grid_5 alpha">
 				<h2 style="margin:0;">{{"now"|date('F')}} Sales Order Total</h2>
+		{% if modules.dashboard_breakdowns %}
+				<h2 style="margin:0;font-weight:normal">{{"now"|date('F')}} Retail Total</h2>
+				<h2 style="margin:0;font-weight:normal">{{"now"|date('F')}} Commercial Total</h2>
+		{% endif %}
 			</div>
 			<div class="grid_3 tr">
 				<h2 style="margin:0;color:green;">&pound;{{monthly_total|num_format(2)}}</h2>
+		{% if modules.dashboard_breakdowns %}
+				<h2 style="margin:0;color:green;">&pound;{{retail_monthly_total|num_format(2)}}</h2>
+				<h2 style="margin:0;color:green;">&pound;{{commercial_monthly_total|num_format(2)}}</h2>
+		{% endif %}
 			</div>
 			<div class="grid_5">
 				<h2 style="margin:0;">All Time Sales Order Total</h2>
+		{% if modules.dashboard_breakdowns %}
+				<h2 style="margin:0;font-weight:normal">All Time Retail Total</h2>
+				<h2 style="margin:0;font-weight:normal">All Time Commercial Total</h2>
+		{% endif %}
 			</div>
 			<div class="grid_3 omega tr">
 				<h2 style="margin:0;color:green;">&pound;{{all_time_total|num_format(2)}}</h2>
+		{% if modules.dashboard_breakdowns %}
+				<h2 style="margin:0;color:green;">&pound;{{retail_all_time_total|num_format(2)}}</h2>
+				<h2 style="margin:0;color:green;">&pound;{{commercial_all_time_total|num_format(2)}}</h2>
+		{% endif %}
 			</div>
 			
 			

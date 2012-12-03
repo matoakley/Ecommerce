@@ -65,6 +65,11 @@ class Ecommerce_Model_Product extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
