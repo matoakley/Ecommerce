@@ -38,7 +38,7 @@ font-weight: bold;
 		</div>
 		<div class="clear"></div>
 	</div>
-
+	
 	<h2>Event Details</h2>
 	
 	<div class="field">
@@ -134,7 +134,7 @@ font-weight: bold;
 				<label for="address-town" {{ errors.address.town ? "class='error'" : "" }}>Town</label>
 			</div>
 			<div class="grid_6 omega">
-				<input type="text" id="address-town" name="address[town]" value="{{fields.event.address.town}}" class="inputtext long {% if not stockist.loaded %}slugify{% endif %}" />
+				<input type="text" id="address-town" name="address[town]" value="{{fields.event.address.town}}" class="inputtext long" />
 			</div>
 			<div class="clear"></div>
 		</div>
