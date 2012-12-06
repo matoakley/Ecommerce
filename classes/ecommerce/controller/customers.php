@@ -42,10 +42,19 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	
 		// Process the log in
 		if ($_POST)
-		{
-
-  		if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in('customer'))
-			{  
+		{  
+		  $user_login = $this->auth->login($_POST['login']['email'], $_POST['login']['password']);
+		  $user_logged_in = $this->auth->logged_in('customer');
+		  $user = $this->auth->get_user();
+		  $verified = TRUE;
+		  
+		  if (Caffeine::modules('email_verification') AND $user_logged_in)
+		  {
+  		  $verified = $user->verification;
+		  }
+		  
+			if ($user_login == TRUE AND $user_logged_in == TRUE AND $verified == TRUE)
+			{
 			  // If customer is logging in, clear any referral codes from basket 
     		if (Caffeine::modules('reward_points'))
     		{
@@ -187,6 +196,7 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	      {
 	        if ( ! $customer->loaded())
 	        {
+<<<<<<< HEAD
   	        $customer = Model_Customer::create($_POST);
 	        }
     	    $customer->create_account($_POST['password'], isset($_POST['username']));
@@ -198,6 +208,38 @@ class Ecommerce_Controller_Customers extends Controller_Application
   			  $this->request->redirect(Route::get('customer_dashboard')->uri());
   		  }
 	    }
+=======
+      	     if ( ! $customer->loaded())
+    	        {
+      	        $customer = Model_Customer::create($_POST);
+    	        }
+      	        
+          	   $customer->create_account($_POST['password'], isset($_POST['username']) ? $_POST['username'] : isset($_POST['username']));
+          	   
+            	 $customer->send_email_verification($customer->user);
+            	 $this->request->redirect(Route::get('email_verification')->uri());
+            }
+            else
+              {
+                 try
+                     {
+              	        if ( ! $customer->loaded())
+                  	        {
+                    	        $customer = Model_Customer::create($_POST);
+                  	        }
+	        
+                  	   $customer->create_account($_POST['password'], isset($_POST['username']) ? $_POST['username'] : isset($_POST['username']));
+              
+                  	   $this->auth->force_login($customer->user);
+                  	   $this->request->redirect(Route::get('customer_dashboard')->uri());
+                  	 }
+            	  catch (Kohana_Exception $e)
+            	  {
+          			  $this->request->redirect(Route::get('customer_dashboard')->uri());
+          		  }
+              }
+  	    }
+>>>>>>> cc405329b9d2b8ab752b04a75e0682898754e6f6
 	    else
 	    {
   	    $fields = $_POST;

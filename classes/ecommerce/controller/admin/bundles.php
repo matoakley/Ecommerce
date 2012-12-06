@@ -13,29 +13,28 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 	}
 	
 	function action_index()
-	{
+	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
-		$product = Model_Product::load();
-		
-		$search = $product->get_admin_bundles();
+		$search = Model_Product::search(array('type:bundle'), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
-			'total_items' => count($search),
-			'items_per_page' => ($items) ? $items : $search['count_all'],
+		  'total_items' => $search['count_all'],
+      'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 			'view' => 'pagination/admin',
 		));
 		
 		// Set URI into session for redirecting back from forms
-		$this->session->set('admin.bundles.index', $_SERVER['REQUEST_URI']);
+		$this->session->set('admin.products.index', $_SERVER['REQUEST_URI']);
 		
-		$this->template->bundles = $search;
-		$this->template->total_bundles = count($search);
+		$this->template->bundles = $search['results'];
+		$this->template->total_bundles = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
 	}
+
 	
 	function action_edit($id = FALSE, $cloning = FALSE)
 	{

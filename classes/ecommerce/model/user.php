@@ -126,6 +126,11 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$user->password_confirm = $password;
 		$user->add('roles', array(1,3));
 		$user->save();
+		
+		if (Caffeine::modules('wish_list'))
+  		{  
+    			$user->wish_list_id = $user->generate_wish_list_id();
+  		}
 		if (Caffeine::modules('email_verification'))
   		{
     			$user->email_verification_id = $user->generate_email_verification_id();

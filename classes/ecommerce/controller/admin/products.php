@@ -15,14 +15,13 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	function action_index()
 	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
-		
-		$product = Model_Product::load();
-		$search = $product->get_all_products();
+
+  		  $search = Model_Product::search(array('type:product'), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
-			'total_items' => count($search),
-			'items_per_page' => ($items) ? $items : count($search),
+		  'total_items' => $search['count_all'],
+      'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 			'view' => 'pagination/admin',
 		));
@@ -30,8 +29,8 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		// Set URI into session for redirecting back from forms
 		$this->session->set('admin.products.index', $_SERVER['REQUEST_URI']);
 		
-		$this->template->products = $search;
-		$this->template->total_products = count($search);
+		$this->template->products = $search['results'];
+		$this->template->total_products = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
 	}

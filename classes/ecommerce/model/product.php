@@ -65,6 +65,11 @@ class Ecommerce_Model_Product extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
@@ -120,6 +125,9 @@ class Ecommerce_Model_Product extends Model_Application
 			'status' => array(
 				'field' => 'status',
 			),
+			'type' => array(
+				'field' => 'type',
+			),
 		),
 		'search' => array(
 			'name',
@@ -132,7 +140,7 @@ class Ecommerce_Model_Product extends Model_Application
 	public static function _is_slug_valid(Validate $array, $field)
 	{
 		$valid = TRUE;
-		$product = Model_Product::load();
+		//$product = Model_Product::load();
 		
 		// Is slug set (unless duplicating...)
 		if ( ! isset($array['duplicating']))
@@ -142,11 +150,12 @@ class Ecommerce_Model_Product extends Model_Application
 				$valid = FALSE;
 			}
 			else
-			{
+			{ 
+			  //echo Kohana::debug($array->as_array(), $field);exit;
 				// Is slug a duplicate?
 				$is_duplicate = (bool) Jelly::select('product')
                         				->where('slug', '=', $array['slug'])
-                        				->where('id', '<>', $product->id)
+                        			//	->where('id', '<>', $product->id)
                         				->where('deleted', 'IS', NULL)->count();
 				
 				if ($is_duplicate)
@@ -164,7 +173,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	
 
-public static function list_all()
+	public static function list_all()
 	{
 	 
 		return Jelly::select('product')
@@ -379,6 +388,7 @@ public static function list_all()
 	{
 		return Jelly::select('review')
 							->where('object_id', '=', $this->id)
+							->where('status', '=', 'active')
 							->order_by($order, $direction)
 							->limit($items)
 							->offset($offset)
