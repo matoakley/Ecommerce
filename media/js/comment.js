@@ -39,7 +39,7 @@ define([], function(){
        if (response.id){
         successCallback(response.id);
       } else {
-        errorCallback(response.error);
+        errorCallback(response.errors);
       }
      }, 'json');
   };
