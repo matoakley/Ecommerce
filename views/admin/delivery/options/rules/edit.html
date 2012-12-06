@@ -1,0 +1,98 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	{% if delivery_options_rule.loaded %}
+		Edit Delivery Option: <strong>{{delivery_options_rule.name}}</strong>
+	{% else %}
+		Adding: <strong>New Delivery Option</strong>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if delivery_options_rule.loaded %}
+				<a href="/admin/delivery_options_rules/delete/{{delivery_options_rule.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Delivery Option
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Delivery Option Details</h2>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-name" {{ errors.delivery_options_rule.name ? "class='error'" : "" }}>Name *</label>
+		</div>
+		<div class="grid_8">
+			<input type="text" id="delivery-option-name" name="delivery_options_rule[name]" value="{{fields.delivery_options_rule.name}}"
+				class="inputtext longest" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-options-rule-description" class="top">Description</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="delivery-options-rules-description" name="delivery_options_rule[description]" class="description">{{fields.delivery_options_rule.description}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-price"  {{ errors.delivery_options_rule.price ? "class='error'" : "" }}>Minimum Basket Total (&pound;)</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="delivery-option-price" name="delivery_options_rule[min_basket]" value="{{fields.delivery_options_rule.min_basket|num_format(2)}}" class="inputtext shortest" />
+			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" /> Enter minimum basket total.</span>
+		</div>
+		<div class="clear"></div>
+	</div>	
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-status">Resulting Delivery Option</label>
+		</div>
+		<div class="grid_10">
+			<select id="delivery-option-status" name="delivery_options_rule[delivery_option_id]">
+			{% for delivery_option in delivery_options %}
+				<option value="{{delivery_option.id}}" {{ delivery_option.id == delivery_options_rule.delivery_option_id.id ? "selected" : "" }}>{{delivery_option.name|humanize|title}}</option>
+			{% endfor %}
+			</select>
+			<span class="left-pad"><img src="/images/icons/help.png" alt="" class="inline-icon" />Choose the delivery option is amount spent.</span>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="delivery-option-status">Status</label>
+		</div>
+		<div class="grid_4">
+			<select id="delivery-option-status" name="delivery_options_rule[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == delivery_options_rule.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+</form>
+
+{% endblock %}

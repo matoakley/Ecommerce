@@ -43,6 +43,8 @@ return array
 		'customer_accounts' => FALSE,
 		'dashboard_enhanced_sales_orders' => FALSE,
 		'delivery_options' => FALSE,
+		'delivery_per_item' => FALSE,
+		'delivery_options_rules' => FALSE,
 		'display_in_retail_or_commercial' => FALSE,
 		'email_verification' => FALSE,
 		'events' => FALSE,

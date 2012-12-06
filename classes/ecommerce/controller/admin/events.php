@@ -17,9 +17,11 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 	{
   	$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
-		$order = array( 'start_date', 'ASC');
+		$order = array();
+		$order['start_date'] = 'DESC';
 		
-		$search = Model_Event::search(array(), $items);
+		
+		$search = Model_Event::search(array(), $items, $order);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(

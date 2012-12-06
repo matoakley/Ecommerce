@@ -321,39 +321,20 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		return $sales_order->save();
 	}
-	
-	public static function monthly_completed_total($month = FALSE)
-	{
-		if ( ! $month)
-		{
-			$month = date('m');
-		}
 		
-		$year = date('Y');
-		
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')
-						AND deleted IS NULL
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
-						
-		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
-		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
-	}
-	
 	public static function monthly_sales_orders($month = FALSE)
 	{
 		if ( ! $month)
 		{
 			$month = date('m');
 		}
+		$year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as orders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -364,12 +345,13 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 	
 	   $month = date('m');
-		
+	   $year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as thismonthsorders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -441,19 +423,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
        //RETURN DATE ARRAY
        return $output;
     }
-
-    
-	public static function overall_completed_total()
-	{
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')
-						AND deleted IS NULL";
-						
-		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
-		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
-	}
 	
 	public static function create_commercial_sales_order($data)
 	{
@@ -563,6 +532,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			}
 			
 			$this->status = $status;
+			
+			foreach ($this->items as $sales_order_item)
+			  {
+  			  $sales_order_item->status = $this->status;
+  			  $sales_order_item->save();
+			  }
 			
 			$this->add_note($note_text, TRUE);
 			
@@ -697,5 +672,108 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function invoice_due_date()
 	{
 		return $this->invoiced_on + (86400 * $this->invoice_terms);
+	}
+	
+	public static function monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+	public static function overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+	public static function retail_monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'retail'
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function commercial_monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'commercial'
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function retail_overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'retail'
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function commercial_overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'commercial'
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
 	}
 }

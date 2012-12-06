@@ -86,8 +86,9 @@
 		    <option value="{{customer.user.verification}}">{% if customer.user.verification == "TRUE" %}Yes{% else %}No{% endif %}</option>
 		    <option{% if customer.user.verification == "TRUE" %} value="0">No{% else %} value="1">Yes{% endif %}</option>
 		  </select>
-		{% endif %}
 		  </div>
+		{% endif %}
+
 		<div class="clear"></div>
 	</div>
 	
