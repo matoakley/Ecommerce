@@ -44,7 +44,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		$this->template->thirty = Model_Sales_Order::thirtydays();
 		$merged_thirty_orders = Arr::overwrite($this->template->thirty, $this->template->order_days);
 		$this->template->merged = array_reverse($merged_thirty_orders);
-	
+		//echo Kohana::debug($this->template->thirty);
+		//echo Kohana::debug($this->template->order_days);exit;
 		
 	if (Caffeine::modules('reviews'))
 	  {

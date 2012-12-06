@@ -37,6 +37,7 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 				'vat_rate' => new Field_Float(array(
 					'places' => 4,
 				)),
+				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -57,6 +58,7 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item = Jelly::factory('sales_order_item');
 		
 		$item->sales_order = $sales_order;
+		$item->status = $sales_order->status;
 		$item->sku = $basket_item->sku;
 		
 		// Build product name including product options added onto end.
@@ -163,6 +165,7 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->vat_rate = $sku_object->vat_rate();
 		$item->unit_price = $item->net_unit_price * (($item->vat_rate + 100) / 100);
 		$item->total_price = $item->net_total_price * (($item->vat_rate + 100) / 100);
+		$item->status = $sales_order->status;
 		
 		return $item->save();
 		
@@ -180,7 +183,8 @@ class Ecommerce_Model_Sales_Order_Item extends Model_Application
 		$item->quantity = 1;
 		$item->unit_price = $promotion_code_reward->sku_reward_retail_price();
 		$item->vat_rate = Kohana::config('ecommerce.vat_rate');
-		$item->total_price = $promotion_code_reward->sku_reward_retail_price(); 
+		$item->total_price = $promotion_code_reward->sku_reward_retail_price();
+		$item->status = $sales_order->status;
 		
 		
 		return $item->save();

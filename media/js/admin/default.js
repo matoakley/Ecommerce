@@ -1,5 +1,37 @@
   $(function(){
-
+    
+    
+        
+    $('#defaultDelivery').live('click', function(e){
+      e.preventDefault();
+      var defaultDelivery = $('#default-delivery').val();
+	
+		var data = {
+			default: defaultDelivery,
+		};
+	console.log(data);
+		$.ajax({
+		
+			url: '/admin/delivery_options/default_delivery_option',
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+			$('#tick-delivery').hide();
+  		$('#waiting-delivery').show();
+  		$('#error-delivery').hide();
+			},
+			success: function(){
+			$('#waiting-delivery').hide();
+			$('#tick-delivery').show();
+  		//window.location.reload();
+			},
+			error: function(){
+  		$('#waiting-delivery').hide();
+			$('#error-delivery').show();
+			},
+		});
+	});
+    
 	$('#bulk-actions').change(function(e){
 		
 		if ($(this).val() == 'delete'){

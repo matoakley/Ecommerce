@@ -73,8 +73,37 @@ class Ecommerce_Model_Basket extends Model_Application
 	}
 	
 	public function calculate_shipping()
-	{
-		return $this; // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+	{  
+	  if (Kohana::config('ecommerce.modules.delivery_options_rules'))
+		{
+  	  //***** New delivery rules section *****
+  	  
+  	  $default_delivery_option = Jelly::select('delivery_option')->where('default', '=', 1)->load();
+  	  
+  	  //get delivery rules
+  	  $rules = Jelly::select('delivery_options_rule')->where('status', '=', 'active')->where('deleted', 'IS', NULL)->order_by('min_basket', 'ASC')->execute();
+  	  
+  	  //loop through each one
+  	  foreach ($rules as $rule)
+  	    {
+    	    if ($this->calculate_subtotal() > $rule->min_basket)
+    	      {
+      	      $this->delivery_option = $rule->delivery_option_id->id;
+    	      }
+    	    /*
+else
+    	      {
+      	      $this->delivery_option = $default_delivery_option->id;
+    	      }
+*/
+  	    }
+  
+  		return $this->save();
+  	}
+   else
+     {
+       return $this; // This is overriden for any special cases, e.g. FREE DELIVERY OVER £10 etc.
+     }
 	}
 	
 	public function save($key = NULL)

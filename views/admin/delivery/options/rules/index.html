@@ -1,0 +1,65 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}Viewing: <strong id="type">Delivery Option Rules</strong>{% endblock %}
+
+{% block content %}
+
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/delivery_options_rules/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Delivery Option Rule
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	
+	<div class="clear"></div>
+</div>
+
+<div class="grid_8 omega">
+	<!--
+<select id="bulk-actions">
+		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
+	</select>
+-->
+&nbsp;
+	<span id="no-rows-selected">No rows selected!</span>
+</div>
+
+<div class="grid_8 omega tr">
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_products %}{{page * items}}{% else %}{{total_delivery_option_rules}}{% endif %}</strong> of <strong>{{total_delivery_option_rules}}</strong> items
+</div>
+
+<div class="clear"></div>
+<table>
+	<thead>
+		<tr>
+			<th width="1"><input id="check-all" type="checkbox" /></th>
+			<th>Name</th>
+			<th>Basket Minimum</th>
+			<th>Delivery Reward</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, delivery_option_rule in delivery_options_rules %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="checkbox" class="row-selector" value="{{delivery_option_rule.id}}" /></td>
+			<td><a href="/admin/delivery_options_rules/edit/{{delivery_option_rule.id}}">{{delivery_option_rule.name}}</a></td>
+			<td>&pound;{{delivery_option_rule.min_basket|num_format(2)}}</td>
+			<td>{{delivery_option_rule.delivery_option_id.name|title}}</td>
+			<td class="{{delivery_option_rule.status}}">{{delivery_option_rule.status|title}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{{pagination}}
+
+{% endblock %}
