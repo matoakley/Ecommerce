@@ -18,7 +18,7 @@
 			beforeSend: function(){
 			$('#tick-delivery').hide();
   		$('#waiting-delivery').show();
-  		$('#error-delivery').hide();
+  		$('#error-delivery').show();
 			},
 			success: function(){
 			$('#waiting-delivery').hide();
