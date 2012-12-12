@@ -14,7 +14,7 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	 * @return void
 	 */
 	public function before()
-	{
+	{ 
 		// Attempt to use SSH if available as we're dealing with log ins
 		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
 		{

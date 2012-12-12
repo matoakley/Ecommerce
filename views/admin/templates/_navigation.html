@@ -2,7 +2,6 @@
 	<ul>
 		<li class="first"><a href="/admin">Dashboard</a></li>
 		
-		
 		{% if modules.brands or modules.categories or modules.products or modules.stockists %}
 		<li>
 			<a href="#">Catalog</a>
@@ -27,9 +26,21 @@
 				{% if modules.stockists %}
 					<li><a href="/admin/stockists">Stockists</a></li>
 				{% endif %}
+				
+				{% if modules.bundles %}
+					<li><a href="/admin/bundles">Bundles</a></li>
+				{% endif %}
 			</ul>
 
 		</li>
+		{% endif %}
+		
+		{% if modules.reviews %}
+		  <li><a href="/admin/reviews">Reviews</a></li>
+		{% endif %}
+		
+		{% if modules.comments %}
+		  <li><a href="/admin/comments">Comments</a></li>
 		{% endif %}
 		
 		{% if modules.sales_orders %}
@@ -94,9 +105,18 @@
 		</li>
 		  {% endif %}
 		
+		{% if (modules.delivery_options) or (modules.delivery_options_rules) %}
+		<li><a href="#">Delivery</a>
+		   <ul>
 		{% if modules.delivery_options %}
-			<li><a href="/admin/delivery_options">Delivery Options</a></li>
+			  <li><a href="/admin/delivery_options">Delivery Options</a></li>
 		{% endif %}
+			{% if modules.delivery_options_rules %}
+			  <li><a href="/admin/delivery_options_rules">Delivery Rules</a></li>
+		{% endif %}
+		  </ul>
+		</li>
+		  {% endif %}
 		
 		<li><a href="#">System</a>
 			<ul>

@@ -54,7 +54,19 @@
 		<div class="clear"></div>
 	</div>
 	
-	<div class="field">
+			<div class="field">
+		<div class="grid_2 alpha">
+			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
+		</div>
+		<div class="grid_14 omega">
+			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
+				{% if product.loaded and product.slug %} disabled {% endif %} />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<!--
+<div class="field">
 		<div class="grid_2 alpha">
 			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
@@ -67,6 +79,7 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+-->
 	
 	{% if product.loaded and product.slug %}
 	<div class="field">
@@ -131,6 +144,37 @@
 				<option value="0">None</option>
 			{% for brand in brands %}
 				<option value="{{brand.id}}" {{ brand.id == fields.product.brand.id ? "selected" : "" }}>{{brand.name}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+	
+	{% if modules.related_products %}	
+	<div class="field">
+		<div class="grid_2 omega">
+			<label for="product-related">Related Products</label>
+		</div>
+		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
+		<div class="grid_5 omega">All Products
+			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
+			{% set this_product = product %}
+			{% for product in products %}
+			{% if (product in related_products) or (product.id == this_product.id) %}{% else %}
+				<option value="{{product.id}}">{{product.name|title}}</option>
+				{% endif %}
+			{% endfor %}
+			</select>
+		</div>
+			<div class="grid_1" style="margin-right:40px;">
+			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-related">>></button>
+			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-related"><<</button>
+			</div>
+		<div class="grid_5">Related Products
+      <select id="product-related" size="10" style="width:250px" name="product[related]">
+			{% for product in related_products %}
+				<option value="{{product.id}}">{{product.name|title}}</option>
 			{% endfor %}
 			</select>
 		</div>

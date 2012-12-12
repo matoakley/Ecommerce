@@ -18,6 +18,7 @@ class Ecommerce_Model_Delivery_Option extends Model_Application
 						'not_empty' => NULL,
 					),
 				)),
+				'default' => new Field_Boolean,
 				'status' => new Field_String,
 				'featured' => new Field_Boolean,
 				'customer_selectable' => new Field_Boolean,

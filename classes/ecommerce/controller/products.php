@@ -53,6 +53,8 @@ class Ecommerce_Controller_Products extends Controller_Application
   		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
 		    }
 		
+		//$this->template->age = $user->get_age($this->auth->user->customer->D_O_B);
+
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');
 		
@@ -87,7 +89,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 	function action_search()
 	{
 		if (isset($_GET['q']))
-		{
+		{  
 			$items = Kohana::config('ecommerce.pagination.products');
 			$products_search = Model_Product::search(array('status:active'), $items);
 			

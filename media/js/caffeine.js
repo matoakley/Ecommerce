@@ -1,6 +1,7 @@
 require.config({
   paths: {
-    bootstrap: 'libs/bootstrap/bootstrap'
+    bootstrap: 'libs/bootstrap/bootstrap',
+    jqueryui: 'libs/jquery-ui-1.8.15.min'
   }
 });
 

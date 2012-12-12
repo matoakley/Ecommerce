@@ -1,0 +1,99 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+  Moderate Review of <strong>{{review.item().name}}</strong> by <strong>{% if review.user.customer.name() != '' %}{{review.user.customer.name()}}{% else %}{{review.user.name()}}{% endif %}</strong>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			{% if review.loaded %}
+				<a href="/admin/reviews/delete/{{review.id}}" class="delete-button">
+					<img src="/images/icons/delete.png" alt="" class="inline-icon" />
+					Delete Review
+				</a>
+			{% endif %}
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Review Details</h2>
+	
+	<div class="field">
+  	<div class="grid_2 alpha">
+  	  <label>Customer</label>
+    </div>
+    <div class="grid_4">
+      <a href="/admin/customers/edit/{{review.user.customer.id}}">{% if review.user.customer.name() != '' %}{{review.user.customer.name()}}{% else %}{{review.user.name()}}{% endif %}</a>
+    </div>
+    <div class="grid_2">
+			<label>Customer Email</label>
+		</div>
+		<div class="grid_4 omega">
+		  <a href="mailto:{{review.user.email}}">{{review.user.email}}</a>
+		</div>
+		<div class="clear"></div>
+  </div>
+  
+  <div class="field">
+    <div class="grid_2 alpha">
+      <label>Item</label>
+    </div>
+    <div class="grid_4">
+      {{review.object|title}}
+    </div>
+    <div class="grid_2">
+      <label>Item Name</label>
+    </div>
+    <div class="grid_4 omega">
+			<a href="{{review.item_admin_link()}}">{{review.item().name}}</a>
+		</div>
+		<div class="clear"></div>
+  </div>
+				
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="review-status">Status</label>
+		</div>
+		<div class="grid_14 omega">
+			<select id="review-status" name="review[status]">
+			{% for status in statuses %}
+				<option value="{{status}}" {{ status == fields.review.status ? "selected" : "" }}>{{status|humanize|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+	  <div class="grid_2 alpha">
+	    <label for="review-rating">Rating</label>
+	  </div>
+	  <div class="grid_14 omega">
+	    <input type="text" name="review[rating]" value="{{fields.review.rating}}" class="inputtext tiny" />
+	  </div>
+	  <div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_2 alpha">
+			<label for="review-review" class="top">Review</label>
+		</div>
+		<div class="grid_14 omega">		
+			<textarea id="review-review" name="review[review]">{{fields.review.review}}</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+		
+</form>
+
+{% endblock %}

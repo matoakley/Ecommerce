@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Ecommerce_Controller_Admin_Events extends Controller_Application
+class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 {
 	function before()
 	{
@@ -11,22 +11,50 @@ class Ecommerce_Controller_Admin_Events extends Controller_Application
 	
 		parent::before();
 		
-		$this->add_breadcrumb(URL::site(Route::get('event')->uri()), 'Event');
 	}
 	
 	function action_index()
 	{
-  $this->template->events = Jelly::select('event')
-									->order_by('start_date', 'ASC')
-									->execute();
-									
-		}
+  	$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 		
-   function action_view()
-   {
-			
+		$order = array();
+		$order['start_date'] = 'DESC';
 		
+		
+		$search = Model_Event::search(array(), $items, $order);
+
+		// Pagination
+		$this->template->pagination = Pagination::factory(array(
+			'total_items' => $search['count_all'],
+			'items_per_page' => ($items) ? $items : $search['count_all'],
+			'auto_hide'	=> false,
+			'view' => 'pagination/admin',
+		));
+		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('admin.events.index', $_SERVER['REQUEST_URI']);
+		
+		$this->template->events = $search['results'];
+		$this->template->total_events = $search['count_all'];
+		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+		$this->template->items = $items;
 	}
+		
+  public function action_view()
+    {
+    
+     $event = Model_Event::load($this->request->param('event_slug'));
+		
+     if ( ! $event->loaded())
+       {
+         throw new Kohana_Exception('Event not found.');
+       }
+		
+		$this->template->event = $event;
+		
+		$this->add_breadcrumb('/event', 'Current Event');
+   
+   }
 
 	public function action_edit()
 	{

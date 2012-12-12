@@ -28,11 +28,12 @@ class Ecommerce_Controller_Admin_Delivery_Options extends Controller_Admin_Appli
 		
 		// Set URI into session for redirecting back from forms
 		$this->session->set('admin.delivery_options.index', $_SERVER['REQUEST_URI']);
-		
+
 		$this->template->delivery_options = $search['results'];
 		$this->template->total_options = $search['count_all'];
 		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 		$this->template->items = $items;
+		$this->template->default_delivery_option = Jelly::select('delivery_option')->where('default', '=', 1)->load();
 	}
 	
   public function action_edit($id = FALSE)
@@ -105,5 +106,20 @@ class Ecommerce_Controller_Admin_Delivery_Options extends Controller_Admin_Appli
 		$delivery_option->delete();
 		
 		$this->request->redirect($this->session->get('admin.delivery_options.index', 'admin/delivery_options'));
+	}
+	
+	public function action_default_delivery_option()
+	{
+  	$delivery_option = Model_Delivery_Option::load($_POST['default']);
+  	$delivery_option->default = 1;
+  	$delivery_option->save();
+  	
+  	$other_options = Jelly::select('delivery_option')->where('id', '<>', $delivery_option->id)->execute();
+  	
+  	foreach ($other_options as $other)
+  	  {
+    	  $other->default = 0;
+    	  $other->save();
+  	  }
 	}
 }
