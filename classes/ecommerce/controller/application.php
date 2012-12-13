@@ -63,8 +63,7 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		// Build category tree for navigation
 		$this->template->categories = Model_Category::build_category_tree(NULL, TRUE);
 		
-		$brands = Model_Brand::search(array('status:active'));
-		$this->template->all_brands = $brands['results'];
+		$this->template->all_brands = Jelly::select('brand')->where('status', '=', 'active')->execute();
 		
 		// Set recently viewed products
 		$this->template->recent_products = array_reverse($this->recent_products);
@@ -82,6 +81,10 @@ abstract class Ecommerce_Controller_Application extends Controller_Template_Twig
 		$this->template->cloudmade_api_key = Kohana::config('ecommerce.cloudmade_api_key');
 		
 		$this->template->basket = $this->basket;
+	
+		// If app is in development mode then we bust the JS cache by appending timestamp
+		// otherwise we append the Caffeine version with the app's own buster variable.
+		$this->template->require_js_versioning = IN_PRODUCTION ? Caffeine::js_buster() : time();
 	
 		parent::after();
 	}

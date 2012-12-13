@@ -79,6 +79,16 @@
 				<a href="mailto:{{customer.email}}">Send Email</a>
 			{% endif %}
 		</div>
+		{% if modules.email_verification and customer.user %}
+			<div class="grid_3">
+			Account Activated
+		  <select id="activated" name="customer[account_activated]">
+		    <option value="{{customer.user.verification}}">{% if customer.user.verification == "TRUE" %}Yes{% else %}No{% endif %}</option>
+		    <option{% if customer.user.verification == "TRUE" %} value="0">No{% else %} value="1">Yes{% endif %}</option>
+		  </select>
+		  </div>
+		{% endif %}
+
 		<div class="clear"></div>
 	</div>
 	
@@ -107,7 +117,8 @@
 				<label for="customer-invoice-terms">Invoice Terms</label>
 			</div>
 			<div class="grid_14 omega">
-				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" value="{{fields.customer.invoice_terms}}" /> days
+				<input type="text" class="inputtext shortest" name="customer[invoice_terms]" id="terms" value="{{fields.customer.invoice_terms}}" {% if fields.customer.invoice_terms == 0 %} disabled="disabled" {% endif %}/> days / 
+				<input type="checkbox" id="immediate-payment" name="customer[invoice_terms]" value="0" {% if fields.customer.invoice_terms == 0 %} checked {% endif %}> Immediate payment required
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -166,7 +177,16 @@
 		{% endif %}
 		<div class="clear"></div>
 	</div>
-	
+	{% if (modules.reward_points) and (customer.user.id) %}
+	<div class="field">
+		<div class="grid_4 alpha">
+			<label form="customer-status">Current Reward Points Total</label>
+		</div>
+		<div class="grid_4"><input type="text" class="inputtext short" disabled="disabled" value="{{customer.reward_points}}" style="text-align:center;color:navy"></div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
+
 	{# Custom Fields #}
 	{% set object = customer %}
 	{% include "admin/custom/fields/_edit_form_snippet.html" %}
@@ -368,5 +388,6 @@
 	{% endif %}
 		
 </form>
+
 
 {% endblock %}

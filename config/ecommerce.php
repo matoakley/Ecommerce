@@ -2,11 +2,13 @@
 
 return array
 (
-	'software_version' => '1.2.2', 
+	'software_version' => '1.2.3',
+	'js_buster' => '1',
 
 	'vat_rate' => 20,
+	'default_price_includes_vat' => TRUE,
 	'default_delivery_option' => 5,
-	'default_web_customer_type' => 1, // When using CRM customer types
+	'default_web_customer_type' => NULL, // When using CRM customer types
 	'default_commercial_customer_type' => 2,
 	
 	'site_name' => 'Creative Intent Ecommerce Software',
@@ -32,13 +34,19 @@ return array
 		'blog' => FALSE,
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
+		'bundles' => FALSE,
 		'categories' => FALSE,
+		'comments' => FALSE,
 		'commercial_sales_orders' => FALSE,
 		'crm' => FALSE,
 		'custom_fields' => FALSE,
 		'customer_accounts' => FALSE,
 		'dashboard_enhanced_sales_orders' => FALSE,
 		'delivery_options' => FALSE,
+		'delivery_per_item' => FALSE,
+		'delivery_options_rules' => FALSE,
+		'display_in_retail_or_commercial' => FALSE,
+		'email_verification' => FALSE,
 		'events' => FALSE,
 		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,
@@ -47,6 +55,9 @@ return array
 		'product_weights' => FALSE,
 		'products' => FALSE,
 		'promotion_codes' => FALSE,
+		'related_products' => FALSE,
+		'reviews' => FALSE,
+		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
 		'snippets' => FALSE,
@@ -56,6 +67,7 @@ return array
 		'trade_area' => FALSE,
 		'users' => FALSE,
 		'vat_codes' => FALSE,
+		'wish_list' => FALSE,
 		
 	),
 	
@@ -63,6 +75,7 @@ return array
 	'default_admin_list_option' => 25,
 	'default_country' => 1,
 	'default_promotion_code_length' => 6,
+	'default_customer_referral_code_length' => 16,
 	
 	'no_ssl' => FALSE, // Disable SSL redirect on checkout
 	
@@ -89,4 +102,6 @@ return array
 	'forum_post_name_max_length' => 245,
 	
 	'cookie_salt' => 'YasUr4LYWG4e87Tg8yIJZb6iAjssQokzdW1Z9uSqe4UD6IMgj83M',
+	
+	'moderate_reviews' => TRUE, // Should reviews be hidden until moderated?
 );

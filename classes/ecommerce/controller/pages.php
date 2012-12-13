@@ -17,9 +17,9 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 		parent::before();
 	}
 	
-	function action_view($slug = FALSE)
-	{		
-		$page = Model_Page::get_by_slug($slug);
+	public function action_view()
+	{	
+		$page = Model_Page::get_by_slug($this->request->param('slug'));
 		
 		if ( ! $page->loaded())
 		{
@@ -35,7 +35,7 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 		$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug))), $page->name);
 	}
 	
-	function action_static()
+	public function action_static()
 	{	
 		$slug = $this->request->param('slug');
 
@@ -58,7 +58,7 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 														->order_by(DB::expr('RAND()'))
 														->limit(4)								
 														->execute();
-		}
+		}	
 		
 		// build breadcrumb
 		// Try to find a route based on the static page name otherwise use the standard /pages/static/<slug> route
@@ -82,5 +82,4 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 			$this->add_breadcrumb(URL::site(Route::get('view_static_page')->uri(array('slug' => $slug))), $page_name);			
 		}
 	}
-	
 }

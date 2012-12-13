@@ -27,7 +27,12 @@ class Ecommerce_Controller_Customers extends Controller_Application
 			$this->request->redirect(Route::get('customer_login')->uri());
 		}
 		
-		$this->template->customer = $this->auth->get_user()->customer;
+		$this->template->customer = $this->auth->get_user()->get('customer')->load();
+		
+		if (Caffeine::modules('reviews'))
+		{
+  			$this->template->customer_reviews = $this->get_customer_reviews();
+		}
 		
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
 	}
@@ -40,19 +45,44 @@ class Ecommerce_Controller_Customers extends Controller_Application
 			$this->request->redirect(Route::get('customer_dashboard')->uri());
 		}
 	
+		$ajax_data = array();
+	
 		// Process the log in
 		if ($_POST)
-		{
-			if ($this->auth->login($_POST['login']['email'], $_POST['login']['password']) AND $this->auth->logged_in('customer'))
+		{  
+		  $user_login = $this->auth->login($_POST['login']['email'], $_POST['login']['password']);
+		  $user_logged_in = $this->auth->logged_in('customer');
+		  $user = $this->auth->get_user();
+		  $verified = TRUE;
+		  
+		  if (Caffeine::modules('email_verification') AND $user_logged_in)
+		  {
+  		  $verified = $user->verification;
+		  }
+		  
+			if ($user_login == TRUE AND $user_logged_in == TRUE AND $verified == TRUE)
 			{
-				if (isset($_GET['return_url']))
-				{
-					$this->request->redirect('/'.$_GET['return_url']);
-				}
-				else
-				{
-					$this->request->redirect(Route::get('customer_dashboard')->uri());
-				}
+			  // If customer is logging in, clear any referral codes from basket 
+    		if (Caffeine::modules('reward_points'))
+    		{
+      		$this->basket->reset_referral_code();
+    		}
+    		
+    		if (Request::$is_ajax)
+    		{
+      	  $ajax_data['user'] = $this->auth->get_user()->as_array();
+    		}
+    		else
+    		{
+  				if (isset($_GET['return_url']))
+  				{
+  					$this->request->redirect('/'.$_GET['return_url']);
+  				}
+  				else
+  				{
+  					$this->request->redirect(Route::get('customer_dashboard')->uri());
+  				}
+  		  }
 			}
 			else
 			{
@@ -60,7 +90,19 @@ class Ecommerce_Controller_Customers extends Controller_Application
 				$this->auth->logout();
 				$this->template->email = $_POST['login']['email'];
 				$this->template->login_failed = TRUE;
+				
+				$ajax_data['error'] = TRUE;
 			}
+		}
+		elseif (Request::$is_ajax)
+		{
+  		throw new Kohana_Exception('No data POSTed.');
+		}
+		
+		if (Request::$is_ajax)
+		{
+  		echo json_encode($ajax_data);
+  		exit;
 		}
 		
 		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
@@ -71,6 +113,14 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	{
 		// Log out and redirect to log in page
 		$this->auth->logout();
+		
+		// If customer has been logged in and added reward 
+		// points to their basket, we should remove them now
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->basket->reset_reward_points();
+		}
+		
 		$this->request->redirect(Route::get('customer_login')->uri());
 	}
 	
@@ -132,21 +182,102 @@ class Ecommerce_Controller_Customers extends Controller_Application
 	
 	public function action_create_account()
 	{
-		if ( ! $_POST)
-		{
-			throw new Kohana_Exception('No data posted');
-		}
-		
-		try
-		{
-			$customer = Model_Customer::load($_POST['customer_id']);
-			$customer->create_account($_POST['password']);
-			$this->auth->force_login($customer->user);
-			$this->request->redirect(Route::get('customer_dashboard')->uri());
-		}
-		catch (Kohana_Exception $e)
-		{
-			$this->request->redirect(Route::get('customer_dashboard')->uri());
-		}
-	}
+	  $fields = array();
+	  $errors = array();
+	 
+	  if ($_POST)
+	  {
+	    $customer = isset($_POST['customer_id']) ? Model_Customer::load($_POST['customer_id']) : Model_Customer::load();
+	  
+	    if ( ! $customer->loaded())
+	    {
+	      try
+	      {
+  	      $customer->validate($_POST); 
+	      }
+	      catch (Validate_Exception $e)
+	      {
+  	      $errors['customer'] = $e->array->errors('model/customer');
+	      }
+	    }
+	  
+	    $user = Model_User::load();
+	    try
+	    {
+  	    $user->validate($_POST);
+	    }
+	    catch (Validate_Exception $e)
+	    {
+  	    $errors['user'] = $e->array->errors('model/user');
+	    }
+	  
+	    if (empty($errors))
+	    { 
+	      /* email verification */
+	      if (Caffeine::modules('email_verification'))
+	        {
+      	     if ( ! $customer->loaded())
+    	        {
+      	        $customer = Model_Customer::create($_POST);
+    	        }
+      	        
+          	   $customer->create_account($_POST['password'], isset($_POST['username']) ? $_POST['username'] : isset($_POST['username']));
+          	   
+            	 $customer->send_email_verification($customer->user);
+            	 $this->request->redirect(Route::get('email_verification')->uri());
+            }
+            else
+              {
+                 try
+                     {
+              	        if ( ! $customer->loaded())
+                  	        {
+                    	        $customer = Model_Customer::create($_POST);
+                  	        }
+	        
+                  	   $customer->create_account($_POST['password'], isset($_POST['username']) ? $_POST['username'] : isset($_POST['username']));
+              
+                  	   $this->auth->force_login($customer->user);
+                  	   $this->request->redirect(Route::get('customer_dashboard')->uri());
+                  	 }
+            	  catch (Kohana_Exception $e)
+            	  {
+          			  $this->request->redirect(Route::get('customer_dashboard')->uri());
+          		  }
+              }
+  	    }
+	    else
+	    {
+  	    $fields = $_POST;
+	    }
+    }
+    
+    $this->template->fields = $fields;
+    $this->template->errors = $errors;
+    
+		$this->add_breadcrumb(URL::site(Route::get('customer_dashboard')->uri()), 'Account');
+		$this->add_breadcrumb(URL::site(Route::get('customer_register')->uri()), 'Register');		
+	}	
+	
+	public function action_activate_account()
+	{
+	 
+  	$id = $this->request->param('email_verification_id');
+  	
+  	$user = Jelly::select('user')->where('email_verification_id', '=', $id)->load();
+  	
+  	if ($user->loaded())
+  	  {
+  	    $user->verification = TRUE;
+  	    $user->save();
+  	  }
+    
+    $this->request->redirect(Route::get('customer_dashboard')->uri());
+  }
+  
+  public function get_customer_reviews()
+  {
+    $user_id = $this->auth->get_user()->id;
+    return $reviews = Jelly::select('review')->where('user_id', '=', $user_id)->execute();
+  }
 }

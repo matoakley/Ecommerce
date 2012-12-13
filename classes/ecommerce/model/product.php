@@ -32,6 +32,11 @@ class Ecommerce_Model_Product extends Model_Application
 					'through' => 'categories_products',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'brand' => new Field_BelongsTo(array(
 					'foreign' => 'brand.id',
 					'on_copy' => 'copy',
@@ -39,6 +44,7 @@ class Ecommerce_Model_Product extends Model_Application
 				'status' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
+				'type' => new Field_String,
 				'meta_description' => new Field_String(array(
 					'on_copy' => 'copy',
 				)),
@@ -59,10 +65,17 @@ class Ecommerce_Model_Product extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'bundle_items' => new Field_ManyToMany(array(
+					'foreign' => 'sku',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				
+				'related_products' => new Field_HasMany(array(
+					'foreign' => 'related_product.product_id',
+				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
 				)),
@@ -112,6 +125,9 @@ class Ecommerce_Model_Product extends Model_Application
 			'status' => array(
 				'field' => 'status',
 			),
+			'type' => array(
+				'field' => 'type',
+			),
 		),
 		'search' => array(
 			'name',
@@ -119,11 +135,12 @@ class Ecommerce_Model_Product extends Model_Application
 		),
 	);
 
-	/****** Validation Callbacks ******/
+		/****** Validation Callbacks ******/
 	
 	public static function _is_slug_valid(Validate $array, $field)
 	{
 		$valid = TRUE;
+		//$product = Model_Product::load();
 		
 		// Is slug set (unless duplicating...)
 		if ( ! isset($array['duplicating']))
@@ -133,9 +150,14 @@ class Ecommerce_Model_Product extends Model_Application
 				$valid = FALSE;
 			}
 			else
-			{
+			{ 
+			  //echo Kohana::debug($array->as_array(), $field);exit;
 				// Is slug a duplicate?
-				$is_duplicate = (bool) Jelly::select('product')->where('slug', '=', $array['slug'])->where('deleted', 'IS', NULL)->count();
+				$is_duplicate = (bool) Jelly::select('product')
+                        				->where('slug', '=', $array['slug'])
+                        			//	->where('id', '<>', $product->id)
+                        				->where('deleted', 'IS', NULL)->count();
+				
 				if ($is_duplicate)
 				{
 					$valid = FALSE;
@@ -148,7 +170,21 @@ class Ecommerce_Model_Product extends Model_Application
 			$array->error('slug', 'Slug is a required field.');
 		}
 	}
+	
+	
 
+	public static function list_all()
+	{
+	 
+		return Jelly::select('product')
+							->where('products.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
+							->order_by('name', 'ASC')
+							->execute();
+	}
+
+
+	
 	/****** Public Functions ******/
 	
 	public static function most_popular_products($num_products = 5)
@@ -168,26 +204,31 @@ class Ecommerce_Model_Product extends Model_Application
 						
 		return Database::instance()->query(Database::SELECT, $sql, FALSE);
 	}
+	
+		public static function top_selling_products($items = 5)
+	{
+  	$sql = "SELECT products.*
+						FROM products
+						JOIN skus ON products.id = skus.product_id
+						JOIN sales_order_items ON (skus.id = sales_order_items.sku_id OR products.id = sales_order_items.product_id)
+						JOIN sales_orders ON sales_order_items.sales_order_id = sales_orders.id
+						WHERE sales_orders.status = 'complete'
+						AND products.deleted IS NULL
+						AND sales_orders.deleted IS NULL
+						AND sales_order_items.deleted IS NULL
+						GROUP BY sales_order_items.product_name
+						ORDER BY SUM(sales_order_items.quantity) DESC
+						LIMIT $items";
+						
+		//return Database::instance()->query(Database::SELECT, $sql, FALSE);
+	
+	return Database::instance()->query(Database::SELECT, $sql, 'Model_Product');
+	                           
+	}
 
 	public static function newest_products($num_products = 5)
 	{
 		return Jelly::select('product')->where('status', '=', 'active')->order_by('created', 'DESC')->limit($num_products)->execute();
-	}
-
-	public function display_meta_description()
-	{
-		// If a meta description has not been set then we'll build one from the description.
-		// Not ideal, but it's better than nothing!
-		if ( ! is_null($this->meta_description) AND $this->meta_description != '')
-		{
-			$meta_description = $this->meta_description;
-		}
-		else
-		{
-			$meta_description = Text::limit_chars(strip_tags($this->description), 160, ' &hellip;', TRUE);
-		}
-		
-		return $meta_description;
 	}
 
 	public function summarise_sku_price($is_admin = FALSE)
@@ -215,7 +256,7 @@ class Ecommerce_Model_Product extends Model_Application
 				}
 				
 				$summary = ($multiple_prices) ? 'From ' : '';
-				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, Kohana::config('ecommerce.vat_rate')), 2);
+				$summary .= '&pound;'.number_format(Currency::add_tax($min_price, $sku->vat_rate()), 2);
 			}
 		}
 		else
@@ -246,7 +287,6 @@ class Ecommerce_Model_Product extends Model_Application
 	 */
 	public function update($data)
 	{	
-	
 		if (isset($data['stock']))
 		{
 			$this->stock = $data['stock'];
@@ -260,6 +300,8 @@ class Ecommerce_Model_Product extends Model_Application
 		$this->default_image = isset($data['default_image']) ? $data['default_image'] : NULL;
 		$this->thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : NULL;
 		$this->brand = isset($data['brand']) ? $data['brand'] : NULL;
+		$this->type = isset($data['type']) ? $data['type'] : 'product';
+		
 		// Clear down and save categories.
 		$this->remove('categories', $this->categories);
 		
@@ -278,13 +320,14 @@ class Ecommerce_Model_Product extends Model_Application
 		{
 			$sitemap_ping = Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
 		}
-		
+		//echo Kohana::debug($this);exit;
 		$this->save();
 		
 		// If there are no SKUs set for this product then it must
 		// be a new product so create a default SKU.
-		if ( ! count($this->skus))
-		{
+		
+		if (! count($this->skus))
+		{  
 			Model_Sku::create_default($this);
 		}
 		
@@ -328,8 +371,7 @@ class Ecommerce_Model_Product extends Model_Application
 		$options = Jelly::select('product_option')
 									->where('product_id', '=', $this->id)
 									->execute()->as_array('id', 'key');
-		echo Kohana::debug($options);exit;
-									
+
 		return array_values(array_unique($options));
 	}
 	
@@ -342,12 +384,33 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 	
+	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')
+	{
+		return Jelly::select('review')
+							->where('object_id', '=', $this->id)
+							->where('status', '=', 'active')
+							->order_by($order, $direction)
+							->limit($items)
+							->offset($offset)
+							->execute();
+	}
+	
 	public function active_skus()
 	{
-		return $this->get('skus')
+		if (IS_TRADE)
+		{
+  		return $this->get('skus')
 								->where('status', '=', 'active')
-								->where('commercial_only', '=', 0)
+								->where('show_in_commercial', '=', 1)
 								->execute();
+		}
+		else 
+		{
+  		return $this->get('skus')
+								->where('status', '=', 'active')
+								->where('show_in_retail', '=', 1)
+								->execute();
+		}
 	}
 	
 	// Alias of active_skus()
@@ -376,4 +439,41 @@ class Ecommerce_Model_Product extends Model_Application
 			$option->delete();
 		}
 	}
+	
+	//function to get all bundles not products
+		public function get_admin_bundles()
+	{
+  	$bundles = Jelly::select('product')
+		        ->where('type', '=', 'bundle')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $bundles;
+	}
+	
+	//function to get all products excluding bundles.
+	public function get_all_products()
+	{
+  	$products = Jelly::select('product')
+  	        ->where('type', '=', 'product')
+						->order_by('name')
+						->execute()->as_array();
+						
+		return $products;
+	}
+	
+	public static function add_to_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->add('bundle_items', $sku_id);
+		$bundle->save();
+	}
+	
+		public static function remove_from_bundle($product_id, $sku_id)
+	{	
+		$bundle = Model_Product::load($product_id);
+		$bundle->remove('bundle_items', $sku_id);
+		$bundle->save();
+	}
+
 }

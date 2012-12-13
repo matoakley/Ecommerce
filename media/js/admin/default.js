@@ -1,4 +1,213 @@
-$(function(){
+  $(function(){
+    
+    
+        
+    $('#defaultDelivery').live('click', function(e){
+      e.preventDefault();
+      var defaultDelivery = $('#default-delivery').val();
+	
+		var data = {
+			default: defaultDelivery,
+		};
+	console.log(data);
+		$.ajax({
+		
+			url: '/admin/delivery_options/default_delivery_option',
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+			$('#tick-delivery').hide();
+  		$('#waiting-delivery').show();
+  		$('#error-delivery').show();
+			},
+			success: function(){
+			$('#waiting-delivery').hide();
+			$('#tick-delivery').show();
+  		//window.location.reload();
+			},
+			error: function(){
+  		$('#waiting-delivery').hide();
+			$('#error-delivery').show();
+			},
+		});
+	});
+    
+	$('#bulk-actions').change(function(e){
+		
+		if ($(this).val() == 'delete'){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to delete the selected item(s)?')) {
+		
+		var items = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						items[i] = $(this).val();
+  						i++;
+  				
+	
+  				var data = {
+    				items: items,
+    				type: $('#type').text(),
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/tools/bulk_delete',
+			type: 'POST',
+			data: data,
+			success: function(response){
+			  window.location.reload();
+    				 }
+    				 });
+    				});
+    		   };
+    		  }
+    		})
+	     });
+	     
+	 $('#bulk-actions').change(function(e){
+		var status = $(this).val();
+		var statusUgly = $('#bulk-actions option:selected').text();
+		var statusPretty = statusUgly.replace('Mark ', '');
+		
+		if (status == 'awaiting_payment' || status == 'problem_occurred' || status == 'payment_received' || status == "order_cancelled" || status == 'invoice_generated' || status == 'invoice_sent' || status == 'complete'){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to change the status of the selected item(s) to ' + statusPretty +  '?')) {
+		
+		var items = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						items[i] = $(this).val();
+  						i++;
+  				
+	
+  				var data = {
+    				items: items,
+    				status: status,
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/tools/bulk_change_status',
+			type: 'POST',
+			data: data,
+			success: function(response){
+			  window.location.reload();
+    				 }
+    				 });
+    				});
+    		   };
+    		  }
+    		});
+  
+  $('#add-to-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-unrelated').val();
+    var productOption = $('#product-unrelated option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    console.log(originalProduct);
+    $.ajax({   
+				url: '/admin/related_products/add_to_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-related').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-related').val();
+    var productOption = $('#product-related option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    
+    $.ajax({   
+				url: '/admin/related_products/remove_from_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-unrelated').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
+  
+   $('#add-to-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-sku-id').val();
+    var productOption = $('#product-sku-id option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    
+    $.ajax({   
+				url: '/admin/bundles/add_to_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-bundle').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-bundle').val();
+    var productOption = $('#product-bundle option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    $.ajax({   
+				url: '/admin/bundles/remove_from_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-sku-id').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
+
 
 	$('#nav ul').superfish();
 	
@@ -18,6 +227,25 @@ $(function(){
 		selectOtherMonths: true
 	});
 	
+	// Manage datepicker for customer callbacks and show/hide "assigned to" selector as required 
+	$('input#communication-callback-on').datepicker({
+		constrainInput: true,
+		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
+		numberOfMonths: 2,
+		selectOtherMonths: true,
+		onSelect: function(dateText, inst){
+  		$('select#communication-callback-assigned-to').removeAttr('disabled');
+		}
+   });
+   $('input#communication-callback-on').change(function(){
+     if ($(this).val() != ""){
+      $('select#communication-callback-assigned-to').removeAttr('disabled');
+     } else {
+      $('select#communication-callback-assigned-to').attr('disabled', 'disabled');
+     }
+   });
+	
 	$('textarea.description').ckeditor({
 
 		// CKFinder integration		
@@ -26,20 +254,46 @@ $(function(){
     filebrowserUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
     filebrowserImageUploadUrl : '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
 	});
+	
+	$('.delete-custom-field-document').live('click', function(e){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to permanently delete this file?'))
+		{
+			$.ajax({   
+				url: $(this).attr('href'),
+				type: 'GET',
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeOut(200, function(){
+  			    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').html(response.html);
+  		    })
+  		    $('div.custom-field-upload-form[data-custom-field-id="'+response.custom_field.id+'"]').fadeIn(200);
+				}
+		  })
+		}
+  });
 
 	$('.slugify').keyup(function(){
 		$(this).slugify($('.slug'));
 	});
 	
 	$('#check-all').click(function(){
-		
-		var checked = $(this).attr('checked');
-		
-		$('.row-selector').each(function(){
-			
-			$(this).attr('checked', checked).trigger('change');
-		});
-	});
+    
+      var checked = $(this).attr('checked');
+      $('.row-selector').each(function(){
+          
+      if (checked){
+              
+      $(this).attr('checked', 'checked');
+          }
+      else {
+              
+      $(this).removeAttr('checked');
+      }
+    });
+  });
 	
 	$('#bulk-actions').change(function(){
 		
@@ -238,16 +492,32 @@ $(function(){
 		var title = $('input#communication-title');
 		var text = $('textarea#communication-text');
 		var date = $('div#communication-date');
-		/* var sendToCustomer = $('input#communication-send-to-customer'); */
-		var data = {
+		var callbackOn = $('input#communication-callback-on');
+		var callbackAssignedTo = $('select#communication-callback-assigned-to');
+		if ( !callbackOn.val() ) {
+		 var data = {
+			communication: {
+				type: type.val(),
+				title: title.val(),
+				text: text.val(),
+				date: Math.round(date.datetimepicker('getDate').getTime() /1000)
+			}
+		};
+		}
+		else 
+		{
+	
+    var data = {
 			communication: {
 				type: type.val(),
 				title: title.val(),
 				text: text.val(),
 				date: Math.round(date.datetimepicker('getDate').getTime() /1000),
-/* 				send_to_customer: sendToCustomer.is(':checked') */
+				callback_on: Math.round(callbackOn.datepicker('getDate').getTime() /1000),
+				callback_assigned_to: callbackAssignedTo.val()
 			}
 		};
+		 }
 		$.ajax({
 			url: button.data('add-url'),
 			type: 'POST',
@@ -267,6 +537,8 @@ $(function(){
 				date.datetimepicker('setDate', (new Date()));
 				$('div#new-communication').slideUp(600);
 				$('a#show-new-communication').children('span').html('New Communication');
+				callbackOn.val('');
+				callbackAssignedTo.val($('input#default-callback-user').val());
 			},
 			complete: function(){
 				$('#add-communication-spinner').hide();
@@ -292,6 +564,32 @@ $(function(){
 				button.show();
 			}
 		});
+	});
+	$('a.callback-complete').live('click', function(e){
+  	e.preventDefault();
+  	if (confirm('Are you sure you wich to mark this callback as completed?')){
+    	var link = $(this);
+    	var communicationId = $(this).data('communication-id');
+    	var spinner = $('img.callback_completed_spinner[data-communication-id="'+communicationId+'"]');
+    	var icon = $('img.callback_completed_icon[data-communication-id="'+communicationId+'"]');
+    	var details = $('span.callback_details[data-communication-id="'+communicationId+'"]');
+    	$.ajax({
+      	url: link.attr('href'),
+      	type: 'get',
+      	beforeSend: function(){
+        	icon.hide();
+        	spinner.show();
+      	},
+      	error: function(){
+        	spinner.hide();
+        	icon.show();
+      	},
+      	success: function(){
+        	spinner.hide();
+        	details.css('text-decoration', 'line-through');
+      	}
+    	});
+    }
 	});
 	// CRM Customer Addresses
 	$('a#show-new-address').click(function(e){
@@ -581,11 +879,6 @@ $(function(){
 		dateFormat: 'dd/mm/yy'
 	});
 	
-	$('#document').change(function(){
-  	var filePath = $(this).val();
-  	console.log(filePath);
-	})
-	
 	//inline editor for communications
 
 	$('.inline_editor_textarea').live('mouseenter', function(){
@@ -707,8 +1000,6 @@ $(function(){
     cancelButton.remove();
    });
   });
-
-});
 
 // inline editor for contacts
 
@@ -1260,8 +1551,21 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
     saveButton.remove();
     cancelButton.remove();
    });
-  });
+   
+});
 
+//IS immediate payment required?
+
+$('#immediate-payment').live('click', function(){
+
+  if ($('#immediate-payment').prop('checked')) {
+    $("#terms").attr('disabled', 'disabled');
+   }
+    
+  else {
+    $("#terms").removeAttr('disabled', 'disabled');
+   }
+});
 
 function number_format (number, decimals, dec_point, thousands_sep) {
     // Formats a number with grouped thousands  

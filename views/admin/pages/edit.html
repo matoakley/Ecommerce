@@ -1,11 +1,7 @@
 {% extends "admin/templates/default.html" %}
 
-{% block head %}
-
-	{% parent %}
-	
-	<script type="text/javascript" src="/js/admin/jquery.counter-1.0.min.js"></script>
-
+{% block custom_scripts %}
+	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
 {% endblock %}
 
 {% block page_title %}
@@ -69,7 +65,7 @@
 		</div>
 		<div class="grid_14 omega">
 			<a href="{% url "view_page", ["slug":page.slug] %}" target="_blank">
-				{{base_url}}{% url "view_page", ["slug":page.slug] %}
+				{% url "view_page", ["slug":page.slug] %}
 			</a>
 		</div>
 		<div class="clear"></div>

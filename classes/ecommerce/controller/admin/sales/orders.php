@@ -89,6 +89,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		if ($sales_order->loaded() AND $sales_order->status = 'payment_received')
 		{
 			$sales_order->update_status('complete')->send_shipped_email();
+
 			echo 'ok';
 		}
 		else
@@ -336,6 +337,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($this->template->render());
     $html2pdf->Output('Invoice '.$sales_order->id.'.pdf', 'D');
+    exit;
 	}
 	
 	public function action_generate_delivery_note()
@@ -355,6 +357,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
     $html2pdf = new HTML2PDF('P','A4','en');
     $html2pdf->WriteHTML($this->template->render());
     $html2pdf->Output('Delivery Note '.$sales_order->id.'.pdf', 'D');
+    exit;
 	}
 	
 	public function action_export_to_sage()
@@ -383,14 +386,14 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 				date('d/m/Y', $sales_order->invoiced_on),
 				'INV-'.$sales_order->id,
 				$company_name,
-				round($sales_order->order_subtotal, 2),
+				round(($sales_order->order_subtotal + $sales_order->delivery_option_net_price), 2),
 				'T1',
 				round($sales_order->order_vat, 2),
 			);
-		
+			
 			$data[] = $sales_order_data;
 		}
-
+		
 		$dir_name = APPPATH.'exports/sage/';
 		
 		if ( ! is_dir($dir_name))
@@ -421,4 +424,29 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$this->request->send_file($file_path, $filename, array('delete' => FALSE));
 		exit();
 	}
+	
+		public function action_generate_receipt()
+	{
+		$this->auto_render = FALSE;
+	
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded())
+		{
+			throw new Kohana_Exception('Sales Order not found');
+		}
+		
+		// If this is the fist time that the invoice has been
+		// generated then set invoiced on as now.
+		$sales_order->set_invoiced_on_date();
+		
+		$this->template->base_url = URL::site();
+		$this->template->sales_order = $sales_order;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($this->template->render());
+    $html2pdf->Output('Invoice '.$sales_order->id.'.pdf', 'D');
+    exit;
+	}
+	
 }

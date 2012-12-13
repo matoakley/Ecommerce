@@ -1,0 +1,160 @@
+<style type="text/css">
+<!--
+
+	h1 {
+		font-style: normal;
+		margin-bottom: 0;
+	}
+	
+	table {
+		width: 100%;
+	}
+
+-->
+</style>
+<page backtop="40mm" backbottom="80mm">
+	<page_header>
+		<table>
+			<tr>
+				<td style="width:50%;">
+					<img src="images/logo-trade.png" border="0" width="280" style="margin-bottom: 20px;" /><br/>
+					<div style="text-align: center; width: 280px;"></div>
+				</td>
+				<td style="width:50%;">
+					<h1>Receipt</h1>
+					<table>
+						<tr>
+							<td style="width:40%;">Invoice Number:</td>
+							<td style="width:60%;">INV-{{sales_order.id}}</td>
+						</tr>
+						<tr>
+							<td style="width:40%;">Invoice Date:</td>
+							<td style="width:60%;">{{sales_order.invoiced_on|date('d/m/Y')}}</td>
+						</tr>
+						<tr>
+							<td style="width:40%;">Order Ref:</td>
+							<td style="width:60%;">{{sales_order.ref}}</td>
+						</tr>
+					</table>
+					<p><strong><u></u></strong></p>
+				</td>
+			</tr>
+		</table>
+	</page_header>
+	<page_footer>
+		<table>
+			<tr>
+				<td style="width:30%;"><strong><u>Phone: 01473 249051</u></strong></td>
+				<td style="width:70%;"><strong><u>Email: info@deluxesupplements.co.uk</u></strong></td>
+			</tr>
+			<tr>
+				<td style="width:70%;"><strong><u>Web site: www.deluxenutrition.co.uk</u></strong></td>
+			</tr>
+		</table>
+	</page_footer>
+	<table>
+		<tr>
+			<td style="width:50%">
+				<p>Invoice to:</p>
+				<div style="border:1px solid #000; padding: 10px; width: 280px;">
+					{% if sales_order.customer.company %}
+						{{sales_order.customer.company}}<br/>
+					{% else %}
+						{{sales_order.customer.name}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.line_1 %}
+						{{sales_order.billing_address.line_1}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.line_2 %}	
+						{{sales_order.billing_address.line_2}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.line_3 %}	
+						{{sales_order.billing_address.line_3}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.town %}	
+						{{sales_order.billing_address.town}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.county %}	
+						{{sales_order.billing_address.county}}<br/>
+					{% endif %}
+					{% if sales_order.billing_address.postcode %}	
+						{{sales_order.billing_address.postcode}}<br/>
+					{% endif %}
+				</div>
+			</td>
+			<td style="width:50%">
+				<p>Deliver to:</p>
+				<div style="border:1px solid #000; padding: 10px; width: 280px;">
+					{% if sales_order.customer.company %}
+						{{sales_order.customer.company}}<br/>
+					{% else %}
+						{{sales_order.customer.name}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.line_1 %}
+						{{sales_order.delivery_address.line_1}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.line_2 %}	
+						{{sales_order.delivery_address.line_2}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.line_3 %}	
+						{{sales_order.delivery_address.line_3}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.town %}	
+						{{sales_order.delivery_address.town}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.county %}	
+						{{sales_order.delivery_address.county}}<br/>
+					{% endif %}
+					{% if sales_order.delivery_address.postcode %}	
+						{{sales_order.delivery_address.postcode}}<br/>
+					{% endif %}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<table style="margin-top:30px;">
+		<tr>
+			<th style="width:8%;text-align:right;padding:5px;">Qty</th>
+			<th style="width:12%;padding:5px;">Code</th>
+			<th style="width:32%;padding:5px;">Details</th>
+			<th style="width:12%;text-align:right;padding:5px;">Unit Price</th>
+			<th style="width:12%;text-align:right;padding:5px;">Net Amt</th>
+			<th style="width:12%;text-align:right;padding:5px;">VAT Rate</th>
+			<th style="width:12%;text-align:right;padding:5px;">VAT</th>
+		</tr>
+		{% for item in sales_order.items %}
+			<tr>
+				<td style="text-align:right;padding:5px;width:8%;">{{item.quantity|num_format(2)}}</td>
+				<td style="padding:5px;width:12%;">{{item.sku.sku}}</td>
+				<td style="padding:5px;width:32%;">{{item.product_name}}</td>
+				<td style="text-align:right;padding:5px;width:12%;">{{item.net_unit_price|num_format(2)}}</td>
+				<td style="text-align:right;padding:5px;width:12%;">{{item.net_total_price|num_format(2)}}</td>
+				<td style="text-align:right;padding:5px;width:12%;">{{item.vat_rate|num_format(2)}}</td>
+				<td style="text-align:right;padding:5px;width:12%;">{{item.vat|num_format(2)}}</td>
+			</tr>
+		{% endfor %}
+		<tr>
+			<td colspan="7" style="padding:5px;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="3" style="padding:5px;">&nbsp;</td>
+			<td colspan="3" style="padding:5px;"><strong>Total Net Amount</strong></td>
+			<td style="text-align:right;padding:5px;">{{(sales_order.order_subtotal - sales_order.delivery_option_price)|num_format(2)}}</td>
+		</tr>
+				<tr>
+			<td colspan="3" style="padding:5px;">&nbsp;</td>
+			<td colspan="3" style="padding:5px;"><strong>Carriage Net</strong></td>
+			<td style="text-align:right;padding:5px;">{{sales_order.delivery_option_net_price|num_format(2)}}</td>
+		</tr>
+				<tr>
+			<td colspan="3" style="padding:5px;">&nbsp;</td>
+			<td colspan="3" style="padding:5px;"><strong>Total VAT Amount</strong></td>
+			<td style="text-align:right;padding:5px;">{{sales_order.order_vat|num_format(2)}}</td>
+		</tr>
+				<tr>
+			<td colspan="3" style="padding:5px;">&nbsp;</td>
+			<td colspan="3" style="padding:5px;"><strong>Invoice Total</strong></td>
+			<td style="text-align:right;padding:5px;">{{sales_order.order_total|num_format(2)}}</td>
+		</tr>
+	</table>
+</page>

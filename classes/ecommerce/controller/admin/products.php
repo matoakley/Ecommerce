@@ -16,12 +16,12 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	{					
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_Product::search(array(), $items);
+  		  $search = Model_Product::search(array('type:product'), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
-			'total_items' => $search['count_all'],
-			'items_per_page' => ($items) ? $items : $search['count_all'],
+		  'total_items' => $search['count_all'],
+      'items_per_page' => ($items) ? $items : $search['count_all'],
 			'auto_hide'	=> false,
 			'view' => 'pagination/admin',
 		));
@@ -38,7 +38,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 	function action_edit($id = FALSE, $cloning = FALSE)
 	{
 		$product = Model_Product::load($id);
-	
+		
 		if ($id AND ! $product->loaded())
 		{
 			throw new Kohana_Exception('Product could not be found.');
@@ -61,10 +61,10 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 			$fields['skus'][$sku->id]['product_options'] = $sku->product_options->as_array();
 			foreach ($sku->tiered_prices as $tiered_price)
 			{
-				$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
+  			$fields['skus'][$sku->id]['tiered_prices_array'][$tiered_price->price_tier->id] = $tiered_price->retail_price();
 			}
 		}
-		
+  		
 		foreach ($product->images as $product_image)
 		{
 			$fields['product_images'][] = $product_image->as_array();
@@ -79,6 +79,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		if ($_POST)
 		{	
 				// Try validating the posted data
+				//echo Kohana::debug($_POST);exit;
 			try
 			{
 				$product->validate($_POST['product']);
@@ -207,11 +208,14 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				{
   				foreach ($_POST['skus'] as $sku_id => $sku)
   				{
-  					foreach($sku['tiered_prices'] as $tier_id => $price)
-  					{
-  						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
-  					}
-  				}
+  				  if (Caffeine::modules('tiered_prices'))
+  				     {
+        					foreach($sku['tiered_prices'] as $tier_id => $price)
+        					{
+        						$fields['skus'][$sku_id]['tiered_prices_array'][$tier_id] = $price;
+        					}
+        		   }
+  				  }
   		  }
 				
 				if (isset($_POST['product_images']))
@@ -223,10 +227,16 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 				}
 			}
 		}
-		$this->template->VAT = Kohana::config('ecommerce.VAT_inc');
+		$this->template->default_price_includes_vat = Kohana::config('ecommerce.default_price_includes_vat');
 		$this->template->errors = $errors;
 		$this->template->fields = $fields;
 		
+		  if (Caffeine::modules('related_products'))
+		    {
+  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
+  		    $this->template->products = Model_Product::list_all();
+		    }
+		    
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
 		$this->template->inputs = Model_Product::$inputs;

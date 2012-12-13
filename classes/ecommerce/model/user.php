@@ -35,6 +35,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 						'min_length' => array(6)
 					)
 				)),
+				'verification' => new Field_Boolean,
 				'email' => new Field_Email(array(
 					'unique' => TRUE
 				)),
@@ -42,6 +43,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 					'default' => 0
 				)),
 				'last_login' => new Field_Timestamp(array(
+				  'format' => 'U',
 					'pretty_format' => 'D M Y H:i',
 				)),
 				'short_bio' => new Field_Text,
@@ -52,6 +54,10 @@ class Ecommerce_Model_User extends Model_Auth_User
 				'avatar' => new Field_String(array(
 					'in_db' => FALSE,
 				)),
+				'comments' => new Field_HasMany,
+				'reviews' => new Field_HasMany,
+				'wish_list_id' => new Field_String,
+				'email_verification_id' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -111,15 +117,26 @@ class Ecommerce_Model_User extends Model_Auth_User
 		return parent::__get($field);
 	}
 	
-	public static function create_for_customer($customer, $password)
+	public static function create_for_customer($customer, $password, $username = NULL)
 	{
 		$user = Jelly::factory('user');
-		$user->username = $customer->email;
+		$user->username = $username ? $username : $customer->email;
 		$user->email = $customer->email;
 		$user->password = $password;
 		$user->password_confirm = $password;
 		$user->add('roles', array(1,3));
-		return $user->save();
+		$user->save();
+		
+		if (Caffeine::modules('wish_list'))
+  		{  
+    			$user->wish_list_id = $user->generate_wish_list_id();
+  		}
+		if (Caffeine::modules('email_verification'))
+  		{
+    			$user->email_verification_id = $user->generate_email_verification_id();
+  		}
+  		
+		return $user;
 	}
 
 	public static function load($id = FALSE)
@@ -207,7 +224,7 @@ class Ecommerce_Model_User extends Model_Auth_User
 		
 		return $data;
 	}
-
+	
 	public function get_avatar()
 	{
 		$file_path = '/images/users/' . $this->id . '.jpg';
@@ -227,6 +244,8 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$this->password = $data['password'];
 		$this->password_confirm = $data['password'];
 		
+		//admin users need to be verified instantly
+		$this->verification = TRUE;
 		$this->firstname = $data['firstname'];
 		$this->lastname = $data['lastname'];
 		
@@ -298,5 +317,60 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$this->email = $email;
 		$this->username = $email;
 		return $this->save();
+	}
+	
+	public function watch_item($item)
+	{
+	  $wish_list = Model_Wish_List::load();
+	  $wish_list->add_watch_item($this, $item);
+
+	}
+	
+	public function unwatch_item($item)
+	{
+		$wish_list = Model_Wish_List::load();
+	  $wish_list->remove_watch_item($this, $item);
+	}
+	
+	public function generate_wish_list_id()
+	{
+    $user = Jelly::select('user')->where('id', '=', $this->id)->load();
+    
+		$length = 16;
+	
+		$code = FALSE;
+		
+		while ( ! $code OR Jelly::select('user')->where('wish_list_id', '=', $code)->count() > 0)
+		{
+			$code = Text::random('distinct', $length);
+		}
+		
+		$user->wish_list_id = $code;
+		$user->save();
+	
+	}
+	
+	public function generate_email_verification_id()
+	{
+    $user = $this;
+    
+		$length = 16;
+	
+		$code = FALSE;
+		
+		while ( ! $code OR Jelly::select('user')->where('email_verification_id', '=', $code)->count() > 0)
+		{
+			$code = Text::random('distinct', $length);
+		}
+		
+		$user->email_verification_id = $code;
+		$user->save();
+	
+	}
+	
+	// get users age from timestamp date of birth
+	public function get_age($dob)
+	{
+  	return $age = floor((time() - $dob)/(86400*365));
 	}
 }

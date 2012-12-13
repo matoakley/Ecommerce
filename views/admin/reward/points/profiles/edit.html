@@ -1,0 +1,66 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}
+	<strong>Edit Reward Points Options</strong>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+	<div class="field">
+		<div class="grid_6 alpha">
+			<strong class="left-pad">Fields marked with * are required.</strong>
+		</div>
+		<div class="grid_10 omega tr">
+			<a href="{{cancel_url}}" class="right-pad">Cancel Changes</a>
+			<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
+			<input type="submit" value="Save &amp; Continue Editing" class="right-pad" />
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<h2>Reward Points Options</h2>
+	
+	<div class="field">
+		<div class="grid_7 alpha">
+			<strong style="padding-left:20px;padding-top:10px;">Reward Points Earning Value</strong>
+		</div>
+		<div class="grid_5">
+			<input type="text" id="reward-points-price-per-pound" name="reward_points[price_per_pound]" value="{{reward_points_profile.points_per_pound}}"
+				class="inputtext shortest" /> &nbsp;Points Per £1 Spent.
+		</div>	
+		<div class="clear"></div>
+</div>	
+
+	<div class="field">
+		<div class="grid_7 alpha">
+			<strong style="padding-left:20px;padding-top:10px;">Reward Points Redeemable Value</strong>
+					</div>
+		<div class="grid_6">
+			<input type="text" id="reward-points-redeem-price" name="reward_points[redeem_price]" value="{{reward_points_profile.decimal_to_pence}}" class="inputtext shortest" /> &nbsp;Pence Per Point Earned.
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+		<div class="field">
+		<div class="grid_7 alpha" style="text-align:left">
+			<strong style="padding-left:20px;padding-top:10px;">Customer Referral Code -- Reward For Existing Customer</strong>
+		</div>
+		<div class="grid_7">
+			<input type="text" id="reward-points-customer-referral" name="reward_points[customer_referral]" value="{{reward_points_profile.customer_referral}}" class="inputtext shortest" /> &nbsp; For The Existing Customer As A Reward.
+		</div>	
+		<div class="clear"></div>
+	</div>
+	
+	<div class="field">
+		<div class="grid_7 alpha">
+			<strong style="padding-left:20px;padding-top:10px;">Customer Referral Code -- Reward For New Customer</strong>
+		</div>
+		<div class="grid_7">
+			<input type="text" id="reward-points-new-referral" name="reward_points[new_referral]" value="{{reward_points_profile.new_customer_referral}}" class="inputtext shortest" /> &nbsp; Reward For The New Customer Joining.
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+{% endblock %}

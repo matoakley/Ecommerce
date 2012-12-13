@@ -5,6 +5,7 @@ class Ecommerce_Model_Category extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('categories')
+		  ->sorting(array('order' => 'ASC', 'name' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
@@ -80,9 +81,9 @@ class Ecommerce_Model_Category extends Model_Application
 		
 		foreach ($tree as $key => $values)
 		{
-			$tree[$key]['children'] = self::build_category_tree($values['id'], $active_only);
+			$tree[$key]['children'] = Model_Category::build_category_tree($values['id'], $active_only);
 			$tree[$key]['num_products'] = count(Jelly::select('category', $values['id'])->products);
-			$tree[$key]['thumbnail'] = self::get_thumbnail_path($values['id']);
+			$tree[$key]['thumbnail'] = Model_Category::get_static_thumbnail_path($values['id']);
 		}
 		
 		return $tree;
@@ -127,10 +128,22 @@ class Ecommerce_Model_Category extends Model_Application
 		
 		return $categories->execute();
 	}
-	
-	public static function get_thumbnail_path($id)
+
+	public static function get_static_thumbnail_path($id)
 	{
 		$path = '/images/categories/' . $id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $path))
+		{
+			$path = '/images/categories/default_thumb.jpg';
+		}
+		
+		return $path;
+	}
+	
+	public function get_thumbnail_path()
+	{
+		$path = '/images/categories/' . $this->id . '.jpg';
 		
 		if ( ! file_exists(DOCROOT . $path))
 		{

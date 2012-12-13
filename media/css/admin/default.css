@@ -402,9 +402,10 @@ span.status_tag {
 	border-top-right-radius: 3px 3px;
 	border-bottom-right-radius: 3px 3px;
 	border-bottom-left-radius: 3px 3px;
+	text-align: center;
 }
 
-span.status_tag.awaiting_payment {
+span.status_tag.awaiting_payment, span.status_tag.awaiting_moderation {
 	background-color:orange;
 }
 
@@ -412,11 +413,15 @@ span.status_tag.payment_received, span.status_tag.invoice_generated {
 	background-color:#6C549E;
 }
 
+span.status_tag.dispatched {
+	background-color:cadetblue;
+}
+
 span.status_tag.invoice_sent {
 	background-color:#2713da;
 }
 
-span.status_tag.order_cancelled {
+span.status_tag.order_cancelled, span.status_tag.disabled {
 	background-color:red;
 }
 
@@ -428,7 +433,7 @@ span.status_tag.problem_occurred {
 	background-color:#614016;
 }
 
-span.status_tag.complete {
+span.status_tag.complete, span.status_tag.active {
 	background-color: #419E61;
 }
 

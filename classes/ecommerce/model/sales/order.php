@@ -26,6 +26,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'column' => 'delivery_option_id',
 				)),
 				'delivery_option_name' => new Field_String,
+				'delivery_option_net_price' => new Field_Float(array(
+					'places' => 4,
+				)),
 				'delivery_option_price' => new Field_Float(array(
 					'places' => 4,
 				)),
@@ -34,6 +37,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'discount_amount' => new Field_Float(array(
 					'places' => 4,
 					'default' => 0,
+				)),
+				'reward_points_used' => new Field_Integer,
+				'reward_points_used_value' => new Field_Float(array(
+				  'places' => 4,
+				)),
+				'reward_points_earned' => new Field_Integer,
+				'reward_points_processed' => new Field_Boolean(array(
+				  'default' => FALSE,
 				)),
 				'type' => new Field_String,
 				'status' => new Field_String,
@@ -63,6 +74,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				'invoiced_on' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'customer_referral_code' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -115,20 +127,14 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	protected function calculate_vat_and_subtotal()
 	{
 		$vat = 0;
-		$dvat = 0;
 	
 		foreach ($this->items as $item)
 		{
 			$vat += $item->total_price - $item->net_total_price;
 		}
 	
-		// Delivery VAT
-		$dvat += ($this->delivery_option_price * (Kohana::config('ecommerce.vat_rate') / 100));
-	
-		$this->order_vat = $vat;
+		$this->order_vat = $vat + ($this->delivery_option_price - $this->delivery_option_net_price);
 		$this->order_subtotal = $this->order_total - $vat;
-		$this->order_vat = $vat + $dvat;
-		$this->order_total = $this->order_total + $dvat;
 		
 		return $this->save();
 	}
@@ -166,17 +172,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->delivery_address = $delivery_address;
 		$sales_order->delivery_option = $basket->delivery_option;
 		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_net_price = $basket->delivery_option->price;
 		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
 		$sales_order->delivery_firstname = $delivery_name['delivery_firstname'];
 		$sales_order->delivery_lastname = $delivery_name['delivery_lastname'];
 		$sales_order->status = 'awaiting_payment';
-		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'retail';
 		
 		$sales_order->save();
-		
+	
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
 		{
@@ -188,6 +194,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			{
 				case 'discount':
 					$sales_order->discount_amount = $basket->calculate_discount();
+					$sales_order->save();
 					break;
 					
 				case 'item':
@@ -197,7 +204,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				default:
 					break;
 			}
-			
+
 			$sales_order->save();
 		}
 		
@@ -206,11 +213,27 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
 		}
 		
+		$sales_order->order_total = $basket->calculate_total();
+		$sales_order->calculate_vat_and_subtotal();
+		
+		if (Caffeine::modules('reward_points'))
+		{
+  	  if ($basket->use_reward_points)
+  	  {
+    	  $sales_order->reward_points_used = $basket->max_reward_points();
+    	  $sales_order->reward_points_used_value = $basket->calculate_discount_for_reward_points();
+		  }
+		  $sales_order->reward_points_earned = floor($sales_order->order_total - $sales_order->delivery_option_price) * Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  //ORIGINAL $sales_order->order_subtotal / Model_Reward_Points_Profile::load(1)->points_per_pound;
+		  
+		  $sales_order->customer_referral_code = $basket->customer_referral_code;
+		}
+		
 		$session = Session::instance();
 		$session->delete('basket_id');
 		$session->set('sales_order_id', $sales_order->id);
 		
-		return $sales_order;
+		return $sales_order->save();
 	}
 	
 	public static function create_trade_from_basket($basket, $customer, $delivery_address)
@@ -224,13 +247,18 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->delivery_address = $delivery_address;
 		$sales_order->delivery_option = $basket->delivery_option;
 		$sales_order->delivery_option_name = $basket->delivery_option->name;
+		$sales_order->delivery_option_net_price = $basket->delivery_option->price;
 		$sales_order->delivery_option_price = $basket->delivery_option->retail_price();
 		$sales_order->status = 'invoice_generated';
-		$sales_order->order_total = $basket->calculate_total();
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
 		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		
+		if (Auth::instance()->logged_in('customer'))
+		{
+  		$sales_order->user = Auth::instance()->get_user();
+		}
 		
 		$sales_order->save();
 		
@@ -238,6 +266,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		{
 			Model_Sales_Order_Item::create_from_basket($sales_order, $basket_item);
 		}
+		
+		//save the baskets referral code against the customer
+		$customer->customer_referral_code = $basket->customer_referral_code;
+		$customer->save();
 		
 		// Handle any promotional codes that are added to the basket.
 		if ($basket->promotion_code_reward->loaded())
@@ -261,7 +293,8 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			}
 		}
 		
-		$sales_order->calculate_vat_and_subtotal()->save();
+		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		$session = Session::instance();
 		$session->delete('basket_id');
@@ -288,38 +321,20 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		return $sales_order->save();
 	}
-	
-	public static function monthly_completed_total($month = FALSE)
-	{
-		if ( ! $month)
-		{
-			$month = date('m');
-		}
 		
-		$year = date('Y');
-		
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
-						
-		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
-		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
-	}
-	
 	public static function monthly_sales_orders($month = FALSE)
 	{
 		if ( ! $month)
 		{
 			$month = date('m');
 		}
+		$year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as orders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -330,12 +345,13 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	{
 	
 	   $month = date('m');
-		
+	   $year = date('Y');
 		
 		$sql = "SELECT COUNT(*) as thismonthsorders
 						FROM sales_orders
 						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month";
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -354,68 +370,59 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		return ( ! is_null($result[0]['alltimeorders'])) ? $result[0]['alltimeorders'] : 0;
 	}
 	
-	public static function daily_order_count()
-	{
-  	$query = "SELECT COUNT(created) AS order_no, 
-          DATE(created) AS order_day 
-          FROM 
-              sales_orders 
-          WHERE status IN ('payment_received', 'complete') 
-          GROUP BY 
-              order_day 
-          ORDER BY 
-              created 
-          DESC
-          LIMIT 31";
-            
-    $results = Database::instance()->query(Database::SELECT, $query, FALSE);
-    
-        
-    $orders = array();
-		foreach ($results as $result)
-		{
-      $value = $result['order_no'];
-      $key = $result['order_day'];
-      $keystripped = str_replace("-","", $key);
-      $orders[intval($keystripped)] = intval($value); 
-		}
-
-    return $orders;
-  }		
-    
-  public static function thirtydays()
-  {
-     //CLEAR OUTPUT FOR USE
-     $output = array();
-
-      //SET CURRENT DATE
-     $month = date("m");
-     $day = date("d");
-     $year = date("Y");
-     $num = date("t");
-      //LOOP THROUGH DAYS
-     for($i=1; $i<=$num; $i++){
-          $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
-     }
-     
-     foreach ($results as $result)
-     {
-         $output[$result] = 0;
-     }
-     //RETURN DATE ARRAY
-     return $output;
-  }
-    
-	public static function overall_completed_total()
-	{
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')";
-						
-		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
-		
-		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
-	}
+  	public static function daily_order_count()
+  	{
+  	  $num = date("t");
+    	$query = "SELECT COUNT(created) AS order_no, 
+            DATE(created) AS order_day 
+            FROM 
+                sales_orders 
+            WHERE status IN ('payment_received', 'complete') 
+            GROUP BY 
+                order_day 
+            ORDER BY 
+                created 
+            DESC
+            LIMIT $num";
+              
+      $results = Database::instance()->query(Database::SELECT, $query, FALSE);
+      
+          
+      $orders = array();
+  		foreach ($results as $result)
+  		{
+        $value = $result['order_no'];
+        $key = $result['order_day'];
+        $keystripped = str_replace("-","", $key);
+        $orders[intval($keystripped)] = intval($value); 
+  		}
+  
+      return $orders;
+    }		
+      
+    public static function thirtydays()
+    {
+       //CLEAR OUTPUT FOR USE
+       $output = array();
+  
+        //SET CURRENT DATE
+       $month = date("m");
+       $day = date("d");
+       $year = date("Y");
+       $num = date("t");
+       
+        //LOOP THROUGH DAYS
+       for($i=1; $i<=($num +1); $i++){
+            $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
+       }
+       
+       foreach ($results as $result)
+       {
+           $output[$result] = 0;
+       }
+       //RETURN DATE ARRAY
+       return $output;
+    }
 	
 	public static function create_commercial_sales_order($data)
 	{
@@ -433,9 +440,9 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->billing_address = $customer->default_billing_address;
 		$sales_order->delivery_address = $data['delivery_address'];
 		$sales_order->delivery_option_name = 'Commercial Delivery';
-		$sales_order->delivery_option_price = $data['delivery_charge'];
+		$sales_order->delivery_option_net_price = $data['delivery_charge'];
+		$sales_order->delivery_option_price = Currency::add_tax($data['delivery_charge'], Kohana::config('ecommerce.vat_rate'));
 		$sales_order->status = 'invoice_generated';
-		$sales_order->order_total = $data['delivery_charge'];
 		$sales_order->ip_address = Request::$client_ip;
 		$sales_order->ref = $data['ref'];
 		$sales_order->user = Auth::instance()->get_user();
@@ -449,6 +456,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 		
 		$sales_order->calculate_vat_and_subtotal();
+		$sales_order->calculate_total();
 		
 		return $sales_order->save();
 	}
@@ -488,6 +496,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 		$message = Twig::factory('emails/order_shipped.html');
 		$message->sales_order = $this;
+		$message->modules = Kohana::config('ecommerce.modules');
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
 		$to = array(
@@ -524,12 +533,17 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			
 			$this->status = $status;
 			
+			foreach ($this->items as $sales_order_item)
+			  {
+  			  $sales_order_item->status = $this->status;
+  			  $sales_order_item->save();
+			  }
+			
 			$this->add_note($note_text, TRUE);
 			
 			
 			// If we are controlling stock and setting an order to payment received then we should decrement the stock count of each item
-			$is_controlling_stock = Kohana::config('ecommerce.modules.stock_control');
-			if ($is_controlling_stock)
+			if (Caffeine::modules('stock_control'))
 			{
 				if ($status == 'payment_received')
 				{
@@ -543,6 +557,32 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 				}
 			}
 			
+			// If we are using reward points then remove any points used and assign points earned
+			// once their order has been paid for
+			if (Caffeine::modules('reward_points') AND ! $this->reward_points_processed)
+			{ 
+  			if ($status == 'payment_received')
+  			 {
+  			   $this->customer->remove_reward_points($this->reward_points_used)->add_reward_points($this->reward_points_earned);
+  			 
+  			   // Referral points for customer and referrer...
+  			  if ($this->customer_referral_code)
+  			  {
+    			  $referring_customer = Model_Customer::find_by_referral_code($this->customer_referral_code);
+    			  
+    			  if ($referring_customer->loaded())
+    			  {
+    			    $reward_points_profile = Model_Reward_Points_Profile::load(1);
+    			  
+      			  $referring_customer->add_reward_points($reward_points_profile->customer_referral);
+      			  $this->customer->add_reward_points($reward_points_profile->new_customer_referral);
+    			  }
+  			  }
+  			  
+  			   $this->reward_points_processed = TRUE; 
+  			 }
+			}
+
 			return $this->save();
 		}
 		else
@@ -632,5 +672,108 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	public function invoice_due_date()
 	{
 		return $this->invoiced_on + (86400 * $this->invoice_terms);
+	}
+	
+	public static function monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+	public static function overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+	public static function retail_monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'retail'
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function commercial_monthly_completed_total($month = FALSE)
+	{
+		if ( ! $month)
+		{
+			$month = date('m');
+		}
+		
+		$year = date('Y');
+		
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'commercial'
+						AND deleted IS NULL
+						AND EXTRACT(MONTH FROM created) = $month
+						AND EXTRACT(YEAR FROM created) = $year";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function retail_overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'retail'
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
+	}
+	
+		public static function commercial_overall_completed_total()
+	{
+		$sql = "SELECT SUM(order_total) as total
+						FROM sales_orders
+						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+						AND type = 'commercial'
+						AND deleted IS NULL";
+						
+		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
+		
+		return ( ! is_null($result[0]['total'])) ? $result[0]['total'] : 0;
 	}
 }

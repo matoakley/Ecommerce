@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Customers</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Customers</strong>{% endblock %}
 
 {% block content %}
 
@@ -12,9 +12,11 @@
 </p>
 
 <div class="search-bar">
-	<div class="grid_8 alpha">&nbsp;</div>
-	<div class="grid_8 omega tr">
-		<form>
+	<div class="grid_2 alpha">&nbsp;</div>
+	<div class="grid_14 omega tr">
+		<form>{% if modules.trade_area %}
+		  <span><a href="/admin/customers">Show All Customers</a> /&nbsp; </span>
+		  <span><a href="/admin/customers?q=customer_type:1">Show Only Trade Customers</a> &nbsp; </span>{% endif %}
 			<span class="right-pad"><input type="checkbox" name="include_archived" value="true" {% if showing_archived %}checked="checked"{% endif %} /> Show Archived?</span>
 			<input type="text" name="q" value="{{q}}" class="inputtext" />
 			<input type="submit" value="Search" />
@@ -26,6 +28,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -58,7 +61,7 @@
 			{% set edit_link = customer.parent.id %}
 		{% endif %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{customer.id}}" /></td>
 			<td><a href="/admin/customers/edit/{{edit_link}}">{{customer.lastname}}, {{customer.firstname}}</td>
 			<td>{{customer.company}}</td>
 			<td>{{customer.account_ref}}</td>

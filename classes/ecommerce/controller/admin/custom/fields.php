@@ -90,6 +90,7 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 		
 		$this->template->custom_field = $custom_field;
 		$this->template->objects = Model_Custom_Field::$objects;
+		$this->template->types = Model_Custom_Field::$types;
 	}
 	
 	public function action_delete()
@@ -104,24 +105,24 @@ class Ecommerce_Controller_Admin_Custom_Fields extends Controller_Admin_Applicat
 	
 	public function action_delete_document()
 	{
-	 $custom_field_id = $this->request->param('field_id');
-	 $object_id = $this->request->param('object_id');
-	 $document = Jelly::select('custom_field_value')->where('custom_field_id', '=', $custom_field_id)->where('object_id', '=', $object_id)->load();
-	 
-	 $object = array( 'id' => $object_id);
-	 $custom_field = array( 'id' => $custom_field_id);
+	 $this->auto_render = FALSE;
+	
+	 $custom_field_value = Jelly::select('custom_field_value')->where('custom_field_id', '=', $this->request->param('field_id'))->where('object_id', '=', $this->request->param('object_id'))->load();
+	 $custom_field = $custom_field_value->custom_field;
 	 
 	 $data = array();
 	 
-		$data['html'] = Twig::factory('/admin/snippets/_upload.html', array(
-			'object' => $object,
+	 $custom_field_value->delete();
+	 
+		$data['html'] = Twig::factory('/admin/custom/fields/_upload.html', array(
 			'custom_field' => $custom_field,
-			'inputs' => Model_Product::$inputs,
 		))->render();
 		
-	 $document->delete();
+		$data['custom_field'] = $custom_field->as_array();
 		
-		echo json_encode($data);
-		
+		if (Request::$is_ajax)
+		{
+		  echo json_encode($data);
+		}
 	}
 }

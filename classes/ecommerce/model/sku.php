@@ -31,8 +31,15 @@ class Ecommerce_Model_Sku extends Model_Application
 					'column' => 'thumbnail_id',
 					'on_copy' => 'copy',
 				)),
+				'bundles' => new Field_ManyToMany(array(
+					'foreign' => 'product',
+					'through' => 'bundles_skus',
+					'on_copy' => 'copy',
+				)),
 				'status' => new Field_String,
 				'commercial_only' => new Field_Boolean,
+				'show_in_commercial' => new Field_Boolean,
+				'show_in_retail' => new Field_Boolean,
 				'tiered_prices' => new Field_HasMany(array(
 					'foreign' => 'sku_tiered_price.sku_id',
 				)),
@@ -103,6 +110,7 @@ class Ecommerce_Model_Sku extends Model_Application
 							->join('products')->on('products.id', '=', 'skus.product_id')
 							->where('products.status', '=', 'active')
 							->where('skus.status', '=', 'active')
+							->where('products.deleted', 'IS', NULL)
 							->order_by('products.name', 'ASC')
 							->execute();
 	}
@@ -132,21 +140,20 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			return $this->price_for_tier(Auth::instance()->get_user()->customer->price_tier);
 		}
-  		return $this->price = Currency::add_tax($this->price, $this->vat_rate());
+  		return Currency::add_tax($this->price, $this->vat_rate());
 	}
 	
 	public function update($data)
 	{ 
-	  if (isset($data['VAT']))
-	    {
-  	    $this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
-  	  }
+	//echo Kohana::debug($data);exit;
+		  if (isset($data['price_includes_vat']))
+	  {
+  		$this->price = Currency::deduct_tax(str_replace(',', '', $data['price']), $this->vat_rate());
+  	}
 	  else 
-	   {
-  	    $this->price = $data['price'];
-  	    echo Kohana::debug($this->price);
-  	   
-		 }  
+	  {
+  		$this->price = $data['price'];
+		}  
 		 
 		$this->sku = $data['sku'];
 		if (isset($data['status']))
@@ -158,6 +165,9 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			$this->commercial_only = isset($data['commercial_only']) ? $data['commercial_only'] : FALSE;
 		}
+		
+		$this->show_in_retail = isset($data['retail']) ? $data['retail'] : FALSE;
+		$this->show_in_commercial = isset($data['commercial']) ? $data['commercial'] : FALSE;
 		
 		if (Caffeine::modules('stock_control') AND isset($data['stock']))
 		{
@@ -181,11 +191,12 @@ class Ecommerce_Model_Sku extends Model_Application
 		if (Kohana::config('ecommerce.modules.tiered_pricing') AND isset($data['tiered_prices']))
 		{
 			foreach ($data['tiered_prices'] as $price_tier_id => $price)
-			{
-				Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);
+			{   
+      		Jelly::select('sku_tiered_price')->where('sku_id', '=', $this->id)->where('price_tier_id', '=', $price_tier_id)->load()->update($this->id, $price_tier_id, $price);  
+         
 			}
 		}
-		
+
 		return $this->save();
 	}
 
@@ -245,5 +256,17 @@ class Ecommerce_Model_Sku extends Model_Application
 		{
 			return $this->price;
 		}
+	}
+	
+	public function calculate_reward_points()
+	{
+  	if ( ! Caffeine::modules('reward_points'))
+  	{
+    	throw new Kohana_Exception('The Reward Points module is not enabled.');
+  	}
+  	
+  	$reward_points_profile = Model_Reward_Points_Profile::load(1);
+  	
+  	return round($reward_points_profile->points_per_pound * floor($this->retail_price()), 0);
 	}
 }

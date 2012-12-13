@@ -1,0 +1,71 @@
+{% extends "admin/templates/default.html" %}
+
+{% block page_title %}Viewing: <strong id="type">Reviews</strong>{% endblock %}
+
+{% block content %}
+
+<!--
+<div class="search-bar">
+	<div class="grid_8 alpha">
+		<a href="/admin/products/add" class="img-button">
+			<img src="/images/icons/add.png" alt="" />
+			New Product
+		</a>
+	</div>
+	<div class="grid_8 omega tr">
+		<form>
+			<input type="text" name="q" value="{{q}}" class="inputtext" />
+			<input type="submit" value="Search" />
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+-->
+
+<div class="grid_8 alpha">
+	<select id="bulk-actions">
+		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
+	</select>
+
+	<span id="no-rows-selected">No rows selected!</span>
+</div>
+
+<div class="grid_8 omega tr">
+	Showing <strong>{{page * items - (items - 1)}}</strong> to <strong>{% if (page * items) <= total_reviews %}{{page * items}}{% else %}{{total_reviews}}{% endif %}</strong> of <strong>{{total_reviews}}</strong> items
+</div>
+
+<div class="clear"></div>
+<table>
+	<thead>
+		<tr>
+			<th width="1"><input id="check-all" type="checkbox" /></th>
+			<th>&nbsp;</th>
+			<th>Customer</th>
+			<th>Email</th>
+			<th class="tc">Type</th>
+			<th>Item Reviewed</th>
+			<th>&nbsp;</th>
+			<th class="tr">Submitted on</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, review in reviews %}
+		<tr class="{{['', 'alternate']|cycle(key)}}">
+			<td><input type="checkbox" class="row-selector" value="{{review.id}}" /></td>
+			<td class="tc"><a href="/admin/reviews/edit/{{review.id}}">Moderate</a></td>
+			<td><a href="/admin/customers/edit/{{review.user.customer.id}}">{% if review.user.customer.name() != '' %}{{review.user.customer.name()}}{% else %}{{review.user.name()}}{% endif %}</a></td>
+			<td><a href="mailto:{{review.user.email}}">{{review.user.email}}</a></td>
+			<td class="tc">{{review.object|title}}</td>
+			<td><a href="{{review.item_admin_link()}}">{{review.item().name}}</a></td>
+			<td class="tc"><span class="status_tag {{review.status}}">{{review.status|humanize|title}}</span></td>
+			<td class="tr">{{review.created|date("d/m/Y")}}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{{pagination}}
+
+
+{% endblock %}

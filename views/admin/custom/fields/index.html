@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Custom Fields</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Custom Fields</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -40,16 +41,16 @@
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
 			<th class="tc">Object</th>
-			<th class="tr">Show editor?</th>
+			<th class="tr">Field Type</th>
 		</tr>
 	</thead>
 	<tbody>
 	{% for key, custom_field in custom_fields %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{custom_field.id}}"/></td>
 			<td><a href="/admin/custom_fields/edit/{{custom_field.id}}">{{custom_field.name}}</a></td>
 			<td class="tc">{{custom_field.object|title}}</td>
-			<td class="tr">{% if custom_field.show_editor %}Yes{% else %}No{% endif %}</td>
+			<td class="tr">{{custom_field.type|title}}</td>
 		</tr>
 	{% endfor %}
 	</tbody>

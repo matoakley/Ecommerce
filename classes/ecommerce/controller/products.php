@@ -12,9 +12,9 @@ class Ecommerce_Controller_Products extends Controller_Application
 		parent::before();
 	}
 
-	function action_view($slug = FALSE)
+	function action_view()
 	{
-		$product = Model_Product::load($slug);
+		$product = Model_Product::load($this->request->param('slug'));
 		
 		if ( ! $product->loaded())
 		{
@@ -48,6 +48,13 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
 		
+		if (Caffeine::modules('related_products'))
+		    {
+  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
+		    }
+		
+		//$this->template->age = $user->get_age($this->auth->user->customer->D_O_B);
+
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');
 		
@@ -82,7 +89,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 	function action_search()
 	{
 		if (isset($_GET['q']))
-		{
+		{  
 			$items = Kohana::config('ecommerce.pagination.products');
 			$products_search = Model_Product::search(array('status:active'), $items);
 			
@@ -138,6 +145,20 @@ class Ecommerce_Controller_Products extends Controller_Application
     		{
         	$data['price'] = number_format($sku->retail_price(), 2);
         	$data['image'] = $sku->thumbnail->full_size_path;
+        
+          if (Caffeine::modules('stock_control')) 
+          {
+            $data['stock'] = $sku->stock;
+          }
+          else 
+          {
+            $data['stock'] = $sku->stock_status == 'in_stock';
+          }
+          
+          if (Caffeine::modules('reward_points'))
+          {
+            $data['reward_points'] = floor($data['price']) * Model_Reward_Points_Profile::load(1)->points_per_pound;
+          }
     		}
     	}
 		}

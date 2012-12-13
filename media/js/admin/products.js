@@ -134,31 +134,19 @@ $(function(){
 		}
 	});
 	
-	$('.delete-product-document').live('click', function(e){
-		
-		e.preventDefault();
-		
-		if (confirm('Are you sure that you want to permanently delete this file?'))
-		{
-		   var refresh = $('#upload').data('url');
-			$.ajax({
-			   
-				url: $(this).attr('href'),
-				type: 'GET',
-				dataType: 'json',
-				success: function(response){
-				    $('#upload').fadeOut(200, function(){
-  				    $('#upload').html(response.html);
-				    })
-				    $('#upload').fadeIn(200);
-  					
-					}
-				})
-		   }
-     });
-  });
+});
+
 function ucwords (str) {
 	return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) {
 	    return $1.toUpperCase();
 	});
 };
+
+// Are you sure you want to edit the SEO slug?
+
+     $('#edit-slug').live('click', function(e){
+        e.preventDefault();
+          if (confirm('Are you sure you want to edit the SEO slug? This is an important field of the product and editing could cause issues with the display of the webpage.')) {
+                $('#product-slug').removeAttr('readonly')
+              }
+      });

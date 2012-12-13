@@ -9,9 +9,11 @@ class Ecommerce_Model_Customer extends Model_Application
 {
 	public static function initialize(Jelly_Meta $meta)
 	{
-		$meta->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
+		$meta
+		//->sorting(array('lastname' => 'ASC', 'firstname' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'customer_referral_code' => new Field_String,
 				'user' => new Field_BelongsTo,
 				'orders' => new Field_HasMany(array(
 					'foreign' => 'sales_order.customer_id',
@@ -48,6 +50,10 @@ class Ecommerce_Model_Customer extends Model_Application
 				'position' => new Field_String,
 				'invoice_terms' => new Field_Integer,
 				'reward_points' => new Field_Integer,
+				'D_O_B' =>  new Field_Timestamp(array(
+					'format' => 'Y-m-d',
+					'pretty_format' => 'd/m/Y',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -150,14 +156,19 @@ class Ecommerce_Model_Customer extends Model_Application
 			$customer->company = $data['company'];
 		}
 		
+		if (isset($data['D_O_B']))
+    {
+      $customer->D_O_B = $data['D_O_B'];
+    }
+		
 		$customer->status = 'active';
+		
 		$customer->save();
 		
 		if (isset($data['email_subscribe']))
 		{
 			Model_Subscriber::create($customer->email, $customer->id);
 		}
-		
 		return $customer;
 	}
 	
@@ -194,6 +205,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		return ($user->loaded()) ? $user : FALSE;
 	}
 	
+	public static function find_by_referral_code($code)
+	{
+  	return Jelly::select('customer')->where('customer_referral_code', 'LIKE', $code)->load();
+	}
+	
 	public function update_at_checkout($data)
 	{
 		// Format email address to lowercase
@@ -213,9 +229,17 @@ class Ecommerce_Model_Customer extends Model_Application
 		return $this;
 	}
 	
-	public function create_account($password)
+	public function create_account($password, $username = NULL)
 	{
-		$this->user = Model_User::create_for_customer($this, $password);
+		$this->user = Model_User::create_for_customer($this, $password, $username);
+		
+		// If we're using reward points, they now have an account
+		// and so we'll give them a referral code.
+		if (Caffeine::modules('reward_points'))
+		{
+  		$this->generate_referral_code();
+		}
+		
 		return $this->save();
 	}
 	
@@ -280,8 +304,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
   		$customer->notes = $data['contact_notes'];
 		}
-
-	
+		if (Caffeine::modules('email_verification'))
+		  {
+  		   $this->user->verification = $data['account_activated'];
+  		   $this->user->save(); 
+		  }
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
 		if (isset($data['customer_types']))
@@ -303,8 +330,11 @@ class Ecommerce_Model_Customer extends Model_Application
 			$this->user->add('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
 		}
 		elseif (Caffeine::modules('trade_area') AND ! isset($data['trade_area']))
-		{
-			$this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+		{ 
+		  if (Jelly::select('role')->where('name', '=', 'trade_area')->count() < 1)
+		   { 
+			   $this->user->remove('roles', Jelly::select('role')->where('name', '=', 'trade_area')->load())->save();
+			 }
 		}
 
 		$this->status = $data['status'];
@@ -339,12 +369,15 @@ class Ecommerce_Model_Customer extends Model_Application
 	public function delete($key = NULL)
 	{
 		// Remove any communications held against the customer to keep the DB tidy
-		foreach ($this->communications as $communication)
+		if ($this->communications)
 		{
-			$communication->delete();
-		}  
-	
-		return parent::delete($key);
+  		foreach ($this->communications as $communication)
+  		{
+  			$communication->delete();
+  		}  
+  	
+  		return parent::delete($key);
+    }
 	}
 	
 	public function archive()
@@ -394,6 +427,7 @@ class Ecommerce_Model_Customer extends Model_Application
 		$message->customer = $this;
 		$message->site_name = Kohana::config('ecommerce.site_name');
 
+		$bcc_address = Kohana::config('ecommerce.copy_order_confirmations_to');
 		$to = array(
 			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
 		);
@@ -462,4 +496,65 @@ class Ecommerce_Model_Customer extends Model_Application
 		$this->user->update_email($data['email']);
 		return $this->save();
 	}
+	
+	//Reward Points
+	
+	public function generate_referral_code()
+	{	
+  	while (! $this->customer_referral_code)
+  	{
+    	$code = Text::random('distinct', Kohana::config('ecommerce.default_customer_referral_code_length'));
+    	
+    	// Check code is unique
+    	if ( ! (bool) Jelly::select('customer')->where('customer_referral_code', '=', $code)->count())
+    	{
+      	$this->customer_referral_code = $code;
+      	$this->save();
+    	}
+  	}
+  	
+  	return $this->save();
+	}
+	
+  public function add_reward_points($points)
+	{	
+  	$this->reward_points += $points;
+  	return $this->save();
+	}
+	
+	public function remove_reward_points($points)
+	{
+  	$this->reward_points -= $points;
+  	return $this->save();
+	}
+			
+	// Helper method as customer is cached when logged in
+	public function get_reward_points()
+	{
+  	return $this->reward_points;
+	}
+	
+	public static function send_email_verification($user)
+	{
+		// Send an email to user with a key (maybe use hashed password?)
+		Email::connect();
+		
+		$message = Twig::factory('customers/email_verification.html');
+		
+		// Check that the email address provided links to a use and also to a customer
+		if ( ! $user->loaded() OR ! $user->customer->loaded())
+		{
+			throw new Kohana_Exception('User not found');
+		}
+				
+		$message->verification_link = 'http://'. $_SERVER['SERVER_NAME'] . '/email/verification/' . $user->email_verification_id;
+
+		$to = array(
+			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
+	}
+	
+
 }

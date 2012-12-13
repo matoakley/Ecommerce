@@ -48,8 +48,10 @@
 		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Price * (&pound;)</label>
 	</div>
 	<div class="grid_6">
-		<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{{sku.retail_price|num_format(2)}}" class="inputtext shortest" />
-		<span class="left-pad"><input type="checkbox" id="sku-{{sku.id}}-VAT" name="skus[{{sku.id}}][VAT]" value="yes" {% if VAT %}checked{% endif %}/> Does this include VAT?</span>
+  	<input type="text" id="sku-{{sku.id}}-price" name="skus[{{sku.id}}][price]" value="{% if default_price_includes_vat %}{{sku.retail_price|num_format(2)}}{% else %}{{sku.price|num_format(2)}}{% endif %}" class="inputtext shortest" />
+		<span class="left-pad">
+		<input type="checkbox" id="sku-{{sku.id}}-price-includes-vat" name="skus[{{sku.id}}][price_includes_vat]" value="1" {% if default_price_includes_vat %}checked{% endif %} />
+		  Price entered includes VAT (if applicable)</span>
 	</div>
 	<div class="grid_2">
 			<label for="sku-{{sku.id}}-stock">Stock</label>
@@ -85,6 +87,9 @@
 			<div class="grid_12 omega">
 				<input type="text" id="sku-{{sku.id}}-price-tier-{{tier.id}}" name="skus[{{sku.id}}][tiered_prices][{{tier.id}}]" value="{{sku.tiered_prices_array[tier.id]|num_format(2)}}" class="inputtext shortest" />
 			</div>
+			<span class="left-pad">
+		<input type="checkbox" id="sku-{{sku.id}}-price-tier-{{tier.id}}-includes-vat" name="skus[{{sku.id}}][tiered_price_includes_vat][{{tier.id}}]" value="1" {% if default_price_includes_vat %}checked{% endif %} />
+		  Price entered includes VAT (if applicable)</span>
 			<div class="clear"></div>
 		</div>
 	{% endfor %}
@@ -142,16 +147,20 @@
 	</div>
 {% endif %}
 
-{% if modules.commercial_sales_orders %}
+{% if modules.display_in_retail_or_commercial %}
 <div class="field">
 	<div class="grid_2 alpha">
-		<label for="sku-{{sku.id}}-commercial-only">Commercial only?</label>
+		<label for="sku-{{sku.id}}-price" {{ errors.skus[(sku_id)].price ? "class='error'" : "" }}>Display in:</label>
 	</div>
-	<div class="grid_14 omega">
-		<input type="checkbox" id="sku-{{sku.id}}-commercial-only" name="skus[{{sku.id}}][commercial_only]" {% if sku.commercial_only %}checked="checked"{% endif %} />
+	<div class="grid_8">
+		<input type="checkbox" id="sku-{{sku.id}}-retail" name="skus[{{sku.id}}][retail]" {% if sku.show_in_retail %}checked{% endif %} />Retail 
+		<input type="checkbox" id="sku-{{sku.id}}-commercial" name="skus[{{sku.id}}][commercial]" {% if sku.show_in_commercial %}checked{% endif %} />Commercial 
 	</div>
 	<div class="clear"></div>
 </div>
+{% else %}
+		<input type="hidden" id="sku-{{sku.id}}-retail" name="skus[{{sku.id}}][retail]" value="1" />
+		<input type="hidden" id="sku-{{sku.id}}-commercial" name="skus[{{sku.id}}][commercial]" value="1"/>
 {% endif %}
 
 {% endfor %}

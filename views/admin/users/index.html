@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>System Users</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">System Users</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>
@@ -47,7 +48,7 @@
 	<tbody>
 	{% for key, user in users %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td><input type="checkbox" class="row-selector" /></td>
+			<td><input type="checkbox" class="row-selector" value="{{user.id}}"/></td>
 			<td><a href="/admin/users/edit/{{user.id}}">{{user.username}}</a></td>
 			<td>{{user.firstname}} {{user.lastname}}</td>
 			<td>
