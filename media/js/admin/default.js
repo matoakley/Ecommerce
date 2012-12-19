@@ -44,29 +44,29 @@
 						$(".row-selector").filter(':checked').each(function(){
 				
   						items[i] = $(this).val();
-  						i++;
-  				
-	
-  				var data = {
+  						i++;    				
+    				})
+    				
+    var data = {
     				items: items,
     				type: $('#type').text(),
-    				
-    				}
+    		}
 
 		$.ajax({
 		
 			url: '/admin/tools/bulk_delete',
 			type: 'POST',
 			data: data,
+			beforeSend: function(){
+  			console.log(items);
+			},
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
+    				  }
     				});
-    		   };
-    		  }
-    		})
-	     });
+    		  };
+    		}
+    });
 	     
 	 $('#bulk-actions').change(function(e){
 		var status = $(this).val();
@@ -85,6 +85,7 @@
 				
   						items[i] = $(this).val();
   						i++;
+  				})
   				
 	
   				var data = {
@@ -100,12 +101,12 @@
 			data: data,
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
-    				});
-    		   };
-    		  }
-    		});
+    				    }
+    				 })
+    				}
+      		}
+      });
+    				
   
   $('#add-to-related').click(function(e){
     e.preventDefault();
@@ -1649,3 +1650,5 @@ jQuery.fn.slugify = function(obj) {
       obj.val(slug);
   });
 }
+
+});
