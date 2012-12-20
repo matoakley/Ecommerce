@@ -20,6 +20,8 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 					'visits' => $visits,
 					'total' => Model_Sales_Order::monthly_completed_total((int)$month),
 					'orders' => Model_Sales_Order::monthly_sales_orders((int)$month),
+					'commerical_orders' => Model_Sales_Order::commercial_monthly_completed_total((int)$month),
+					'retail_orders' => Model_Sales_Order::retail_monthly_completed_total((int)$month),
 				);
 			}
 			$this->template->monthly_visits = $monthly_totals;
@@ -50,11 +52,11 @@ class Ecommerce_Controller_Admin_Dashboard extends Controller_Admin_Application 
 		$this->template->thirty = Model_Sales_Order::thirtydays();
 		$merged_thirty_orders = Arr::overwrite($this->template->thirty, $this->template->order_days);
 		$this->template->merged = array_reverse($merged_thirty_orders);
+
 		
 	if (Caffeine::modules('reviews'))
 	  {
   	  $this->template->reviews_for_moderation = Model_Review::reviews_to_moderate(5);
 	  }
 	}
-	
 }

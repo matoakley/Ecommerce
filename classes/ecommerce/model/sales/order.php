@@ -533,6 +533,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			
 			$this->status = $status;
 			
+			foreach ($this->items as $sales_order_item)
+			  {
+  			  $sales_order_item->status = $this->status;
+  			  $sales_order_item->save();
+			  }
+			
 			$this->add_note($note_text, TRUE);
 			
 			

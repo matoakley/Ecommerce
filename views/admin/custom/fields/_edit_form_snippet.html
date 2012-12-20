@@ -9,7 +9,7 @@
 			{% if custom_field.type == 'wysiwyg' %}
 				<textarea id="custom-field-{{custom_field.id}}" name="custom_fields[{{custom_field.id}}]" class="description">{{custom_field.value_for_object_id(object.id)}}</textarea>
 		  {% elseif custom_field.type == 'text' %}
-				<input type="text" id="custom-field-{{custom_field.id}}" name="custom_fields[{{custom_field.id}}]" class="inputtext long" value="{{custom_field.value_for_object_id(object.id)}}" />
+				<input type="text" id="custom-field-{{custom_field.id}}" name="custom_fields[{{custom_field.id}}]" class="inputtext long" value='{{custom_field.value_for_object_id(object.id)}}' />
 		  {% elseif custom_field.type == 'upload' %}
 		    <div class="custom-field-upload-form" data-custom-field-id="{{custom_field.id}}">
   			  {% if not custom_field.value_for_object_id(object.id) %}

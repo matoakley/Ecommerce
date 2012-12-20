@@ -147,6 +147,52 @@ function ucwords (str) {
      $('#edit-slug').live('click', function(e){
         e.preventDefault();
           if (confirm('Are you sure you want to edit the SEO slug? This is an important field of the product and editing could cause issues with the display of the webpage.')) {
-                $('#product-slug').removeAttr('readonly')
+                $('#product-slug').removeAttr('disabled');
+                $('#edit-slug').hide();
+                $('#save-slug').show();
               }
       });
+    
+    $('#save-slug').live('click', function(e){
+        e.preventDefault();   
+      
+      var id = $(this).data('id');
+      var slug = $('#product-slug').val();
+        
+      $('#save-slug').hide();
+      $('#edit-slug').show();
+      
+      var data = {id: id,
+                  slug: slug};
+      
+      $.ajax({
+        url: '/admin/products/change_slug',
+        type: 'POST',
+        data: data,
+        dataType: 'json',
+        beforeSend: function(){
+          $('#slug-spinner').show();
+        },
+        success: function(response){
+          if (response == "Error") {
+              $('#slug-exists').fadeIn();
+              $('#slug-spinner').hide();
+              $('#edit-slug').hide();
+              $('#save-slug').show();
+            }
+          else {
+              $('#product-slug').attr('disabled', 'disabled');
+              $('#product-slug').val(response);
+              $('#slug-spinner').hide();
+              $('#pub-link').fadeOut(200, function(){
+              $('#pub-link').remove();
+              $('#refresh').fadeIn();
+              });
+              $('#slug-yes').show();
+             //window.location.reload();
+            }
+        },
+      })
+   });
+      
+      

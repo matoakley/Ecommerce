@@ -7,4 +7,6 @@ CREATE TABLE `wish_lists` (
      PRIMARY KEY (`id`)
 );
 
+
 ALTER TABLE `users` ADD COLUMN `wish_list_id` varchar(255);
+

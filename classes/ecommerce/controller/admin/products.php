@@ -447,5 +447,27 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		Model_Sku::load($_POST['sku_id'])->delete();
 	}
 	
+	public function action_change_slug()
+	{
+	 if ($_POST)
+	   {
+	     $slug_exists = Jelly::select('product')->where('slug', '=', $_POST['slug'])->where('id', '<>', $_POST['id'])->load();
+	     
+  	   $product = Model_Product::load($_POST['id']);
+  	     
+  	     if ($product->loaded() AND !$slug_exists->loaded())
+  	       {
+    	       $product->slug = isset($_POST['slug']) ? $_POST['slug'] : $product->slug;
+    	       echo json_encode($product->slug);
+  	       }
+  	     else 
+  	       {
+  	         echo json_encode('Error');
+  	       }
+  	       
+  	   $product->save();
+	   }
+	 }
+	
 }
 

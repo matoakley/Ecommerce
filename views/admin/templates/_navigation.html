@@ -105,9 +105,18 @@
 		</li>
 		  {% endif %}
 		
+		{% if (modules.delivery_options) or (modules.delivery_options_rules) %}
+		<li><a href="#">Delivery</a>
+		   <ul>
 		{% if modules.delivery_options %}
-			<li><a href="/admin/delivery_options">Delivery Options</a></li>
+			  <li><a href="/admin/delivery_options">Delivery Options</a></li>
 		{% endif %}
+			{% if modules.delivery_options_rules %}
+			  <li><a href="/admin/delivery_options_rules">Delivery Rules</a></li>
+		{% endif %}
+		  </ul>
+		</li>
+		  {% endif %}
 		
 		<li><a href="#">System</a>
 			<ul>

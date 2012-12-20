@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS `bundles_skus`;
 CREATE TABLE `bundles_skus` (
   `product_id` int(11) DEFAULT NULL,
@@ -6,3 +7,4 @@ CREATE TABLE `bundles_skus` (
 
 
 ALTER TABLE `products` ADD COLUMN `type` varchar(255) DEFAULT 'product';
+
