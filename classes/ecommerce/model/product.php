@@ -125,7 +125,6 @@ class Ecommerce_Model_Product extends Model_Application
 	public static function _is_slug_valid(Validate $array, $field)
 	{
 		$valid = TRUE;
-		$product = Model_Product::load();
 		
 		// Is slug set (unless duplicating...)
 		if ( ! isset($array['duplicating']))
@@ -139,7 +138,6 @@ class Ecommerce_Model_Product extends Model_Application
 				// Is slug a duplicate?
 				$is_duplicate = (bool) Jelly::select('product')
                         				->where('slug', '=', $array['slug'])
-                        				->where('id', '<>', $product->id)
                         				->where('deleted', 'IS', NULL)->count();
 				
 				if ($is_duplicate)
