@@ -50,6 +50,10 @@ class Ecommerce_Model_Customer extends Model_Application
 				'position' => new Field_String,
 				'invoice_terms' => new Field_Integer,
 				'reward_points' => new Field_Integer,
+				'D_O_B' =>  new Field_Timestamp(array(
+					'format' => 'Y-m-d',
+					'pretty_format' => 'd/m/Y',
+				)),
 				'created' =>  new Field_Timestamp(array(
 					'auto_now_create' => TRUE,
 					'format' => 'Y-m-d H:i:s',
@@ -151,6 +155,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
 			$customer->company = $data['company'];
 		}
+		
+		if (isset($data['D_O_B']))
+    {
+      $customer->D_O_B = $data['D_O_B'];
+    }
 		
 		$customer->status = 'active';
 		
@@ -295,8 +304,11 @@ class Ecommerce_Model_Customer extends Model_Application
 		{
   		$customer->notes = $data['contact_notes'];
 		}
-
-	
+		if (Caffeine::modules('email_verification'))
+		  {
+  		   $this->user->verification = $data['account_activated'];
+  		   $this->user->save(); 
+		  }
 		// Clear down and save customer types.
 		$this->remove('customer_types', $this->customer_types);
 		if (isset($data['customer_types']))
@@ -521,4 +533,28 @@ class Ecommerce_Model_Customer extends Model_Application
 	{
   	return $this->reward_points;
 	}
+	
+	public static function send_email_verification($user)
+	{
+		// Send an email to user with a key (maybe use hashed password?)
+		Email::connect();
+		
+		$message = Twig::factory('customers/email_verification.html');
+		
+		// Check that the email address provided links to a use and also to a customer
+		if ( ! $user->loaded() OR ! $user->customer->loaded())
+		{
+			throw new Kohana_Exception('User not found');
+		}
+				
+		$message->verification_link = 'http://'. $_SERVER['SERVER_NAME'] . '/email/verification/' . $user->email_verification_id;
+
+		$to = array(
+			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
+	}
+	
+
 }

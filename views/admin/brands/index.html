@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Brands</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Brands</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>
@@ -47,7 +48,7 @@
 	<tbody>
 	{% for key, brand in brands %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{brand.id}}" /></td>
 			<td><a href="/admin/brands/edit/{{brand.id}}">{{brand.name}}</a></td>
 			<td><a href="{{brand.website}}" target="_blank">{{brand.website}}</a></td>
 			<td class="tr"><a href="/admin/products?q=brand:{{brand.id}}">{{brand.count_products}}</a></td>

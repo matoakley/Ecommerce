@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Snippets</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Snippets</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -45,7 +46,7 @@
 	<tbody>
 	{% for key, snippet in snippets %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{snippet.id}}"/></td>
 			<td><a href="/admin/snippets/edit/{{snippet.id}}">{{snippet.name}}</a></td>
 			<td>{{snippet.description}}</td>
 		</tr>

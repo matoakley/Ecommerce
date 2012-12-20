@@ -1,0 +1,1 @@
+ALTER TABLE `sales_order_items` ADD COLUMN `status` varchar(255);

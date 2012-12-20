@@ -1,4 +1,214 @@
-$(function(){
+  $(function(){
+    
+    
+        
+    $('#defaultDelivery').live('click', function(e){
+      e.preventDefault();
+      var defaultDelivery = $('#default-delivery').val();
+	
+		var data = {
+			default: defaultDelivery,
+		};
+	console.log(data);
+		$.ajax({
+		
+			url: '/admin/delivery_options/default_delivery_option',
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+			$('#tick-delivery').hide();
+  		$('#waiting-delivery').show();
+  		$('#error-delivery').show();
+			},
+			success: function(){
+			$('#waiting-delivery').hide();
+			$('#tick-delivery').show();
+  		//window.location.reload();
+			},
+			error: function(){
+  		$('#waiting-delivery').hide();
+			$('#error-delivery').show();
+			},
+		});
+	});
+    
+	$('#bulk-actions').change(function(e){
+		
+		if ($(this).val() == 'delete'){
+		e.preventDefault();
+		if (confirm('Are you sure that you want to delete the selected item(s)?')) {
+		
+		var items = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						items[i] = $(this).val();
+  						i++;    				
+    				})
+    				
+    var data = {
+    				items: items,
+    				type: $('#type').text(),
+    		}
+
+		$.ajax({
+		
+			url: '/admin/tools/bulk_delete',
+			type: 'POST',
+			data: data,
+			beforeSend: function(){
+  			console.log(items);
+			},
+			success: function(response){
+			  window.location.reload();
+    				  }
+    				});
+    		  };
+    		}
+    });
+	     
+	 $('#bulk-actions').change(function(e){
+		var status = $(this).val();
+		var statusUgly = $('#bulk-actions option:selected').text();
+		var statusPretty = statusUgly.replace('Mark ', '');
+		
+		if (status == 'awaiting_payment' || status == 'problem_occurred' || status == 'payment_received' || status == "order_cancelled" || status == 'invoice_generated' || status == 'invoice_sent' || status == 'complete'){
+		e.preventDefault();
+		
+		if (confirm('Are you sure that you want to change the status of the selected item(s) to ' + statusPretty +  '?')) {
+		
+		var items = [];
+  						var i = 0;
+		
+						$(".row-selector").filter(':checked').each(function(){
+				
+  						items[i] = $(this).val();
+  						i++;
+  				})
+  				
+	
+  				var data = {
+    				items: items,
+    				status: status,
+    				
+    				}
+
+		$.ajax({
+		
+			url: '/admin/tools/bulk_change_status',
+			type: 'POST',
+			data: data,
+			success: function(response){
+			  window.location.reload();
+    				    }
+    				 })
+    				}
+      		}
+      });
+    				
+  
+  $('#add-to-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-unrelated').val();
+    var productOption = $('#product-unrelated option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    console.log(originalProduct);
+    $.ajax({   
+				url: '/admin/related_products/add_to_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-related').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-related').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-related').val();
+    var productOption = $('#product-related option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, related_id: product};
+    
+    $.ajax({   
+				url: '/admin/related_products/remove_from_related_products',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-unrelated').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
+  
+   $('#add-to-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-sku-id').val();
+    var productOption = $('#product-sku-id option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    
+    $.ajax({   
+				url: '/admin/bundles/add_to_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-bundle').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+  
+    console.log(product, productOption);
+    
+  })
+  
+   $('#remove-from-bundle').click(function(e){
+    e.preventDefault();
+    
+    var product = $('#product-bundle').val();
+    var productOption = $('#product-bundle option:selected');
+    var originalProduct = $('#product-id').data('id');
+    var data = {product_id: originalProduct, sku_id: product};
+    
+    $.ajax({   
+				url: '/admin/bundles/remove_from_bundle',
+				type: 'POST',
+				data: data,
+				dataType: 'json',
+				success: function(response){
+  				console.log(response);
+  				}
+		  })
+        
+    $('#product-sku-id').append("<option value='" + product + "'>" + productOption.text() + "</option>");
+    productOption.remove();
+    
+    console.log(product, productOption);
+    
+  })
+
 
 	$('#nav ul').superfish();
 	
@@ -71,14 +281,20 @@ $(function(){
 	});
 	
 	$('#check-all').click(function(){
-		
-		var checked = $(this).attr('checked');
-		
-		$('.row-selector').each(function(){
-			
-			$(this).attr('checked', checked).trigger('change');
-		});
-	});
+    
+      var checked = $(this).attr('checked');
+      $('.row-selector').each(function(){
+          
+      if (checked){
+              
+      $(this).attr('checked', 'checked');
+          }
+      else {
+              
+      $(this).removeAttr('checked');
+      }
+    });
+  });
 	
 	$('#bulk-actions').change(function(){
 		
@@ -786,8 +1002,6 @@ $(function(){
    });
   });
 
-});
-
 // inline editor for contacts
 
 $('.inline_editor_textarea_contacts').live('mouseenter', function(){
@@ -1338,8 +1552,21 @@ $('.inline_editor_textarea_address').live('mouseenter', function(){
     saveButton.remove();
     cancelButton.remove();
    });
+   
 });
 
+//IS immediate payment required?
+
+$('#immediate-payment').live('click', function(){
+
+  if ($('#immediate-payment').prop('checked')) {
+    $("#terms").attr('disabled', 'disabled');
+   }
+    
+  else {
+    $("#terms").removeAttr('disabled', 'disabled');
+   }
+});
 
 function number_format (number, decimals, dec_point, thousands_sep) {
     // Formats a number with grouped thousands  
@@ -1423,3 +1650,5 @@ jQuery.fn.slugify = function(obj) {
       obj.val(slug);
   });
 }
+
+});

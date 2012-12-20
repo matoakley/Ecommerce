@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Delivery Options</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Delivery Options</strong>{% endblock %}
 
 {% block content %}
 
@@ -17,12 +17,31 @@
 			<input type="submit" value="Search" />
 		</form>
 	</div>
+  
+<!--
+  {% if modules.delivery_options_rules %}  
+	<div class="grid_8 alpha" style="margin-top:10px;">
+    	Default Delivery Option
+    	  <select id="default-delivery">
+			{% for delivery_option in delivery_options %}
+				<option value="{{delivery_option.id}}" {{ delivery_option.id == default_delivery_option.id ? "selected" : "" }}>{{delivery_option.name|humanize|title}}</option>
+			{% endfor %}
+			</select>
+			<button id="defaultDelivery">Update</button>
+				<img src="/images/ajax-loader.gif" style="margin-left:5px;display:none" id="waiting-delivery">
+				<img src="/images/icons/accept.png" style="margin-left:5px;display:none" id="tick-delivery">
+				<img src="/images/icons/cancel.png" style="margin-left:5px;display:none" id="error-delivery">
+	</div>
+	{% endif %}
+-->
+	
 	<div class="clear"></div>
 </div>
 
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>

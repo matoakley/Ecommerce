@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Stockists</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Stockists</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -46,7 +47,7 @@
 	<tbody>
 	{% for key, stockist in stockists %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{stockist.id}}"/></td>
 			<td><a href="/admin/stockists/edit/{{stockist.id}}">{{stockist.name}}</a></td>
 			<td>{{stockist.address}}</td>
 			<td>{% if stockist.address.latitude and stockist.address.longitude %}Yes{% else %}No{% endif %}</td>

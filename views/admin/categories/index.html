@@ -1,6 +1,6 @@
 {% extends "admin/templates/default.html" %}
 
-{% block page_title %}Viewing: <strong>Categories</strong>{% endblock %}
+{% block page_title %}Viewing: <strong id="type">Categories</strong>{% endblock %}
 
 {% block content %}
 
@@ -23,6 +23,7 @@
 <div class="grid_8 alpha">
 	<select id="bulk-actions">
 		<option value="">-- Bulk Actions --</option>
+		<option value="delete">Delete Selected</option>
 	</select>
 
 	<span id="no-rows-selected">No rows selected!</span>	
@@ -47,7 +48,7 @@
 	<tbody>
 	{% for key, category in categories %}
 		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" /></td>
+			<td width="1"><input type="checkbox" class="row-selector" value="{{category.id}}"/></td>
 			<td><a href="/admin/categories/edit/{{category.id}}">{{category.name}}</a></td>
 			<td>{{category.parent.name}}</td>
 			<td class="tr"><a href="/admin/products?q=category:{{category.id}}">{{category.count_products}}</a></td>

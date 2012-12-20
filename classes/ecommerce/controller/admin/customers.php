@@ -505,7 +505,9 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->auto_render = FALSE;
 		
 		$customer = Model_Customer::load($this->request->param('id'));
-		$customer->delete();
+		// not sure why this doesnt work yet but il overload it to fix it for now ... $customer->delete();
+		$customer->deleted = time();
+		$customer->save();
 		
 		$this->request->redirect($this->session->get('admin.customers.index', 'admin/customers'));
 	}
@@ -557,4 +559,32 @@ class Ecommerce_Controller_Admin_Customers extends Controller_Admin_Application
 		$this->request->send_file($file_path, $customer->account_ref.'.csv', array('delete' => TRUE));
 		exit();
 	}
+	
+	// Bulk delete
+	/*
+public function action_bulk_delete()
+	{
+		if ($_POST)
+		{
+			try
+			{
+				foreach ($_POST['customers'] as $customer_id)
+				{
+					$customer = Model_Customer::load($customer_id);
+					
+    			$customer->deleted = time();
+    			$customer->save();
+    			
+    			echo 'ok';
+					
+				}
+			}
+			catch (Validate_Exception $e)
+			{
+			
+			}
+		}
+	}
+*/
+
 }

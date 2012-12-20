@@ -424,4 +424,29 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		$this->request->send_file($file_path, $filename, array('delete' => FALSE));
 		exit();
 	}
+	
+		public function action_generate_receipt()
+	{
+		$this->auto_render = FALSE;
+	
+		$sales_order = Model_Sales_Order::load($this->request->param('sales_order_id'));
+		
+		if ( ! $sales_order->loaded())
+		{
+			throw new Kohana_Exception('Sales Order not found');
+		}
+		
+		// If this is the fist time that the invoice has been
+		// generated then set invoiced on as now.
+		$sales_order->set_invoiced_on_date();
+		
+		$this->template->base_url = URL::site();
+		$this->template->sales_order = $sales_order;
+		
+    $html2pdf = new HTML2PDF('P','A4','en');
+    $html2pdf->WriteHTML($this->template->render());
+    $html2pdf->Output('Invoice '.$sales_order->id.'.pdf', 'D');
+    exit;
+	}
+	
 }
