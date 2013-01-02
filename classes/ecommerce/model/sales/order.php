@@ -341,7 +341,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			        FROM sales_orders
 			        WHERE status IN ('payment_received', 'complete')
 			        AND EXTRACT(MONTH FROM created) = $month
-			        AND EXTRACT(YEAR FROM created) = $last_year";
+			        AND EXTRACT(YEAR FROM created) = $year";
 			}
 		else
 			{
