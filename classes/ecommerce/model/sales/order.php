@@ -324,22 +324,24 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		
 	public static function monthly_sales_orders($month = FALSE)
 	{
+	 $this_month = date('m');
+	 
 		if ( ! $month)
 		{
 			$month = date('m');
 		}
 		$year = date('Y');
 						
-		if ($month < 6)
+		//funky shit to stop it resetting in january
+		if ($this_month <= 6 AND $month != $this_month AND $month > 6)
 			{
-			$last_year = date('Y', strtotime('last year'));
+			   $last_year = date('Y', strtotime('last year'));
 			
 			$sql =  "SELECT COUNT(*) as orders
 			        FROM sales_orders
 			        WHERE status IN ('payment_received', 'complete')
 			        AND EXTRACT(MONTH FROM created) = $month
-			        AND EXTRACT(YEAR FROM created) = $year
-			        OR EXTRACT(YEAR FROM created) = $last_year";
+			        AND EXTRACT(YEAR FROM created) = $last_year";
 			}
 		else
 			{
