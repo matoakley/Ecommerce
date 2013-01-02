@@ -329,13 +329,27 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$month = date('m');
 		}
 		$year = date('Y');
-		
-		$sql = "SELECT COUNT(*) as orders
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete')
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
 						
+		if ($month < 6)
+			{
+			$last_year = date('Y', strtotime('last year'));
+			
+			$sql =  "SELECT COUNT(*) as orders
+			        FROM sales_orders
+			        WHERE status IN ('payment_received', 'complete')
+			        AND EXTRACT(MONTH FROM created) = $month
+			        AND EXTRACT(YEAR FROM created) = $year
+			        OR EXTRACT(YEAR FROM created) = $last_year";
+			}
+		else
+			{
+			 $sql = "SELECT COUNT(*) as orders
+  						FROM sales_orders
+  						WHERE status IN ('payment_received', 'complete')
+  						AND EXTRACT(MONTH FROM created) = $month
+  						AND EXTRACT(YEAR FROM created) = $year";	
+			}
+												
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
 		return ( ! is_null($result[0]['orders'])) ? $result[0]['orders'] : 0;
@@ -676,19 +690,35 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public static function monthly_completed_total($month = FALSE)
 	{
+	  $this_month = date('m');
+	  
 		if ( ! $month)
 		{
 			$month = date('m');
 		}
 		
 		$year = date('Y');
-		
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
-						AND deleted IS NULL
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
+		//funky shit to stop it resetting in january
+		if ($this_month <= 6 AND $month != $this_month AND $month > 6)
+			{
+			   $last_year = date('Y', strtotime('last year'));
+			   
+      		$sql = "SELECT SUM(order_total) as total
+      						FROM sales_orders
+      						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+      						AND deleted IS NULL
+      						AND EXTRACT(MONTH FROM created) = $month
+      						AND EXTRACT(YEAR FROM created) = $last_year";
+      }
+    else
+      {
+          $sql = "SELECT SUM(order_total) as total
+        						FROM sales_orders
+        						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+        						AND deleted IS NULL
+        						AND EXTRACT(MONTH FROM created) = $month
+        						AND EXTRACT(YEAR FROM created) = $year";
+      }
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -715,14 +745,29 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		}
 		
 		$year = date('Y');
-		
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
-						AND type = 'retail'
-						AND deleted IS NULL
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
+		//funky shit to stop it resetting in january
+				if (date('m') < 6 AND $month != date('m'))
+    			{
+    			$last_year = date('Y', strtotime('last year'));
+    			
+    			$sql = "SELECT SUM(order_total) as total
+    						  FROM sales_orders
+    						  WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+    						  AND type = 'retail'
+    						  AND deleted IS NULL
+    						  AND EXTRACT(MONTH FROM created) = $month
+    			        AND EXTRACT(YEAR FROM created) = $last_year";
+    			}
+        else
+    			{
+    			 $sql = "SELECT SUM(order_total) as total
+    						FROM sales_orders
+    						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+    						AND type = 'retail'
+    						AND deleted IS NULL
+    						AND EXTRACT(MONTH FROM created) = $month
+    						AND EXTRACT(YEAR FROM created) = $year";	
+    			}
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
@@ -731,20 +776,38 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 		public static function commercial_monthly_completed_total($month = FALSE)
 	{
+	  $this_month = 6;
+	  
 		if ( ! $month)
 		{
 			$month = date('m');
 		}
 		
 		$year = date('Y');
-		
-		$sql = "SELECT SUM(order_total) as total
-						FROM sales_orders
-						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
-						AND type = 'commercial'
-						AND deleted IS NULL
-						AND EXTRACT(MONTH FROM created) = $month
-						AND EXTRACT(YEAR FROM created) = $year";
+		//funky shit to stop it resetting in january
+		if ($this_month <= 6 AND $month != $this_month AND $month > 6)
+			{
+			   $last_year = date('Y', strtotime('last year'));
+			
+      		$sql = "SELECT SUM(order_total) as total
+      						FROM sales_orders
+      						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+      						AND type = 'commercial'
+      						AND deleted IS NULL
+      						AND EXTRACT(MONTH FROM created) = $month
+      						AND EXTRACT(YEAR FROM created) = $last_year";
+      }
+    else
+      {
+             $sql = "SELECT SUM(order_total) as total
+          						FROM sales_orders
+          						WHERE status IN ('payment_received', 'complete', 'invoice_sent', 'invoice_generated', 'dispatched')
+          						AND type = 'commercial'
+          						AND deleted IS NULL
+          						AND EXTRACT(MONTH FROM created) = $month
+          						AND EXTRACT(YEAR FROM created) = $year";
+
+      }
 						
 		$result = Database::instance()->query(Database::SELECT, $sql, FALSE)->as_array();
 		
