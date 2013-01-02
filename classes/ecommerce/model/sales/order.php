@@ -333,7 +333,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$year = date('Y');
 						
 		//funky shit to stop it resetting in january
-		if ($this_month <= 6 AND $month != $this_month AND $month > 6)
+		if ($this_month <= 6 AND $month != intval($this_month) AND $month > 6)
 			{
 			   $last_year = date('Y', strtotime('last year'));
 			
@@ -341,7 +341,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			        FROM sales_orders
 			        WHERE status IN ('payment_received', 'complete')
 			        AND EXTRACT(MONTH FROM created) = $month
-			        AND EXTRACT(YEAR FROM created) = $year";
+			        AND EXTRACT(YEAR FROM created) = $last_year";
 			}
 		else
 			{
