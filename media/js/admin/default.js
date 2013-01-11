@@ -6,10 +6,8 @@
       e.preventDefault();
       var defaultDelivery = $('#default-delivery').val();
 	
-		var data = {
-			default: defaultDelivery,
-		};
-	console.log(data);
+		var data = {default: defaultDelivery};
+	
 		$.ajax({
 		
 			url: '/admin/delivery_options/default_delivery_option',
