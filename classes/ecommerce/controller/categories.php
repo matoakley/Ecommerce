@@ -73,4 +73,19 @@ class Ecommerce_Controller_Categories extends Controller_Application
 		$this->add_breadcrumb(URL::site(Route::get('view_category')->uri(array('slug' => $category->slug))), $category->name);
 	}
 	
+	function action_index()
+	{
+		$items = FALSE;
+
+  		  $search = Model_Category::search(array(), $items);
+		
+		// Set URI into session for redirecting back from forms
+		$this->session->set('categories.index', $_SERVER['REQUEST_URI']);
+		
+		$this->template->categories = $search['results'];
+		$this->template->total_categories = $search['count_all'];
+		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+		$this->template->items = $items;
+ 	}
+	
 }
