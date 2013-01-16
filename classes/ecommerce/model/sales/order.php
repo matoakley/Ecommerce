@@ -253,7 +253,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
-		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		$sales_order->invoice_terms = $customer->invoice_terms == NULL ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
 		
 		if (Auth::instance()->logged_in('customer'))
 		{
