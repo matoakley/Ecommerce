@@ -79,7 +79,7 @@ class Ecommerce_Model_Event extends Model_Application
 		//$month = ($month % 12 != -1) ? $month % 12 : 12;
 	
 		//$date = mktime(12, 0, 0, $month, 1, date('Y') + $year);
-		echo Kohana::debug(date('Y-m-d', $date));
+
 		$query = Jelly::select('event')
 		                ->where(DB::expr('MONTH(start_date)'), '=', date('m', $date))
 		                ->where(DB::expr('YEAR(start_date)'), '=', date('Y', $date))
