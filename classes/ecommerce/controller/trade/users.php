@@ -209,4 +209,9 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 	{
 		$this->template->sales_orders = $this->auth->get_user()->customer->get('orders')->where('status', 'IN', array('invoice_generated', 'invoice_sent', 'complete'))->order_by('created', 'DESC')->execute();
 	}
+	
+	public function action_view_order()
+	{
+		$this->template->sales_order = Model_Sales_Order::load($this->request->param('id'));
+	}
 }
