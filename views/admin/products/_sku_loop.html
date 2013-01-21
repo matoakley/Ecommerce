@@ -119,6 +119,7 @@
 	<div class="clear"></div>
 </div>
 
+{% if modules.sku_thumbnails %}
 <div class="field">
 		<div class="grid_2 alpha">
 			<label for="sku-{{sku.id}}-thumbnail-id">Image ID: </label>
@@ -134,6 +135,7 @@
 		
 	<div class="clear"></div>
 </div>
+{% endif %}
 
 {% if modules.product_weights %}
 	<div class="field">

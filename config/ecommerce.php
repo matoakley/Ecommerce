@@ -60,6 +60,7 @@ return array
 		'reward_points' => FALSE,
 		'sage_exports' => FALSE,
 		'sales_orders' => FALSE,
+		'sku_thumbnails' => FALSE,
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
