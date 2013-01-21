@@ -556,5 +556,30 @@ class Ecommerce_Model_Customer extends Model_Application
 		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 	
+		public static function send_trade_forgotten_password_email($email_address)
+	{
+		// Send an email to user with a key (maybe use hashed password?)
+		Email::connect();
+		
+		$message = Twig::factory('emails/forgotten_password.html');
+		
+		$user = Jelly::select('user')->where('email', '=', $email_address)->limit(1)->execute();
+		
+		// Check that the email address provided links to a use and also to a customer
+		if ( ! $user->loaded() OR ! $user->customer->loaded())
+		{
+			throw new Kohana_Exception('User not found');
+		}
+		
+		$message->user = $user->customer;
+		$message->site_name = Kohana::config('ecommerce.site_name');
+		$message->reset_link = Route::url('trade_customer_reset_password', array('reset_hash' => urlencode($user->password), 'email' => urlencode($user->email)));
+
+		$to = array(
+			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
+		);
+
+		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
+	}
 
 }
