@@ -468,6 +468,21 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
   	   $product->save();
 	   }
 	 }
+	 
+	 public function action_list_order()
+	{
+  	$this->auto_render = FALSE;
+  	
+  	if ($_POST)
+  	 {
+  	   foreach ($_POST as $option_id => $position)
+  	     {
+    	       $product_option = Model_Product_Option::load($option_id);
+    	       $product_option->list_order = $position;
+    	       $product_option->save(); 
+  	     }
+  	 }
+	}
 	
 }
 

@@ -5,8 +5,7 @@
       var defaultDelivery = $('#default-delivery').val();
 	
 		var data = {
-			default: defaultDelivery,
-		};
+			default: defaultDelivery};
 	console.log(data);
 		$.ajax({
 		

@@ -19,17 +19,13 @@ class Ecommerce_Controller_Events extends Controller_Application
 		$month = $this->request->param('month', date('m'));
 		
 		$items = 20;
-		$page_number = Arr::get($_GET, 'page', 1);	
-	
-		$events = Model_Event::get_events_by_month($month, $items, ($page_number - 1) * $items);
+		$page_number = Arr::get($_GET, 'page', 1);
 	
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
 			'total_items'    => count(Model_Event::get_events_by_month($month, NULL, NULL)),
 			'items_per_page' => $items,
 		));
-	
-		$this->template->events = $events;
 	
 		$calendar_days = array();
 		
@@ -49,8 +45,11 @@ class Ecommerce_Controller_Events extends Controller_Application
 																										->execute();
 			}
 		}
+		$events = Model_Event::get_events_by_month($date, $items, ($page_number - 1) * $items);
+		
 		$this->template->calendar_title = date("F Y", $date);
 		$this->template->calendar_days = $calendar_days;
+		$this->template->events = $events;
 		
 		$tabs = array();
 		for ($i = -05; $i < 7; $i++)

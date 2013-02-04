@@ -188,7 +188,6 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		{
 			$sales_order->promotion_code = $basket->promotion_code;
 			$sales_order->promotion_code_code = $basket->promotion_code->code;
-			$basket->promotion_code->redeem();
 			
 			switch ($basket->promotion_code_reward->reward_type)
 			{
@@ -229,6 +228,11 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		  $sales_order->customer_referral_code = $basket->customer_referral_code;
 		}
 		
+		if ($basket->promotion_code_reward->loaded())
+		  {
+  		  $basket->promotion_code->redeem();
+		  }
+		
 		$session = Session::instance();
 		$session->delete('basket_id');
 		$session->set('sales_order_id', $sales_order->id);
@@ -253,7 +257,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
-		$sales_order->invoice_terms = $customer->invoice_terms ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		$sales_order->invoice_terms = $customer->invoice_terms == NULL ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
 		
 		if (Auth::instance()->logged_in('customer'))
 		{
