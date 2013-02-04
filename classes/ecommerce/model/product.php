@@ -383,7 +383,8 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	public function get_option_values($option_name)
 	{
-		return Jelly::select('product_option')
+		$options =  Jelly::select('product_option')
+		          ->distinct(true)
 							->join('product_options_skus')
 							->on('product_option_id', '=', 'product_option.id')
 							->join('skus')
@@ -395,6 +396,8 @@ class Ecommerce_Model_Product extends Model_Application
 							->where('product_option.deleted', '=', NULL)
 							->order_by('list_order', 'ASC')
 							->execute();
+		
+		return $options;
 	}
 	
 	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')
