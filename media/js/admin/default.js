@@ -1,6 +1,4 @@
   $(function(){
-    
-    
         
     $('#defaultDelivery').live('click', function(e){
       e.preventDefault();
@@ -66,6 +64,29 @@
     				});
     		  };
     		}
+    else {
+      if ($(this).val() == 'print_invoices'){
+    		e.preventDefault();    		
+    		var items = [];
+      						var i = 0;
+    		
+    						$(".row-selector").filter(':checked').each(function(){
+    				
+      						items = items + '/'+$(this).val();
+      						i++;    				
+        				})
+
+    		var url = "/admin/sales_orders/bulk_print"+items;
+    		var print = $('a#bulk-print');
+    		
+    		$(function(){
+      		print.attr('href', url);
+          window.location.href = url;
+    		})    		
+          
+        		}
+    }
+    
     });
 	     
 	 $('#bulk-actions').change(function(e){
