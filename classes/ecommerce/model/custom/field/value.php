@@ -52,7 +52,7 @@ class Ecommerce_Model_Custom_Field_Value extends Model_Application
   			
   			if ( ! is_dir($directory))
   			{
-  				mkdir($directory);
+  				mkdir($directory, 0777);
   			}
   		}
   		
@@ -64,7 +64,7 @@ class Ecommerce_Model_Custom_Field_Value extends Model_Application
   		     		
   		if (move_uploaded_file($_FILES['custom_fields']['tmp_name'][$custom_field_value->custom_field->id], DOCROOT.$file_path))
   		{
-    		$custom_field_value->value = $file_path;
+    		$custom_field_value->value = '/' . $file_path;
   		} 
     }
 		else
