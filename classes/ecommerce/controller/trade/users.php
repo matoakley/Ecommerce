@@ -214,4 +214,5 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 	{
 		$this->template->sales_order = Model_Sales_Order::load($this->request->param('id'));
 	}
+	
 }

@@ -120,3 +120,10 @@ Route::set('basket_from_sales_order', 'basket/create-from-sales-order/<sales_ord
 	'controller' => 'basket',
 	'action' => 'create_from_sales_order',
 ));
+
+Route::set('trade_customer_reset_password', 'forgotten-password(/<reset_hash>/<email>)', array(
+	'email' => '.*', // Allow dots in email address
+))->defaults(array(
+	'controller' => 'customers',
+	'action' => 'trade_forgotten_password',
+));
