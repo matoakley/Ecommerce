@@ -54,32 +54,25 @@
 		<div class="clear"></div>
 	</div>
 	
-			<div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
-		</div>
-		<div class="grid_14 omega">
-			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
-				{% if product.loaded and product.slug %} disabled {% endif %} />
-		</div>
-		<div class="clear"></div>
-	</div>
-	
-	<!--
 <div class="field">
 		<div class="grid_2 alpha">
 			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
 		<div class="grid_8 omega product-slug">
 		  <input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
-				readonly="readonly"/>
+				{% if product.loaded %}disabled="disabled"{% endif %}/>
+		 <span class="hidden" id="slug-exists" style="color:red">* This slug already exists</span>
 		</div>
-		<div class="grid_2">
-		  <button id="edit-slug">Edit SEO Slug</button>
+		{% if product.loaded() %}
+		<div class="grid_3">
+		  <button id="edit-slug" data-id="{{product.id}}">Edit SEO Slug</button>
+		  <button id="save-slug" data-id="{{product.id}}" class="hidden">Save</button>
+		  <img src="/media/images/admin/ajax-loader.gif" alt="" id="slug-spinner" style="vertical-align:middle" class="hidden" />
+		  <img src="/media/images/icons/accept.png" alt="" id="slug-yes" style="vertical-align:middle" class="hidden" />
 		</div>
+		{% endif %}
 		<div class="clear"></div>
 	</div>
--->
 	
 	{% if product.loaded and product.slug %}
 	<div class="field">
@@ -87,7 +80,8 @@
 			<label>Public Page</label>
 		</div>
 		<div class="grid_14 omega">
-			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{% url "view_product", ["slug":product.slug] %}</a>
+			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank" id="pub-link">{% url "view_product", ["slug":product.slug] %}</a>
+			<span id="refresh" class="hidden">Please Refresh or Save to view the updated Public Page Link.</span>
 		</div>
 		<div class="clear"></div>
 	</div>

@@ -1,14 +1,11 @@
   $(function(){
-    
-    
         
     $('#defaultDelivery').live('click', function(e){
       e.preventDefault();
       var defaultDelivery = $('#default-delivery').val();
 	
 		var data = {
-			default: defaultDelivery,
-		};
+			default: defaultDelivery};
 	console.log(data);
 		$.ajax({
 		
@@ -44,29 +41,52 @@
 						$(".row-selector").filter(':checked').each(function(){
 				
   						items[i] = $(this).val();
-  						i++;
-  				
-	
-  				var data = {
+  						i++;    				
+    				})
+    				
+    var data = {
     				items: items,
     				type: $('#type').text(),
-    				
-    				}
+    		}
 
 		$.ajax({
 		
 			url: '/admin/tools/bulk_delete',
 			type: 'POST',
 			data: data,
+			beforeSend: function(){
+  			console.log(items);
+			},
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
+    				  }
     				});
-    		   };
-    		  }
-    		})
-	     });
+    		  };
+    		}
+    else {
+      if ($(this).val() == 'print_invoices'){
+    		e.preventDefault();    		
+    		var items = [];
+      						var i = 0;
+    		
+    						$(".row-selector").filter(':checked').each(function(){
+    				
+      						items = items + '/'+$(this).val();
+      						i++;    				
+        				})
+
+    		var url = "/admin/sales_orders/bulk_print"+items;
+    		var print = $('a#bulk-print');
+    		
+    		$(function(){
+      		print.attr('href', url);
+          window.location.href = url;
+    		})    		
+          
+        		}
+    }
+    
+    });
 	     
 	 $('#bulk-actions').change(function(e){
 		var status = $(this).val();
@@ -85,6 +105,7 @@
 				
   						items[i] = $(this).val();
   						i++;
+  				})
   				
 	
   				var data = {
@@ -100,12 +121,12 @@
 			data: data,
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
-    				});
-    		   };
-    		  }
-    		});
+    				    }
+    				 })
+    				}
+      		}
+      });
+    				
   
   $('#add-to-related').click(function(e){
     e.preventDefault();
@@ -1649,3 +1670,5 @@ jQuery.fn.slugify = function(obj) {
       obj.val(slug);
   });
 }
+
+});

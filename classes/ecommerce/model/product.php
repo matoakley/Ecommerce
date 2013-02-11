@@ -140,7 +140,6 @@ class Ecommerce_Model_Product extends Model_Application
 	public static function _is_slug_valid(Validate $array, $field)
 	{
 		$valid = TRUE;
-		//$product = Model_Product::load();
 		
 		// Is slug set (unless duplicating...)
 		if ( ! isset($array['duplicating']))
@@ -151,11 +150,9 @@ class Ecommerce_Model_Product extends Model_Application
 			}
 			else
 			{ 
-			  //echo Kohana::debug($array->as_array(), $field);exit;
 				// Is slug a duplicate?
 				$is_duplicate = (bool) Jelly::select('product')
                         				->where('slug', '=', $array['slug'])
-                        			//	->where('id', '<>', $product->id)
                         				->where('deleted', 'IS', NULL)->count();
 				
 				if ($is_duplicate)
@@ -375,13 +372,32 @@ class Ecommerce_Model_Product extends Model_Application
 		return array_values(array_unique($options));
 	}
 	
-	public function get_option_values($option_name)
+	public function get_admin_option_values($option_name)
 	{
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->order_by('value', 'DESC')
+							->order_by('list_order', 'ASC')
 							->execute();
+	}
+	
+	public function get_option_values($option_name)
+	{
+		$options =  Jelly::select('product_option')
+		          ->distinct(true)
+							->join('product_options_skus')
+							->on('product_option_id', '=', 'product_option.id')
+							->join('skus')
+							->on('sku_id', '=', 'skus.id')
+							->where('product_options.product_id', '=', $this->id)
+							->where('key', '=', $option_name)
+							->where('sku.status', '=', 'active')
+							->where('sku.deleted', '=', NULL)
+							->where('product_option.deleted', '=', NULL)
+							->order_by('list_order', 'ASC')
+							->execute();
+		
+		return $options;
 	}
 	
 	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')

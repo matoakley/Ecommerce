@@ -52,6 +52,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 		    {
   		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
 		    }
+
 		
 		//$this->template->age = $user->get_age($this->auth->user->customer->D_O_B);
 
