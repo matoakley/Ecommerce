@@ -60,7 +60,7 @@ class Ecommerce_Model_Custom_Field_Value extends Model_Application
   		
   		// Append timestamp to ID for filename to keep it unique whilst obscure enought to stop
   		// people guessing other potential files on the system
-  		$file_path = '/documents/'.date('Y').'/'.date('m').'/'.$custom_field_value->id.time().'.'.$ext;
+  		$file_path = 'documents/'.date('Y').'/'.date('m').'/'.$custom_field_value->id.time().'.'.$ext;
   		     		
   		if (move_uploaded_file($_FILES['custom_fields']['tmp_name'][$custom_field_value->custom_field->id], DOCROOT.$file_path))
   		{
