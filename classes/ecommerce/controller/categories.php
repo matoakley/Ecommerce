@@ -37,7 +37,7 @@ class Ecommerce_Controller_Categories extends Controller_Application
 				'auto_hide'	=> false,
 			));
 		}
-		//echo Kohana::debug(count($sidebar_categories));exit;
+		
 		$this->template->category = $category;
 		$this->template->sidebar_categories = (count($sidebar_categories) > 1) ? $sidebar_categories : FALSE;
 		$this->template->parent_category = ($category->parent->loaded()) ? $category->parent : FALSE;
