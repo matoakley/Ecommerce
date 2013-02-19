@@ -86,4 +86,15 @@ class Ecommerce_Controller_Admin_Brands extends Controller_Admin_Application {
 		$this->request->redirect($this->session->get('admin.brands.index', 'admin/brands'));
 	}
 	
+	public function action_upload_image()
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{	
+			$brand = Model_Brand::load($_POST['brand_id']);
+			$brand->upload_image($_FILES['image']['tmp_name']);
+		}
+	}
+	
 }
