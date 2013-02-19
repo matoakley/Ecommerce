@@ -95,6 +95,10 @@ return array
     'width' => 310,
     'height' => 250,
   ),
+  'page_image_sizing' => array(
+    'width' => 450,
+    'height' => 450,
+  ),
 	
 	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 	

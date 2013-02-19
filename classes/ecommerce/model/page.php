@@ -18,6 +18,9 @@ class Ecommerce_Model_Page extends Model_Application
 					'foreign' => 'page.id',
 					'column' => 'parent_id',
 				)),
+				'featured_image' => new Field_String(array(
+          'in_db' => FALSE,
+        )),
 				'pages' => new Field_HasMany(array(
 					'foreign' => 'page.parent_id',
 				)),
@@ -51,6 +54,16 @@ class Ecommerce_Model_Page extends Model_Application
 			'body',
 		),
 	);
+	
+	public function __get($field)
+  {
+    if ($field == 'featured_image')
+    {
+      return $this->get_featured_image();
+    }
+
+    return parent::__get($field);
+  }
 
 	public static function build_page_tree($root_page = NULL, $active_only = FALSE)
 	{				
@@ -119,4 +132,48 @@ class Ecommerce_Model_Page extends Model_Application
 
 		return $this;
 	}
+	
+	public function get_featured_image()
+	{
+		$file_path = '/images/pages/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/pages/default.jpg';
+		}
+		
+		return $file_path;
+	}
+
+	public function upload_image($tmp_file)
+	{
+		// Let's get to work on resizing this image
+		$image = Image::factory($tmp_file);
+		
+		// Full Size first
+		$image_size = Kohana::config('ecommerce.page_image_sizing');
+		if ($image_size['width'] > 0 AND $image_size['height'] > 0)
+		{
+			$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
+			// Crop it for good measure
+			$image->crop($image_size['width'], $image_size['height']);
+		}
+		elseif ($image_size['width'] == 0)
+		{
+			$image->resize(NULL, $image_size['height']);
+		}
+		else
+		{
+			$image->resize($image_size['width'], NULL);
+		}
+		
+		$directory = DOCROOT . 'images/pages';
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
+		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+	}
+
 }
