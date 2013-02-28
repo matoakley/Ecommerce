@@ -16,7 +16,7 @@ class Ecommerce_Controller_Admin_Blog_Categories extends Controller_Admin_Applic
 	{
 		$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 
-		$search = Model_Blog_Category::search(array('created' => 'ASC'), $items);
+		$search = Model_Blog_Category::search(array(), $items);
 
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
