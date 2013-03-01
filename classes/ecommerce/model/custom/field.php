@@ -57,6 +57,7 @@ class Ecommerce_Model_Custom_Field extends Model_Application
 		'blog_post',
 		'customer',
 		'product',
+		'page',
 	);
 	
 	public static $types = array(

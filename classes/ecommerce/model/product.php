@@ -180,7 +180,31 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 
+	public static function sort_high_or_low_values($products, $direction = "low")
+	{  
+	  $products_values = array();
+	  
+  	foreach ($products['results'] as $product)
+  	 { 
+    	 $products_values[$product->id] = intval(str_replace("&pound;", '', str_replace(",", '', $product->summarise_sku_price()))); 
+  	 }
 
+  	 if ($direction == "high")
+  	   {
+    	   arsort($products_values);
+  	   }
+  	 else
+  	   {
+    	   asort($products_values);
+  	   }
+  	   
+  	 foreach ($products_values as $product_id => $value)
+  	   { 
+    	   $products_sorted['results'][] = Model_Product::load($product_id);
+  	   }
+
+  	 return $products_sorted;
+	}
 	
 	/****** Public Functions ******/
 	

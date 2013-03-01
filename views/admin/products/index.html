@@ -56,7 +56,7 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td><input type="checkbox" class="row-selector" value="{{product.id}}" /></td>
 			<td><a href="/admin/products/edit/{{product.id}}">{{product.name}}</a></td>
-			<td>{{product.price|num_format(2)}}</td>
+			<td>{{product.summarise_sku_price}}</td>
 			<td class="{{product.status}}">{{product.status|humanize|title}}</td>
 		</tr>
 	{% endfor %}

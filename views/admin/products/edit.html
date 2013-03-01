@@ -2,8 +2,8 @@
 
 {% block custom_scripts %}
 	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?v=2"></script>
-	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=3"></script>{% endif %}
+	<script type="text/javascript" src="/media/js/admin/products.js?v=5"></script>
+	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=7"></script>{% endif %}
 {% endblock %}
 
 {% block page_title %}
@@ -63,7 +63,8 @@
 				{% if product.loaded %}disabled="disabled"{% endif %}/>
 		 <span class="hidden" id="slug-exists" style="color:red">* This slug already exists</span>
 		</div>
-		{% if product.loaded() %}
+		<!--
+{% if product.loaded() %}
 		<div class="grid_3">
 		  <button id="edit-slug" data-id="{{product.id}}">Edit SEO Slug</button>
 		  <button id="save-slug" data-id="{{product.id}}" class="hidden">Save</button>
@@ -71,6 +72,7 @@
 		  <img src="/media/images/icons/accept.png" alt="" id="slug-yes" style="vertical-align:middle" class="hidden" />
 		</div>
 		{% endif %}
+-->
 		<div class="clear"></div>
 	</div>
 	

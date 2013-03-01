@@ -180,7 +180,11 @@ class Ecommerce_Controller_Basket extends Controller_Application
 	{
 		$this->auto_render = FALSE;
 		
-		$this->basket->update_delivery_option($_POST['id']);
+		if (isset($_POST['id']))
+		  {
+  		  $this->basket->update_delivery_option($_POST['id']); 
+		  }
+		  
 		$this->basket->calculate_shipping();
 
 		$data = array(
