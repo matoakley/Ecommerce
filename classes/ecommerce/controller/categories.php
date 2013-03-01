@@ -12,12 +12,6 @@ class Ecommerce_Controller_Categories extends Controller_Application
 		parent::before();
 	}
 	
-	//heres the function for now testing
-	function by_high($product)
-	{
-    return $product;
-	}
-	
 	function action_view()
 	{
 		$category = Model_Category::load($this->request->param('slug'));
