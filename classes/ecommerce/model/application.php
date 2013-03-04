@@ -137,6 +137,18 @@ class Ecommerce_Model_Application extends Jelly_Model
 						unset($query_string[$key]);
 					}
 				}
+				//filter backwards, if the operand is != then get the filters and set $not to true to use later
+				elseif (strpos($qs, '!='))
+				  {
+  				  $filter = explode('!=', $qs);
+  				  $not = TRUE;
+  				  
+  					if (array_key_exists($filter[0], $class::$searchable_fields['filtered']))
+  					{
+  						$filters[$filter[0]] = $filter[1];
+  						unset($query_string[$key]);
+  					}
+				  }
 			}
 		}
 		
@@ -164,8 +176,16 @@ class Ecommerce_Model_Application extends Jelly_Model
 					$results->on($on[0], '=', $on[1]);
 				}
 			}
-			
-			$results->where($class::$searchable_fields['filtered'][$field]['field'], '=' , $value);
+			//look here for $not to see if it should be filtering backwards
+			if (isset($not) && $not == TRUE)
+  			{
+    			$results->where($class::$searchable_fields['filtered'][$field]['field'], '!=' , $value);
+  			}
+  		//otherwise do the usual gubbins.
+			else
+  			{
+    		  $results->where($class::$searchable_fields['filtered'][$field]['field'], '=' , $value);	
+  			}
 		}
 		
 		$model = new $class;

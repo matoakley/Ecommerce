@@ -239,6 +239,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		    
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		$this->template->types = Model_Product::$types;
 		$this->template->inputs = Model_Product::$inputs;
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
