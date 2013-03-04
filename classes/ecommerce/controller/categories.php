@@ -23,10 +23,19 @@ class Ecommerce_Controller_Categories extends Controller_Application
 										Model_Category::build_category_tree($category->parent->id, TRUE);
 		
 		$parent_category = $category->parent;
-		
+
 		$items = Kohana::config('ecommerce.pagination.products');
 		$products_search = Model_Product::search(array('category:'.$category->id, 'status:active'), $items);
 		
+		if (isset($_POST['sort-high']))
+		  {
+  		  $products_search = Model_Product::sort_high_or_low_values($products_search, $direction = "high");
+		  }
+		if (isset($_POST['sort-low']))
+		  {
+  		  $products_search = Model_Product::sort_high_or_low_values($products_search, $direction = "low");
+		  }
+		  
 		// If number of items is set then we should paginate the results
 		if ($items AND $products_search['count_all'] > $items)
 		{
@@ -48,7 +57,7 @@ class Ecommerce_Controller_Categories extends Controller_Application
 			$brands = $category->get_brands();
 			$this->template->sidebar_brands = (count($brands) > 1) ? $brands : FALSE;
 		}
-		
+
 		$this->template->products = $products_search['results'];
 		$this->template->sub_categories = Model_Category::build_category_tree($category->id, TRUE);
 		

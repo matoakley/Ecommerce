@@ -34,7 +34,7 @@ class Ecommerce_Model_Custom_Field_Value extends Model_Application
 			$custom_field_value->custom_field = $custom_field_id;
 			$custom_field_value->save();
 		}
-		
+		//echo Kohana::debug($_FILES);exit;
 		// Uploading files custom field
 		if ($custom_field_value->custom_field->type == 'upload' AND $_FILES['custom_fields']['size'][$custom_field_value->custom_field->id] > 0)
 	  {
