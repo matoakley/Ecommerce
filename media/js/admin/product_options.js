@@ -197,22 +197,24 @@ $(function(){
 		});
 	}); 
 	
+	//Product options re-ording system
 	$('.option-container').sortable({ 
 	  handle: '.inline-icon',
 	  cursor: 'move',
     update : function (event, ui) {
-      var rel = $(this).attr('rel');
-      var order = $(this).sortable('toArray');
-      console.log(order);
-      var fields = $('.input-list[rel='+ rel +']');
-      $(order).each(function(i){
-        $(fields[order[i]]).val(i);
-      });
-/*
-      $('.input-list[rel='+ rel +']').each(function(i) {
-        $(this).val(order[i]);
+      var list = {};
+      var stuff = {ui: ui.item.index(), this: ui.item.data('id')};
+      
+      $('.product-option-row').each(function(){
+        list[$(this).data('id')] = $(this).index();
       })
-*/
+      //console.log(list);
+      $.ajax({
+        url: '/admin/products/list_order',
+        type: 'POST',
+        data: list,
+        success:function(){},
+      })
     } 
   }); 
 	

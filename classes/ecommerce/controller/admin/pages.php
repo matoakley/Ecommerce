@@ -43,7 +43,12 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 		{
 			$page->template = 'default';
 		}
-	
+		
+		if ($this->modules['custom_fields'])
+		{
+			$fields['custom_fields'] = $page->custom_fields();
+		}
+		
 		if ($id AND ! $page->loaded())
 		{
 			throw new Kohana_Exception('Page could not be found.');
@@ -57,6 +62,11 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 			try
 			{
 				$page->update($_POST['page']);
+				
+				if ($this->modules['custom_fields'] AND isset($_POST['custom_fields']))
+				{
+					$page->update_custom_field_values($_POST['custom_fields']);
+				}
 								
 				// If 'Save & Exit' has been clicked then lets hit the index with previous page/filters
 				if (isset($_POST['save_exit']))
@@ -79,6 +89,7 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 		
 		$this->template->page = $page;
 		$this->template->statuses = Model_Page::$statuses;
+		$this->template->fields = $fields;
 		$this->template->top_level_pages = Model_Page::build_page_tree();
 	}
 
@@ -90,6 +101,17 @@ class Ecommerce_Controller_Admin_Pages extends Controller_Admin_Application
 		$pages->delete();
 		
 		$this->request->redirect($this->session->get('admin.pages.index', 'admin/pages'));
+	}
+	
+	public function action_upload_image()
+	{
+		$this->auto_render = FALSE;
+		
+		if ($_POST)
+		{	
+			$page = Model_Page::load($_POST['page_id']);
+			$page->upload_image($_FILES['image']['tmp_name']);
+		}
 	}
 	
 }

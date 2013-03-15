@@ -139,6 +139,39 @@
 	
 </form>
 
+<h2>Featured Image</h2>
+
+	{% if not brand.loaded %}
+	
+		<p><em>You must save the brand before adding an image.</em></p>
+		
+	{% else %}
+	
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/brands/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="brand_id" value="{{brand.id}}" />
+						
+			<div class="field">
+				<div class="grid_8 alpha">
+					<img src="{{brand.featured_image}}" alt="Featured Image" style="margin-left:10px;" id="current-image" />
+				</div>
+				<div class="grid_2">
+					<label>Upload Image</label>
+				</div>
+				<div class="grid_4 omega">
+          <input type="file" name="image" id="brand-image-upload" data-brand-id="{{brand.id}}" />
+				</div>
+			
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
+
 <script type="text/javascript" charset="utf-8">
 	$('#brand-meta-description').counter({
 		count: 'up',

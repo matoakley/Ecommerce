@@ -105,6 +105,9 @@
 		<div class="clear"></div>
 	</div>
 
+	{# Custom Fields #}
+	{% set object = page %}
+	{% include "admin/custom/fields/_edit_form_snippet.html" %}
 	
 	<h2>Meta Details</h2>
 	
@@ -151,6 +154,40 @@
 
 	
 </form>
+
+<h2>Featured Image</h2>
+
+	{% if not page.loaded %}
+	
+		<p><em>You must save the page before adding an image.</em></p>
+		
+	{% else %}
+	
+		<!-- Async image uploader -->
+		<form enctype="multipart/form-data" action="/admin/pages/upload_image" method="post" id="upload-image-form" target="upload-image">
+			
+			<input type="hidden" name="page_id" value="{{page.id}}" />
+						
+			<div class="field">
+				<div class="grid_8 alpha">
+					<img src="{{page.featured_image}}" alt="Featured Image" style="margin-left:10px;" id="current-image" />
+				</div>
+				<div class="grid_2">
+					<label>Upload Image</label>
+				</div>
+				<div class="grid_4 omega">
+          <input type="file" name="image" id="page-image-upload" data-page-id="{{page.id}}" />
+				</div>
+			
+				<div class="clear"></div>
+			</div>
+			
+		</form>
+		
+		<iframe name="upload-image" id="upload-image"></iframe>
+	
+	{% endif %}
+
 
 <script type="text/javascript" charset="utf-8">
 	$('#page-meta-description').counter({
