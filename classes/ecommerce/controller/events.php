@@ -42,6 +42,7 @@ class Ecommerce_Controller_Events extends Controller_Application
 																										->where('start_date', '<=', date('Y-m-d', $calendar_days[$i][$j]['day_date']).' 00:00:00')
 																										->where('end_date', '>=', date('Y-m-d', $calendar_days[$i][$j]['day_date']).' 00:00:00')
 																										->where('status', '=', 'active')
+																										->where('deleted', '=', NULL)
 																										->execute();
 			}
 		}
