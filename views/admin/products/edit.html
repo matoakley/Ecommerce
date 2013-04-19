@@ -185,7 +185,7 @@
 		<div class="grid_5">Related Products
       <select id="product-related" size="10" style="width:250px" name="product[related]">
 			{% for product in related_products %}
-				<option value="{{product.id}}">{{product.name|title}}</option>
+				<option value="{{product.related.id}}">{{product.related.name|title}}</option>
 			{% endfor %}
 			</select>
 		</div>

@@ -180,31 +180,7 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 
-	public static function sort_high_or_low_values($products, $direction = "low")
-	{  
-	  $products_values = array();
-	  
-  	foreach ($products['results'] as $product)
-  	 { 
-    	 $products_values[$product->id] = intval(str_replace("&pound;", '', str_replace(",", '', $product->summarise_sku_price()))); 
-  	 }
 
-  	 if ($direction == "high")
-  	   {
-    	   arsort($products_values);
-  	   }
-  	 else
-  	   {
-    	   asort($products_values);
-  	   }
-  	   
-  	 foreach ($products_values as $product_id => $value)
-  	   { 
-    	   $products_sorted['results'][] = Model_Product::load($product_id);
-  	   }
-
-  	 return $products_sorted;
-	}
 	
 	/****** Public Functions ******/
 	
@@ -515,5 +491,34 @@ class Ecommerce_Model_Product extends Model_Application
 		$bundle->remove('bundle_items', $sku_id);
 		$bundle->save();
 	}
-
+	
+	// Override standard delete to handle orphaned related product
+	public function delete($key = FALSE)
+	{	
+	  //go through and delete all related products	
+		foreach ($this->related_products as $related)
+		{
+  		$related->delete();
+		}
+		
+		//go through and delete all skus
+		foreach ($this->skus as $sku)
+		{
+  		$sku->delete();
+		}
+		
+		//go through and delete all product options
+		foreach ($this->product_options as $option)
+		{
+  		$option->delete();
+		}
+		
+		//go through and delete all images
+		foreach ($this->images as $image)
+		{
+  		$image->delete();
+		}
+		
+		parent::delete($key);
+	}
 }
