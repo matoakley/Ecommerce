@@ -32,6 +32,12 @@ Route::set('admin_add_sales_order_item', 'admin/sales_orders/add_sales_order_lin
 	'action' => 'add_sales_order_line',
 ));
 
+Route::set('admin_add_booking_item', 'admin/sales_orders/add_booking_line/<customer_id>(/<sku_id>)')->defaults(array(
+	'directory' => 'admin',
+	'controller' => 'sales_orders',
+	'action' => 'add_booking_line',
+));
+
 Route::set('customer_contact_add', 'admin/customers/<customer_id>/add_contact')->defaults(array(
 	'directory' => 'admin',
 	'controller' => 'customers',

@@ -102,7 +102,15 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			'invoice_sent',
 			'complete',
 			'order_cancelled',
-		),	
+		),
+		'booking' => array(
+		  'awaiting_payment',
+			'problem_occurred',
+			'payment_received',
+			'payment_due',
+			'complete',
+			'order_cancelled',
+		),
 	);
 	
 	public static $searchable_fields = array(

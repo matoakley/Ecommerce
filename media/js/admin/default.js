@@ -1,5 +1,5 @@
 $(function(){
-      
+    
   //Page image upload 
   $(function(){
 
@@ -793,6 +793,13 @@ $(function(){
 				$('span#sales-order-vat').html(calculateSalesOrderVat());
 				// Disable the sku in the select to avoid duplicate rows
 				$('select#new-sales-order-item').find('option[data-sku-id="'+response.sku.id+'"]').attr('disabled', 'disabled');
+				$('.datepicker').datepicker({
+      		constrainInput: true,
+      		dateFormat: 'dd/mm/yy',
+      		firstDay: 1,
+      		numberOfMonths: 1,
+      		selectOtherMonths: true
+      	})
 			},
 			complete: function(){
 				select.val('');
