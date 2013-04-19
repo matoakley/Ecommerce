@@ -437,10 +437,10 @@ class Ecommerce_Model_Sales_Order extends Model_Application
        $month = date("m");
        $day = date("d");
        $year = date("Y");
-       $num = date("t");
+       $num = date("t", mktime(0,0,0, date("n") - 1)); //get the days number from the LAST month to keep it right.
        
         //LOOP THROUGH DAYS
-       for($i=0; $i<=($num -1); $i++){
+       for($i=0; $i<=($num); $i++){
             $results[] = date('Ymd',mktime(0,0,0,$month,($day-$i),$year));
        }
        
