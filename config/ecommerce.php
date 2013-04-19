@@ -31,6 +31,7 @@ return array
 	),
 	
 	'modules' => array(
+	  'admin_online_pay' => FALSE,
 		'blog' => FALSE,
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
