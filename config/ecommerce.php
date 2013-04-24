@@ -31,6 +31,7 @@ return array
 	),
 	
 	'modules' => array(
+	  'admin_online_pay' => FALSE,
 		'blog' => FALSE,
 		'blog_categories' => FALSE,
 		'brands' => FALSE,
@@ -94,7 +95,10 @@ return array
     'width' => 310,
     'height' => 250,
   ),
-	
+  
+  //if transparent images are needed for products then .png otherwise .jpg
+  'product_image_format' => '.jpg',
+
 	'default_google_product_category' => '', // Find category in http://www.google.com/support/merchants/bin/answer.py?answer=160081
 	
 	'cloudmade_api_key' => 'af4f31e0445f463ebe783a749812d374', // Generic API key from http://cloudmade.com/ if you plan to use Leaflet.js for maps

@@ -48,7 +48,13 @@ class Ecommerce_Controller_Products extends Controller_Application
 		$this->template->meta_description = $product->display_meta_description();
 		$this->template->meta_keywords = $product->meta_keywords;
 		
-		$this->template->age = Model_User::get_age($this->auth->user->customer->D_O_B);
+		if (Caffeine::modules('related_products'))
+		    {
+  		    $this->template->related_products = $product->related_products;
+		    }
+
+		
+		//$this->template->age = $user->get_age($this->auth->user->customer->D_O_B);
 
 		// load up the breadcrumb
 		$category = $this->session->get('last_viewed_category');

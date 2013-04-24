@@ -8,3 +8,6 @@ CREATE TABLE `bundles_skus` (
 
 ALTER TABLE `products` ADD COLUMN `type` varchar(255) DEFAULT 'product';
 
+update products
+set type='product';
+

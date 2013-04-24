@@ -282,15 +282,30 @@
 			
 			<div class="table-container">
 			
-				<table>
+				<table border="1">
 					<tbody>
+				{% if modules.dashboard_breakdowns %}
+					<th>Month</th>
+					<th>Visits</th>
+					<th>Retail</th>
+					<th>Trade</th>
+					<th>Total</th>
+				{% endif %}
 					{% set i = 1 %}
 					{% for month, data in monthly_visits %}
 						<tr class="{{['', 'alternate']|cycle(i)}}">
 							<td><strong>{{month}}</strong></td>
-							<td class="tc">{{data.visits}} - Visits</td>
-							{% if modules.dashboard_enhanced_sales_orders %}<td class="tc">{{data.orders}} - Orders</td>{% endif %}
-							<td class="tr">&pound;{{data.total|num_format(2)}}</td>
+							<td class="td">{{data.visits}}
+  				{% if not modules.dashboard_breakdowns %}
+  				  - Visits</td>
+  				  <td class="td">{{data.orders}} - Orders
+  				{% endif %}
+							</td>
+						{% if modules.dashboard_breakdowns %}
+							<td class="td">&pound;{{data.retail_orders|num_format(2)}}</td>
+							<td class="td">&pound;{{data.commerical_orders|num_format(2)}}</td>
+						{% endif %}
+							<td class="td">&pound;{{data.total|num_format(2)}}</td>
 						</tr>
 						{% set i = i + 1 %}
 					{% endfor %}
@@ -300,6 +315,52 @@
 			</div>
 
 		</div>
+		
+		<!-- 
+		<div class="dashboard-row">
+	
+		<div class="grid_8 alpha dashboard-element" style="height:250px;overflow:scroll;">
+		
+			<h2>Monthly Breakdown</h2>
+			
+			<div class="table-container">
+			
+				<table border="1">
+					<tbody>
+				{% if modules.dashboard_breakdowns %}
+					<th>Month</th>
+					<th>Visits</th>
+					<th>Retail</th>
+					<th>Trade</th>
+					<th>Total</th>
+				{% endif %}
+					{% set i = 1 %}
+					{% for years in monthly_visits %}
+					{% for month, data in years %}
+						<tr class="{{['', 'alternate']|cycle(i)}}">
+							<td><strong>{{month}} ({{data.year}})</strong></td>
+							<td class="td">{{data.visits}}
+  				{% if not modules.dashboard_breakdowns %}
+  				  - Visits</td>
+  				  <td class="td">{{data.orders}} - Orders
+  				{% endif %}
+							</td>
+						{% if modules.dashboard_breakdowns %}
+							<td class="td">&pound;{{data.retail_orders|num_format(2)}}</td>
+							<td class="td">&pound;{{data.commerical_orders|num_format(2)}}</td>
+						{% endif %}
+							<td class="td">&pound;{{data.total|num_format(2)}}</td>
+						</tr>
+						{% set i = i + 1 %}
+					{% endfor %}
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</div>
+
+		</div>
+   -->
 		
 		<div class="grid_8 omega dashboard-element">
 			<h2>Top Referring Sites <em>(last 30 days)</em></h2>

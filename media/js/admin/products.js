@@ -1,5 +1,32 @@
 $(function(){
 	
+	//quick search auto predict thing.
+    
+	$(".search").keyup(function(){
+      var searchbox = $(this).val();
+      var dataString = 'searchword='+ searchbox;
+      
+      if(searchbox!=''){
+        $.ajax({
+          type: "POST",
+          url: "/admin/products/quick_search",
+          data: dataString,
+          cache: false,
+          success: function(html){
+          if (html != ''){
+            $("#display").html(html).show();
+          }
+          	}
+        });
+      }
+      return false;    
+    });
+
+    jQuery(function($){
+       $("#searchbox").Watermark("Search");
+       });
+
+	
 	$('#bulk-update-prices').live('click', function(){
 	
 		var products = {};

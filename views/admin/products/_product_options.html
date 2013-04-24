@@ -14,9 +14,9 @@
 			<div class="grid_6 omega">
 			
 				<div class="option-container" id="option-container"  rel="{{option}}">
-				{% for key, value in product.get_option_values(option) %}
+				{% for key, value in product.get_admin_option_values(option) %}
 
-					<div class="product-option-row" id="{{key}}" data-id="{{key}}" rel="{{option}}">
+					<div class="product-option-row" id="{{key}}" data-id="{{value.id}}" rel="{{option}}">
 						<input type="radio" name="new_sku_options_{{option}}" class="new-sku-options" value="{{value.id}}" />
 						<input type="text" name="product_options[{{value.id}}][value]" value="{{value.value}}" class="inputtext short" />
 						<img src="/media/images/admin/ajax-loader.gif" alt="Loading…" id="remove-option-value-spinner-{{value.id}}"
@@ -26,7 +26,7 @@
 					</div>
 				{% endfor %}
 				</div>
-				{% for key, value in product.get_option_values(option) %}
+				{% for key, value in product.get_admin_option_values(option) %}
   				<input type="hidden" name="product_options[{{value.id}}][order]" class="input-list" value="{{key}}" rel="{{option}}">
 				{% endfor %}
 

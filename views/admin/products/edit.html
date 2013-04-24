@@ -2,8 +2,8 @@
 
 {% block custom_scripts %}
 	<script type="text/javascript" src="/media/js/admin/jquery.counter-1.0.min.js"></script>
-	<script type="text/javascript" src="/media/js/admin/products.js?v=2"></script>
-	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=3"></script>{% endif %}
+	<script type="text/javascript" src="/media/js/admin/products.js?v=5"></script>
+	{% if modules.product_options %}<script type="text/javascript" src="/media/js/admin/product_options.js?v=7"></script>{% endif %}
 {% endblock %}
 
 {% block page_title %}
@@ -54,32 +54,27 @@
 		<div class="clear"></div>
 	</div>
 	
-			<div class="field">
-		<div class="grid_2 alpha">
-			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
-		</div>
-		<div class="grid_14 omega">
-			<input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
-				{% if product.loaded and product.slug %} disabled {% endif %} />
-		</div>
-		<div class="clear"></div>
-	</div>
-	
-	<!--
 <div class="field">
 		<div class="grid_2 alpha">
 			<label for="product-slug" {{ errors.product.slug ? "class='error'" : "" }}>SEO Slug *</label>
 		</div>
 		<div class="grid_8 omega product-slug">
 		  <input type="text" id="product-slug" name="product[slug]" value="{{fields.product.slug}}" class="inputtext longest slug" 
-				readonly="readonly"/>
+				{% if product.loaded %}disabled="disabled"{% endif %}/>
+		 <span class="hidden" id="slug-exists" style="color:red">* This slug already exists</span>
 		</div>
-		<div class="grid_2">
-		  <button id="edit-slug">Edit SEO Slug</button>
+		<!--
+{% if product.loaded() %}
+		<div class="grid_3">
+		  <button id="edit-slug" data-id="{{product.id}}">Edit SEO Slug</button>
+		  <button id="save-slug" data-id="{{product.id}}" class="hidden">Save</button>
+		  <img src="/media/images/admin/ajax-loader.gif" alt="" id="slug-spinner" style="vertical-align:middle" class="hidden" />
+		  <img src="/media/images/icons/accept.png" alt="" id="slug-yes" style="vertical-align:middle" class="hidden" />
 		</div>
+		{% endif %}
+-->
 		<div class="clear"></div>
 	</div>
--->
 	
 	{% if product.loaded and product.slug %}
 	<div class="field">
@@ -87,7 +82,8 @@
 			<label>Public Page</label>
 		</div>
 		<div class="grid_14 omega">
-			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank">{% url "view_product", ["slug":product.slug] %}</a>
+			<a href="{% url "view_product", ["slug":product.slug] %}" target="_blank" id="pub-link">{% url "view_product", ["slug":product.slug] %}</a>
+			<span id="refresh" class="hidden">Please Refresh or Save to view the updated Public Page Link.</span>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -150,38 +146,7 @@
 		<div class="clear"></div>
 	</div>
 	{% endif %}
-	
-	{% if modules.related_products %}	
-	<div class="field">
-		<div class="grid_2 omega">
-			<label for="product-related">Related Products</label>
-		</div>
-		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
-		<div class="grid_5 omega">All Products
-			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
-			{% set this_product = product %}
-			{% for product in products %}
-			{% if (product in related_products) or (product.id == this_product.id) %}{% else %}
-				<option value="{{product.id}}">{{product.name|title}}</option>
-				{% endif %}
-			{% endfor %}
-			</select>
-		</div>
-			<div class="grid_1" style="margin-right:40px;">
-			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-related">>></button>
-			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-related"><<</button>
-			</div>
-		<div class="grid_5">Related Products
-      <select id="product-related" size="10" style="width:250px" name="product[related]">
-			{% for product in related_products %}
-				<option value="{{product.id}}">{{product.name|title}}</option>
-			{% endfor %}
-			</select>
-		</div>
-		<div class="clear"></div>
-	</div>
-	{% endif %}
-	
+
 	{% if not product.loaded %}
 	
 		<p>You must now <input type="submit" value="Save & Continue Editing" /> to set further options.</p>
@@ -196,6 +161,37 @@
 			{% endif %}
 		{% endif %}
 		{% include "admin/products/_sku_loop.html" %}
+		
+		{% if modules.related_products %}	
+	<div class="field">
+		<div class="grid_2 omega">
+			<label for="product-related">Related Products</label>
+		</div>
+		<div class="grid_1" id="product-id" data-id="{{product.id}}">&nbsp;</div>
+		<div class="grid_5 omega">All Products
+			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
+			{% set this_product = product %}
+			{% for product in products %}
+			{% if not(product in related_products) and (product.id != this_product.id) %}
+				<option value="{{product.id}}">{{product.name|title}}</option>
+				{% endif %}
+			{% endfor %}
+			</select>
+		</div>
+			<div class="grid_1" style="margin-right:40px;">
+			<button style="margin-left:10px;margin-top: 45px;vertical-align: top;" id="add-to-related">>></button>
+			<button style="margin-left:10px;margin-top: 5px;" id="remove-from-related"><<</button>
+			</div>
+		<div class="grid_5">Related Products
+      <select id="product-related" size="10" style="width:250px" name="product[related]">
+			{% for product in related_products %}
+				<option value="{{product.related.id}}">{{product.related.name|title}}</option>
+			{% endfor %}
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endif %}
 			
 		<h2>Meta Details</h2>
 		

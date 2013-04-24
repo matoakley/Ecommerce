@@ -1,14 +1,67 @@
+$(function(){
+    
+  //Page image upload 
   $(function(){
-    
-    
-        
+
+  	$('#page-image-upload').change(function(){
+  	
+  		var uploadButton = $(this);
+  	
+  		// Remove the current image and replace with a spinner
+  		$("#current-image").attr('src', '/media/images/admin/ajax-loader.gif');
+  		
+  		// If file upload has changed then do an async upload
+  		$('#upload-image-form').submit();
+  		
+  		// Check the iframe for the response
+  		$('#upload-image').load(function(){
+  			
+  			// Set the new image into the page
+  			var date = new Date().getTime();
+  			$("#current-image").attr('src', '/images/pages/'+uploadButton.attr('data-page-id')+'.jpg?'+date);
+  			
+  			// Reset the upload field
+  			$('#image-upload-field').val('');
+  		});
+  		
+  	});
+  	
+  });
+  
+  //Brand image upload
+  $(function(){
+
+  	$('#brand-image-upload').change(function(){
+  	
+  		var uploadButton = $(this);
+  	
+  		// Remove the current image and replace with a spinner
+  		$("#current-image").attr('src', '/media/images/admin/ajax-loader.gif');
+  		
+  		// If file upload has changed then do an async upload
+  		$('#upload-image-form').submit();
+  		
+  		// Check the iframe for the response
+  		$('#upload-image').load(function(){
+  			
+  			// Set the new image into the page
+  			var date = new Date().getTime();
+  			$("#current-image").attr('src', '/images/brands/'+uploadButton.attr('data-brand-id')+'.jpg?'+date);
+  			
+  			// Reset the upload field
+  			$('#image-upload-field').val('');
+  		});
+  		
+  	});
+  	
+  });
+ 
     $('#defaultDelivery').live('click', function(e){
       e.preventDefault();
       var defaultDelivery = $('#default-delivery').val();
 	
 		var data = {
-			default: defaultDelivery,
-		};
+			default: defaultDelivery};
 	console.log(data);
 		$.ajax({
 		
@@ -18,7 +71,7 @@
 			beforeSend: function(){
 			$('#tick-delivery').hide();
   		$('#waiting-delivery').show();
-  		$('#error-delivery').hide();
+  		$('#error-delivery').show();
 			},
 			success: function(){
 			$('#waiting-delivery').hide();
@@ -44,29 +97,52 @@
 						$(".row-selector").filter(':checked').each(function(){
 				
   						items[i] = $(this).val();
-  						i++;
-  				
-	
-  				var data = {
+  						i++;    				
+    				})
+    				
+    var data = {
     				items: items,
     				type: $('#type').text(),
-    				
-    				}
+    		}
 
 		$.ajax({
 		
 			url: '/admin/tools/bulk_delete',
 			type: 'POST',
 			data: data,
+			beforeSend: function(){
+  			console.log(items);
+			},
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
+    				  }
     				});
-    		   };
-    		  }
-    		})
-	     });
+    		  };
+    		}
+    else {
+      if ($(this).val() == 'print_invoices'){
+    		e.preventDefault();    		
+    		var items = [];
+      						var i = 0;
+    		
+    						$(".row-selector").filter(':checked').each(function(){
+    				
+      						items = items + '/'+$(this).val();
+      						i++;    				
+        				})
+
+    		var url = "/admin/sales_orders/bulk_print"+items;
+    		var print = $('a#bulk-print');
+    		
+    		$(function(){
+      		print.attr('href', url);
+          window.location.href = url;
+    		})    		
+          
+        		}
+    }
+    
+    });
 	     
 	 $('#bulk-actions').change(function(e){
 		var status = $(this).val();
@@ -85,6 +161,7 @@
 				
   						items[i] = $(this).val();
   						i++;
+  				})
   				
 	
   				var data = {
@@ -100,12 +177,12 @@
 			data: data,
 			success: function(response){
 			  window.location.reload();
-    				 }
-    				 });
-    				});
-    		   };
-    		  }
-    		});
+    				    }
+    				 })
+    				}
+      		}
+      });
+    				
   
   $('#add-to-related').click(function(e){
     e.preventDefault();
@@ -716,6 +793,13 @@
 				$('span#sales-order-vat').html(calculateSalesOrderVat());
 				// Disable the sku in the select to avoid duplicate rows
 				$('select#new-sales-order-item').find('option[data-sku-id="'+response.sku.id+'"]').attr('disabled', 'disabled');
+				$('.datepicker').datepicker({
+      		constrainInput: true,
+      		dateFormat: 'dd/mm/yy',
+      		firstDay: 1,
+      		numberOfMonths: 1,
+      		selectOtherMonths: true
+      	})
 			},
 			complete: function(){
 				select.val('');
@@ -1649,3 +1733,5 @@ jQuery.fn.slugify = function(obj) {
       obj.val(slug);
   });
 }
+
+});

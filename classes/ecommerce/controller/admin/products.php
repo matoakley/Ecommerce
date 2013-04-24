@@ -239,6 +239,7 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		    
 		$this->template->product = $product;
 		$this->template->statuses = Model_Product::$statuses;
+		//$this->template->types = Model_Product::$types;
 		$this->template->inputs = Model_Product::$inputs;
 		$this->template->sku_statuses = Model_Sku::$statuses;
 		$this->template->brands = Model_Brand::list_all();
@@ -445,6 +446,43 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		}
 		
 		Model_Sku::load($_POST['sku_id'])->delete();
+	}
+	
+	public function action_change_slug()
+	{
+	 if ($_POST)
+	   {
+	     $slug_exists = Jelly::select('product')->where('slug', '=', $_POST['slug'])->where('id', '<>', $_POST['id'])->load();
+	     
+  	   $product = Model_Product::load($_POST['id']);
+  	     
+  	     if ($product->loaded() AND !$slug_exists->loaded())
+  	       {
+    	       $product->slug = isset($_POST['slug']) ? $_POST['slug'] : $product->slug;
+    	       echo json_encode($product->slug);
+  	       }
+  	     else 
+  	       {
+  	         echo json_encode('Error');
+  	       }
+  	       
+  	   $product->save();
+	   }
+	 }
+	 
+	 public function action_list_order()
+	{
+  	$this->auto_render = FALSE;
+  	
+  	if ($_POST)
+  	 {
+  	   foreach ($_POST as $option_id => $position)
+  	     {
+    	       $product_option = Model_Product_Option::load($option_id);
+    	       $product_option->list_order = $position;
+    	       $product_option->save(); 
+  	     }
+  	 }
 	}
 	
 }

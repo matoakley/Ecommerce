@@ -26,6 +26,8 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 			throw new Kohana_Exception('Page not found');
 		}
 		$this->template->page = $page;
+		$this->template->meta_description = $page->meta_description;
+		$this->template->meta_keywords = $page->meta_keywords;
 	
 		// build breadcrumb
 		if ($page->parent->loaded())

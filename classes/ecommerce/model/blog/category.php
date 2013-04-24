@@ -74,8 +74,9 @@ class Ecommerce_Model_Blog_Category extends Model_Application
 		{
 			$tree->where('status', '=', 'active');
 		}
-						
-		$tree = $tree->order_by('order')->execute()->as_array();
+		
+		//sort by created desc unless order is specified
+		$tree = $tree->order_by('order', 'ASC')->order_by('created', 'DESC')->execute()->as_array();
 		
 		foreach ($tree as $key => $values)
 		{

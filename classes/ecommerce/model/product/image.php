@@ -125,7 +125,8 @@ class Ecommerce_Model_Product_Image extends Model_Application
 	
 	private function get_filepath($type = 'full_size')
 	{
-		return '/images/products/' . $type . '/'. date('Y/m/', $this->created) . $this->id . '.jpg';
+		return '/images/products/' . $type . '/'. date('Y/m/', $this->created) . $this->id . Kohana::config('ecommerce.product_image_format');
+
 	}
 	
 	public function update($data)

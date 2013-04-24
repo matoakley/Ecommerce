@@ -137,7 +137,7 @@ $(function(){
 	$('.item-quantity').attr('readonly', 'readonly').addClass('disabled');
 	
 	// Add the promotion code over AJAX
-	$('#add-promotion-code').live('click', function(e){
+	$('#add-promotion-code').on('click', function(e){
 		
 		e.preventDefault();
 		
@@ -196,7 +196,7 @@ $(function(){
 		
 	});
 	
-	$('#remove-promotion-code').live('click', function(e){
+	$('#remove-promotion-code').on('click', function(e){
 		
 		e.preventDefault();
 		
@@ -241,7 +241,7 @@ $(function(){
 		});
 	}
 	
-	$('#use_reward_points').live('click', function(e){
+	$('#use_reward_points').on('click', function(e){
   	var use_reward_points = $(this).is(':checked');
   	$.ajax({
 			url: '/basket/use_reward_points',
@@ -261,7 +261,7 @@ $(function(){
 	  });
 	});
 	
-	$('button#add-referral-code').live('click', function(e){
+	$('button#add-referral-code').on('click', function(e){
   	e.preventDefault();
   	var code = $('#box-add-referral-code').val();
   	$.ajax({
