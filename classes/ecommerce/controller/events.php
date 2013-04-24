@@ -10,9 +10,8 @@ class Ecommerce_Controller_Events extends Controller_Application
 		}
 	
 		parent::before();
-		
-		//moved to index
-		//$this->add_breadcrumb(URL::site(Route::get('events')->uri()), 'Events');
+
+		$this->add_breadcrumb(URL::site(Route::get('events')->uri()), 'Events');
 	}
 	
 		public function action_index()
