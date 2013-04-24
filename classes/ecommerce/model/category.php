@@ -84,13 +84,7 @@ class Ecommerce_Model_Category extends Model_Application
 			$tree[$key]['children'] = Model_Category::build_category_tree($values['id'], $active_only);
 			$tree[$key]['num_products'] = count(Jelly::select('category', $values['id'])->products);
 			$tree[$key]['thumbnail'] = Model_Category::get_static_thumbnail_path($values['id']);
-			$tree[$key]['products'] = Jelly::select('product')
-                                 ->join('categories_products')
-                    		         ->on('products.id', '=', 'product_id')
-                                 ->join('categories')
-                    		         ->on('categories_products.category_id', '=', 'category.id')
-                    		         ->where('categories.id', '=', $values['id'])
-                    		         ->execute()->as_array();
+			$tree[$key]['products'] = Jelly::select('category', $values['id'])->products;
 		}
 		
 		return $tree;
