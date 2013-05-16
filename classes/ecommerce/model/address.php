@@ -236,6 +236,14 @@ class Ecommerce_Model_Address extends Model_Application
 		{
 		  $this->name = $data['name'];
 		}
+		if (isset($data['longitude']))
+		{
+		  $this->longitude = $data['longitude'];
+		}
+		if (isset($data['latitude']))
+		{
+		  $this->latitude = $data['latitude'];
+		}
 		if (isset($data['address']))
 		{
     $address = explode(", ", $_POST['address']);

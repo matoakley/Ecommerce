@@ -12,7 +12,7 @@ class Ecommerce_Model_Related_Product extends Model_Application
 					'foreign' => 'product.id',
 					'column' => 'product_id',
 				)),
-				'related_id' => new Field_BelongsTo(array(
+				'related' => new Field_BelongsTo(array(
 					'foreign' => 'product.id',
 					'column' => 'related_id',
 				)),
@@ -38,18 +38,19 @@ class Ecommerce_Model_Related_Product extends Model_Application
 		$related_product = Jelly::factory('related_product');
 		
 		$related_product->product = $product;
-		$related_product->related_id = $related;
+		$related_product->related = $related;
 		
 		$related_product->save();
 	}
 	
 	public static function remove_from_related_products($product_id, $related_id)
 	{
-	  $related_product = Jelly::select('related_product')->where('product_id', '=', $product_id)->where('related_id', '=', $related_id)->load();
+	  $related_product = Jelly::select('related_product')->where('product_id', '=', $product_id)->where('related', '=', $related_id)->load();
 	  
 		$related_product->delete();
 	}
 	
+	//legacy shouldnt be used anymore use ORM ->related_products instead.
 	public static function get_related_products($product_id)
 	{
   	$related_product_items = Jelly::select('related_product')->where('product_id', '=', $product_id)->execute();
@@ -59,11 +60,10 @@ class Ecommerce_Model_Related_Product extends Model_Application
   //for each of them load the model             
   foreach ($related_product_items->as_array() as $key => $id)
     {
-      $related_products[$key] = Jelly::select('product')->where('id', '=', intval($id['related_id']))->load();
+      $related_products = Jelly::select('product')->where('id', '=', intval($id['related']))->load();
       
-    }
-
-      return $related_products;
+    }   
+    return $related_product_items;
 	}
 	
 }

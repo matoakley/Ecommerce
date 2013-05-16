@@ -263,6 +263,7 @@ class Ecommerce_Controller_Admin_Sales_Orders extends Controller_Admin_Applicati
 		
 		$this->template->default_vat = Kohana::config('ecommerce.vat_rate');
 	}
+
 	
 	public function action_add_sales_order_line()
 	{	

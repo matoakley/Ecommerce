@@ -372,13 +372,32 @@ class Ecommerce_Model_Product extends Model_Application
 		return array_values(array_unique($options));
 	}
 	
-	public function get_option_values($option_name)
+	public function get_admin_option_values($option_name)
 	{
 		return Jelly::select('product_option')
 							->where('product_id', '=', $this->id)
 							->where('key', '=', $option_name)
-							->order_by('value', 'DESC')
+							->order_by('list_order', 'ASC')
 							->execute();
+	}
+	
+	public function get_option_values($option_name)
+	{
+		$options =  Jelly::select('product_option')
+		          ->distinct(true)
+							->join('product_options_skus')
+							->on('product_option_id', '=', 'product_option.id')
+							->join('skus')
+							->on('sku_id', '=', 'skus.id')
+							->where('product_options.product_id', '=', $this->id)
+							->where('key', '=', $option_name)
+							->where('sku.status', '=', 'active')
+							->where('sku.deleted', '=', NULL)
+							->where('product_option.deleted', '=', NULL)
+							->order_by('list_order', 'ASC')
+							->execute();
+		
+		return $options;
 	}
 	
 	public function get_product_reviews($items, $offset = NULL, $order = 'created', $direction = 'ASC')
@@ -472,5 +491,34 @@ class Ecommerce_Model_Product extends Model_Application
 		$bundle->remove('bundle_items', $sku_id);
 		$bundle->save();
 	}
-
+	
+	// Override standard delete to handle orphaned related product
+	public function delete($key = FALSE)
+	{	
+	  //go through and delete all related products	
+		foreach ($this->related_products as $related)
+		{
+  		$related->delete();
+		}
+		
+		//go through and delete all skus
+		foreach ($this->skus as $sku)
+		{
+  		$sku->delete();
+		}
+		
+		//go through and delete all product options
+		foreach ($this->product_options as $option)
+		{
+  		$option->delete();
+		}
+		
+		//go through and delete all images
+		foreach ($this->images as $image)
+		{
+  		$image->delete();
+		}
+		
+		parent::delete($key);
+	}
 }

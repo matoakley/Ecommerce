@@ -152,6 +152,17 @@
 <h2>Order Details</h2>
 
 {% if sales_order.type == "commercial" %}
+  {% if modules.admin_online_pay %}
+    {% if sales_order.status != "complete" %}
+    
+    <form action="{% url "admin_confirm", ["id": sales_order.id] %}" method="post">
+      <input type="hidden" name="amount" class="inputtext shortest" value="{{sales_order.order_total}}">
+      <button style="float:right;">Pay Online</button>
+    </form>
+  
+    {% endif %}
+  {% endif %}
+  
 	{% include "admin/sales/orders/_view_commercial_order_details.html" %}
 {% else %}
 	{% include "admin/sales/orders/_view_retail_order_details.html" %}

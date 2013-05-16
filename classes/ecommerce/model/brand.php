@@ -27,6 +27,9 @@ class Ecommerce_Model_Brand extends Model_Application
 				'thumbnail' => new Field_String(array(
 					'in_db' => FALSE,
 				)),
+				'featured_image' => new Field_String(array(
+          'in_db' => FALSE,
+        )),
 				'products' => new Field_HasMany(array(
 					'foreign' => 'product.brand_id',
 				)),
@@ -61,7 +64,21 @@ class Ecommerce_Model_Brand extends Model_Application
 	public static $statuses = array(
 		'active', 'disabled'
 	);
+	
+	public function __get($field)
+  {
+    if ($field == 'featured_image')
+    {
+      return $this->get_featured_image();
+    }
+    elseif ($field == 'thumbnail')
+		{
+			return $this->get_thumbnail_path($this->id);
+		}
 
+    return parent::__get($field);
+  }
+	
 	public static function list_all()
 	{
 		return Jelly::select('brand')->order_by('name')->execute();
@@ -119,16 +136,6 @@ class Ecommerce_Model_Brand extends Model_Application
 		return $path;
 	}
 	
-	public function __get($name)
-	{
-		if ($name == 'thumbnail')
-		{
-			return $this->get_thumbnail_path($this->id);
-		}
-		
-		return parent::__get($name);
-	}
-	
 	public function update($data)
 	{		
 		$this->set($data);
@@ -142,5 +149,47 @@ class Ecommerce_Model_Brand extends Model_Application
 		
 		return $this;
 	}
+	
+	public function get_featured_image()
+	{
+		$file_path = '/images/brands/' . $this->id . '.jpg';
+		
+		if ( ! file_exists(DOCROOT . $file_path))
+		{
+			$file_path = '/images/brands/default.jpg';
+		}
+		
+		return $file_path;
+	}
 
+	public function upload_image($tmp_file)
+	{
+		// Let's get to work on resizing this image
+		$image = Image::factory($tmp_file);
+		
+		// Full Size first
+		$image_size = Kohana::config('ecommerce.blog_image_sizing');
+		if ($image_size['width'] > 0 AND $image_size['height'] > 0)
+		{
+			$image->resize($image_size['width'], $image_size['height'], Image::INVERSE);
+			// Crop it for good measure
+			$image->crop($image_size['width'], $image_size['height']);
+		}
+		elseif ($image_size['width'] == 0)
+		{
+			$image->resize(NULL, $image_size['height']);
+		}
+		else
+		{
+			$image->resize($image_size['width'], NULL);
+		}
+		
+		$directory = DOCROOT . 'images/brands';
+		if ( ! is_dir($directory))
+		{
+			mkdir($directory);
+		}
+		
+		$image->save($directory . DIRECTORY_SEPARATOR . $this->id . '.jpg');
+	}
 }
