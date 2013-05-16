@@ -88,4 +88,14 @@ class Ecommerce_Controller_Admin_Price_Tiers extends Controller_Admin_Applicatio
 		
 		$this->template->tier = $tier;
 	}
+	
+	public function action_delete()
+	{
+	  $this->auto_render = FALSE;
+	  
+	  $price_tier = Model_Price_Tier::load();
+    $price_tier->delete($this->request->param('id'));
+    
+    $this->request->redirect('/admin/price_tiers/');
+	}
 }
