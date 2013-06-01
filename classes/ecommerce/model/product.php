@@ -501,6 +501,14 @@ class Ecommerce_Model_Product extends Model_Application
   		$related->delete();
 		}
 		
+		//if this product is deleted we need to delete all the related products
+		// that this product belongs to to avoid the slug error.
+		$products_related = Jelly::select('related_product')->where('related_id', '=', $this->id)->execute();
+		foreach ($products_related as $related)
+		{
+  		$related->delete();
+		}
+		
 		//go through and delete all skus
 		foreach ($this->skus as $sku)
 		{
