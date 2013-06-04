@@ -20,3 +20,7 @@ else
 {
 	require MODPATH.'ecommerce/routes_trade'.EXT;
 }
+
+Kohana::modules($modules + array(
+    'aacl'      => MODPATH.'aacl',      
+));
