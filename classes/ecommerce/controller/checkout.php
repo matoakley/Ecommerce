@@ -34,7 +34,6 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 		
 		// If the customer is logged in we should attempt to 
 		// auto fill some of the fields
-		
 		if ($this->auth->logged_in('customer') AND $this->auth->get_user()->customer != NULL)
 		{
 			$this->template->customer = $this->auth->get_user()->customer;

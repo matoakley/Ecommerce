@@ -10,7 +10,7 @@ class Ecommerce_Controller_Events extends Controller_Application
 		}
 	
 		parent::before();
-		
+
 		$this->add_breadcrumb(URL::site(Route::get('events')->uri()), 'Events');
 	}
 	
@@ -60,7 +60,6 @@ class Ecommerce_Controller_Events extends Controller_Application
 		
 		$this->template->tabs = $tabs;
 		$this->template->current_tab = $month;
-
 		
 		}	
 

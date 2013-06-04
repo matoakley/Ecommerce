@@ -46,7 +46,7 @@ abstract class Ecommerce_Controller_Trade_Application extends Controller_Templat
 		$this->modules = Kohana::config('ecommerce.modules');
 		
 		// Users must be logged in to trade area
-		if ( ! $this->auth->logged_in('trade_area') AND ! in_array(Route::name($this->request->route), array('sign_in', 'sign_up', 'sign_up_received')))
+		if ( ! $this->auth->logged_in('trade_area') AND ! in_array(Route::name($this->request->route), array('sign_in', 'sign_up', 'sign_up_received')) AND $this->request->uri != 'users/trade_forgotten_password')
 		{
 			$this->session->set('redirected_from', $this->request->uri());
 			$this->request->redirect(Route::get('sign_in')->uri());

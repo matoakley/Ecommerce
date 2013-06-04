@@ -215,4 +215,66 @@ class Ecommerce_Controller_Trade_Users extends Controller_Trade_Application
 		$this->template->sales_order = Model_Sales_Order::load($this->request->param('id'));
 	}
 	
+	public function action_trade_forgotten_password()
+	{
+	 // If user is already logged in then send them to the trade homepage
+		if ($this->auth->logged_in('trade'))
+		{
+			$this->request->redirect(Route::get('default')->uri());
+		}
+		
+		if ($hash = $this->request->param('reset_hash') AND $email = $this->request->param('email'))
+		{
+			// Check if email address and hash match our records
+			if ($user = Model_Customer::validate_password_reset($email, $hash))
+			{
+				$this->template->valid_params = TRUE;
+				
+				if ($_POST)
+				{
+					// Reset the password!
+					try
+					{
+						$user->change_password($_POST['new_password']);
+						$this->auth->login($email, $_POST['new_password']);
+						$this->request->redirect(Route::get('default')->uri());
+					}
+					catch (Validate_Exception $e)
+					{
+						$this->template->invalid_password = TRUE;
+					}
+				}
+			}	
+			else
+			{
+				$this->template->invalid_params = TRUE;	
+			}	
+		
+			// Show form allowing user to reset password
+			
+			
+			// If POSTed then process the reset
+		}
+		elseif ( ! $this->request->param())
+		{
+			if ($_POST)
+			{
+				try
+				{
+					Model_Customer::send_trade_forgotten_password_email($_POST['email']);
+					$this->template->email_sent = TRUE;
+					$this->template->email = $_POST['email'];
+				}
+				catch (Kohana_Exception $e)
+				{
+					$this->template->login_failed = TRUE;
+					$this->template->email = $_POST['email'];
+				}
+			}
+		}
+		
+		$this->add_breadcrumb(URL::site(Route::get('default')->uri()), 'Home');
+		$this->add_breadcrumb(URL::site(Route::get('trade_customer_reset_password')->uri()), 'Forgotten Password');		
+	}
+	
 }

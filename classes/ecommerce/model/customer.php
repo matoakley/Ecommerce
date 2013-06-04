@@ -557,7 +557,8 @@ class Ecommerce_Model_Customer extends Model_Application
 	// Helper method as customer is cached when logged in
 	public function get_reward_points()
 	{
-  	return $this->reward_points;
+  	$customer = Jelly::select('customer')->where('id', '=', $this->id)->load();
+  	return $customer->reward_points;
 	}
 	
 	public static function send_email_verification($user)
