@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-abstract class Ecommerce_Controller_Admin_Application extends Controller_Template_Twig
+abstract class Ecommerce_Controller_Admin_Application extends Controller_AACL
 {
 	public $environment = 'production';
 
