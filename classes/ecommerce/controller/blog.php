@@ -49,6 +49,10 @@ class Ecommerce_Controller_Blog extends Controller_Application {
 			throw new Kohana_Exception('The blog post that you are searching for could not be found.');
 		}
 		
+		//add counter
+		$blog_post->counter += 1;
+		$blog_post->save();
+		
 		$this->template->blog_post = $blog_post;
 		
 		if ($this->modules['blog_categories'])

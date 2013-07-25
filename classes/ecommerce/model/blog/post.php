@@ -38,6 +38,7 @@ class Ecommerce_Model_Blog_Post extends Model_Application
 				'deleted' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'counter' => new Field_Integer,
 			));
 	}
 
