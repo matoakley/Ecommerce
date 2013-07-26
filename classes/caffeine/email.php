@@ -11,7 +11,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Caffeine_Email extends class Email{
+class Caffeine_Email extends Email{
 
   //THIS WAS OVEWRITTEN BECAUSE THE ORIGINAL AUTH IS A COCK AND WE COULDN'T DO IT ANOTHER WAY.//
 
