@@ -83,7 +83,10 @@ class Caffeine_Email extends Email{
 		{
 			// From with a name
 			$message->setFrom($from);
-			$message->setReturnPath($from);
+			
+			//if its an array we need the address
+			$from_email = array_keys($from);
+			$message->setReturnPath($from_email[0]);
 		}
 
 		return Email::$mail->send($message);
