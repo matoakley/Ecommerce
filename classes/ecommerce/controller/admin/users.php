@@ -71,6 +71,7 @@ class Ecommerce_Controller_Admin_Users extends Controller_Admin_Application {
 		}
 		
 		$this->template->user = $user;
+		$this->template->user_roles = $user->roles->as_array('id', 'id');
 		$this->template->roles = Model_Role::list_all();
 	}
 	

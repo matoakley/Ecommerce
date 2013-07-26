@@ -175,7 +175,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	public static function send_forgotten_password_email($email_address)
 	{
 		// Send an email to user with a key (maybe use hashed password?)
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('emails/forgotten_password.html');
 		
@@ -195,13 +195,13 @@ class Ecommerce_Model_Customer extends Model_Application
 			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 	
 	public static function send_forgotten_trade_password_email($email_address)
 	{
 		// Send an email to user with a key (maybe use hashed password?)
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('emails/trade_password_reset.html');
 		
@@ -221,7 +221,7 @@ class Ecommerce_Model_Customer extends Model_Application
 			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 	
 	public static function validate_password_reset($email, $hash)
@@ -447,7 +447,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	 */
 	public function email_trade_sign_up_confirmation()
 	{
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('emails/trade_sign_up_received.html');
 		$message->customer = $this;
@@ -458,7 +458,7 @@ class Ecommerce_Model_Customer extends Model_Application
 			'to' => array($this->user->email, $this->firstname . ' ' . $this->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Trade account sign up for '.Kohana::config('ecommerce.site_name').' received', $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Trade account sign up for '.Kohana::config('ecommerce.site_name').' received', $message, true);
 	}
 	
 	public function update()
@@ -564,7 +564,7 @@ class Ecommerce_Model_Customer extends Model_Application
 	public static function send_email_verification($user)
 	{
 		// Send an email to user with a key (maybe use hashed password?)
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('customers/email_verification.html');
 		
@@ -580,13 +580,13 @@ class Ecommerce_Model_Customer extends Model_Application
 			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Email Verification link from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 	
 		public static function send_trade_forgotten_password_email($email_address)
 	{
 		// Send an email to user with a key (maybe use hashed password?)
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('emails/forgotten_password.html');
 		
@@ -606,7 +606,7 @@ class Ecommerce_Model_Customer extends Model_Application
 			'to' => array($user->email, $user->customer->firstname . ' ' . $user->customer->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Password reset request from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 
 }

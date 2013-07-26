@@ -14,7 +14,7 @@ class Ecommerce_Controller_Events extends Controller_Application
 		$this->add_breadcrumb(URL::site(Route::get('events')->uri()), 'Events');
 	}
 	
-		public function action_index()
+  public function action_index()
 	{
 		$month = $this->request->param('month', date('m'));
 		
@@ -74,6 +74,5 @@ class Ecommerce_Controller_Events extends Controller_Application
 		$this->template->event = $event;
 		
 		$this->add_breadcrumb('/event', 'Current Event');
-}
-
+  }
 }

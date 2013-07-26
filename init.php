@@ -20,7 +20,7 @@ else
 {
 	require MODPATH.'ecommerce/routes_trade'.EXT;
 }
-
+//enabled the aacl module for permissions based on user roles.
 Kohana::modules($modules + array(
     'aacl'      => MODPATH.'aacl',      
 ));

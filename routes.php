@@ -231,6 +231,12 @@ Route::set('events_index', 'events(/month/<month>)')->defaults(array(
 	'action' => 'index',
 ));
 
+Route::set('events_index_admin', 'admin/events(/month/<month>)')->defaults(array(
+  'directory' => 'admin',
+	'controller' => 'events',
+	'action' => 'index',
+));
+
 Route::set('forum_post_new', 'forums/<category_slug>/new')->defaults(array(
 	'controller' => 'forums',
 	'action' => 'new_post',

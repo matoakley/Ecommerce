@@ -25,6 +25,7 @@ class Ecommerce_Model_Event extends Model_Application
 				'start_date' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'event_type' => new Field_String,
 				'address' => new Field_BelongsTo,
 				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
@@ -42,6 +43,14 @@ class Ecommerce_Model_Event extends Model_Application
 	}
 	public static $statuses = array(
 		'active', 'disabled'
+	);
+	
+	public static $types = array(
+		'Staff Holiday' => '#F5AC5F',
+		'Other' => '#74E4AE',
+		'Booking' => '#49AD2C',
+		'Payment' => '#5268EF',
+		'Viewing' => '#F47467',
 	);
 
 	public static $searchable_fields = array(
@@ -104,41 +113,44 @@ class Ecommerce_Model_Event extends Model_Application
 	
 	public function update($data)
 	{	
-  	   $errors = array();
-			if (isset($_POST['event']))
-			{
-				try
-				{
-					//event_validator($_POST['event']);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['event'] = $e->array->errors();
-				}
-		
-
-		$this->name = $data['name'];
-		if (isset($data['slug']))
-		{
-			$this->slug = $data['slug'];
-		}
-		if (isset($data['status']))
-		{
-		$this->status = $data['status'];
-		}
-		$this->address = $data['address'];
-		$this->start_date = $data['start_date'];
-		$this->end_date = $data['end_date'];
-		$this->description = $data['description'];
-		$this->save();
-		
-		// Ping sitemap to search engines to alert them of content change
-		if (IN_PRODUCTION AND $this->status == 'active')
-		{
-			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
-		}
-		
-		return $this;
-	}
+    $errors = array();
+    
+    if (isset($_POST['event']))
+    {
+      try
+      {
+        //event_validator($_POST['event']);
+      }
+      catch (Validate_Exception $e)
+      {
+        $errors['event'] = $e->array->errors();
+      }
+      
+    $this->name = $data['name'];
+    
+    if (isset($data['slug']))
+    {
+      $this->slug = $data['slug'];
+    }
+    
+    if (isset($data['status']))
+    {
+      $this->status = $data['status'];
+    }
+    
+    $this->address = $data['address'];
+    $this->start_date = $data['start_date'];
+    $this->end_date = $data['end_date'];
+    $this->description = $data['description'];
+    $this->save();
+    
+    // Ping sitemap to search engines to alert them of content change
+    if (IN_PRODUCTION AND $this->status == 'active')
+    {
+      Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+    }
+    
+    return $this;
+   }
  }
 }
