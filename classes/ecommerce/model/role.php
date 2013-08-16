@@ -70,7 +70,7 @@ class Ecommerce_Model_Role extends Model_Auth_Role
 	//a helper to find the rules applied to this role.
 	public function roles_rules()
 	{
-  	return Jelly::select('aacl_rule')->where('role', '=', $this->id)->execute();
+  	return Jelly::select('aacl_rule')->where('role', '=', $this->id)->where('deleted', '=', NULL)->execute();
 	}
 	
 	public function match_rule($resource = NULL, $action = NULL, $condition = NULL)
@@ -78,7 +78,7 @@ class Ecommerce_Model_Role extends Model_Auth_Role
 	  //get the rules for this role
   	$roles_rules = $this->roles_rules();
   	$result = FALSE;
-    
+
     //find the one that matches this rule and return true.
   	foreach ($roles_rules as $rule)
   	{
@@ -93,7 +93,7 @@ class Ecommerce_Model_Role extends Model_Auth_Role
         	$result = FALSE;
       	}
     	}
-    	if ($action != NULL)
+    	if ($action != NULL && $result == TRUE)
     	{
         if($action == $rule->action)
       	{
@@ -104,7 +104,7 @@ class Ecommerce_Model_Role extends Model_Auth_Role
         	$result = FALSE;
       	}
     	}
-    	if ($condition != NULL)
+    	if ($condition != NULL && $action == TRUE)
     	{
         if($condition == $rule->condition)
       	{
