@@ -112,10 +112,12 @@ class Ecommerce_Model_Application extends Jelly_Model
 	{
 		$data = array();
 		
-		$query_string = (isset($_GET['q'])) ? explode(' ', $_GET['q']) : array();
-		
+		//see if the query string is a definitive phrase;
+		//if phrase, use the phrase as 0 in array, otherwise split it up.
+		$query_string = (isset($_GET['q'])) ? preg_match('#^(\'|").+\1$#', $_GET['q']) == 1 ? array(str_replace(array('"',"'"), '', $_GET['q'])) : explode(' ', $_GET['q']) : array();
+    
 		$query_string = array_merge($query_string, $conditions);
-		
+
 		$class = get_called_class();
 		
 		$results = Jelly::select($class);
@@ -164,7 +166,7 @@ class Ecommerce_Model_Application extends Jelly_Model
 			}
 			$results->and_where_close();
 		}
-		
+
 		// Implement the filters based on rules in the Model.
 		foreach ($filters as $field => $value)
 		{
