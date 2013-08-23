@@ -1,0 +1,1 @@
+ALTER TABLE `blog_posts` ADD COLUMN `counter` int(11) DEFAULT '0';

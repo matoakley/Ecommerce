@@ -193,7 +193,7 @@ $(function(){
     var data = {product_id: originalProduct, related_id: product};
     console.log(originalProduct);
     $.ajax({   
-				url: '/admin/related_products/add_to_related_products',
+				url: '/admin/products/add_to_related_products',
 				type: 'POST',
 				data: data,
 				dataType: 'json',
@@ -218,7 +218,7 @@ $(function(){
     var data = {product_id: originalProduct, related_id: product};
     
     $.ajax({   
-				url: '/admin/related_products/remove_from_related_products',
+				url: '/admin/products/remove_from_related_products',
 				type: 'POST',
 				data: data,
 				dataType: 'json',
@@ -233,6 +233,7 @@ $(function(){
     console.log(product, productOption);
     
   })
+
   
    $('#add-to-bundle').click(function(e){
     e.preventDefault();

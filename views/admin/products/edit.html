@@ -172,7 +172,7 @@
 			<select id="product-unrelated" size="10" style="width:250px" name="product[related]">
 			{% set this_product = product %}
 			{% for product in products %}
-			{% if not(product in related_products) and (product.id != this_product.id) %}
+			{% if (product in product.related_products) or (product.id == this_product.id) %}{% else %}
 				<option value="{{product.id}}">{{product.name|title}}</option>
 				{% endif %}
 			{% endfor %}
@@ -184,8 +184,8 @@
 			</div>
 		<div class="grid_5">Related Products
       <select id="product-related" size="10" style="width:250px" name="product[related]">
-			{% for product in related_products %}
-				<option value="{{product.related.id}}">{{product.related.name|title}}</option>
+			{% for related_product in product.related_products %}
+				<option value="{{related_product.id}}">{{related_product.name|title}}</option>
 			{% endfor %}
 			</select>
 		</div>

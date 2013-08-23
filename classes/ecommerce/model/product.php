@@ -73,8 +73,12 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				'related_products' => new Field_HasMany(array(
-					'foreign' => 'related_product.product_id',
+				'related_products' => new Field_ManyToMany(array(
+					'foreign' => 'product',
+					'through' => array(
+                    'model'   => 'related_products_products',
+                    'columns' => array('related_product_id', 'product_id'),
+                ),
 				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
@@ -494,21 +498,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	// Override standard delete to handle orphaned related product
 	public function delete($key = FALSE)
-	{	
-	  //go through and delete all related products	
-		foreach ($this->related_products as $related)
-		{
-  		$related->delete();
-		}
-		
-		//if this product is deleted we need to delete all the related products
-		// that this product belongs to to avoid the slug error.
-		$products_related = Jelly::select('related_product')->where('related_id', '=', $this->id)->execute();
-		foreach ($products_related as $related)
-		{
-  		$related->delete();
-		}
-		
+	{			
 		//go through and delete all skus
 		foreach ($this->skus as $sku)
 		{
@@ -528,5 +518,17 @@ class Ecommerce_Model_Product extends Model_Application
 		}
 		
 		parent::delete($key);
+	}
+	
+	public function add_to_related_products($data)
+	{
+  	$this->add('related_products', array($data));
+  	$this->save();
+	}
+	
+	public function remove_from_related_products($data)
+	{
+  	$this->remove('related_products', array($data));
+  	$this->save();
 	}
 }

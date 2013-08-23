@@ -233,7 +233,6 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
 		
 		  if (Caffeine::modules('related_products'))
 		    {
-  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
   		    $this->template->products = Model_Product::list_all();
 		    }
 		    
@@ -483,6 +482,39 @@ class Ecommerce_Controller_Admin_Products extends Controller_Admin_Application
     	       $product_option->save(); 
   	     }
   	 }
+	}
+	
+	public function action_add_to_related_products()
+	{	
+		$this->auto_render = FALSE;
+		
+		$product = Model_Product::load($_POST['product_id']);
+		$product->add_to_related_products($_POST['related_id']);
+		
+		if (! $product) 
+		  {
+  		  return json_encode('error');
+		  }
+		else 
+		  {
+  		  return json_encode('success');
+		  }
+	}
+	
+	public function action_remove_from_related_products()
+	{	
+		$this->auto_render = FALSE;
+		$product = Model_Product::load($_POST['product_id']);
+		$product->remove_from_related_products($_POST['related_id']);
+		
+		if (! $product) 
+		  {
+  		  return json_encode('error');
+		  }
+		else 
+		  {
+  		  return json_encode('success');
+		  }
 	}
 	
 }
