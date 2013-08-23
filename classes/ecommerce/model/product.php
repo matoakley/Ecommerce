@@ -77,7 +77,7 @@ class Ecommerce_Model_Product extends Model_Application
 					'foreign' => 'product',
 					'through' => array(
                     'model'   => 'related_products_products',
-                    'columns' => array('related_product_id', 'product_id'),
+                    'columns' => array('product_id', 'related_product_id'),
                 ),
 				)),
 				'product_options' => new Field_HasMany(array(
