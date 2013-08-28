@@ -73,8 +73,12 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				'related_products' => new Field_HasMany(array(
-					'foreign' => 'related_product.product_id',
+				'related_products' => new Field_ManyToMany(array(
+					'foreign' => 'product',
+					'through' => array(
+                    'model'   => 'related_products_products',
+                    'columns' => array('product_id', 'related_product_id'),
+                ),
 				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
@@ -180,31 +184,7 @@ class Ecommerce_Model_Product extends Model_Application
 							->execute();
 	}
 
-	public static function sort_high_or_low_values($products, $direction = "low")
-	{  
-	  $products_values = array();
-	  
-  	foreach ($products['results'] as $product)
-  	 { 
-    	 $products_values[$product->id] = intval(str_replace("&pound;", '', str_replace(",", '', $product->summarise_sku_price()))); 
-  	 }
 
-  	 if ($direction == "high")
-  	   {
-    	   arsort($products_values);
-  	   }
-  	 else
-  	   {
-    	   asort($products_values);
-  	   }
-  	   
-  	 foreach ($products_values as $product_id => $value)
-  	   { 
-    	   $products_sorted['results'][] = Model_Product::load($product_id);
-  	   }
-
-  	 return $products_sorted;
-	}
 	
 	/****** Public Functions ******/
 	
@@ -515,5 +495,40 @@ class Ecommerce_Model_Product extends Model_Application
 		$bundle->remove('bundle_items', $sku_id);
 		$bundle->save();
 	}
-
+	
+	// Override standard delete to handle orphaned related product
+	public function delete($key = FALSE)
+	{			
+		//go through and delete all skus
+		foreach ($this->skus as $sku)
+		{
+  		$sku->delete();
+		}
+		
+		//go through and delete all product options
+		foreach ($this->product_options as $option)
+		{
+  		$option->delete();
+		}
+		
+		//go through and delete all images
+		foreach ($this->images as $image)
+		{
+  		$image->delete();
+		}
+		
+		parent::delete($key);
+	}
+	
+	public function add_to_related_products($data)
+	{
+  	$this->add('related_products', array($data));
+  	$this->save();
+	}
+	
+	public function remove_from_related_products($data)
+	{
+  	$this->remove('related_products', array($data));
+  	$this->save();
+	}
 }

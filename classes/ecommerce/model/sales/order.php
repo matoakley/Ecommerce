@@ -102,7 +102,15 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			'invoice_sent',
 			'complete',
 			'order_cancelled',
-		),	
+		),
+		'booking' => array(
+		  'awaiting_payment',
+			'problem_occurred',
+			'payment_received',
+			'payment_due',
+			'complete',
+			'order_cancelled',
+		),
 	);
 	
 	public static $searchable_fields = array(
@@ -491,7 +499,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function send_confirmation_email()
 	{
-		Email::connect();
+		Caffeine_Email::connect();
 
 		$message = Twig::factory('emails/order_confirmation.html');
 		$message->sales_order = $this;
@@ -507,12 +515,12 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			$to['bcc'] = array($bcc_address, '');
 		}
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order confirmation from ' . Kohana::config('ecommerce.site_name'), $message, true);
 	}
 	
 	public function send_shipped_email()
 	{
-		Email::connect();
+		Caffeine_Email::connect();
 		
 		$message = Twig::factory('emails/order_shipped.html');
 		$message->sales_order = $this;
@@ -523,7 +531,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 			'to' => array($this->customer->email, $this->customer->firstname . ' ' . $this->customer->lastname),
 		);
 
-		return Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
+		return Caffeine_Email::send($to, array(Kohana::config('ecommerce.email_from_address') => Kohana::config('ecommerce.email_from_name')), 'Your order from ' . Kohana::config('ecommerce.site_name') . ' has been shipped', $message, true);
 	}
 	
 	
@@ -618,7 +626,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 	
 	public function send_invoice($copy_to_administrator = FALSE)
 	{
-		$email = Email::connect();
+		$email = Caffeine_Email::connect();
 		
 		$site_name = Kohana::config('ecommerce.trade_site_name') != '' ? Kohana::config('ecommerce.trade_site_name') : Kohana::config('ecommerce.site_name');
 		$from_address = Kohana::config('ecommerce.commercial_email_from_address') != '' ? Kohana::config('ecommerce.commercial_email_from_address') : Kohana::config('ecommerce.email_from_address');

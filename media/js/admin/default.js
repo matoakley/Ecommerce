@@ -1,5 +1,5 @@
 $(function(){
-      
+    
   //Page image upload 
   $(function(){
 
@@ -193,7 +193,7 @@ $(function(){
     var data = {product_id: originalProduct, related_id: product};
     console.log(originalProduct);
     $.ajax({   
-				url: '/admin/related_products/add_to_related_products',
+				url: '/admin/products/add_to_related_products',
 				type: 'POST',
 				data: data,
 				dataType: 'json',
@@ -218,7 +218,7 @@ $(function(){
     var data = {product_id: originalProduct, related_id: product};
     
     $.ajax({   
-				url: '/admin/related_products/remove_from_related_products',
+				url: '/admin/products/remove_from_related_products',
 				type: 'POST',
 				data: data,
 				dataType: 'json',
@@ -233,6 +233,7 @@ $(function(){
     console.log(product, productOption);
     
   })
+
   
    $('#add-to-bundle').click(function(e){
     e.preventDefault();
@@ -793,6 +794,13 @@ $(function(){
 				$('span#sales-order-vat').html(calculateSalesOrderVat());
 				// Disable the sku in the select to avoid duplicate rows
 				$('select#new-sales-order-item').find('option[data-sku-id="'+response.sku.id+'"]').attr('disabled', 'disabled');
+				$('.datepicker').datepicker({
+      		constrainInput: true,
+      		dateFormat: 'dd/mm/yy',
+      		firstDay: 1,
+      		numberOfMonths: 1,
+      		selectOtherMonths: true
+      	})
 			},
 			complete: function(){
 				select.val('');

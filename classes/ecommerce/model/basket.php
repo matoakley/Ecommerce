@@ -229,7 +229,7 @@ else
 					switch ($this->promotion_code_reward->discount_unit)
 					{
 						case 'pounds':
-							$discount += $this->promotion_code_reward->discount_amount;
+							$discount += $item->sku->retail_price() * $item->quantity < $this->promotion_code_reward->discount_amount ? $item->sku->retail_price() * $item->quantity : $this->promotion_code_reward->discount_amount;
 							break;
 						case 'percent':
 							$discount += ($item->sku->retail_price() * $item->quantity) * ($this->promotion_code_reward->discount_amount / 100);
@@ -246,7 +246,7 @@ else
   		$discount = $subtotal;
 		}
 		
-		return number_format($discount, 2);
+		return number_format($discount, 2, '.', '');
 	}
 	
 	public function update_delivery_option($delivery_option_id)

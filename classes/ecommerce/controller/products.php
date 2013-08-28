@@ -50,7 +50,7 @@ class Ecommerce_Controller_Products extends Controller_Application
 		
 		if (Caffeine::modules('related_products'))
 		    {
-  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
+  		    $this->template->related_products = $product->related_products;
 		    }
 
 		

@@ -55,6 +55,7 @@ class Ecommerce_Controller_Admin_Tools extends Controller_Admin_Application
 					{
   					$item->deleted = time();
   					$item->save();
+  					$item->delete();
   				}
 				}
 
