@@ -64,6 +64,7 @@ return array
 		'snippets' => FALSE,
 		'stock_control' => FALSE,
 		'stockists' => FALSE,
+		'stripe_payments' => FALSE,
 		'tiered_pricing' => FALSE,
 		'trade_area' => FALSE,
 		'users' => FALSE,
