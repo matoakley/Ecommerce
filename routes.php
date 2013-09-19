@@ -330,6 +330,11 @@ Route::set('view_category', 'browse/<slug>')->defaults(array(
 	'action' => 'view',
 ));
 
+Route::set('view_event_category', 'browse/events/<slug>')->defaults(array(
+	'controller' => 'event_categories',
+	'action' => 'view',
+));
+
 Route::set('view_product', 'view/<slug>')->defaults(array(
 	'controller' => 'products',
 	'action' => 'view',
