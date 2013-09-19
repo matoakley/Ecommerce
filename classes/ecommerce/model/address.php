@@ -179,6 +179,15 @@ class Ecommerce_Model_Address extends Model_Application
 		{
 			$address->name = $data['name'];
 		}
+		
+		if (isset($data['latitude']))
+		{
+			$address->latitude = $data['latitude'];
+		}
+		if (isset($data['longitude']))
+		{
+			$address->longitude = $data['longitude'];
+		}
 
 		if (isset($data['line_3']))
 		{
@@ -236,13 +245,13 @@ class Ecommerce_Model_Address extends Model_Application
 		{
 		  $this->name = $data['name'];
 		}
-		if (isset($data['longitude']))
-		{
-		  $this->longitude = $data['longitude'];
-		}
 		if (isset($data['latitude']))
 		{
-		  $this->latitude = $data['latitude'];
+			$this->latitude = $data['latitude'];
+		}
+		if (isset($data['longitude']))
+		{
+			$this->longitude = $data['longitude'];
 		}
 		if (isset($data['address']))
 		{

@@ -21,19 +21,29 @@ class Ecommerce_Controller_Pages extends Controller_Application {
 	{	
 		$page = Model_Page::get_by_slug($this->request->param('slug'));
 		
-		if ( ! $page->loaded())
+		if ( ! $page->loaded() || $page->loaded() && ! $page->has_content)
 		{
 			throw new Kohana_Exception('Page not found');
 		}
 		$this->template->page = $page;
 		$this->template->meta_description = $page->meta_description;
 		$this->template->meta_keywords = $page->meta_keywords;
-	
-		// build breadcrumb
-		if ($page->parent->loaded())
-		{
-			$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->parent->slug))), $page->parent->name);
-		}	
+    $parent = $page->parent;
+    $breadcrumbs = array();
+    
+    while($parent && $parent->loaded()) 
+    { 
+      $breadcrumbs[] = array('slug' => $parent->slug, 'name' => $parent->name);
+      $parent = $parent->parent;          
+    }
+
+    $breadcrumbs = array_reverse($breadcrumbs);
+    
+    foreach ($breadcrumbs as $breadcrumb)
+    {
+      $this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $breadcrumb['slug']))), $breadcrumb['name']);
+    }
+    
 		$this->add_breadcrumb(URL::site(Route::get('view_page')->uri(array('slug' => $page->slug))), $page->name);
 	}
 	

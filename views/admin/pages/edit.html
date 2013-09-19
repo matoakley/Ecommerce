@@ -94,13 +94,22 @@
 		<div class="grid_2 alpha">
 			<label for="page-parent">Parent Page</label>
 		</div>
-		<div class="grid_14 omega">
+		<div class="grid_6 omega">
 			<select id="page-parent" name="page[parent]">
 				<option value="0">-- Top Level Page --</option>
-			{% for tlp in top_level_pages %}
-				<option value="{{tlp.id}}" {{ tlp.id == page.parent.id ? "selected" : "" }}>{{tlp.name}}</option>
+			{% for tlp in pages %}
+			  {% if tlp.id != page.id %}
+				  <option value="{{tlp.id}}" {{ tlp.id == page.parent.id ? "selected" : "" }}>{{tlp.name}}</option>
+				{% endif %}
 			{% endfor %}
 			</select>
+		</div>
+    <div class="grid_2 alpha">
+			<label for="page-parent">Has Content?</label>
+		</div>
+		<div class="grid_6 omega">
+			<input type="radio" id="page-has_content" name="page[has_content]" value="1" {% if page.has_content %}checked{% endif %}/> Yes /
+			<input type="radio" id="page-has_content" name="page[has_content]" value="0" {% if not page.has_content %}checked{% endif %}/> No
 		</div>
 		<div class="clear"></div>
 	</div>
