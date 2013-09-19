@@ -154,9 +154,9 @@ class Ecommerce_Model_Event_Category extends Model_Application
 		return $path;
 	}
 	
-	public function count_products()
+	public function count_events()
 	{
-		return count($this->products);
+		return count($this->events);
 	}
 	
 	public function update($data)

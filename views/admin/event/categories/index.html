@@ -40,9 +40,9 @@
 		<tr>
 			<th width="1"><input id="check-all" type="checkbox" /></th>
 			<th>Name</th>
-			<th>Parent Category</th>
-			<th class="tr">Events</th>
-			<th>Status</th>
+			<th class="tc">Parent Category</th>
+			<th class="tc">Events</th>
+			<th class="tc">Status</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -50,9 +50,9 @@
 		<tr class="{{['', 'alternate']|cycle(key)}}">
 			<td width="1"><input type="checkbox" class="row-selector" value="{{category.id}}"/></td>
 			<td><a href="/admin/event_categories/edit/{{category.id}}">{{category.name}}</a></td>
-			<td>{{category.parent.name}}</td>
-			<td>{{category.count_products}}</td>
-			<td class="{{category.status}}">{{category.status|title}}</td>
+			<td class="tc">{{category.parent.name|title}}</td>
+			<td class="tc">{{category.count_events}}</td>
+			<td class="tc {{category.status}}">{{category.status|title}}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
