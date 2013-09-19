@@ -49,6 +49,7 @@ return array
 		'display_in_retail_or_commercial' => FALSE,
 		'email_verification' => FALSE,
 		'events' => FALSE,
+		'events_categories' => FALSE,
 		'forums' => FALSE,
 		'geocoded_addresses' => FALSE,
 		'pages' => FALSE,
