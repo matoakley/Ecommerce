@@ -18,6 +18,7 @@ class Ecommerce_Model_Page extends Model_Application
 					'foreign' => 'page.id',
 					'column' => 'parent_id',
 				)),
+				'has_content' => new Field_Boolean,
 				'featured_image' => new Field_String(array(
           'in_db' => FALSE,
         )),
@@ -64,13 +65,41 @@ class Ecommerce_Model_Page extends Model_Application
 
     return parent::__get($field);
   }
+  
+  public static function list_all()
+  {			
+		return Jelly::select('page')->execute();
+  }
+  
+  public static function page_hierachy($root_page = NULL, $active_only = FALSE)
+  {		
+		$tree = array();
+		
+		$tree = Jelly::select('page')->where('parent_id', '=', $root_page);
+		
+		if ($active_only)
+		{
+			$tree->where('status', '=', 'active');
+		}
+						
+		$tree = $tree->order_by('order')->execute()->as_array();
+		
+		foreach ($tree as $key => $values)
+		{
+			$tree[$key]['children'] = Model_Page::page_hierachy($values['id'], $active_only);
+			$tree[$key]['num_pages'] = count(Jelly::select('page', $values['id'])->pages);
+			$tree[$key]['pages'] = Jelly::select('page', $values['id'])->page;
+		}
+		
+		return $tree;
+  }
 
 	public static function build_page_tree($root_page = NULL, $active_only = FALSE)
 	{				
 		$tree = array();
 		
 		$tree = Jelly::select('page')->where('parent_id', '=', $root_page);
-		
+    
 		if ($active_only)
 		{
 			$tree->where('status', '=', 'active');

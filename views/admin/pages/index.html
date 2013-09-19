@@ -46,12 +46,30 @@
 	</thead>
 	<tbody>
 	{% for key, page in pages %}
-		<tr class="{{['', 'alternate']|cycle(key)}}">
-			<td width="1"><input type="checkbox" class="row-selector" value="{{page.id}}"/></td>
-			<td><a href="/admin/pages/edit/{{page.id}}">{{page.name}}</a></td>
-			<td>{{page.template}}</td>
-			<td>{{page.status|title}}</td>
-		</tr>
+	  {% if not page.parent.loaded and page.pages %}
+  		<tr class="{{['', 'alternate']|cycle(key)}}">
+  			<td width="1"><input type="checkbox" class="row-selector" value="{{page.id}}"/></td>
+  			<td><a href="/admin/pages/edit/{{page.id}}"><strong>{{page.name}}</strong></a></td>
+  			<td>{{page.template}}</td>
+  			<td>{{page.status|title}}</td>
+  		</tr>
+  		{% for pp in page.pages %}
+  		  <tr class="{{['', 'alternate']|cycle(key)}}">
+    			<td width="1"><input type="checkbox" class="row-selector" value="{{pp.id}}"/></td>
+    			<td><a href="/admin/pages/edit/{{page.id}}">{{pp.name}}</a></td>
+    			<td>{{pp.template}}</td>
+    			<td>{{pp.status|title}}</td>
+    		</tr>
+    		{% for p in pp.pages %}
+    		  <tr class="{{['', 'alternate']|cycle(key)}}">
+      			<td width="1"><input type="checkbox" class="row-selector" value="{{p.id}}"/></td>
+      			<td><a href="/admin/pages/edit/{{page.id}}">-- {{p.name}}</a></td>
+      			<td>{{p.template}}</td>
+      			<td>{{p.status|title}}</td>
+      		</tr>
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
 	{% endfor %}
 	</tbody>
 </table>
