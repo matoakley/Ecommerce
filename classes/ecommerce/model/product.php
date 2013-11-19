@@ -199,7 +199,7 @@ class Ecommerce_Model_Product extends Model_Application
 						AND products.deleted IS NULL
 						AND sales_orders.deleted IS NULL
 						AND sales_order_items.deleted IS NULL
-						GROUP BY sales_order_items.product_name
+						GROUP BY sales_order_items.sku_id
 						ORDER BY SUM(sales_order_items.quantity) DESC
 						LIMIT $num_products";
 						

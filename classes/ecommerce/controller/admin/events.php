@@ -112,6 +112,7 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 		
 		$this->template->fields = $fields;
 		$this->template->statuses = Model_Event::$statuses;
+		$this->template->categories = Model_Event_Category::get_admin_categories(FALSE, FALSE);
 		$this->template->errors = $errors;
 		$this->template->event = $event;
 	}

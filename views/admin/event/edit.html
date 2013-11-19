@@ -158,6 +158,33 @@ font-weight: bold;
 			</div>
 			<div class="clear"></div>
 		</div>
+		
+		{% if event.loaded and modules.events_categories %}
+  		<h2>Categories</h2>
+  		{% set i = 1 %}
+  		{% for key, category in categories %}
+  			{% if not category.parent.loaded %}
+  				<div class="grid_4 field {% if i % 4 == 1 %}alpha{% elseif i % 4 == 0 %}omega{% endif %}">
+  					<input type="checkbox" id="event-category-{{category.id}}" name="event[categories][]" value="{{category.id}}" 
+  						class="top-level-category" {% if event.loaded and category.id in event.categories.as_array('id', 'id') %}checked{% endif %} />
+  					<label for="event-category-{{category.id}}" class="checkbox-label-bold">{{category.name}}</label>
+  					{% if category.categories %}
+  						<ul class="subcategory-list">
+  							{% for subcategory in category.categories %}
+  							<li>
+  								<input type="checkbox" id="event-category-{{subcategory.id}}" name="event[categories][]" 
+  									value="{{subcategory.id}}" {% if event.loaded and subcategory.id in event.categories.as_array('id', 'id') %}checked{% endif %} />
+  								<label for="event-category-{{subcategory.id}}" class="checkbox-label">{{subcategory.name}}</label>
+  							</li>
+  							{% endfor %}
+  						</ul>
+  					{% endif %}
+  				</div>
+  				{% if i % 4 == 0 %}<div class="clear"></div>{% endif %}
+  				{% set i = i + 1 %}
+  			{% endif %}
+  		{% endfor %}
+    {% endif %}
 	
 	<div class="grid_6 omega">
 				<input type="submit" name="save_exit" value="Save &amp; Exit" class="right-pad" />
