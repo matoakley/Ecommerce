@@ -5,7 +5,7 @@ class Ecommerce_Model_Product extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('products')
-			->sorting(array('name' => 'ASC'))
+			//->sorting(array('name' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(

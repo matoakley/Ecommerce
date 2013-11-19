@@ -15,11 +15,7 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	 */
 	public function before()
 	{ 
-		// Attempt to use SSH if available as we're dealing with log ins
-		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
-		{
-			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
-		}
+		$this->check_for_https();
 	
 		if ( ! IN_PRODUCTION)
 		{
@@ -80,5 +76,14 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 			$this->request->response .= View::factory('profiler/stats');
 		}
 */
+	}
+	
+	public function check_for_https()
+	{
+  	// Attempt to use SSH if available as we're dealing with log ins
+		if($_SERVER['SERVER_PORT'] != 443 AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
+		{
+			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
+		}
 	}
 }
