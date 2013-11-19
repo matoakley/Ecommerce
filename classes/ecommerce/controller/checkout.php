@@ -9,10 +9,7 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 			throw new Kohana_Exception('This module is not enabled');
 		}
 
-		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
-		{
-			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
-		}
+		$this->check_for_https();
 		
 		parent::before();
 	}
@@ -198,6 +195,15 @@ class Ecommerce_Controller_Checkout extends Controller_Application
 				$this->session->set('new_customer', TRUE);
 				$this->request->redirect(Route::get('checkout')->uri());
 			}
+		}
+	}
+	
+	public function check_for_https()
+	{
+  	// Attempt to use SSH if available as we're dealing with log ins
+		if($_SERVER['SERVER_PORT'] != 443 AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
+		{
+			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
 		}
 	}
 }
