@@ -250,15 +250,31 @@ class Ecommerce_Model_User extends Model_Auth_User
 		$this->lastname = $data['lastname'];
 		
 		$this->short_bio = Text::auto_p($data['short_bio']);
+		$original_roles = array();
 		
 		foreach ($this->roles as $role)
 		{
-			$this->remove('roles', $role->id);
+			$original_roles[] = $role;
 		}
+		$this->remove('roles', $this->roles);
+		$this->save();
 		
 		// Always set Login and Admin roles
 		$data['roles'][] = 1;
 		$data['roles'][] = 2;
+		
+		foreach($original_roles as $role)
+		{
+		  if (in_array($role->id, array(3,4)))
+		  {
+  		  $data['roles'][] = $role->id;
+		  }
+		}
+		
+		if (isset($data['new_role']) && ! in_array($data['new_role'], $data['roles']))
+		{
+  		$data['roles'][] = $data['new_role'];
+		}
 		
 		if (isset($data['roles']))
 		{

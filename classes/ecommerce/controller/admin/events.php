@@ -15,31 +15,64 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 	
 	function action_index()
 	{
-  	$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
+	  $month = $this->request->param('month', date('m'));
 		
-		$order = array();
-		$order['start_date'] = 'DESC';
+		$items = 20;
+		$page_number = Arr::get($_GET, 'page', 1);
+    // Find out which day of the week the 1st of the month falls on.
+		$date = mktime(0, 0, 0, $month, 1, date('Y'));
 		
-		
-		$search = Model_Event::search(array(), $items, $order);
-
 		// Pagination
 		$this->template->pagination = Pagination::factory(array(
-			'total_items' => $search['count_all'],
-			'items_per_page' => ($items) ? $items : $search['count_all'],
-			'auto_hide'	=> false,
-			'view' => 'pagination/admin',
+			'total_items'    => count(Model_Event::get_events_by_month($date, NULL, NULL)),
+			'items_per_page' => $items,
 		));
+	
+		$calendar_days = array();
 		
-		// Set URI into session for redirecting back from forms
-		$this->session->set('admin.events.index', $_SERVER['REQUEST_URI']);
+		for ($i = 0; $i < 6; $i++)
+		{
+			for ($j = 1; $j < 8; $j++)
+			{
+				$calendar_days[$i][$j]['day_date'] = mktime(12, 0, 0, date('m', $date), date('d', $date) + (($i * 7) + $j) - date('N', $date), date('Y', $date));
+				$calendar_days[$i][$j]['class'] = (date('m', $calendar_days[$i][$j]['day_date']) == date('m', $date)) ? 'this_month' : 'other_month';
+				$calendar_days[$i][$j]['has_events'] = Jelly::select('event')
+																										->where('start_date', '<=', date('Y-m-d', $calendar_days[$i][$j]['day_date']).' 00:00:00')
+																										->where('end_date', '>=', date('Y-m-d', $calendar_days[$i][$j]['day_date']).' 00:00:00')
+																										->where('status', '=', 'active')
+																										->where('deleted', '=', NULL)
+																										->execute();
+			}
+		}
 		
-		$this->template->events = $search['results'];
-		$this->template->total_events = $search['count_all'];
-		$this->template->page = (isset($_GET['page'])) ? $_GET['page'] : 1;
-		$this->template->items = $items;
+		$events = Model_Event::get_events_by_month($date, $items, ($page_number - 1) * $items);
+		
+		$this->template->calendar_title = date("F Y", $date);
+		$this->template->calendar_days = $calendar_days;
+		$this->template->events = $events;
+		
+		$tabs = array();
+		for ($i = -05; $i < 7; $i++)
+		{
+			$tabs[date('m')+$i] = date('M y', mktime(0, 0, 0, date('m') + $i, 1, date('Y')));
+		}
+		
+		$this->template->tabs = $tabs;
+		$this->template->current_tab = $month;
+		$this->template->breadcrumbs = NULL;
+		$this->template->types = Model_Event::$types;
+		
+		//products for the prices panel
+		$this->template->barn_products = Jelly::select('sku')->where('venue', '=', 'the_barn')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
+		$this->template->hall_products = Jelly::select('sku')->where('venue', '=', 'the_hall')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
+		$this->template->hall_barn_products = Jelly::select('sku')->where('venue', '=', 'the_hall_and_barn')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
+		
+		//logs
+		$this->template->event_logs = Jelly::select('event_logs')->order_by('created', 'DESC')->execute();
+		
+  	$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 	}
-		
+			
   public function action_view()
     {
     
@@ -115,6 +148,7 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 		$this->template->categories = Model_Event_Category::get_admin_categories(FALSE, FALSE);
 		$this->template->errors = $errors;
 		$this->template->event = $event;
+		$this->template->types = Model_Event::$types;
 	}
 
 	public function action_delete($id = NULL)
@@ -125,6 +159,5 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 		$events->delete();
 		
 		$this->request->redirect($this->session->get('admin.events.index', 'admin/events'));
-	}
-	
+	}	
 }
