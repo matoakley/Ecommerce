@@ -5,7 +5,7 @@ class Ecommerce_Model_Product extends Model_Application
 	public static function initialize(Jelly_Meta $meta)
 	{
 		$meta->table('products')
-			->sorting(array('name' => 'ASC'))
+			//->sorting(array('name' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
@@ -73,8 +73,12 @@ class Ecommerce_Model_Product extends Model_Application
 				'skus' => new Field_HasMany(array(
 					'foreign' => 'sku.product_id',
 				)),
-				'related_products' => new Field_HasMany(array(
-					'foreign' => 'related_product.product_id',
+				'related_products' => new Field_ManyToMany(array(
+					'foreign' => 'product',
+					'through' => array(
+                    'model'   => 'related_products_products',
+                    'columns' => array('product_id', 'related_product_id'),
+                ),
 				)),
 				'product_options' => new Field_HasMany(array(
 					'on_copy' => 'clone',
@@ -195,7 +199,7 @@ class Ecommerce_Model_Product extends Model_Application
 						AND products.deleted IS NULL
 						AND sales_orders.deleted IS NULL
 						AND sales_order_items.deleted IS NULL
-						GROUP BY sales_order_items.product_name
+						GROUP BY sales_order_items.sku_id
 						ORDER BY SUM(sales_order_items.quantity) DESC
 						LIMIT $num_products";
 						
@@ -494,21 +498,7 @@ class Ecommerce_Model_Product extends Model_Application
 	
 	// Override standard delete to handle orphaned related product
 	public function delete($key = FALSE)
-	{	
-	  //go through and delete all related products	
-		foreach ($this->related_products as $related)
-		{
-  		$related->delete();
-		}
-		
-		//if this product is deleted we need to delete all the related products
-		// that this product belongs to to avoid the slug error.
-		$products_related = Jelly::select('related_product')->where('related_id', '=', $this->id)->execute();
-		foreach ($products_related as $related)
-		{
-  		$related->delete();
-		}
-		
+	{			
 		//go through and delete all skus
 		foreach ($this->skus as $sku)
 		{
@@ -528,5 +518,17 @@ class Ecommerce_Model_Product extends Model_Application
 		}
 		
 		parent::delete($key);
+	}
+	
+	public function add_to_related_products($data)
+	{
+  	$this->add('related_products', array($data));
+  	$this->save();
+	}
+	
+	public function remove_from_related_products($data)
+	{
+  	$this->remove('related_products', array($data));
+  	$this->save();
 	}
 }

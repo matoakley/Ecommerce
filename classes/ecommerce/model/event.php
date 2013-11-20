@@ -25,6 +25,10 @@ class Ecommerce_Model_Event extends Model_Application
 				'start_date' => new Field_Timestamp(array(
 					'format' => 'Y-m-d H:i:s',
 				)),
+				'categories' => new Field_ManyToMany(array(
+					'foreign' => 'event_category',
+					'through' => 'categories_events',
+				)),
 				'address' => new Field_BelongsTo,
 				'status' => new Field_String,
 				'created' =>  new Field_Timestamp(array(
@@ -102,43 +106,46 @@ class Ecommerce_Model_Event extends Model_Application
 		return $query->execute();
 	}
 	
-	public function update($data)
-	{	
-  	   $errors = array();
-			if (isset($_POST['event']))
-			{
-				try
-				{
-					//event_validator($_POST['event']);
-				}
-				catch (Validate_Exception $e)
-				{
-					$errors['event'] = $e->array->errors();
-				}
-		
-
-		$this->name = $data['name'];
-		if (isset($data['slug']))
-		{
-			$this->slug = $data['slug'];
-		}
-		if (isset($data['status']))
-		{
-		$this->status = $data['status'];
-		}
-		$this->address = $data['address'];
-		$this->start_date = $data['start_date'];
-		$this->end_date = $data['end_date'];
-		$this->description = $data['description'];
-		$this->save();
-		
-		// Ping sitemap to search engines to alert them of content change
-		if (IN_PRODUCTION AND $this->status == 'active')
-		{
-			Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
-		}
-		
-		return $this;
-	}
- }
+  public function update($data)
+  {	
+    $errors = array();  
+  
+    $this->name = $data['name'];
+    
+    if (isset($data['slug']))
+    {
+      $this->slug = $data['slug'];
+    }
+    if (isset($data['status']))
+    {
+      $this->status = $data['status'];
+    }
+    
+    $this->address = $data['address'];
+    $this->start_date = $data['start_date'];
+    $this->end_date = $data['end_date'];
+    $this->description = $data['description'];
+    
+    if (Kohana::config('ecommerce.modules.events_categories'))
+    {
+      // Clear down and save categories.
+  		$this->remove('categories', $this->categories);
+  		
+  		if (isset($data['categories']))
+  		{
+  		  // note to self 'categories' is based on THIS models fields not the database! not the categories table! not magic!
+  			$this->add('categories', $data['categories']);
+  		}
+    }
+    
+    $this->save();
+    
+    // Ping sitemap to search engines to alert them of content change
+    if (IN_PRODUCTION AND $this->status == 'active')
+    {
+      Sitemap::ping(URL::site(Route::get('sitemap_index')->uri()), TRUE);
+    }
+    
+    return $this;
+  }
 }

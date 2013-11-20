@@ -87,7 +87,7 @@ class Ecommerce_Model_Stockist extends Model_Application
 	/****** Public Methods ******/
 	
 	public function update($data)
-	{	
+	{
 		$this->name = $data['name'];
 		if (isset($data['slug']))
 		{
