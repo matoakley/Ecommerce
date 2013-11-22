@@ -61,6 +61,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 					'foreign' => 'sales_order_item.sales_order_id',
 				)),
 				'ip_address' => new Field_String,
+				'user_agent' => new Field_String,
 				'basket' => new Field_HasOne,
 				'notes' => new Field_HasMany(array(
 					'foreign' => 'sales_order_note.sales_order_id',
@@ -188,6 +189,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->ip_address = $_SERVER['REMOTE_ADDR'];
 		$sales_order->basket = $basket;
 		$sales_order->type = 'retail';
+		$sales_order->user_agent = Request::$user_agent;
 		
 		$sales_order->save();
 	
@@ -266,6 +268,7 @@ class Ecommerce_Model_Sales_Order extends Model_Application
 		$sales_order->basket = $basket;
 		$sales_order->type = 'commercial';
 		$sales_order->invoice_terms = $customer->invoice_terms == NULL ? $customer->invoice_terms : Kohana::config('ecommerce.default_invoice_terms');
+		$sales_order->user_agent = Request::$user_agent;
 		
 		if (Auth::instance()->logged_in('customer'))
 		{

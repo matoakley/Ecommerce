@@ -233,7 +233,7 @@ class Ecommerce_Controller_Admin_Bundles extends Controller_Admin_Application {
 		
 		  if (Caffeine::modules('related_products'))
 		    {
-  		    $this->template->related_products = Model_Related_Product::get_related_products($product->id);
+  		    $this->template->related_products = $product->related_products;
   		    $this->template->products = Model_Product::list_all();
 		    }
 		    

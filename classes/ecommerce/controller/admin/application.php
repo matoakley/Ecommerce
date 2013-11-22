@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-abstract class Ecommerce_Controller_Admin_Application extends Controller_Template_Twig
+abstract class Ecommerce_Controller_Admin_Application extends Controller_AACL
 {
 	public $environment = 'production';
 
@@ -15,12 +15,11 @@ abstract class Ecommerce_Controller_Admin_Application extends Controller_Templat
 	 */
 	public function before()
 	{ 
-		// Attempt to use SSH if available as we're dealing with log ins
-		if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
+	  if(Request::$protocol != 'https' AND IN_PRODUCTION AND ! Kohana::config('ecommerce.no_ssl'))
 		{
 			$this->request->redirect(URL::site(Request::Instance()->uri, 'https'));
 		}
-	
+	  
 		if ( ! IN_PRODUCTION)
 		{
 			$this->environment = 'development';
