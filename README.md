@@ -1,3 +1,9 @@
+# Upgrading to v1.2.4
+
+- Add AACL Submodule (Important)
+- Remove sitemap module and add as git submodule from Matt's GitHub
+- (If Sonic) Point index.php to new system location.
+
 # Upgrading to v1.2.2
 
 - It is important that you move the Admin catchall route from /modules/ecommerce/init.php into application/bootstrap.php, above the master catchall route. You'll find the admin catchall route commented out in the init.php file, please don't delete it. For an example of where to put it, see the /application/bootstrap.php file of Paddy & Scott's.
