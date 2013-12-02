@@ -36,17 +36,17 @@ class Ecommerce_Model_Product_Image extends Model_Application
 		$i = Jelly::factory('product_image');
 		$i->product = $product_id;
 		$i->save();
-	
+
 		// Resize and save the images
 		$image = Image::factory($file_path);
-		
+
 		// Full Size first
 		$full_size_size = Kohana::config('ecommerce.image_sizing.full_size');  // Apologies for the stupid variable naming!
 		$image->resize($full_size_size['width'], $full_size_size['height'], Image::INVERSE);
-		
+
 		// Crop it for good measure
 		$image->crop($full_size_size['width'], $full_size_size['height']);
-		
+
 		// Loop through each step of the dir path and check the dir exists or create it
 		$directory_parts = array(
 			'images',
@@ -64,13 +64,13 @@ class Ecommerce_Model_Product_Image extends Model_Application
 				mkdir($directory);
 			}
 		}
-		
+
 		$image->save(DOCROOT . $i->get_filepath('full_size'));
-		
+
 		// Then Thumbnail
 		$thumbnail_size = Kohana::config('ecommerce.image_sizing.thumbnail');
 		$image->resize($thumbnail_size['width'], $thumbnail_size['height'], Image::NONE);
-		
+
 		// Loop through each step of the dir path and check the dir exists or create it
 		$directory_parts = array(
 			'images',
@@ -88,29 +88,29 @@ class Ecommerce_Model_Product_Image extends Model_Application
 				mkdir($directory);
 			}
 		}
-				
+
 		$image->save(DOCROOT . $i->get_filepath('thumb'));
-		
+
 		return $i;
 	}
-	
+
 	public function __get($name)
 	{
 		if ($name == 'full_size_path')
 		{
 			$path = $this->get_filepath('full_size');
-			
+
 			if ( ! file_exists(DOCROOT . $path))
 			{
 				$path = '/images/products/default_full_size.jpg';
 			}
-		
-			return $path; 
+
+			return $path;
 		}
-		
+
 		if ($name == 'thumb_path')
-		{	
-			$path = $this->get_filepath('thumb'); 
+		{
+			$path = $this->get_filepath('thumb');
 
 			if ( ! file_exists(DOCROOT . $path))
 			{
@@ -119,40 +119,40 @@ class Ecommerce_Model_Product_Image extends Model_Application
 
 			return $path;
 		}
-		
+
 		return parent::__get($name);
 	}
-	
-	private function get_filepath($type = 'full_size')
+
+	protected function get_filepath($type = 'full_size')
 	{
 		return '/images/products/' . $type . '/'. date('Y/m/', $this->created) . $this->id . Kohana::config('ecommerce.product_image_format');
 
 	}
-	
+
 	public function update($data)
 	{
 		$this->alt_text = $data['alt_text'];
 		return $this->save();
 	}
-	
+
 	// Override standard delete to handle orphaned defualt and thumbnail images
 	// and also remove files from teh serverz.
 	public function delete($key = FALSE)
-	{	
+	{
 		$product = $this->product;
-		
+
 		if (file_exists(DOCROOT . $this->get_filepath('full_size')))
 		{
-			unlink(DOCROOT . $this->get_filepath('full_size'));	
+			unlink(DOCROOT . $this->get_filepath('full_size'));
 		}
-		
+
 		if (file_exists(DOCROOT . $this->get_filepath('thumb')))
 		{
 			unlink(DOCROOT . $this->get_filepath('thumb'));
 		}
-		
+
 		parent::delete($key);
-		
+
 		if ( ! $product->default_image->loaded())
 		{
 			$product->set_default_image();
