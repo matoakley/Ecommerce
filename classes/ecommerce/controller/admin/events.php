@@ -62,14 +62,6 @@ class Ecommerce_Controller_Admin_Events extends Controller_Admin_Application
 		$this->template->breadcrumbs = NULL;
 		$this->template->types = Model_Event::$types;
 		
-		//products for the prices panel
-		$this->template->barn_products = Jelly::select('sku')->where('venue', '=', 'the_barn')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
-		$this->template->hall_products = Jelly::select('sku')->where('venue', '=', 'the_hall')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
-		$this->template->hall_barn_products = Jelly::select('sku')->where('venue', '=', 'the_hall_and_barn')->where('deleted', '=', NULL)->where('status', '=', 'active')->execute();
-		
-		//logs
-		$this->template->event_logs = Jelly::select('event_logs')->order_by('created', 'DESC')->execute();
-		
   	$items = ($this->list_option != 'all') ? $this->list_option : FALSE;
 	}
 			
