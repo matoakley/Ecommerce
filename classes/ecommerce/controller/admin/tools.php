@@ -45,27 +45,20 @@ class Ecommerce_Controller_Admin_Tools extends Controller_Admin_Application
     		      $type = strtolower($type);
   		      }
 		      
-  		try
-			{
-  			  foreach ($_POST['items'] as $item_id)
-				{ 
-					$item = Jelly::select($type)->where('id', '=', $item_id)->load();
-					
-					if ($item->loaded())
-					{
-  					$item->deleted = time();
-  					$item->save();
+      foreach ($_POST['items'] as $item_id)
+			{ 
+				$item = Jelly::select($type)->where('id', '=', $item_id)->load();
+				
+				if ($item->loaded())
+				{
   					$item->delete();
-  				}
+  					if($item->loaded())
+  					{
+  					  $item->deleted = time();
+              $item->save();
+            }
 				}
-
-		  }
-			
-			catch (Validate_Exception $e)
-			{
-			
 			}
-
 		}
 	}
 	
